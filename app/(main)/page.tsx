@@ -1,0 +1,366 @@
+'use client';
+
+import React from 'react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    ArrowRight, ShieldCheck, Truck, Star, MapPin,
+    Smartphone, Shirt, Home, Car, Sparkles,
+    Dumbbell, Building2, Briefcase, Baby, ShoppingBasket
+} from 'lucide-react';
+import Image from 'next/image';
+
+export default function HomePage() {
+    return (
+        <div className="flex flex-col min-h-screen">
+            {/* Hero Section */}
+            <section className="relative py-20 md:py-32 bg-gradient-to-b from-background to-muted/20 overflow-hidden">
+                <div className="container px-4 mx-auto text-center relative z-10">
+                    <div className="inline-block mb-4 px-4 py-2 bg-primary/10 rounded-full">
+                        <span className="text-sm font-semibold text-primary">Nigeria&apos;s First Trustless Marketplace</span>
+                    </div>
+                    <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
+                        Shop Without <span className="text-primary">Fear</span>
+                    </h1>
+                    <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+                        Transparency and verification replace blind trust. See dealer ratings, reviews, and transaction history before you buy.
+                    </p>
+
+                    {/* Location Search */}
+                    <div className="max-w-md mx-auto mb-8 relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <MapPin className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="Search dealers near you (e.g. Ikeja)"
+                            className="w-full pl-10 pr-4 py-3 rounded-full border border-input bg-background shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    window.location.href = `/listings?location=${e.currentTarget.value}`;
+                                }
+                            }}
+                        />
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <Button size="lg" asChild className="text-lg px-8">
+                            <Link href="/listings">Browse Products</Link>
+                        </Button>
+                        <Button size="lg" variant="outline" asChild className="text-lg px-8">
+                            <Link href="/about">Learn More</Link>
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Background Decorative Elements */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl -z-10" />
+            </section>
+
+            {/* Shop by Category */}
+            <section className="py-12 container px-4 mx-auto">
+                <h2 className="text-3xl font-bold mb-8">Shop by Category</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                    {[
+                        { name: 'Electronics', icon: Smartphone, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+                        { name: 'Fashion', icon: Shirt, color: 'text-pink-500', bg: 'bg-pink-500/10' },
+                        { name: 'Home & Garden', icon: Home, color: 'text-green-500', bg: 'bg-green-500/10' },
+                        { name: 'Automotive', icon: Car, color: 'text-orange-500', bg: 'bg-orange-500/10' },
+                        { name: 'Beauty', icon: Sparkles, color: 'text-purple-500', bg: 'bg-purple-500/10' },
+                        { name: 'Sports', icon: Dumbbell, color: 'text-red-500', bg: 'bg-red-500/10' },
+                        { name: 'Real Estate', icon: Building2, color: 'text-cyan-500', bg: 'bg-cyan-500/10' },
+                        { name: 'Services', icon: Briefcase, color: 'text-slate-500', bg: 'bg-slate-500/10' },
+                        { name: 'Kids & Babies', icon: Baby, color: 'text-yellow-500', bg: 'bg-yellow-500/10' },
+                        { name: 'Groceries', icon: ShoppingBasket, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+                    ].map((category) => (
+                        <Link
+                            key={category.name}
+                            href={`/listings?category=${category.name}`}
+                            className="flex flex-col items-center justify-center p-6 bg-card hover:bg-muted/50 border border-border/50 rounded-xl transition-all hover:shadow-md group"
+                        >
+                            <div className={`h-14 w-14 ${category.bg} rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300`}>
+                                <category.icon className={`h-7 w-7 ${category.color}`} />
+                            </div>
+                            <span className="font-medium text-sm md:text-base">{category.name}</span>
+                        </Link>
+                    ))}
+                </div>
+            </section>
+
+            {/* Featured Listings */}
+            <section className="py-16 container px-4 mx-auto">
+                <div className="flex justify-between items-center mb-8">
+                    <h2 className="text-3xl font-bold">Featured Listings</h2>
+                    <Button variant="ghost" asChild>
+                        <Link href="/listings" className="flex items-center gap-2">
+                            View All <ArrowRight className="h-4 w-4" />
+                        </Link>
+                    </Button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {[
+                        {
+                            id: 1,
+                            title: "iPhone 15 Pro Max",
+                            price: 1850000,
+                            location: "Ikeja, Lagos",
+                            rating: 4.9,
+                            image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=800&q=80"
+                        },
+                        {
+                            id: 2,
+                            title: "Toyota Camry 2021",
+                            price: 15000000,
+                            location: "Victoria Island",
+                            rating: 4.8,
+                            image: "https://images.unsplash.com/photo-1621007947382-bb3c3968e3bb?auto=format&fit=crop&w=800&q=80"
+                        },
+                        {
+                            id: 3,
+                            title: "MacBook Pro M3",
+                            price: 2400000,
+                            location: "Yaba, Lagos",
+                            rating: 5.0,
+                            image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca4?auto=format&fit=crop&w=800&q=80"
+                        },
+                        {
+                            id: 4,
+                            title: "Sony PS5 Console",
+                            price: 650000,
+                            location: "Lekki, Lagos",
+                            rating: 4.7,
+                            image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=800&q=80"
+                        },
+                    ].map((item) => (
+                        <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow group cursor-pointer border-border/50">
+                            <div className="aspect-square bg-muted relative flex items-center justify-center overflow-hidden">
+                                <Image
+                                    src={item.image}
+                                    alt={item.title}
+                                    fill
+                                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                                />
+                            </div>
+                            <CardHeader className="p-4">
+                                <div className="flex justify-between items-start mb-2">
+                                    <CardTitle className="text-lg line-clamp-1 font-semibold">{item.title}</CardTitle>
+                                    <ShieldCheck className="h-4 w-4 text-blue-500 shrink-0" aria-label="Verified Dealer" />
+                                </div>
+                                <p className="text-primary font-bold text-lg">₦{item.price.toLocaleString()}</p>
+                            </CardHeader>
+                            <CardFooter className="p-4 pt-0 text-sm text-muted-foreground flex justify-between">
+                                <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {item.location}</span>
+                                <span className="flex items-center gap-1"><Star className="h-3 w-3 fill-primary text-primary" /> {item.rating}</span>
+                            </CardFooter>
+                        </Card>
+                    ))}
+                </div>
+            </section>
+
+            {/* Coming Soon Features */}
+            <section className="py-16 container px-4 mx-auto">
+                <div className="text-center mb-12">
+                    <div className="inline-block mb-4 px-4 py-2 bg-primary/10 rounded-full">
+                        <span className="text-sm font-semibold text-primary">Coming in Full Release</span>
+                    </div>
+                    <h2 className="text-3xl font-bold mb-4">Exciting Features on the Way</h2>
+                    <p className="text-muted-foreground max-w-2xl mx-auto">
+                        We're working hard to bring you even more features. Here's what's coming soon!
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="p-6 bg-muted/30 rounded-xl border border-border">
+                        <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
+                            <span className="text-2xl">💬</span>
+                        </div>
+                        <h3 className="text-lg font-bold mb-2">Live Chat System</h3>
+                        <p className="text-sm text-muted-foreground">Real-time messaging with dealers, complete with image sharing and chat history.</p>
+                    </div>
+                    <div className="p-6 bg-muted/30 rounded-xl border border-border">
+                        <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
+                            <span className="text-2xl">⭐</span>
+                        </div>
+                        <h3 className="text-lg font-bold mb-2">Advanced Reviews</h3>
+                        <p className="text-sm text-muted-foreground">Detailed product reviews with photos, verified purchase badges, and helpful voting.</p>
+                    </div>
+                    <div className="p-6 bg-muted/30 rounded-xl border border-border">
+                        <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
+                            <span className="text-2xl">📊</span>
+                        </div>
+                        <h3 className="text-lg font-bold mb-2">Dealer Analytics</h3>
+                        <p className="text-sm text-muted-foreground">Comprehensive insights and performance metrics for dealer accounts.</p>
+                    </div>
+                    <div className="p-6 bg-muted/30 rounded-xl border border-border">
+                        <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
+                            <span className="text-2xl">📱</span>
+                        </div>
+                        <h3 className="text-lg font-bold mb-2">Mobile App</h3>
+                        <p className="text-sm text-muted-foreground">Native iOS and Android apps for shopping on the go.</p>
+                    </div>
+                </div>
+            </section>
+
+            {/* Vendor Pricing Section */}
+            <section className="py-16 bg-muted/30">
+                <div className="container px-4 mx-auto">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl font-bold mb-4">Sell on MarketBridge</h2>
+                        <p className="text-muted-foreground max-w-2xl mx-auto">
+                            Join thousands of verified dealers growing their business. Choose the plan that fits your scale.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                        {/* Starter Plan */}
+                        <Card className="flex flex-col bg-background">
+                            <CardHeader>
+                                <CardTitle className="text-xl">Starter</CardTitle>
+                                <p className="text-sm text-muted-foreground">For new sellers</p>
+                            </CardHeader>
+                            <CardContent className="flex-1">
+                                <div className="mb-4">
+                                    <span className="text-3xl font-bold">Free</span>
+                                </div>
+                                <ul className="space-y-2 text-sm">
+                                    <li className="flex items-center gap-2">
+                                        <ShieldCheck className="h-4 w-4 text-primary" />
+                                        <span>Up to 5 active listings</span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <ShieldCheck className="h-4 w-4 text-primary" />
+                                        <span>Basic analytics</span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <ShieldCheck className="h-4 w-4 text-primary" />
+                                        <span>5% transaction fee</span>
+                                    </li>
+                                </ul>
+                            </CardContent>
+                            <CardFooter>
+                                <Button className="w-full" variant="outline" asChild>
+                                    <Link href="/signup">Start Selling</Link>
+                                </Button>
+                            </CardFooter>
+                        </Card>
+
+                        {/* Pro Plan */}
+                        <Card className="flex flex-col bg-background border-primary shadow-lg relative transform md:-translate-y-4">
+                            <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">
+                                POPULAR
+                            </div>
+                            <CardHeader>
+                                <CardTitle className="text-xl">Professional</CardTitle>
+                                <p className="text-sm text-muted-foreground">For growing businesses</p>
+                            </CardHeader>
+                            <CardContent className="flex-1">
+                                <div className="mb-4">
+                                    <span className="text-3xl font-bold">₦5,000</span>
+                                    <span className="text-muted-foreground">/month</span>
+                                </div>
+                                <ul className="space-y-2 text-sm">
+                                    <li className="flex items-center gap-2">
+                                        <ShieldCheck className="h-4 w-4 text-primary" />
+                                        <span>Up to 50 active listings</span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <ShieldCheck className="h-4 w-4 text-primary" />
+                                        <span>Verified Dealer Badge</span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <ShieldCheck className="h-4 w-4 text-primary" />
+                                        <span>Priority Support</span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <ShieldCheck className="h-4 w-4 text-primary" />
+                                        <span>2.5% transaction fee</span>
+                                    </li>
+                                </ul>
+                            </CardContent>
+                            <CardFooter>
+                                <Button className="w-full" asChild>
+                                    <Link href="/signup">Get Pro</Link>
+                                </Button>
+                            </CardFooter>
+                        </Card>
+
+                        {/* Enterprise Plan */}
+                        <Card className="flex flex-col bg-background">
+                            <CardHeader>
+                                <CardTitle className="text-xl">Enterprise</CardTitle>
+                                <p className="text-sm text-muted-foreground">For large dealerships</p>
+                            </CardHeader>
+                            <CardContent className="flex-1">
+                                <div className="mb-4">
+                                    <span className="text-3xl font-bold">₦20,000</span>
+                                    <span className="text-muted-foreground">/month</span>
+                                </div>
+                                <ul className="space-y-2 text-sm">
+                                    <li className="flex items-center gap-2">
+                                        <ShieldCheck className="h-4 w-4 text-primary" />
+                                        <span>Unlimited listings</span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <ShieldCheck className="h-4 w-4 text-primary" />
+                                        <span>Dedicated Account Manager</span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <ShieldCheck className="h-4 w-4 text-primary" />
+                                        <span>API Access</span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <ShieldCheck className="h-4 w-4 text-primary" />
+                                        <span>1% transaction fee</span>
+                                    </li>
+                                </ul>
+                            </CardContent>
+                            <CardFooter>
+                                <Button className="w-full" variant="outline" asChild>
+                                    <Link href="/contact">Contact Sales</Link>
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </div>
+                </div>
+            </section>
+
+            {/* How It Works */}
+            <section className="py-16 bg-muted/30">
+                <div className="container px-4 mx-auto">
+                    <h2 className="text-3xl font-bold text-center mb-4">Why Choose MarketBridge?</h2>
+                    <p className="text-center text-sm text-muted-foreground mb-12">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary font-medium">
+                            BETA VERSION - More features coming soon!
+                        </span>
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                        <div className="flex flex-col items-center p-6 bg-background rounded-xl shadow-sm">
+                            <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
+                                <ShieldCheck className="h-6 w-6" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2">Verified Dealers</h3>
+                            <p className="text-muted-foreground">Every dealer undergoes a strict verification process to ensure your safety.</p>
+                        </div>
+                        <div className="flex flex-col items-center p-6 bg-background rounded-xl shadow-sm">
+                            <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
+                                <Truck className="h-6 w-6" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2">Secure Delivery</h3>
+                            <p className="text-muted-foreground">Track your orders and enjoy reliable delivery services across Nigeria.</p>
+                        </div>
+                        <div className="flex flex-col items-center p-6 bg-background rounded-xl shadow-sm">
+                            <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
+                                <Star className="h-6 w-6" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2">Quality Assured</h3>
+                            <p className="text-muted-foreground">Read real reviews from other customers and shop with confidence.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    );
+}
