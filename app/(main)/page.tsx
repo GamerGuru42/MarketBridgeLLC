@@ -1,17 +1,30 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-    ArrowRight, ShieldCheck, Truck, Star, MapPin,
-    Smartphone, Shirt, Home, Car, Sparkles,
-    Dumbbell, Building2, Briefcase, Baby, ShoppingBasket
+    ArrowRight, ShieldCheck, Truck, Star, MapPin, Sparkles
 } from 'lucide-react';
 import Image from 'next/image';
+import { CATEGORIES, Category } from '@/lib/categories';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default function HomePage() {
+    const [comingSoonCategory, setComingSoonCategory] = useState<Category | null>(null);
+
+    const handleCategoryClick = (category: Category) => {
+        setComingSoonCategory(category);
+    };
+
     return (
         <div className="flex flex-col min-h-screen">
             {/* Hero Section */}
@@ -62,31 +75,67 @@ export default function HomePage() {
             <section className="py-12 container px-4 mx-auto">
                 <h2 className="text-3xl font-bold mb-8">Shop by Category</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                    {[
-                        { name: 'Electronics', icon: Smartphone, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-                        { name: 'Fashion', icon: Shirt, color: 'text-pink-500', bg: 'bg-pink-500/10' },
-                        { name: 'Home & Garden', icon: Home, color: 'text-green-500', bg: 'bg-green-500/10' },
-                        { name: 'Automotive', icon: Car, color: 'text-orange-500', bg: 'bg-orange-500/10' },
-                        { name: 'Beauty', icon: Sparkles, color: 'text-purple-500', bg: 'bg-purple-500/10' },
-                        { name: 'Sports', icon: Dumbbell, color: 'text-red-500', bg: 'bg-red-500/10' },
-                        { name: 'Real Estate', icon: Building2, color: 'text-cyan-500', bg: 'bg-cyan-500/10' },
-                        { name: 'Services', icon: Briefcase, color: 'text-slate-500', bg: 'bg-slate-500/10' },
-                        { name: 'Kids & Babies', icon: Baby, color: 'text-yellow-500', bg: 'bg-yellow-500/10' },
-                        { name: 'Groceries', icon: ShoppingBasket, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-                    ].map((category) => (
-                        <Link
-                            key={category.name}
-                            href={`/listings?category=${category.name}`}
-                            className="flex flex-col items-center justify-center p-6 bg-card hover:bg-muted/50 border border-border/50 rounded-xl transition-all hover:shadow-md group"
-                        >
-                            <div className={`h-14 w-14 ${category.bg} rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300`}>
-                                <category.icon className={`h-7 w-7 ${category.color}`} />
-                            </div>
-                            <span className="font-medium text-sm md:text-base">{category.name}</span>
-                        </Link>
+                    {CATEGORIES.map((category) => (
+                        <div key={category.name}>
+                            {category.isActive ? (
+                                <Link
+                                    href={`/listings?category=${category.name}`}
+                                    className="flex flex-col items-center justify-center p-6 bg-card hover:bg-muted/50 border border-border/50 rounded-xl transition-all hover:shadow-md group h-full"
+                                >
+                                    <div className={`h-14 w-14 ${category.bg} rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300`}>
+                                        <category.icon className={`h-7 w-7 ${category.color}`} />
+                                    </div>
+                                    <span className="font-medium text-sm md:text-base">{category.name}</span>
+                                </Link>
+                            ) : (
+                                <div
+                                    onClick={() => handleCategoryClick(category)}
+                                    className="flex flex-col items-center justify-center p-6 bg-muted/20 border border-border/30 rounded-xl cursor-pointer hover:bg-muted/30 transition-all h-full relative overflow-hidden"
+                                >
+                                    <div className="absolute top-2 right-2 bg-muted-foreground/20 text-[10px] px-2 py-0.5 rounded-full uppercase font-bold tracking-wider text-muted-foreground">
+                                        Soon
+                                    </div>
+                                    <div className={`h-14 w-14 ${category.bg} opacity-50 rounded-full flex items-center justify-center mb-3 grayscale`}>
+                                        <category.icon className={`h-7 w-7 ${category.color}`} />
+                                    </div>
+                                    <span className="font-medium text-sm md:text-base text-muted-foreground">{category.name}</span>
+                                </div>
+                            )}
+                        </div>
                     ))}
                 </div>
             </section>
+
+            <Dialog open={!!comingSoonCategory} onOpenChange={(open) => !open && setComingSoonCategory(null)}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <div className="mx-auto bg-primary/10 h-12 w-12 rounded-full flex items-center justify-center mb-4">
+                            <Sparkles className="h-6 w-6 text-primary" />
+                        </div>
+                        <DialogTitle className="text-center text-xl">Coming Soon</DialogTitle>
+                        <DialogDescription className="text-center pt-2">
+                            We&apos;re currently focused on delivering a trusted experience for <strong>used cars</strong>.
+                            <br /><br />
+                            The <strong>{comingSoonCategory?.name}</strong> category will be launched once verified partners, listings, and support are fully in place.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex flex-col gap-2 mt-4">
+                        <div className="relative">
+                            <input
+                                type="email"
+                                placeholder="Enter your email"
+                                className="w-full pl-4 pr-4 py-2 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary mb-2"
+                            />
+                        </div>
+                        <Button onClick={() => setComingSoonCategory(null)} className="w-full">
+                            Notify me when this category launches
+                        </Button>
+                        <Button variant="ghost" onClick={() => setComingSoonCategory(null)} className="w-full">
+                            Close
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
 
             {/* Featured Listings */}
             <section className="py-16 container px-4 mx-auto">

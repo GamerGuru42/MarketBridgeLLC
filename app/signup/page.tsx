@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { Loader2, Check, ArrowLeft } from 'lucide-react';
 import { SubscriptionPlan } from '@/types/user';
+import { CATEGORIES } from '@/lib/categories';
 
 const PRICING_PLANS = [
     {
@@ -440,6 +441,31 @@ export default function SignupPage() {
 
                         {role === 'dealer' && (
                             <>
+                                <div className="space-y-2">
+                                    <Label>Primary Niche</Label>
+                                    <Select
+                                        value={CATEGORIES.find(c => c.isActive)?.name || ''}
+                                        disabled
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select your niche" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {CATEGORIES.map((category) => (
+                                                <SelectItem
+                                                    key={category.id}
+                                                    value={category.name}
+                                                    disabled={!category.isActive}
+                                                >
+                                                    {category.name} {!category.isActive && '(Coming Soon)'}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <p className="text-[0.8rem] text-muted-foreground">
+                                        We are currently onboarding <strong>{CATEGORIES.find(c => c.isActive)?.name}</strong> dealers only.
+                                    </p>
+                                </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="businessName">Business Name</Label>
                                     <Input
