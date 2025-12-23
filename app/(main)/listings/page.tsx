@@ -8,8 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import { supabase } from '@/lib/supabase';
-import { Loader2, Search, MapPin, Store, Globe } from 'lucide-react';
+import { Loader2, Search, MapPin, Store, Globe, ShieldCheck } from 'lucide-react';
 import { CATEGORIES } from '@/lib/categories';
 
 interface Listing {
@@ -23,6 +24,12 @@ interface Listing {
     status: string;
     location: string | null;
     created_at: string;
+    make?: string;
+    model?: string;
+    year?: number;
+    condition?: string;
+    is_verified_listing?: boolean;
+    verification_status?: string;
     dealer?: {
         id: string;
         display_name: string;
@@ -36,11 +43,14 @@ export default function ListingsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
-    const [category, setCategory] = useState('All Categories');
+    const [category, setCategory] = useState('Automotive');
+    const [minPrice, setMinPrice] = useState('');
+    const [maxPrice, setMaxPrice] = useState('');
+    const [condition, setCondition] = useState('all');
 
     useEffect(() => {
         fetchListings();
-    }, [category]);
+    }, [category, condition]);
 
     const fetchListings = async () => {
         setLoading(true);
@@ -68,6 +78,19 @@ export default function ListingsPage() {
             // Apply search filter
             if (search) {
                 query = query.ilike('title', `%${search}%`);
+            }
+
+            // Apply price range
+            if (minPrice) {
+                query = query.gte('price', parseInt(minPrice));
+            }
+            if (maxPrice) {
+                query = query.lte('price', parseInt(maxPrice));
+            }
+
+            // Apply condition
+            if (condition !== 'all') {
+                query = query.eq('condition', condition);
             }
 
             const { data, error: fetchError } = await query;
@@ -100,37 +123,87 @@ export default function ListingsPage() {
                 {/* Filters */}
                 <Card className="mb-8">
                     <CardContent className="pt-6">
-                        <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <div className="md:col-span-2">
-                                <div className="relative">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <form onSubmit={handleSearch} className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div className="md:col-span-2">
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                        <Input
+                                            type="text"
+                                            placeholder="Search cars by make, model, or keywords..."
+                                            value={search}
+                                            onChange={(e) => setSearch(e.target.value)}
+                                            className="pl-10"
+                                        />
+                                    </div>
+                                </div>
+                                <Select value={category} onValueChange={setCategory}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Category" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="All Categories">All Categories</SelectItem>
+                                        {CATEGORIES.map((cat) => (
+                                            <SelectItem
+                                                key={cat.id}
+                                                value={cat.name}
+                                                disabled={!cat.isActive}
+                                            >
+                                                {cat.name} {!cat.isActive && '(Soon)'}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <Button type="submit" className="w-full">Search</Button>
+                            </div>
+
+                            <Separator className="my-4" />
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="space-y-1">
+                                    <label className="text-xs font-semibold uppercase text-muted-foreground">Condition</label>
+                                    <Select value={condition} onValueChange={setCondition}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Any Condition" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">Any Condition</SelectItem>
+                                            <SelectItem value="Tokunbo">Tokunbo (Foreign Used)</SelectItem>
+                                            <SelectItem value="Nigerian Used">Nigerian Used</SelectItem>
+                                            <SelectItem value="Brand New">Brand New</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-semibold uppercase text-muted-foreground">Min Price (₦)</label>
                                     <Input
-                                        type="text"
-                                        placeholder="Search listings..."
-                                        value={search}
-                                        onChange={(e) => setSearch(e.target.value)}
-                                        className="pl-10"
+                                        type="number"
+                                        placeholder="0"
+                                        value={minPrice}
+                                        onChange={(e) => setMinPrice(e.target.value)}
                                     />
                                 </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-semibold uppercase text-muted-foreground">Max Price (₦)</label>
+                                    <Input
+                                        type="number"
+                                        placeholder="No Max"
+                                        value={maxPrice}
+                                        onChange={(e) => setMaxPrice(e.target.value)}
+                                    />
+                                </div>
+                                <div className="flex items-end">
+                                    <Button variant="outline" className="w-full" onClick={() => {
+                                        setMinPrice('');
+                                        setMaxPrice('');
+                                        setCondition('all');
+                                        setSearch('');
+                                        setCategory('Automotive');
+                                    }}>
+                                        Reset Filters
+                                    </Button>
+                                </div>
                             </div>
-                            <Select value={category} onValueChange={setCategory}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Category" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="All Categories">All Categories</SelectItem>
-                                    {CATEGORIES.map((cat) => (
-                                        <SelectItem
-                                            key={cat.id}
-                                            value={cat.name}
-                                            disabled={!cat.isActive}
-                                        >
-                                            {cat.name} {!cat.isActive && '(Soon)'}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <Button type="submit">Search</Button>
                         </form>
                     </CardContent>
                 </Card>
@@ -172,9 +245,14 @@ export default function ListingsPage() {
                                                     No Image
                                                 </div>
                                             )}
-                                            {listing.dealer?.is_verified && (
+                                            {listing.is_verified_listing && (
+                                                <Badge className="absolute top-2 right-2 bg-blue-500 hover:bg-blue-600">
+                                                    <ShieldCheck className="h-3 w-3 mr-1" /> Verified Listing
+                                                </Badge>
+                                            )}
+                                            {!listing.is_verified_listing && listing.dealer?.is_verified && (
                                                 <Badge className="absolute top-2 right-2 bg-primary">
-                                                    Verified
+                                                    Verified Dealer
                                                 </Badge>
                                             )}
                                         </div>

@@ -2,6 +2,8 @@
 
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Activity, Users, ShoppingCart, AlertTriangle, Server, Database, BarChart } from 'lucide-react';
 
@@ -60,7 +62,10 @@ export default function AdminPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">12</div>
-                        <p className="text-xs text-muted-foreground">Dealers awaiting approval</p>
+                        <p className="text-xs text-muted-foreground mb-4">Dealers awaiting approval</p>
+                        <Button variant="outline" size="sm" asChild className="w-full">
+                            <Link href="/admin/operations/verifications">Review Listings</Link>
+                        </Button>
                     </CardContent>
                 </Card>
                 <Card>

@@ -22,10 +22,10 @@ CREATE TABLE IF NOT EXISTS public.users (
     subscription_start_date TIMESTAMPTZ,
     subscription_end_date TIMESTAMPTZ,
     listing_limit INTEGER DEFAULT 5,
+    phone_number TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Listings table
 CREATE TABLE IF NOT EXISTS public.listings (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -35,8 +35,23 @@ CREATE TABLE IF NOT EXISTS public.listings (
     price NUMERIC(10, 2) NOT NULL,
     category TEXT NOT NULL,
     images TEXT[] NOT NULL,
-    status TEXT NOT NULL CHECK (status IN ('active', 'sold', 'inactive')) DEFAULT 'active',
+    status TEXT NOT NULL CHECK (status IN ('active', 'sold', 'inactive', 'pending')) DEFAULT 'pending',
     location TEXT,
+    -- Car-specific fields
+    make TEXT,
+    model TEXT,
+    year INTEGER,
+    condition TEXT CHECK (condition IN ('Tokunbo', 'Nigerian Used', 'Brand New')),
+    transmission TEXT CHECK (transmission IN ('Automatic', 'Manual')),
+    mileage INTEGER,
+    fuel_type TEXT,
+    engine_size TEXT,
+    body_type TEXT,
+    vin TEXT,
+    is_verified_listing BOOLEAN DEFAULT FALSE,
+    verification_status TEXT CHECK (verification_status IN ('pending', 'verified', 'rejected')) DEFAULT 'pending',
+    inspection_report_url TEXT,
+    inspector_notes TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );

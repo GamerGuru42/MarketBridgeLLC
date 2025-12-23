@@ -8,7 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
-import { Loader2, Search, MapPin, Store, Globe, MessageCircle, ShoppingCart, Package, ArrowLeft, ShieldCheck, Heart } from 'lucide-react';
+import { Loader2, MapPin, Globe, MessageCircle, ShoppingCart, Package, ArrowLeft, ShieldCheck, Phone } from 'lucide-react';
+import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { ReviewsSection } from '@/components/ReviewsSection';
 
@@ -27,8 +28,23 @@ interface Listing {
         is_verified: boolean;
         photo_url?: string;
         store_type?: string;
+        phone_number?: string;
     };
     created_at: string;
+    // Car-specific fields
+    make?: string;
+    model?: string;
+    year?: number;
+    condition?: 'Tokunbo' | 'Nigerian Used' | 'Brand New';
+    transmission?: 'Automatic' | 'Manual';
+    mileage?: number;
+    fuel_type?: string;
+    engine_size?: string;
+    body_type?: string;
+    vin?: string;
+    is_verified_listing?: boolean;
+    verification_status?: 'pending' | 'verified' | 'rejected';
+    inspection_report_url?: string;
 }
 
 export default function ListingDetailPage() {
@@ -60,7 +76,8 @@ export default function ListingDetailPage() {
                         display_name,
                         is_verified,
                         photo_url,
-                        store_type
+                        store_type,
+                        phone_number
                     )
                 `)
                 .eq('id', params.id)
@@ -117,6 +134,24 @@ export default function ListingDetailPage() {
         } finally {
             setActionLoading(false);
         }
+    };
+
+    const handleWhatsAppDealer = () => {
+        if (!listing) return;
+        const phone = listing.dealer.phone_number || '2348000000000';
+        // Remove any non-numeric characters for WhatsApp
+        const cleanPhone = phone.replace(/\D/g, '');
+        const finalPhone = cleanPhone.startsWith('0') ? '234' + cleanPhone.substring(1) : cleanPhone;
+        const message = encodeURIComponent(`Hello, I saw your ${listing.title} on MarketBridge. Is it still available?`);
+        window.open(`https://wa.me/${finalPhone}?text=${message}`, '_blank');
+    };
+
+    const handleCallDealer = () => {
+        if (!listing?.dealer?.phone_number) {
+            alert('Dealer phone number not available');
+            return;
+        }
+        window.location.href = `tel:${listing.dealer.phone_number}`;
     };
 
     const { addToCart } = useCart();
@@ -241,11 +276,15 @@ export default function ListingDetailPage() {
                     <div className="space-y-4">
                         <div className="aspect-square bg-muted rounded-lg overflow-hidden">
                             {listing.images && listing.images.length > 0 ? (
-                                <img
-                                    src={listing.images[selectedImage]}
-                                    alt={listing.title}
-                                    className="w-full h-full object-cover"
-                                />
+                                <div className="relative w-full h-full">
+                                    <Image
+                                        src={listing.images[selectedImage]}
+                                        alt={listing.title}
+                                        fill
+                                        className="object-cover"
+                                        priority
+                                    />
+                                </div>
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                                     No Image Available
@@ -258,10 +297,16 @@ export default function ListingDetailPage() {
                                     <button
                                         key={idx}
                                         onClick={() => setSelectedImage(idx)}
-                                        className={`aspect-square rounded-md overflow-hidden border-2 transition-all ${selectedImage === idx ? 'border-primary' : 'border-transparent'
-                                            }`}
+                                        className={`aspect-square rounded-md overflow-hidden border-2 transition-all ${selectedImage === idx ? 'border-primary' : 'border-transparent'}`}
                                     >
-                                        <img src={img} alt={`${listing.title} ${idx + 1}`} className="w-full h-full object-cover" />
+                                        <div className="relative w-full h-full">
+                                            <Image
+                                                src={img}
+                                                alt={`${listing.title} ${idx + 1}`}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        </div>
                                     </button>
                                 ))}
                             </div>
@@ -272,17 +317,85 @@ export default function ListingDetailPage() {
                     <div className="space-y-6">
                         <div>
                             <div className="flex items-start justify-between mb-2">
-                                <h1 className="text-3xl font-bold">{listing.title}</h1>
-                                <Badge>{listing.category}</Badge>
+                                <div className="space-y-1">
+                                    <h1 className="text-3xl font-bold">{listing.title}</h1>
+                                    <div className="flex items-center gap-2">
+                                        <Badge variant="outline">{listing.category}</Badge>
+                                        {(listing.is_verified_listing || listing.verification_status === 'verified') && (
+                                            <Badge className="bg-blue-500 hover:bg-blue-600">
+                                                <ShieldCheck className="h-3 w-3 mr-1" /> Verified Listing
+                                            </Badge>
+                                        )}
+                                    </div>
+                                </div>
+                                <p className="text-3xl font-bold text-primary">
+                                    ₦{listing.price.toLocaleString()}
+                                </p>
                             </div>
-                            <p className="text-4xl font-bold text-primary mb-4">
-                                ₦{listing.price.toLocaleString()}
-                            </p>
                             <div className="flex items-center gap-2 text-muted-foreground">
                                 <MapPin className="h-4 w-4" />
-                                <span>{listing.location || 'Location not specified'}</span>
+                                <span>{listing.location || 'Abuja, Nigeria'}</span>
                             </div>
                         </div>
+
+                        <Separator />
+
+                        {listing.inspection_report_url && (
+                            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-blue-500 p-2 rounded-lg text-white">
+                                        <Package className="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-blue-900">MarketBridge Inspection Report</p>
+                                        <p className="text-xs text-blue-700">This vehicle has passed our 150-point inspection.</p>
+                                    </div>
+                                </div>
+                                <Button
+                                    size="sm"
+                                    variant="secondary"
+                                    className="bg-white text-blue-600 hover:bg-blue-50 border-blue-200"
+                                    onClick={() => window.open(listing.inspection_report_url, '_blank')}
+                                >
+                                    View Report
+                                </Button>
+                            </div>
+                        )}
+
+                        {/* Car Specifications */}
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <div className="p-3 bg-muted/30 rounded-lg">
+                                <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Make</p>
+                                <p className="font-semibold">{listing.make || 'Toyota'}</p>
+                            </div>
+                            <div className="p-3 bg-muted/30 rounded-lg">
+                                <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Model</p>
+                                <p className="font-semibold">{listing.model || 'Camry'}</p>
+                            </div>
+                            <div className="p-3 bg-muted/30 rounded-lg">
+                                <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Year</p>
+                                <p className="font-semibold">{listing.year || '2018'}</p>
+                            </div>
+                            <div className="p-3 bg-muted/30 rounded-lg">
+                                <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Condition</p>
+                                <p className="font-semibold">{listing.condition || 'Tokunbo'}</p>
+                            </div>
+                            <div className="p-3 bg-muted/30 rounded-lg">
+                                <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Transmission</p>
+                                <p className="font-semibold">{listing.transmission || 'Automatic'}</p>
+                            </div>
+                            <div className="p-3 bg-muted/30 rounded-lg">
+                                <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Mileage</p>
+                                <p className="font-semibold">{listing.mileage ? `${listing.mileage.toLocaleString()} km` : '42,000 km'}</p>
+                            </div>
+                        </div>
+
+                        {listing.inspection_report_url && (
+                            <Button variant="outline" className="w-full border-dashed border-blue-500 text-blue-500 hover:bg-blue-50 flex items-center gap-2">
+                                <ShieldCheck className="h-4 w-4" />
+                                View MarketBridge Inspection Report (PDF)
+                            </Button>
+                        )}
 
                         <Separator />
 
@@ -300,11 +413,14 @@ export default function ListingDetailPage() {
                                 <h3 className="text-lg font-semibold mb-4">Dealer Information</h3>
                                 <div className="flex items-center gap-3 mb-4">
                                     {listing.dealer.photo_url ? (
-                                        <img
-                                            src={listing.dealer.photo_url}
-                                            alt={listing.dealer.display_name}
-                                            className="h-12 w-12 rounded-full"
-                                        />
+                                        <div className="relative h-12 w-12 shrink-0">
+                                            <Image
+                                                src={listing.dealer.photo_url}
+                                                alt={listing.dealer.display_name}
+                                                fill
+                                                className="rounded-full object-cover"
+                                            />
+                                        </div>
                                     ) : (
                                         <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">
                                             {listing.dealer.display_name.charAt(0).toUpperCase()}
@@ -332,18 +448,39 @@ export default function ListingDetailPage() {
                         {/* Reviews */}
                         <ReviewsSection listingId={listing.id} dealerId={listing.dealer.id} />
 
+                        {/* Safety Tips */}
+                        <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                            <h4 className="text-sm font-bold text-orange-800 flex items-center gap-2 mb-2">
+                                <ShieldCheck className="h-4 w-4" /> MarketBridge Safety Tips
+                            </h4>
+                            <ul className="text-xs text-orange-700 space-y-1 list-disc pl-4">
+                                <li>Never pay for a car before physical inspection.</li>
+                                <li>Always meet the dealer at their verified physical showroom.</li>
+                                <li>Verify the car&apos;s documents (Customs, Ownership) before payment.</li>
+                                <li>MarketBridge Escrow protects your money until delivery is confirmed.</li>
+                            </ul>
+                        </div>
+
                         {/* Actions */}
                         {user && user.id !== listing.dealer.id && (
                             <div className="flex flex-col gap-3">
                                 <div className="flex gap-3">
                                     <Button
-                                        onClick={handleAddToWishlist}
-                                        variant="outline"
-                                        className="flex-1"
+                                        onClick={handleWhatsAppDealer}
+                                        className="flex-1 bg-green-600 hover:bg-green-700 text-white"
                                         disabled={actionLoading}
                                     >
-                                        <Heart className="mr-2 h-4 w-4" />
-                                        Wishlist
+                                        <MessageCircle className="mr-2 h-4 w-4" />
+                                        WhatsApp
+                                    </Button>
+                                    <Button
+                                        onClick={handleCallDealer}
+                                        variant="outline"
+                                        className="flex-1 border-primary text-primary hover:bg-primary/10"
+                                        disabled={actionLoading}
+                                    >
+                                        <Phone className="mr-2 h-4 w-4" />
+                                        Call
                                     </Button>
                                     <Button
                                         onClick={handleContactDealer}
@@ -351,8 +488,8 @@ export default function ListingDetailPage() {
                                         className="flex-1"
                                         disabled={actionLoading}
                                     >
-                                        <MessageCircle className="mr-2 h-4 w-4" />
-                                        Contact Dealer
+                                        <Globe className="mr-2 h-4 w-4" />
+                                        Chat
                                     </Button>
                                 </div>
                                 <div className="flex gap-3">
@@ -393,6 +530,6 @@ export default function ListingDetailPage() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

@@ -3,26 +3,54 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     ArrowRight, ShieldCheck, Truck, Star, MapPin, Sparkles
 } from 'lucide-react';
 import Image from 'next/image';
 import { CATEGORIES, Category } from '@/lib/categories';
+import { supabase } from '@/lib/supabase';
 import {
     Dialog,
     DialogContent,
     DialogDescription,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog";
 
 export default function HomePage() {
     const [comingSoonCategory, setComingSoonCategory] = useState<Category | null>(null);
+    const [waitlistEmail, setWaitlistEmail] = useState('');
+    const [waitlistPhone, setWaitlistPhone] = useState('');
+    const [waitlistSubmitted, setWaitlistSubmitted] = useState(false);
 
     const handleCategoryClick = (category: Category) => {
         setComingSoonCategory(category);
+        setWaitlistSubmitted(false);
+    };
+
+    const handleWaitlistSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const { error } = await supabase
+                .from('waitlist')
+                .insert([
+                    {
+                        email: waitlistEmail,
+                        phone: waitlistPhone,
+                        category: comingSoonCategory?.name
+                    }
+                ]);
+
+            if (error) throw error;
+            setWaitlistSubmitted(true);
+            setWaitlistEmail('');
+            setWaitlistPhone('');
+        } catch (err) {
+            console.error('Waitlist error:', err);
+            alert('Failed to join waitlist. Please try again.');
+        }
     };
 
     return (
@@ -106,34 +134,74 @@ export default function HomePage() {
                 </div>
             </section>
 
-            <Dialog open={!!comingSoonCategory} onOpenChange={(open) => !open && setComingSoonCategory(null)}>
+            <Dialog open={!!comingSoonCategory} onOpenChange={(open) => {
+                if (!open) {
+                    setComingSoonCategory(null);
+                    setWaitlistSubmitted(false);
+                }
+            }}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                         <div className="mx-auto bg-primary/10 h-12 w-12 rounded-full flex items-center justify-center mb-4">
                             <Sparkles className="h-6 w-6 text-primary" />
                         </div>
-                        <DialogTitle className="text-center text-xl">Coming Soon</DialogTitle>
+                        <DialogTitle className="text-center text-xl">
+                            {waitlistSubmitted ? "You're on the list!" : "Coming Soon"}
+                        </DialogTitle>
                         <DialogDescription className="text-center pt-2">
-                            We&apos;re currently focused on delivering a trusted experience for <strong>used cars</strong>.
-                            <br /><br />
-                            The <strong>{comingSoonCategory?.name}</strong> category will be launched once verified partners, listings, and support are fully in place.
+                            {waitlistSubmitted ? (
+                                <>
+                                    We&apos;ve added you to the <strong>{comingSoonCategory?.name}</strong> waitlist.
+                                    We&apos;ll notify you as soon as we launch this category with verified partners.
+                                </>
+                            ) : (
+                                <>
+                                    We&apos;re currently perfecting our verification process for <strong>{comingSoonCategory?.name}</strong>.
+                                    Join the waitlist to be notified when this category goes live.
+                                </>
+                            )}
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="flex flex-col gap-2 mt-4">
-                        <div className="relative">
-                            <input
-                                type="email"
-                                placeholder="Enter your email"
-                                className="w-full pl-4 pr-4 py-2 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary mb-2"
-                            />
+
+                    {!waitlistSubmitted ? (
+                        <form onSubmit={handleWaitlistSubmit} className="flex flex-col gap-3 mt-4">
+                            <div className="space-y-1">
+                                <Label htmlFor="waitlist-email" className="text-xs">Email Address</Label>
+                                <input
+                                    id="waitlist-email"
+                                    type="email"
+                                    required
+                                    value={waitlistEmail}
+                                    onChange={(e) => setWaitlistEmail(e.target.value)}
+                                    placeholder="your@email.com"
+                                    className="w-full px-4 py-2 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <Label htmlFor="waitlist-phone" className="text-xs">Phone Number (Optional)</Label>
+                                <input
+                                    id="waitlist-phone"
+                                    type="tel"
+                                    value={waitlistPhone}
+                                    onChange={(e) => setWaitlistPhone(e.target.value)}
+                                    placeholder="08012345678"
+                                    className="w-full px-4 py-2 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                />
+                            </div>
+                            <Button type="submit" className="w-full mt-2">
+                                Join Waitlist
+                            </Button>
+                            <Button variant="ghost" type="button" onClick={() => setComingSoonCategory(null)} className="w-full">
+                                Not now
+                            </Button>
+                        </form>
+                    ) : (
+                        <div className="mt-4">
+                            <Button onClick={() => setComingSoonCategory(null)} className="w-full">
+                                Great, thanks!
+                            </Button>
                         </div>
-                        <Button onClick={() => setComingSoonCategory(null)} className="w-full">
-                            Notify me when this category launches
-                        </Button>
-                        <Button variant="ghost" onClick={() => setComingSoonCategory(null)} className="w-full">
-                            Close
-                        </Button>
-                    </div>
+                    )}
                 </DialogContent>
             </Dialog>
 
