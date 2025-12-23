@@ -37,7 +37,7 @@ const config: NextConfig = {
     ],
   },
   // Silence Turbopack error when using webpack-based plugins
-  // And explicitly set the root to avoid incorrect inference
+  turbopack: {},
   experimental: {
     // Experimental features
   },
