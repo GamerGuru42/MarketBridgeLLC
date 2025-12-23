@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
-import { Loader2, MapPin, Globe, MessageCircle, ShoppingCart, Package, ArrowLeft, ShieldCheck, Phone } from 'lucide-react';
+import { Loader2, MapPin, Globe, MessageCircle, ShoppingCart, Package, ArrowLeft, ShieldCheck, Phone, Play } from 'lucide-react';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { ReviewsSection } from '@/components/ReviewsSection';
@@ -20,6 +20,7 @@ interface Listing {
     price: number;
     category: string;
     images: string[];
+    videos?: string[];
     location: string;
     dealer_id: string;
     dealer: {
@@ -309,6 +310,30 @@ export default function ListingDetailPage() {
                                         </div>
                                     </button>
                                 ))}
+                            </div>
+                        )}
+
+                        {/* Videos Section */}
+                        {listing.videos && listing.videos.length > 0 && (
+                            <div className="space-y-3">
+                                <h3 className="text-lg font-semibold flex items-center gap-2">
+                                    <Play className="h-5 w-5" />
+                                    Product Videos
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {listing.videos.map((videoUrl, idx) => (
+                                        <div key={idx} className="aspect-video rounded-lg overflow-hidden border bg-muted">
+                                            <video
+                                                src={videoUrl}
+                                                controls
+                                                className="w-full h-full object-cover"
+                                                preload="metadata"
+                                            >
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         )}
                     </div>

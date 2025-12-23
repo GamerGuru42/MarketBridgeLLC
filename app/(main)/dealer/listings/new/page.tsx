@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { ImageUpload } from '@/components/ImageUpload';
+import { VideoUpload } from '@/components/VideoUpload';
 
 const CATEGORIES = [
     'Electronics',
@@ -32,6 +33,7 @@ export default function NewListingPage() {
     const { user, loading: authLoading } = useAuth();
     const [loading, setLoading] = useState(false);
     const [imageUrls, setImageUrls] = useState<string[]>(['']);
+    const [videoUrls, setVideoUrls] = useState<string[]>([]);
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -77,6 +79,7 @@ export default function NewListingPage() {
                     category: formData.category,
                     location: formData.location || null,
                     images: validImages,
+                    videos: videoUrls.length > 0 ? videoUrls : null,
                     status: 'active',
                 })
                 .select()
@@ -199,6 +202,17 @@ export default function NewListingPage() {
                                         onImagesSelected={(urls) => setImageUrls(urls)}
                                         defaultImages={imageUrls.filter(url => url !== '')}
                                         maxImages={5}
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <Label>Product Videos (Optional)</Label>
+                                <div className="mt-2">
+                                    <VideoUpload
+                                        onVideosSelected={(urls) => setVideoUrls(urls)}
+                                        defaultVideos={videoUrls}
+                                        maxVideos={3}
                                     />
                                 </div>
                             </div>

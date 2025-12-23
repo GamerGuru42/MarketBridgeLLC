@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS public.listings (
     price NUMERIC(10, 2) NOT NULL,
     category TEXT NOT NULL,
     images TEXT[] NOT NULL,
+    videos TEXT[],
     status TEXT NOT NULL CHECK (status IN ('active', 'sold', 'inactive', 'pending')) DEFAULT 'pending',
     location TEXT,
     -- Car-specific fields
@@ -55,6 +56,7 @@ CREATE TABLE IF NOT EXISTS public.listings (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
 
 -- Orders table
 CREATE TABLE IF NOT EXISTS public.orders (
