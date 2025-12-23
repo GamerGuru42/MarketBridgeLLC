@@ -37,7 +37,7 @@ export default function HomePage() {
                         Shop Without <span className="text-primary">Fear</span>
                     </h1>
                     <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                        Transparency and verification replace blind trust. See dealer ratings, reviews, and transaction history before you buy.
+                        Beginning with verified used cars, we provide transparency and verification to replace blind trust. See dealer ratings, reviews, and transaction history before you buy.
                     </p>
 
                     {/* Location Search */}
@@ -152,35 +152,35 @@ export default function HomePage() {
                     {[
                         {
                             id: 1,
-                            title: "iPhone 15 Pro Max",
-                            price: 1850000,
-                            location: "Ikeja, Lagos",
+                            title: "Toyota Camry 2018 XLE",
+                            price: 18500000,
+                            location: "Maitama, Abuja",
                             rating: 4.9,
-                            image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=800&q=80"
-                        },
-                        {
-                            id: 2,
-                            title: "Toyota Camry 2021",
-                            price: 15000000,
-                            location: "Victoria Island",
-                            rating: 4.8,
                             image: "https://images.unsplash.com/photo-1621007947382-bb3c3968e3bb?auto=format&fit=crop&w=800&q=80"
                         },
                         {
+                            id: 2,
+                            title: "Honda Accord 2020 Sport",
+                            price: 15000000,
+                            location: "Garki, Abuja",
+                            rating: 4.8,
+                            image: "https://images.unsplash.com/photo-1599912027553-529a67119124?auto=format&fit=crop&w=800&q=80"
+                        },
+                        {
                             id: 3,
-                            title: "MacBook Pro M3",
-                            price: 2400000,
-                            location: "Yaba, Lagos",
+                            title: "Lexus RX 350 2015",
+                            price: 12400000,
+                            location: "Wuse II, Abuja",
                             rating: 5.0,
-                            image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca4?auto=format&fit=crop&w=800&q=80"
+                            image: "https://images.unsplash.com/photo-1581540222194-0def2dac9f2b?auto=format&fit=crop&w=800&q=80"
                         },
                         {
                             id: 4,
-                            title: "Sony PS5 Console",
-                            price: 650000,
-                            location: "Lekki, Lagos",
+                            title: "Mercedes-Benz C300 2017",
+                            price: 22500000,
+                            location: "Asokoro, Abuja",
                             rating: 4.7,
-                            image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=800&q=80"
+                            image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=800&q=80"
                         },
                     ].map((item) => (
                         <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow group cursor-pointer border-border/50">
@@ -257,9 +257,9 @@ export default function HomePage() {
             <section className="py-16 bg-muted/30">
                 <div className="container px-4 mx-auto">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold mb-4">Sell on MarketBridge</h2>
+                        <h2 className="text-3xl font-bold mb-4">Onboard Your Dealership</h2>
                         <p className="text-muted-foreground max-w-2xl mx-auto">
-                            Join thousands of verified dealers growing their business. Choose the plan that fits your scale.
+                            Join verified car dealers in Abuja growing their business. Choose the plan that fits your dealership's scale.
                         </p>
                     </div>
 
