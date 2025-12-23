@@ -228,7 +228,7 @@ export default function ListingsPage() {
                         <div className="mb-4 text-sm text-muted-foreground">
                             Showing {listings.length} {category !== 'All Categories' ? `${category} ` : ''}listing{listings.length !== 1 ? 's' : ''}
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {listings.map((listing) => (
                                 <Link key={listing.id} href={`/listings/${listing.id}`}>
                                     <Card className="overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer h-full flex flex-col">

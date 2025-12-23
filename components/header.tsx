@@ -52,7 +52,7 @@ export const Header = () => {
                 </div>
 
                 {/* Desktop Navigation */}
-                <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+                <nav className="hidden lg:flex items-center gap-6 text-sm font-medium">
                     <Link href="/" className="transition-colors hover:text-primary">Home</Link>
                     <Link href="/listings" className="transition-colors hover:text-primary">Listings</Link>
                     <Link href="/dealers" className="transition-colors hover:text-primary">Find Dealers</Link>
@@ -62,21 +62,21 @@ export const Header = () => {
                 </nav>
 
                 {/* Actions */}
-                <div className="flex items-center gap-2 md:gap-4">
+                <div className="flex items-center gap-2">
                     {loading && !user ? null : (
                         <>
                             {user && (
-                                <>
-                                    {/* Messages Icon with Badge */}
-                                    <Link href="/chats" className="relative">
-                                        <Button variant="ghost" size="icon" className="relative">
+                                <div className="flex items-center gap-2">
+                                    {/* Messages Icon */}
+                                    <Link href="/chats">
+                                        <Button variant="ghost" size="icon">
                                             <MessageCircle className="h-5 w-5" />
                                         </Button>
                                     </Link>
 
                                     {/* Cart Icon (only for customers) */}
                                     {user.role === 'customer' && (
-                                        <Link href="/cart" className="relative">
+                                        <Link href="/cart">
                                             <Button variant="ghost" size="icon" className="relative">
                                                 <ShoppingCart className="h-5 w-5" />
                                                 {itemCount > 0 && (
@@ -87,12 +87,12 @@ export const Header = () => {
                                             </Button>
                                         </Link>
                                     )}
-                                </>
+                                </div>
                             )}
 
                             {/* Login and Sign Up Buttons - Desktop only */}
                             {!user && (
-                                <div className="hidden sm:flex items-center gap-2">
+                                <div className="hidden lg:flex items-center gap-2">
                                     <Button variant="ghost" size="sm" asChild>
                                         <Link href="/login">Login</Link>
                                     </Button>
@@ -104,16 +104,18 @@ export const Header = () => {
 
                             {/* Account Dropdown - Desktop */}
                             {user && (
-                                <div className="hidden md:block">
+                                <div className="hidden lg:block">
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <Button variant="ghost" className="gap-2">
                                                 {user?.photoURL ? (
-                                                    <Image src={user.photoURL} alt={user.displayName || 'User'} width={24} height={24} className="h-6 w-6 rounded-full" />
+                                                    <div className="relative h-6 w-6 rounded-full overflow-hidden">
+                                                        <Image src={user.photoURL} alt={user.displayName || 'User'} fill className="object-cover" />
+                                                    </div>
                                                 ) : (
                                                     <User className="h-5 w-5" />
                                                 )}
-                                                <span className="hidden md:inline">{user?.displayName || 'Account'}</span>
+                                                <span className="hidden xl:inline">{user?.displayName || 'Account'}</span>
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end" className="w-56">
@@ -199,7 +201,7 @@ export const Header = () => {
                     {/* Mobile Menu */}
                     <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                         <SheetTrigger asChild>
-                            <Button variant="ghost" size="icon" className="md:hidden">
+                            <Button variant="ghost" size="icon" className="lg:hidden">
                                 <Menu className="h-5 w-5" />
                                 <span className="sr-only">Menu</span>
                             </Button>

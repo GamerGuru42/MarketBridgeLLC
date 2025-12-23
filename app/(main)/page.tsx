@@ -56,15 +56,15 @@ export default function HomePage() {
     return (
         <div className="flex flex-col min-h-screen">
             {/* Hero Section */}
-            <section className="relative py-20 md:py-32 bg-gradient-to-b from-background to-muted/20 overflow-hidden">
+            <section className="relative py-12 md:py-32 bg-gradient-to-b from-background to-muted/20 overflow-hidden">
                 <div className="container px-4 mx-auto text-center relative z-10">
                     <div className="inline-block mb-4 px-4 py-2 bg-primary/10 rounded-full">
-                        <span className="text-sm font-semibold text-primary">Nigeria&apos;s First Trustless Marketplace</span>
+                        <span className="text-sm font-semibold text-primary px-2">Nigeria&apos;s First Trustless Marketplace</span>
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
+                    <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
                         Shop Without <span className="text-primary">Fear</span>
                     </h1>
-                    <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+                    <p className="text-lg md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto px-2">
                         Beginning with verified used cars, we provide transparency and verification to replace blind trust. See dealer ratings, reviews, and transaction history before you buy.
                     </p>
 
@@ -220,31 +220,31 @@ export default function HomePage() {
                     {[
                         {
                             id: 1,
-                            title: "Toyota Camry 2018 XLE",
+                            title: "2018 Toyota Camry XLE",
                             price: 18500000,
                             location: "Maitama, Abuja",
                             rating: 4.9,
-                            image: "https://images.unsplash.com/photo-1621007947382-bb3c3968e3bb?auto=format&fit=crop&w=800&q=80"
+                            image: "https://images.unsplash.com/photo-1598282361110-3487f879309a?auto=format&fit=crop&w=800&q=80"
                         },
                         {
                             id: 2,
-                            title: "Honda Accord 2020 Sport",
-                            price: 15000000,
-                            location: "Garki, Abuja",
+                            title: "2020 Honda Accord Sport",
+                            price: 15200000,
+                            location: "Wuse II, Abuja",
                             rating: 4.8,
-                            image: "https://images.unsplash.com/photo-1599912027553-529a67119124?auto=format&fit=crop&w=800&q=80"
+                            image: "https://images.unsplash.com/photo-1617469767053-d8229a9a6114?auto=format&fit=crop&w=800&q=80"
                         },
                         {
                             id: 3,
-                            title: "Lexus RX 350 2015",
+                            title: "2015 Lexus RX 350",
                             price: 12400000,
-                            location: "Wuse II, Abuja",
+                            location: "Garki, Abuja",
                             rating: 5.0,
-                            image: "https://images.unsplash.com/photo-1581540222194-0def2dac9f2b?auto=format&fit=crop&w=800&q=80"
+                            image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80"
                         },
                         {
                             id: 4,
-                            title: "Mercedes-Benz C300 2017",
+                            title: "2017 Mercedes-Benz C300",
                             price: 22500000,
                             location: "Asokoro, Abuja",
                             rating: 4.7,

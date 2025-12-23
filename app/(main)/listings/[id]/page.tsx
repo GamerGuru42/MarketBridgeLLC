@@ -318,7 +318,7 @@ export default function ListingDetailPage() {
                         <div>
                             <div className="flex items-start justify-between mb-2">
                                 <div className="space-y-1">
-                                    <h1 className="text-3xl font-bold">{listing.title}</h1>
+                                    <h1 className="text-2xl md:text-3xl font-bold">{listing.title}</h1>
                                     <div className="flex items-center gap-2">
                                         <Badge variant="outline">{listing.category}</Badge>
                                         {(listing.is_verified_listing || listing.verification_status === 'verified') && (
@@ -328,7 +328,7 @@ export default function ListingDetailPage() {
                                         )}
                                     </div>
                                 </div>
-                                <p className="text-3xl font-bold text-primary">
+                                <p className="text-2xl md:text-3xl font-bold text-primary whitespace-nowrap">
                                     ₦{listing.price.toLocaleString()}
                                 </p>
                             </div>
@@ -363,7 +363,7 @@ export default function ListingDetailPage() {
                         )}
 
                         {/* Car Specifications */}
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-2 gap-4">
                             <div className="p-3 bg-muted/30 rounded-lg">
                                 <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Make</p>
                                 <p className="font-semibold">{listing.make || 'Toyota'}</p>
