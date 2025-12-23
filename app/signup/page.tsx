@@ -252,10 +252,10 @@ export default function SignupPage() {
                                 onClick={() => handleRoleSelect('dealer')}
                             >
                                 <CardContent className="p-6 text-center">
-                                    <div className="text-4xl mb-3">🏪</div>
+                                    <div className="text-4xl mb-3">🚗</div>
                                     <h3 className="font-semibold text-lg mb-2">Dealer</h3>
                                     <p className="text-sm text-muted-foreground">
-                                        Sell your products and grow your business
+                                        Onboard your car dealership and reach more verified buyers
                                     </p>
                                 </CardContent>
                             </Card>
