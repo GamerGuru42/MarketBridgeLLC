@@ -58,10 +58,10 @@ export function AiAssistant() {
     // Mock product database for search
     const PRODUCTS = [
         { id: '1', title: 'iPhone 15 Pro Max 256GB', price: 1850000, category: 'Electronics', location: 'Ikeja, Lagos', keywords: ['phone', 'mobile', 'apple', 'iphone', '256gb', 'smartphone'] },
-        { id: '2', title: 'Toyota Camry 2021 Foreign Used', price: 15000000, category: 'Automotive', location: 'Victoria Island', keywords: ['car', 'toyota', 'camry', 'vehicle', 'auto'] },
-        { id: '3', title: 'MacBook Pro M3 1TB', price: 2400000, category: 'Electronics', location: 'Yaba, Lagos', keywords: ['laptop', 'macbook', 'computer', 'apple', 'm3', '1tb'] },
+        { id: '2', title: 'Toyota Camry 2021 Foreign Used', price: 15000000, category: 'Automotive', location: 'Victoria Island', keywords: ['car', 'toyota', 'camry', 'vehicle', 'auto', 'video'] },
+        { id: '3', title: '2018 Lexus RX 350 SUV', price: 22000000, category: 'Automotive', location: 'Maitama, Abuja', keywords: ['lexus', 'rx350', 'suv', 'abuja', 'car', 'video', 'verified'] },
         { id: '4', title: 'Sony PS5 Disc Edition', price: 650000, category: 'Electronics', location: 'Lekki, Lagos', keywords: ['gaming', 'playstation', 'ps5', 'console', 'sony'] },
-        { id: '5', title: 'Nike Air Jordan 1 High Size 42', price: 120000, category: 'Fashion', location: 'Surulere, Lagos', keywords: ['shoes', 'sneakers', 'nike', 'jordan', 'footwear'] },
+        { id: '5', title: '2020 Honda Accord Sport', price: 18200000, category: 'Automotive', location: 'Wuse II, Abuja', keywords: ['honda', 'accord', 'car', 'sedan', 'abuja', 'video'] },
         { id: '6', title: 'Luxury Italian Leather Sofa 7-Seater', price: 3500000, category: 'Home & Garden', location: 'Ikoyi, Lagos', keywords: ['furniture', 'sofa', 'couch', 'home', 'leather'] },
     ];
 
@@ -117,34 +117,56 @@ export function AiAssistant() {
             };
         }
 
-        // Troubleshooting
+        // Personal/Conversational
+        if (lowerInput.includes('how are you') || lowerInput.includes('doing today') || lowerInput.includes('is it going')) {
+            return { content: "I'm doing great, thank you for asking! I'm here and ready to help you navigate MarketBridge. Whether you're looking for a new Lexus in Abuja or trying to upload videos for your latest listing, I've got you covered. How can I assist you?" };
+        }
+
+        if (lowerInput.includes('who are you') || lowerInput.includes('your name')) {
+            return { content: "I'm Sage, the MarketBridge AI assistant. My mission is to ensure you can shop and trade without fear by providing accurate information, troubleshooting help, and connecting you with our dedicated support teams." };
+        }
+
+        // Troubleshooting & How-To
         if (lowerInput.includes('how do i') || lowerInput.includes('how to')) {
+            if (lowerInput.includes('upload') || lowerInput.includes('image') || lowerInput.includes('video') || lowerInput.includes('photo')) {
+                return { content: "Great question! Dealers can now upload both images and videos to their listings:\n\n**For Images:**\n• Max 5 images per listing\n• Formats: JPG, PNG, WEBP\n• Size limit: 5MB per image\n\n**For Videos:**\n• Max 3 videos per listing\n• Formats: MP4, MOV, AVI, WEBM\n• Size limit: 50MB per video\n\nYou can add these while creating a new listing or editing an existing one in your Dealer Dashboard." };
+            }
             if (lowerInput.includes('verify') || lowerInput.includes('become a dealer')) {
                 return { content: "To become a verified dealer:\n1. Sign up with your business email\n2. Choose 'Dealer' during registration\n3. Upload your business documents (CAC certificate, ID)\n4. Wait 24-48 hours for verification\n\nNeed help with a specific step?" };
             }
             if (lowerInput.includes('pay') || lowerInput.includes('checkout')) {
                 return { content: "To complete a purchase:\n1. Add items to your cart\n2. Click 'Checkout'\n3. Enter delivery address\n4. Choose payment method (we support Paystack)\n5. Confirm your order\n\nYou can also pay on delivery for added security!" };
             }
-            return { content: "I can help you with: account setup, making purchases, becoming a dealer, or tracking orders. What specifically would you like to know?" };
+            return { content: "I can help you with:\n• Uploading images and videos (New!)\n• Account setup\n• Making purchases\n• Becoming a dealer\n• Tracking orders\n\nWhat specifically would you like to know?" };
+        }
+
+        // Specific Multimedia/Video queries
+        if (lowerInput.includes('video') || lowerInput.includes('multimedia') || lowerInput.includes('media')) {
+            return { content: "We now support high-quality video walkthroughs for our listings! Dealers can upload 50MB videos to show their products in motion. This is especially great for cars—look for the 'Play' icon on listings to see them in action." };
+        }
+
+        // Out of Scope / Limits
+        if (lowerInput.includes('weather') || lowerInput.includes('news') || lowerInput.includes('stock market') || lowerInput.includes('politics')) {
+            return { content: "While I'd love to chat more, I'm specifically trained to help you with the MarketBridge platform and our Abuja automotive niche. For news or general inquiries, I recommend using a general-purpose assistant. How can I help you with your listings or shopping today?" };
         }
 
         // Trust & Safety
         if (lowerInput.includes('trust') || lowerInput.includes('safe') || lowerInput.includes('fear') || lowerInput.includes('scam')) {
-            return { content: "MarketBridge is designed for you to shop without fear. We verify all dealers, hold payments in escrow until you receive items, and maintain public reviews. Every transaction is protected. What specific concern can I address?" };
-        }
-
-        // Pricing questions
-        if (lowerInput.includes('price') || lowerInput.includes('cost') || lowerInput.includes('fee')) {
-            return { content: "We have transparent pricing with no hidden fees. What you see is what you pay. Transaction fees range from 1-5% depending on your dealer tier. Check our pricing page for details!" };
+            return { content: "MarketBridge is designed for you to shop without fear. We verify all dealers, hold payments in escrow until you receive items, and maintain public reviews. We also now support video verification for products to add an extra layer of trust!" };
         }
 
         // Greeting
-        if (lowerInput.includes('hello') || lowerInput.includes('hi') || lowerInput.includes('hey')) {
-            return { content: "Hello! I'm Sage, your AI assistant. I can help you find products, answer questions, or connect you with support. What are you looking for today?" };
+        if (lowerInput.includes('hello') || lowerInput.includes('hi') || lowerInput.includes('hey') || lowerInput.includes('good morning') || lowerInput.includes('good afternoon')) {
+            return { content: "Hello! I'm Sage, your AI assistant. I'm excited to help you explore MarketBridge! We've just added video upload support for our Abuja car dealers. What can I help you find or set up today?" };
+        }
+
+        // Farewell
+        if (lowerInput.includes('bye') || lowerInput.includes('goodbye') || lowerInput.includes('thanks') || lowerInput.includes('thank you')) {
+            return { content: "You're very welcome! If you need anything else—like help with our new video features or finding a verified dealer in Abuja—don't hesitate to reach out. Have a fantastic day shopping without fear!" };
         }
 
         // Default intelligent response
-        return { content: "I'm here to help! I can:\n• Search for specific products\n• Answer questions about the platform\n• Troubleshoot issues\n• Connect you with technical or operations support\n\nWhat would you like assistance with?" };
+        return { content: "I'm here to help! I can:\n• Search for specific products (including cars in Abuja)\n• Explain how to upload images and videos\n• Answer questions about the platform\n• Troubleshoot issues\n• Connect you with technical or operations support\n\nCould you please specify what you'd like assistance with?" };
     };
 
     const handleSendMessage = async () => {
