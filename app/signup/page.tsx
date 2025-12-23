@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -61,7 +62,7 @@ const PRICING_PLANS = [
 export default function SignupPage() {
     const router = useRouter();
     const [step, setStep] = useState<'role' | 'plan' | 'details'>('role');
-    const [role, setRole] = useState<'customer' | 'dealer'>('customer');
+    const [role, setRole] = useState<'customer' | 'dealer' | 'admin' | 'ceo'>('customer');
     const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan>('starter');
     const [formData, setFormData] = useState({
         displayName: '',
@@ -106,10 +107,14 @@ export default function SignupPage() {
         }
     };
 
-    const handleRoleSelect = (selectedRole: 'customer' | 'dealer') => {
+    const handleRoleSelect = (selectedRole: 'customer' | 'dealer' | 'admin' | 'ceo') => {
         setRole(selectedRole);
         if (selectedRole === 'dealer') {
             setStep('plan');
+        } else if (selectedRole === 'admin') {
+            router.push('/admin/signup');
+        } else if (selectedRole === 'ceo') {
+            router.push('/ceo/signup');
         } else {
             setStep('details');
         }
@@ -201,65 +206,80 @@ export default function SignupPage() {
     if (step === 'role') {
         return (
             <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-b from-background to-muted/20">
-                <Card className="w-full max-w-2xl">
+                <Card className="w-full max-w-4xl">
                     <CardHeader className="space-y-1">
-                        <CardTitle className="text-2xl font-bold text-center">Join MarketBridge</CardTitle>
-                        <CardDescription className="text-center">
-                            Choose how you want to use MarketBridge
+                        <CardTitle className="text-3xl font-black text-center tracking-tighter uppercase italic">Join MarketBridge</CardTitle>
+                        <CardDescription className="text-center font-medium">
+                            Choose your specialized terminal to access the Abuja Automotive Marketplace
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-8">
                         {error && (
                             <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 text-sm text-destructive">
                                 {error}
                             </div>
                         )}
 
-                        <Button variant="outline" type="button" className="w-full" onClick={handleGoogleLogin} disabled={isLoading}>
-                            <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
-                                <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path>
-                            </svg>
-                            Sign up with Google
-                        </Button>
-
-                        <div className="relative">
-                            <div className="absolute inset-0 flex items-center">
-                                <span className="w-full border-t" />
-                            </div>
-                            <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-background px-2 text-muted-foreground">
-                                    Or select your role
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             <Card
-                                className="cursor-pointer hover:border-primary transition-all hover:shadow-md"
+                                className="group cursor-pointer hover:border-primary transition-all hover:shadow-xl border-slate-200 dark:border-slate-800 relative overflow-hidden"
                                 onClick={() => handleRoleSelect('customer')}
                             >
                                 <CardContent className="p-6 text-center">
-                                    <div className="text-4xl mb-3">🛍️</div>
-                                    <h3 className="font-semibold text-lg mb-2">Customer</h3>
-                                    <p className="text-sm text-muted-foreground">
-                                        Browse and purchase products from verified dealers
+                                    <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">🛍️</div>
+                                    <h3 className="font-black uppercase italic text-sm mb-2 tracking-widest">Customer</h3>
+                                    <p className="text-xs text-muted-foreground leading-relaxed">
+                                        Browse and purchase premium vehicles from verified Abuja dealers.
                                     </p>
                                 </CardContent>
                             </Card>
 
                             <Card
-                                className="cursor-pointer hover:border-primary transition-all hover:shadow-md"
+                                className="group cursor-pointer hover:border-primary transition-all hover:shadow-xl border-slate-200 dark:border-slate-800 relative overflow-hidden"
                                 onClick={() => handleRoleSelect('dealer')}
                             >
                                 <CardContent className="p-6 text-center">
-                                    <div className="text-4xl mb-3">🚗</div>
-                                    <h3 className="font-semibold text-lg mb-2">Dealer</h3>
-                                    <p className="text-sm text-muted-foreground">
-                                        Onboard your car dealership and reach more verified buyers
+                                    <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">🚗</div>
+                                    <h3 className="font-black uppercase italic text-sm mb-2 tracking-widest">Dealer</h3>
+                                    <p className="text-xs text-muted-foreground leading-relaxed">
+                                        Onboard your car dealership and reach high-intent verified buyers.
+                                    </p>
+                                </CardContent>
+                            </Card>
+
+                            <Card
+                                className="group cursor-pointer hover:border-blue-500 transition-all hover:shadow-xl bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 relative overflow-hidden"
+                                onClick={() => handleRoleSelect('admin')}
+                            >
+                                <div className="absolute top-0 right-0 p-1">
+                                    <Badge variant="outline" className="text-[8px] font-black uppercase border-blue-500 text-blue-500">Staff</Badge>
+                                </div>
+                                <CardContent className="p-6 text-center">
+                                    <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">🛡️</div>
+                                    <h3 className="font-black uppercase italic text-sm mb-2 tracking-widest text-blue-600">Admin</h3>
+                                    <p className="text-xs text-muted-foreground leading-relaxed">
+                                        Access Mission Control for technical and operational management.
+                                    </p>
+                                </CardContent>
+                            </Card>
+
+                            <Card
+                                className="group cursor-pointer hover:border-[#d4af37] transition-all hover:shadow-xl bg-black border-zinc-900 relative overflow-hidden"
+                                onClick={() => handleRoleSelect('ceo')}
+                            >
+                                <div className="absolute top-0 right-0 p-1">
+                                    <Badge variant="outline" className="text-[8px] font-black uppercase border-[#d4af37] text-[#d4af37]">Executive</Badge>
+                                </div>
+                                <CardContent className="p-6 text-center">
+                                    <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">👑</div>
+                                    <h3 className="font-black uppercase italic text-sm mb-2 tracking-widest text-[#d4af37]">CEO</h3>
+                                    <p className="text-xs text-zinc-500 leading-relaxed">
+                                        Vision Command access for founding partners and strategic oversight.
                                     </p>
                                 </CardContent>
                             </Card>
                         </div>
+
 
                         <p className="text-center text-sm text-muted-foreground">
                             Already have an account?{' '}
