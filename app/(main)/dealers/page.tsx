@@ -25,69 +25,58 @@ export default function FindDealersPage() {
     const dealers = [
         {
             id: 1,
-            name: "TechHub Nigeria",
-            location: "Ikeja, Lagos",
+            name: "Abuja Elite Motors",
+            location: "Maitama, Abuja",
             rating: 4.9,
             reviews: 128,
             verified: true,
-            specialty: "Electronics",
+            specialty: "Luxury Vehicles",
             storeType: "Physical",
-            description: "Premium retailer for laptops, phones, and accessories."
+            description: "Premium retailer for luxury and exotic cars with full inspection reports."
         },
         {
             id: 2,
-            name: "Lagos Auto World",
-            location: "Victoria Island, Lagos",
+            name: "Garki Auto World",
+            location: "Garki Area 1, Abuja",
             rating: 4.7,
             reviews: 85,
             verified: true,
-            specialty: "Automotive",
+            specialty: "Japanese Vehicles",
             storeType: "Hybrid",
-            description: "Certified used cars with warranty and inspection reports."
+            description: "Specializing in certified used Toyota, Honda, and Nissan vehicles."
         },
         {
             id: 3,
-            name: "Home Essentials",
-            location: "Abuja, FCT",
+            name: "Wuse Car Mart",
+            location: "Wuse II, Abuja",
             rating: 4.5,
             reviews: 42,
             verified: true,
-            specialty: "Home & Garden",
+            specialty: "Everyday Cars",
             storeType: "Online",
-            description: "Quality furniture and home appliances for modern living."
+            description: "Quality affordable used cars for everyday commuting and family use."
         },
         {
             id: 4,
-            name: "Gadget Zone",
-            location: "Yaba, Lagos",
+            name: "Capital Wheels",
+            location: "Asokoro, Abuja",
             rating: 4.8,
             reviews: 210,
             verified: true,
-            specialty: "Mobile Phones",
+            specialty: "European Imports",
             storeType: "Physical",
-            description: "Best deals on smartphones and tablets."
+            description: "Best deals on Mercedes-Benz, BMW, and Audi imports in Abuja."
         },
         {
             id: 5,
-            name: "Fashion Forward",
-            location: "Lekki, Lagos",
+            name: "Reliable Auto Hub",
+            location: "Kuje, Abuja",
             rating: 4.6,
             reviews: 67,
-            verified: false,
-            specialty: "Fashion",
-            storeType: "Online",
-            description: "Trendy clothing and accessories for men and women."
-        },
-        {
-            id: 6,
-            name: "Power Systems Ltd",
-            location: "Port Harcourt, Rivers",
-            rating: 4.9,
-            reviews: 34,
             verified: true,
-            specialty: "Industrial",
-            storeType: "Hybrid",
-            description: "Generators, inverters, and solar power solutions."
+            specialty: "Used SUVs",
+            storeType: "Online",
+            description: "Rugged and reliable used SUVs and 4x4 vehicles for Nigerian roads."
         }
     ];
 
@@ -112,9 +101,9 @@ export default function FindDealersPage() {
     return (
         <div className="container mx-auto py-12 px-4">
             <div className="text-center max-w-2xl mx-auto mb-12">
-                <h1 className="text-4xl font-bold mb-4">Find Verified Dealers</h1>
+                <h1 className="text-4xl font-bold mb-4">Find Verified Car Dealerships</h1>
                 <p className="text-muted-foreground text-lg mb-8">
-                    Connect with trusted sellers across Nigeria. Find dealers near you.
+                    Connect with trusted automobile dealers in Abuja and across Nigeria. Every dealer on this list is verified for authenticity and reliability.
                 </p>
 
                 <div className="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto">

@@ -12,7 +12,7 @@ export default function AboutPage() {
                 <div className="container mx-auto px-4 text-center">
                     <h1 className="text-5xl font-bold mb-6">About MarketBridge</h1>
                     <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                        Nigeria's first <span className="text-primary font-semibold">escrow-protected marketplace</span> - where your money stays safe until you receive what you ordered
+                        Beginning with verified used cars, we are building Nigeria's first <span className="text-primary font-semibold">escrow-protected marketplace</span> - where your money stays safe until you receive and verify your vehicle.
                     </p>
                 </div>
             </section>
