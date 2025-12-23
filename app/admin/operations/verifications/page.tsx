@@ -32,10 +32,7 @@ interface Listing {
     make?: string;
     model?: string;
     year?: number;
-    status: string;
-    verification_status: string;
-    inspection_report_url?: string;
-    inspector_notes?: string;
+    videos?: string[];
     dealer: {
         display_name: string;
     };
@@ -180,6 +177,14 @@ export default function VerificationsPage() {
                                 <div className="absolute top-2 right-2">
                                     <Badge className="bg-orange-500">Pending Review</Badge>
                                 </div>
+                                {listing.videos && listing.videos.length > 0 && (
+                                    <div className="absolute bottom-2 right-2">
+                                        <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm border-primary/20 flex items-center gap-1">
+                                            <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse"></div>
+                                            Video Available
+                                        </Badge>
+                                    </div>
+                                )}
                             </div>
                             <CardHeader className="p-4 pb-2">
                                 <CardTitle className="text-lg line-clamp-1">{listing.title}</CardTitle>
@@ -250,6 +255,16 @@ export default function VerificationsPage() {
                         <div className="space-y-2 text-sm border p-3 rounded-lg bg-muted/20">
                             <p><strong>Car:</strong> {verifyingListing?.title}</p>
                             <p><strong>Dealer:</strong> {verifyingListing?.dealer.display_name}</p>
+                            {verifyingListing?.videos && verifyingListing.videos.length > 0 && (
+                                <div className="mt-3">
+                                    <p className="text-xs font-semibold mb-2">Video Verification Assets:</p>
+                                    <div className="grid grid-cols-1 gap-2">
+                                        {verifyingListing.videos.map((v, i) => (
+                                            <video key={i} src={v} controls className="w-full rounded border bg-black aspect-video" />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <div className="space-y-2">

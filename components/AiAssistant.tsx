@@ -137,7 +137,10 @@ export function AiAssistant() {
             if (lowerInput.includes('pay') || lowerInput.includes('checkout')) {
                 return { content: "To complete a purchase:\n1. Add items to your cart\n2. Click 'Checkout'\n3. Enter delivery address\n4. Choose payment method (we support Paystack)\n5. Confirm your order\n\nYou can also pay on delivery for added security!" };
             }
-            return { content: "I can help you with:\n• Uploading images and videos (New!)\n• Account setup\n• Making purchases\n• Becoming a dealer\n• Tracking orders\n\nWhat specifically would you like to know?" };
+            if (lowerInput.includes('dashboard') || lowerInput.includes('admin') || lowerInput.includes('executive')) {
+                return { content: "We've specialized our management interfaces for the Abuja launch:\n\n**CEO Dashboard:** Strategic Vision & Regional Performance\n**COO Dashboard:** Operations Hub, Logistics & Verification\n**CTO Hub:** Systems Infrastructure & Media Storage\n\n**Specialized Admin Dashboards:**\n• **Technical Admin:** System reliability, error logs, and API health.\n• **Operations Admin:** Detailed verification queue, logistics network, and escrow status.\n• **Marketing Admin:** Growth analytics, SEO performance, and campaign management.\n\nExecutives and Admins can access these directly from the Account menu or the Admin Sidebar. Need help finding a specific tool?" };
+            }
+            return { content: "I can help you with:\n• Uploading images and videos (New!)\n• Executive Dashboards (CEO, COO, CTO)\n• Account setup\n• Making purchases\n• Becoming a dealer\n\nWhat specifically would you like to know?" };
         }
 
         // Specific Multimedia/Video queries

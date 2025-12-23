@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS public.users (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     email TEXT UNIQUE NOT NULL,
     display_name TEXT NOT NULL,
-    role TEXT NOT NULL CHECK (role IN ('customer', 'dealer', 'admin', 'ceo', 'cofounder')),
+    role TEXT NOT NULL CHECK (role IN ('customer', 'dealer', 'admin', 'ceo', 'cofounder', 'cto', 'coo', 'technical_admin', 'operations_admin', 'marketing_admin')),
     photo_url TEXT,
     location TEXT,
     is_verified BOOLEAN DEFAULT FALSE,

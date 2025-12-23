@@ -146,11 +146,32 @@ export const Header = () => {
                                             {['technical_admin', 'operations_admin', 'marketing_admin'].includes(user?.role || '') && (
                                                 <>
                                                     <DropdownMenuItem asChild>
-                                                        <Link href="/admin" className="cursor-pointer">
+                                                        <Link href="/admin" className="cursor-pointer font-bold text-primary">
                                                             <LayoutDashboard className="mr-2 h-4 w-4" />
-                                                            Admin Dashboard
+                                                            Admin Portal
                                                         </Link>
                                                     </DropdownMenuItem>
+                                                    {user?.role === 'technical_admin' && (
+                                                        <DropdownMenuItem asChild>
+                                                            <Link href="/admin/technical" className="cursor-pointer pl-6 italic text-xs">
+                                                                Technical Command
+                                                            </Link>
+                                                        </DropdownMenuItem>
+                                                    )}
+                                                    {user?.role === 'operations_admin' && (
+                                                        <DropdownMenuItem asChild>
+                                                            <Link href="/admin/operations" className="cursor-pointer pl-6 italic text-xs">
+                                                                Operations Hub
+                                                            </Link>
+                                                        </DropdownMenuItem>
+                                                    )}
+                                                    {user?.role === 'marketing_admin' && (
+                                                        <DropdownMenuItem asChild>
+                                                            <Link href="/admin/marketing" className="cursor-pointer pl-6 italic text-xs">
+                                                                Growth Dashboard
+                                                            </Link>
+                                                        </DropdownMenuItem>
+                                                    )}
                                                     <DropdownMenuSeparator />
                                                 </>
                                             )}
@@ -160,6 +181,28 @@ export const Header = () => {
                                                         <Link href="/ceo" className="cursor-pointer">
                                                             <LayoutDashboard className="mr-2 h-4 w-4" />
                                                             CEO Dashboard
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                </>
+                                            )}
+                                            {user?.role === 'cto' && (
+                                                <>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link href="/cto" className="cursor-pointer">
+                                                            <LayoutDashboard className="mr-2 h-4 w-4" />
+                                                            CTO Hub
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                </>
+                                            )}
+                                            {user?.role === 'coo' && (
+                                                <>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link href="/coo" className="cursor-pointer">
+                                                            <LayoutDashboard className="mr-2 h-4 w-4" />
+                                                            Operations Command
                                                         </Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuSeparator />

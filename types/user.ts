@@ -6,7 +6,7 @@ export interface User {
     _id: string; // Legacy MongoDB ID (for backwards compatibility)
     email: string;
     displayName: string;
-    role: string;
+    role: 'customer' | 'dealer' | 'admin' | 'ceo' | 'cofounder' | 'cto' | 'coo' | 'technical_admin' | 'operations_admin' | 'marketing_admin';
     photoURL?: string;
     location?: string;
     isVerified?: boolean;
