@@ -117,7 +117,7 @@ export default function ListingsPage() {
                 {/* Header */}
                 <div className="mb-8">
                     <h1 className="text-4xl font-bold mb-2">Browse Listings</h1>
-                    <p className="text-muted-foreground">Discover great deals from verified dealers</p>
+                    <p className="text-muted-foreground">Discover new and used cars from verified dealers of all sizes</p>
                 </div>
 
                 {/* Filters */}
@@ -168,9 +168,9 @@ export default function ListingsPage() {
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="all">Any Condition</SelectItem>
+                                            <SelectItem value="Brand New">Brand New</SelectItem>
                                             <SelectItem value="Tokunbo">Tokunbo (Foreign Used)</SelectItem>
                                             <SelectItem value="Nigerian Used">Nigerian Used</SelectItem>
-                                            <SelectItem value="Brand New">Brand New</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>

@@ -59,13 +59,13 @@ export default function HomePage() {
             <section className="relative py-12 md:py-32 bg-gradient-to-b from-background to-muted/20 overflow-hidden">
                 <div className="container px-4 mx-auto text-center relative z-10">
                     <div className="inline-block mb-4 px-4 py-2 bg-primary/10 rounded-full">
-                        <span className="text-sm font-semibold text-primary px-2">Nigeria&apos;s First Trustless Marketplace</span>
+                        <span className="text-sm font-semibold text-primary px-2">Nigeria's Most Trusted Business Marketplace</span>
                     </div>
                     <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
                         Shop Without <span className="text-primary">Fear</span>
                     </h1>
                     <p className="text-lg md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto px-2">
-                        Beginning with verified used cars, we provide transparency and verification to replace blind trust. See dealer ratings, reviews, and transaction history before you buy.
+                        Starting with new and used cars, we connect verified dealers with customers through transparency and trust. From small businesses to large enterprises, we're building Nigeria's most reliable marketplace.
                     </p>
 
                     {/* Location Search */}

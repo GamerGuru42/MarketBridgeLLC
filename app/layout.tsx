@@ -18,8 +18,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MarketBridge - Shop Without Fear",
-  description: "Nigeria's first trustless marketplace. Connect with verified dealers and shop with transparency. Find the best deals on electronics, fashion, automotive, and more.",
+  title: "MarketBridge - Nigeria's Most Trusted Business Marketplace",
+  description: "Starting with new and used cars, MarketBridge connects verified dealers with customers through escrow-protected transactions. From small businesses to large enterprises, shop with confidence.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -27,8 +27,8 @@ export const metadata: Metadata = {
     title: "MarketBridge",
   },
   openGraph: {
-    title: "MarketBridge - Shop Without Fear",
-    description: "Nigeria's first trustless marketplace with verified dealers",
+    title: "MarketBridge - Nigeria's Most Trusted Business Marketplace",
+    description: "Starting with new and used cars. Escrow-protected transactions for businesses of all sizes.",
     url: "https://marketbridge.vercel.app",
     siteName: "MarketBridge",
     images: [
@@ -43,8 +43,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary",
-    title: "MarketBridge - Shop Without Fear",
-    description: "Nigeria's first trustless marketplace with verified dealers",
+    title: "MarketBridge - Nigeria's Most Trusted Business Marketplace",
+    description: "Starting with new and used cars. Escrow-protected transactions for businesses of all sizes.",
     images: ["/icon-512.png"],
   },
 };

@@ -23,7 +23,7 @@ export const CATEGORIES: Category[] = [
         bg: 'bg-orange-500/10',
         isActive: true,
         slug: 'automotive',
-        description: 'Verified used cars from trusted dealers.'
+        description: 'New and used cars from verified dealers. All sizes of businesses welcome.'
     },
     {
         id: 'electronics',
