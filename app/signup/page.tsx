@@ -63,6 +63,10 @@ export default function SignupPage() {
     const router = useRouter();
     const [step, setStep] = useState<'role' | 'plan' | 'details'>('role');
     const [role, setRole] = useState<'customer' | 'dealer' | 'admin' | 'ceo'>('customer');
+    const [showAccessCodeInput, setShowAccessCodeInput] = useState(false);
+    const [accessCode, setAccessCode] = useState('');
+    const [targetRole, setTargetRole] = useState<'admin' | 'ceo' | null>(null);
+
     const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan>('starter');
     const [formData, setFormData] = useState({
         displayName: '',
@@ -108,17 +112,93 @@ export default function SignupPage() {
     };
 
     const handleRoleSelect = (selectedRole: 'customer' | 'dealer' | 'admin' | 'ceo') => {
+        if (selectedRole === 'admin' || selectedRole === 'ceo') {
+            setTargetRole(selectedRole);
+            setAccessCode('');
+            setError('');
+            setShowAccessCodeInput(true);
+            return;
+        }
+
         setRole(selectedRole);
         if (selectedRole === 'dealer') {
             setStep('plan');
-        } else if (selectedRole === 'admin') {
-            router.push('/admin/signup');
-        } else if (selectedRole === 'ceo') {
-            router.push('/ceo/signup');
         } else {
             setStep('details');
         }
     };
+
+    const verifyAccessCode = (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+
+        if (targetRole === 'admin') {
+            if (accessCode === '1029384756') {
+                router.push('/admin/signup');
+            } else {
+                setError('Invalid Administrator Access Code');
+            }
+        } else if (targetRole === 'ceo') {
+            if (accessCode === '244466666') {
+                router.push('/ceo/signup');
+            } else {
+                setError('Invalid Executive Access Code');
+            }
+        }
+    };
+
+    if (showAccessCodeInput) {
+        return (
+            <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-slate-950 font-sans">
+                <Card className="w-full max-w-md bg-slate-900 border-slate-800 text-slate-100 shadow-2xl">
+                    <CardHeader className="space-y-1 pb-8 text-center">
+                        <CardTitle className="text-xl font-bold uppercase tracking-widest text-white">
+                            Security Check
+                        </CardTitle>
+                        <CardDescription className="text-slate-400 font-mono text-xs">
+                            Enter the restricted access code for {targetRole === 'admin' ? 'Mission Control' : 'Vision Command'}.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {error && (
+                            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-xs text-red-400 font-mono text-center">
+                                {error}
+                            </div>
+                        )}
+                        <form onSubmit={verifyAccessCode} className="space-y-6">
+                            <div className="space-y-2">
+                                <Label className="text-xs text-slate-500 uppercase font-black tracking-widest">Access Code</Label>
+                                <Input
+                                    type="password"
+                                    className="bg-slate-950 border-slate-800 text-center tracking-[0.5em] font-mono text-lg"
+                                    value={accessCode}
+                                    onChange={(e) => setAccessCode(e.target.value)}
+                                    placeholder="••••••••••"
+                                    autoFocus
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    onClick={() => {
+                                        setShowAccessCodeInput(false);
+                                        setTargetRole(null);
+                                    }}
+                                    className="border border-slate-700 hover:bg-slate-800 text-slate-400"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button type="submit" className="bg-primary hover:bg-primary/90 text-white font-bold">
+                                    Verify
+                                </Button>
+                            </div>
+                        </form>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
 
     const handlePlanSelect = (plan: SubscriptionPlan) => {
         setSelectedPlan(plan);

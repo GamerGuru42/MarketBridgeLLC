@@ -18,6 +18,11 @@ export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
+    // Access Code State
+    const [showCodeInput, setShowCodeInput] = useState(false);
+    const [targetRole, setTargetRole] = useState<'admin' | 'ceo' | null>(null);
+    const [accessCode, setAccessCode] = useState('');
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
@@ -66,6 +71,85 @@ export default function LoginPage() {
             setIsLoading(false);
         }
     };
+
+    const initiateExecutiveLogin = (role: 'admin' | 'ceo') => {
+        setTargetRole(role);
+        setAccessCode('');
+        setError('');
+        setShowCodeInput(true);
+    };
+
+    const verifyAccessCode = (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+
+        if (targetRole === 'admin') {
+            if (accessCode === '1029384756') {
+                router.push('/admin/login');
+            } else {
+                setError('Invalid Administrator Access Code');
+            }
+        } else if (targetRole === 'ceo') {
+            if (accessCode === '244466666') {
+                router.push('/ceo/login');
+            } else {
+                setError('Invalid Executive Access Code');
+            }
+        }
+    };
+
+    if (showCodeInput) {
+        return (
+            <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-slate-950 font-sans">
+                <Card className="w-full max-w-md bg-slate-900 border-slate-800 text-slate-100 shadow-2xl">
+                    <CardHeader className="space-y-1 pb-8 text-center">
+                        <CardTitle className="text-xl font-bold uppercase tracking-widest text-white">
+                            Restricted Access
+                        </CardTitle>
+                        <CardDescription className="text-slate-400 font-mono text-xs">
+                            Enter security clearance for {targetRole === 'admin' ? 'Mission Control' : 'Vision Command'}.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {error && (
+                            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-xs text-red-400 font-mono text-center">
+                                {error}
+                            </div>
+                        )}
+                        <form onSubmit={verifyAccessCode} className="space-y-6">
+                            <div className="space-y-2">
+                                <Label className="text-xs text-slate-500 uppercase font-black tracking-widest">Access Code</Label>
+                                <Input
+                                    type="password"
+                                    className="bg-slate-950 border-slate-800 text-center tracking-[0.5em] font-mono text-lg"
+                                    value={accessCode}
+                                    onChange={(e) => setAccessCode(e.target.value)}
+                                    placeholder="••••••••••"
+                                    autoFocus
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    onClick={() => {
+                                        setShowCodeInput(false);
+                                        setTargetRole(null);
+                                    }}
+                                    className="border border-slate-700 hover:bg-slate-800 text-slate-400"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button type="submit" className="bg-primary hover:bg-primary/90 text-white font-bold">
+                                    Verify
+                                </Button>
+                            </div>
+                        </form>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-b from-background to-muted/20">
@@ -131,7 +215,19 @@ export default function LoginPage() {
                         </Button>
                     </form>
 
-                    <p className="text-center text-sm text-muted-foreground">
+                    <div className="pt-6 border-t mt-6">
+                        <p className="text-center text-xs font-bold uppercase text-muted-foreground mb-4 tracking-widest">Staff & Executive Login</p>
+                        <div className="grid grid-cols-2 gap-3">
+                            <Button variant="outline" size="sm" onClick={() => initiateExecutiveLogin('admin')} className="text-xs">
+                                Mission Control
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={() => initiateExecutiveLogin('ceo')} className="text-xs">
+                                Vision Command
+                            </Button>
+                        </div>
+                    </div>
+
+                    <p className="text-center text-sm text-muted-foreground pt-4">
                         Don't have an account?{' '}
                         <Link href="/signup" className="text-primary hover:underline">
                             Sign up
