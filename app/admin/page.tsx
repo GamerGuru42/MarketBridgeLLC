@@ -6,15 +6,35 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Activity, Users, ShoppingCart, AlertTriangle, Server, Database, BarChart, ArrowRight, Zap } from 'lucide-react';
+import { Activity, Users, ShoppingCart, AlertTriangle, Server, Database, BarChart, ArrowRight, Zap, LayoutDashboard } from 'lucide-react';
+import { TourGuide } from '@/components/tour-guide';
 
 export default function AdminPage() {
     const { user } = useAuth();
+
+    const adminTourSteps = [
+        {
+            title: "Mission Control Briefing",
+            description: "Welcome to the central command node. This dashboard routes you to specific operational departments.",
+            icon: <LayoutDashboard size={24} />
+        },
+        {
+            title: "Departmental Nodes",
+            description: "Access specialized tools for Technical, Operations, and Marketing management from these quick-link cards.",
+            icon: <Server size={24} />
+        },
+        {
+            title: "Strategic Proposals",
+            description: "Draft official memos and upgrade requests for the CEO here. All submissions are logged for audit.",
+            icon: <Zap size={24} />
+        }
+    ];
 
     if (!user) return <div>Loading...</div>;
 
     return (
         <div className="container mx-auto py-10 px-4">
+            <TourGuide pageKey="admin_hub" steps={adminTourSteps} title="Admin Briefing" />
             <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
             <p className="text-muted-foreground mb-8">
                 Welcome back, {user.displayName}. You are logged in as <span className="font-semibold capitalize">{user.role.replace('_', ' ')}</span>.

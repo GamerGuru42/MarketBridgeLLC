@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 import { LogOut } from 'lucide-react';
 
+import { useAuth } from '@/contexts/AuthContext';
+
 interface SidebarItem {
     label: string;
     href: string;
@@ -22,6 +24,7 @@ interface SidebarProps {
 
 export function Sidebar({ items, title, className }: SidebarProps) {
     const pathname = usePathname();
+    const { logout } = useAuth();
 
     return (
         <div className={cn("pb-12 min-h-screen border-r bg-muted/10", className)}>
@@ -49,7 +52,7 @@ export function Sidebar({ items, title, className }: SidebarProps) {
                 </div>
             </div>
             <div className="px-3 py-2 mt-auto absolute bottom-4 w-full border-t pt-4">
-                <Button variant="ghost" className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10">
+                <Button variant="ghost" className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => logout()}>
                     <LogOut className="mr-2 h-4 w-4" />
                     Log out
                 </Button>

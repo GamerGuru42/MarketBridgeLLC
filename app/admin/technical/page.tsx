@@ -4,17 +4,37 @@ import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Link from 'next/link';
-import { Server, Database, Activity, Lock, Search, Code, Cpu, Globe, AlertCircle, Terminal, Zap } from 'lucide-react';
+import { Server, Database, Activity, Lock, Search, Code, Cpu, Globe, AlertCircle, Terminal, Zap, LayoutDashboard } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { TourGuide } from '@/components/tour-guide';
+
+const techTourSteps = [
+    {
+        title: "System Status Console",
+        description: "Real-time monitoring of Abuja and Lagos API nodes, database latency, and error rates.",
+        icon: <Activity size={24} />
+    },
+    {
+        title: "Security & Audits",
+        description: "Review access logs, failed login attempts, and active firewall rules for the platform.",
+        icon: <Lock size={24} />
+    },
+    {
+        title: "Deployment Controls",
+        description: "Trigger rollbacks or enable maintenance mode during critical infrastructure updates.",
+        icon: <Terminal size={24} />
+    }
+];
 
 export default function TechnicalAdminPage() {
     const { user } = useAuth();
 
     return (
         <div className="container mx-auto py-10 px-4 space-y-8">
+            <TourGuide pageKey="admin_technical" steps={techTourSteps} title="Technical Briefing" />
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-4xl font-extrabold tracking-tight font-mono text-slate-900">Systems Reliability Engineer</h1>

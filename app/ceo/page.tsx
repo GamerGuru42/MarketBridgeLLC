@@ -3,16 +3,71 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { TrendingUp, Users, DollarSign, Activity, MapPin, Video, ShieldCheck, PieChart, Clock, ArrowRight } from 'lucide-react';
+import { TrendingUp, Users, DollarSign, Activity, MapPin, Video, ShieldCheck, PieChart, Clock, ArrowRight, LayoutDashboard } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 
+import { TourGuide } from '@/components/tour-guide';
+
+const ceoTourSteps = [
+    {
+        title: "Welcome to Vision Command",
+        description: "This is your central executive hub. From here, you can monitor real-time global performance, approve strategic initiatives, and communicate with your C-Suite.",
+        icon: <LayoutDashboard size={24} />
+    },
+    {
+        title: "Strategic Proposal Queue",
+        description: "Your admins submit critical upgrades and budget requests here. You have final override authority to Approve or Decline these initiatives.",
+        icon: <Activity size={24} />
+    },
+    {
+        title: "Market Intelligence",
+        description: "Track key growth metrics like CAC, LTV, and regional penetration maps to make data-driven expansion decisions.",
+        icon: <TrendingUp size={24} />
+    }
+];
+
 export default function CEOPage() {
     const { user } = useAuth();
 
+    // Proposal State
+    const [proposals, setProposals] = React.useState([
+        {
+            id: 1,
+            initials: "DT",
+            color: "blue",
+            title: "Escrow Automation Upgrade v2.1",
+            author: "Operations Admin",
+            time: "2h ago",
+            tag: "HIGH PRIORITY",
+            tagColor: "text-orange-500 border-orange-200",
+            desc: "Proposal to automate escrow release for transactions under ₦1M in Abuja Central after 48h of verified delivery. Projected to reduce manual ops load by 40%."
+        },
+        {
+            id: 2,
+            initials: "KA",
+            color: "purple",
+            title: "Multimedia Cache Expansion (Abuja Node)",
+            author: "Technical Admin",
+            time: "5h ago",
+            tag: "INFRASTRUCTURE",
+            tagColor: "text-blue-500 border-blue-200",
+            desc: "Storage quotas for car videos in the Maitama region are at 85%. Approval needed to spin up an additional 500GB S3-compatible cluster node."
+        }
+    ]);
+
+    const handleAction = (id: number, action: 'approve' | 'decline') => {
+        // Optimistic UI update
+        const newProposals = proposals.filter(p => p.id !== id);
+        setProposals(newProposals);
+        // simulating a backend call or toast could go here
+    };
+
     return (
         <div className="container mx-auto py-10 px-4 space-y-8">
+            <TourGuide pageKey="ceo_dashboard" steps={ceoTourSteps} title="Executive Briefing" />
+
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">Executive Command Center</h1>
@@ -92,50 +147,41 @@ export default function CEOPage() {
                                     <CardTitle className="text-xl">Strategic Proposal Queue</CardTitle>
                                     <CardDescription>Review and approve upgrades or policy shifts from Admin leads</CardDescription>
                                 </div>
-                                <Badge className="bg-primary/20 text-primary border-primary/30">3 Pending</Badge>
+                                <Badge className="bg-primary/20 text-primary border-primary/30">{proposals.length} Pending</Badge>
                             </div>
                         </CardHeader>
                         <CardContent className="p-0">
                             <div className="divide-y">
-                                <div className="p-6 hover:bg-muted/30 transition-colors">
-                                    <div className="flex items-start justify-between mb-4">
-                                        <div className="flex gap-3">
-                                            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">DT</div>
-                                            <div>
-                                                <h4 className="font-bold underline italic text-sm">Escrow Automation Upgrade v2.1</h4>
-                                                <p className="text-xs text-muted-foreground font-medium">Proposed by <span className="text-blue-600">Operations Admin</span> • 2h ago</p>
+                                {proposals.length === 0 ? (
+                                    <div className="p-12 text-center text-muted-foreground">
+                                        <ShieldCheck className="h-12 w-12 mx-auto mb-4 text-green-500 opacity-50" />
+                                        <h3 className="text-lg font-bold">All caught up!</h3>
+                                        <p className="text-sm">No pending proposals in the queue.</p>
+                                    </div>
+                                ) : (
+                                    proposals.map((proposal) => (
+                                        <div key={proposal.id} className="p-6 hover:bg-muted/30 transition-colors">
+                                            <div className="flex items-start justify-between mb-4">
+                                                <div className="flex gap-3">
+                                                    <div className={`h-10 w-10 rounded-full bg-${proposal.color}-100 flex items-center justify-center text-${proposal.color}-600 font-bold`}>{proposal.initials}</div>
+                                                    <div>
+                                                        <h4 className="font-bold underline italic text-sm">{proposal.title}</h4>
+                                                        <p className="text-xs text-muted-foreground font-medium">Proposed by <span className={`text-${proposal.color}-600`}>{proposal.author}</span> • {proposal.time}</p>
+                                                    </div>
+                                                </div>
+                                                <Badge variant="outline" className={proposal.tagColor}>{proposal.tag}</Badge>
+                                            </div>
+                                            <p className="text-sm text-slate-600 mb-6 leading-relaxed">
+                                                "{proposal.desc}"
+                                            </p>
+                                            <div className="flex gap-3">
+                                                <Button size="sm" onClick={() => handleAction(proposal.id, 'approve')} className="bg-green-600 hover:bg-green-700 h-8 text-xs">APPROVE & DEPLOY</Button>
+                                                <Button size="sm" variant="outline" className="h-8 text-xs">REQUEST INFO</Button>
+                                                <Button size="sm" onClick={() => handleAction(proposal.id, 'decline')} variant="ghost" className="h-8 text-xs text-red-500">DECLINE</Button>
                                             </div>
                                         </div>
-                                        <Badge variant="outline" className="text-orange-500 border-orange-200">HIGH PRIORITY</Badge>
-                                    </div>
-                                    <p className="text-sm text-slate-600 mb-6 leading-relaxed">
-                                        "Proposal to automate escrow release for transactions under ₦1M in Abuja Central after 48h of verified delivery. Projected to reduce manual ops load by 40%."
-                                    </p>
-                                    <div className="flex gap-3">
-                                        <Button size="sm" className="bg-green-600 hover:bg-green-700 h-8 text-xs">APPROVE & DEPLOY</Button>
-                                        <Button size="sm" variant="outline" className="h-8 text-xs">REQUEST INFO</Button>
-                                        <Button size="sm" variant="ghost" className="h-8 text-xs text-red-500">DECLINE</Button>
-                                    </div>
-                                </div>
-                                <div className="p-6 hover:bg-muted/30 transition-colors">
-                                    <div className="flex items-start justify-between mb-4">
-                                        <div className="flex gap-3">
-                                            <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold">KA</div>
-                                            <div>
-                                                <h4 className="font-bold underline italic text-sm">Multimedia Cache Expansion (Abuja Node)</h4>
-                                                <p className="text-xs text-muted-foreground font-medium">Proposed by <span className="text-purple-600">Technical Admin</span> • 5h ago</p>
-                                            </div>
-                                        </div>
-                                        <Badge variant="outline" className="text-blue-500 border-blue-200">INFRASTRUCTURE</Badge>
-                                    </div>
-                                    <p className="text-sm text-slate-600 mb-6 leading-relaxed">
-                                        "Storage quotas for car videos in the Maitama region are at 85%. Approval needed to spin up an additional 500GB S3-compatible cluster node."
-                                    </p>
-                                    <div className="flex gap-3">
-                                        <Button size="sm" className="bg-green-600 hover:bg-green-700 h-8 text-xs">PROVISION NOW</Button>
-                                        <Button size="sm" variant="outline" className="h-8 text-xs">VIEW SPECS</Button>
-                                    </div>
-                                </div>
+                                    ))
+                                )}
                             </div>
                         </CardContent>
                     </Card>

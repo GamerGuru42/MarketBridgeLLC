@@ -3,17 +3,37 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Truck, ShieldCheck, AlertTriangle, Scale, History, Map, Activity, ShoppingBag, Users, Clock, Zap } from 'lucide-react';
+import { Truck, ShieldCheck, AlertTriangle, Scale, History, Map, Activity, ShoppingBag, Users, Clock, Zap, LayoutDashboard } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Progress } from '@/components/ui/progress';
+import { TourGuide } from '@/components/tour-guide';
+
+const opsTourSteps = [
+    {
+        title: "Active Escrows",
+        description: "Monitor live transactions where funds are held. Release payments only upon confirmed delivery verification.",
+        icon: <ShieldCheck size={24} />
+    },
+    {
+        title: "Dispute Tribunal",
+        description: "Adjudicate conflicts between buyers and dealers. Your decisions on refunds or releases are final.",
+        icon: <Scale size={24} />
+    },
+    {
+        title: "Logistics Map",
+        description: "Track shipment vectors across the Abuja territory to identify bottlenecks.",
+        icon: <Map size={24} />
+    }
+];
 
 export default function OperationsAdminPage() {
     const { user } = useAuth();
 
     return (
         <div className="container mx-auto py-10 px-4 space-y-8">
+            <TourGuide pageKey="admin_operations" steps={opsTourSteps} title="Operations Briefing" />
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-4xl font-extrabold tracking-tight">Marketplace Operations</h1>

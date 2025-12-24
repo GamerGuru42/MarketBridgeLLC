@@ -3,16 +3,36 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { BarChart3, TrendingUp, Users, Mail, Megaphone, Share2, Search, Target, MousePointer2, Sparkles } from 'lucide-react';
+import { BarChart3, TrendingUp, Users, Mail, Megaphone, Share2, Search, Target, MousePointer2, Sparkles, LayoutDashboard } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { TourGuide } from '@/components/tour-guide';
+
+const marketingTourSteps = [
+    {
+        title: "Growth Metrics",
+        description: "Analyze Customer Acquisition Cost (CAC) and ROI across all channels.",
+        icon: <BarChart3 size={24} />
+    },
+    {
+        title: "Campaign Manager",
+        description: "Launch and monitor active PPC or Social campaigns.",
+        icon: <Megaphone size={24} />
+    },
+    {
+        title: "SEO Intelligence",
+        description: "Track search rankings for key inventory keywords in the Abuja region.",
+        icon: <Search size={24} />
+    }
+];
 
 export default function MarketingAdminPage() {
     const { user } = useAuth();
 
     return (
         <div className="container mx-auto py-10 px-4 space-y-8 text-slate-900">
+            <TourGuide pageKey="admin_marketing" steps={marketingTourSteps} title="Marketing Briefing" />
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-4xl font-extrabold tracking-tight">Growth & Marketing</h1>
