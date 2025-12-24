@@ -26,7 +26,7 @@ interface Order {
     buyer_id: string;
     seller_id: string;
     listing_id: string;
-    status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+    status: 'pending' | 'paid' | 'confirmed' | 'disputed' | 'completed' | 'cancelled';
     amount: number;
     shipping_address: string | null;
     phone_number: string | null;
@@ -164,6 +164,10 @@ export default function OrdersPage() {
         switch (status) {
             case 'pending':
                 return <Clock className="h-4 w-4" />;
+            case 'paid':
+                return <AlertCircle className="h-4 w-4" />;
+            case 'disputed':
+                return <AlertCircle className="h-4 w-4 text-destructive" />;
             case 'confirmed':
                 return <Truck className="h-4 w-4" />;
             case 'completed':
@@ -179,6 +183,10 @@ export default function OrdersPage() {
         switch (status) {
             case 'pending':
                 return 'secondary';
+            case 'paid':
+                return 'default';
+            case 'disputed':
+                return 'destructive';
             case 'confirmed':
                 return 'default';
             case 'completed':
@@ -193,13 +201,17 @@ export default function OrdersPage() {
     const getStatusText = (status: string) => {
         switch (status) {
             case 'pending':
-                return 'Pending Payment';
+                return 'Waiting for Payment';
+            case 'paid':
+                return 'Payment in Escrow';
+            case 'disputed':
+                return 'Under Dispute';
             case 'confirmed':
                 return 'In Transit';
             case 'completed':
-                return 'Delivered';
+                return 'Delivered/Released';
             case 'cancelled':
-                return 'Cancelled';
+                return 'Cancelled/Refunded';
             default:
                 return status.charAt(0).toUpperCase() + status.slice(1);
         }
@@ -314,20 +326,53 @@ export default function OrdersPage() {
                                             </div>
                                         )}
                                         {/* Escrow Status & Actions */}
-                                        {order.status === 'pending' && (
+                                        {(order.status === 'pending') && (
                                             <div className="border-t pt-3">
                                                 <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
                                                     <div className="flex items-start gap-2">
-                                                        <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 mt-0.5" />
+                                                        <Clock className="h-5 w-5 text-yellow-600 dark:text-yellow-400 mt-0.5" />
                                                         <div>
                                                             <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-                                                                Payment Pending
+                                                                Awaiting Payment Confirmation
                                                             </p>
                                                             <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
-                                                                Your payment of ₦{order.amount.toLocaleString()} is being held in escrow. It will be released to the seller once you confirm delivery.
+                                                                We're waiting to confirm your payment of ₦{order.amount.toLocaleString()}. Once confirmed, it will be held in escrow.
                                                             </p>
                                                         </div>
                                                     </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {order.status === 'paid' && (
+                                            <div className="border-t pt-3">
+                                                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-3">
+                                                    <div className="flex items-start gap-2">
+                                                        <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+                                                        <div>
+                                                            <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                                                                Payment in Escrow
+                                                            </p>
+                                                            <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                                                                ₦{order.amount.toLocaleString()} is securely held. The seller will be notified to ship your item.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <Button
+                                                        variant="outline"
+                                                        onClick={() => openChat(order)}
+                                                        className="flex-1"
+                                                    >
+                                                        <MessageCircle className="mr-2 h-4 w-4" />
+                                                        Contact Seller
+                                                    </Button>
+                                                    <Link href={`/orders/${order.id}/dispute`} className="flex-1">
+                                                        <Button variant="ghost" className="w-full text-destructive hover:text-destructive hover:bg-destructive/10">
+                                                            <AlertCircle className="mr-2 h-4 w-4" />
+                                                            File Dispute
+                                                        </Button>
+                                                    </Link>
                                                 </div>
                                             </div>
                                         )}
@@ -346,7 +391,7 @@ export default function OrdersPage() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="flex gap-2">
+                                                <div className="flex gap-2 mb-2">
                                                     <Button
                                                         onClick={() => handleConfirmDelivery(order)}
                                                         disabled={confirmingOrder === order.id}
@@ -369,9 +414,13 @@ export default function OrdersPage() {
                                                         onClick={() => openChat(order)}
                                                     >
                                                         <MessageCircle className="mr-2 h-4 w-4" />
-                                                        Contact Seller
                                                     </Button>
                                                 </div>
+                                                <Link href={`/orders/${order.id}/dispute`}>
+                                                    <Button variant="ghost" size="sm" className="w-full text-xs text-muted-foreground hover:text-destructive">
+                                                        Having issues? File a dispute
+                                                    </Button>
+                                                </Link>
                                             </div>
                                         )}
                                         {order.status === 'completed' && (
