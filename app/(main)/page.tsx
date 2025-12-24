@@ -107,9 +107,95 @@ export default function HomePage() {
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl -z-10" />
             </section>
 
+            {/* Authenticated User Quick Actions */}
+            {user && (
+                <section className="py-12 bg-primary/5">
+                    <div className="container px-4 mx-auto">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-background p-8 rounded-2xl border border-primary/10 shadow-sm transition-all hover:shadow-md">
+                            <div className="flex items-center gap-6">
+                                <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center">
+                                    <Sparkles className="h-8 w-8 text-primary" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold italic tracking-tighter uppercase">Welcome back, {user.displayName.split(' ')[0]}!</h3>
+                                    <p className="text-muted-foreground text-sm italic">Pick up where you left off in your marketplace journey.</p>
+                                </div>
+                            </div>
+                            <div className="flex flex-wrap gap-3">
+                                <Button variant="outline" asChild size="sm">
+                                    <Link href="/settings">Account Settings</Link>
+                                </Button>
+                                <Button variant="outline" asChild size="sm">
+                                    <Link href="/wishlist">Saved Items</Link>
+                                </Button>
+                                <Button variant="outline" asChild size="sm">
+                                    <Link href="/orders">Order History</Link>
+                                </Button>
+                                {user.role === 'dealer' && (
+                                    <Button asChild size="sm" className="bg-primary hover:bg-primary/90">
+                                        <Link href="/dealer/dashboard">Dealer Portal</Link>
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            {/* Guest Value Proposition - Why MarketBridge? */}
+            {!user && (
+                <section className="py-20 bg-muted/30">
+                    <div className="container px-4 mx-auto">
+                        <div className="text-center max-w-3xl mx-auto mb-16">
+                            <h2 className="text-3xl md:text-4xl font-black italic tracking-tighter uppercase mb-4">Nigeria's Most Trusted Marketplace</h2>
+                            <p className="text-muted-foreground text-lg">
+                                We are bridging the trust gap by verifying every dealer and securing every transaction.
+                            </p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                            <div className="space-y-4 text-center p-8 bg-background rounded-3xl shadow-sm border border-border/50 hover:border-primary/50 transition-colors">
+                                <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto text-primary">
+                                    <ShieldCheck className="h-8 w-8" />
+                                </div>
+                                <h3 className="text-xl font-bold uppercase tracking-tight">Verified Sellers</h3>
+                                <p className="text-muted-foreground text-sm">Every dealer is physically and legally vetted. No ghosts. No scams.</p>
+                            </div>
+                            <div className="space-y-4 text-center p-8 bg-background rounded-3xl shadow-sm border border-border/50 hover:border-primary/50 transition-colors">
+                                <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto text-primary">
+                                    <Truck className="h-8 w-8" />
+                                </div>
+                                <h3 className="text-xl font-bold uppercase tracking-tight">Escrow Security</h3>
+                                <p className="text-muted-foreground text-sm">Your payment stays in our vault until you've inspected and accepted your item.</p>
+                            </div>
+                            <div className="space-y-4 text-center p-8 bg-background rounded-3xl shadow-sm border border-border/50 hover:border-primary/50 transition-colors">
+                                <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto text-primary">
+                                    <Star className="h-8 w-8" />
+                                </div>
+                                <h3 className="text-xl font-bold uppercase tracking-tight">Verified Reviews</h3>
+                                <p className="text-muted-foreground text-sm">Only customers with completed purchases can leave reviews. 100% authentic feedback.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            )}
+
             {/* Shop by Category */}
-            <section className="py-12 container px-4 mx-auto">
-                <h2 className="text-3xl font-bold mb-8">Shop by Category</h2>
+            <section className="py-16 container px-4 mx-auto">
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+                    <div>
+                        <h2 className="text-3xl font-black uppercase italic tracking-tighter">Explore Marketplace</h2>
+                        <p className="text-muted-foreground mt-2 italic">Find premium vehicles and high-value items from trusted Nigerian dealers.</p>
+                    </div>
+                    {user?.role !== 'dealer' && (
+                        <div className="flex bg-muted p-1 rounded-xl">
+                            <Button size="sm" variant="ghost" className="rounded-lg font-bold">Buy</Button>
+                            <Button size="sm" asChild variant="ghost" className="rounded-lg text-muted-foreground hover:text-primary">
+                                <Link href="/signup?role=dealer">Sell</Link>
+                            </Button>
+                        </div>
+                    )}
+                </div>
+                {/* ... rest of the categories grid remains the same ... */}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     {CATEGORIES.map((category) => (
                         <div key={category.name}>
@@ -329,163 +415,166 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* Vendor Pricing Section */}
-            <section className="py-16 bg-muted/30">
-                <div className="container px-4 mx-auto">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold mb-4">Onboard Your Dealership</h2>
-                        <p className="text-muted-foreground max-w-2xl mx-auto">
-                            Join verified car dealers in Abuja growing their business. Choose the plan that fits your dealership's scale.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                        {/* Starter Plan */}
-                        <Card className="flex flex-col bg-background">
-                            <CardHeader>
-                                <CardTitle className="text-xl">Starter</CardTitle>
-                                <p className="text-sm text-muted-foreground">For new sellers</p>
-                            </CardHeader>
-                            <CardContent className="flex-1">
-                                <div className="mb-4">
-                                    <span className="text-3xl font-bold">Free</span>
-                                </div>
-                                <ul className="space-y-2 text-sm">
-                                    <li className="flex items-center gap-2">
-                                        <ShieldCheck className="h-4 w-4 text-primary" />
-                                        <span>Up to 5 active listings</span>
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <ShieldCheck className="h-4 w-4 text-primary" />
-                                        <span>Basic analytics</span>
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <ShieldCheck className="h-4 w-4 text-primary" />
-                                        <span>5% transaction fee</span>
-                                    </li>
-                                </ul>
-                            </CardContent>
-                            <CardFooter>
-                                <Button className="w-full" variant="outline" asChild>
-                                    <Link href="/signup">Start Selling</Link>
-                                </Button>
-                            </CardFooter>
-                        </Card>
-
-                        {/* Pro Plan */}
-                        <Card className="flex flex-col bg-background border-primary shadow-lg relative transform md:-translate-y-4">
-                            <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">
-                                POPULAR
+            {/* Dealer Plans - Show only to non-dealers */}
+            {user?.role !== 'dealer' && (
+                <>
+                    <section className="py-20 bg-muted/20 border-y border-border/50">
+                        <div className="container px-4 mx-auto">
+                            <div className="text-center max-w-3xl mx-auto mb-16">
+                                <h2 className="text-3xl md:text-4xl font-black italic tracking-tighter uppercase mb-4">Grow Your Business</h2>
+                                <p className="text-muted-foreground text-lg">
+                                    Join hundreds of verified dealers reaching thousands of customers across Nigeria.
+                                </p>
                             </div>
-                            <CardHeader>
-                                <CardTitle className="text-xl">Professional</CardTitle>
-                                <p className="text-sm text-muted-foreground">For growing businesses</p>
-                            </CardHeader>
-                            <CardContent className="flex-1">
-                                <div className="mb-4">
-                                    <span className="text-3xl font-bold">₦5,000</span>
-                                    <span className="text-muted-foreground">/month</span>
-                                </div>
-                                <ul className="space-y-2 text-sm">
-                                    <li className="flex items-center gap-2">
-                                        <ShieldCheck className="h-4 w-4 text-primary" />
-                                        <span>Up to 50 active listings</span>
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <ShieldCheck className="h-4 w-4 text-primary" />
-                                        <span>Verified Dealer Badge</span>
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <ShieldCheck className="h-4 w-4 text-primary" />
-                                        <span>Priority Support</span>
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <ShieldCheck className="h-4 w-4 text-primary" />
-                                        <span>2.5% transaction fee</span>
-                                    </li>
-                                </ul>
-                            </CardContent>
-                            <CardFooter>
-                                <Button className="w-full" asChild>
-                                    <Link href="/signup">Get Pro</Link>
-                                </Button>
-                            </CardFooter>
-                        </Card>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                                {/* Starter Plan */}
+                                <Card className="flex flex-col bg-background">
+                                    <CardHeader>
+                                        <CardTitle className="text-xl">Starter</CardTitle>
+                                        <p className="text-sm text-muted-foreground">For new sellers</p>
+                                    </CardHeader>
+                                    <CardContent className="flex-1">
+                                        <div className="mb-4">
+                                            <span className="text-3xl font-bold">Free</span>
+                                        </div>
+                                        <ul className="space-y-2 text-sm">
+                                            <li className="flex items-center gap-2">
+                                                <ShieldCheck className="h-4 w-4 text-primary" />
+                                                <span>Up to 5 active listings</span>
+                                            </li>
+                                            <li className="flex items-center gap-2">
+                                                <ShieldCheck className="h-4 w-4 text-primary" />
+                                                <span>Basic analytics</span>
+                                            </li>
+                                            <li className="flex items-center gap-2">
+                                                <ShieldCheck className="h-4 w-4 text-primary" />
+                                                <span>5% transaction fee</span>
+                                            </li>
+                                        </ul>
+                                    </CardContent>
+                                    <CardFooter>
+                                        <Button className="w-full" variant="outline" asChild>
+                                            <Link href="/signup">Start Selling</Link>
+                                        </Button>
+                                    </CardFooter>
+                                </Card>
 
-                        {/* Enterprise Plan */}
-                        <Card className="flex flex-col bg-background">
-                            <CardHeader>
-                                <CardTitle className="text-xl">Enterprise</CardTitle>
-                                <p className="text-sm text-muted-foreground">For large dealerships</p>
-                            </CardHeader>
-                            <CardContent className="flex-1">
-                                <div className="mb-4">
-                                    <span className="text-3xl font-bold">₦20,000</span>
-                                    <span className="text-muted-foreground">/month</span>
-                                </div>
-                                <ul className="space-y-2 text-sm">
-                                    <li className="flex items-center gap-2">
-                                        <ShieldCheck className="h-4 w-4 text-primary" />
-                                        <span>Unlimited listings</span>
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <ShieldCheck className="h-4 w-4 text-primary" />
-                                        <span>Dedicated Account Manager</span>
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <ShieldCheck className="h-4 w-4 text-primary" />
-                                        <span>API Access</span>
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <ShieldCheck className="h-4 w-4 text-primary" />
-                                        <span>1% transaction fee</span>
-                                    </li>
-                                </ul>
-                            </CardContent>
-                            <CardFooter>
-                                <Button className="w-full" variant="outline" asChild>
-                                    <Link href="/contact">Contact Sales</Link>
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    </div>
-                </div>
-            </section>
+                                {/* Pro Plan */}
+                                <Card className="flex flex-col bg-background border-primary shadow-lg relative transform md:-translate-y-4">
+                                    <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">
+                                        POPULAR
+                                    </div>
+                                    <CardHeader>
+                                        <CardTitle className="text-xl">Professional</CardTitle>
+                                        <p className="text-sm text-muted-foreground">For growing businesses</p>
+                                    </CardHeader>
+                                    <CardContent className="flex-1">
+                                        <div className="mb-4">
+                                            <span className="text-3xl font-bold">₦5,000</span>
+                                            <span className="text-muted-foreground">/month</span>
+                                        </div>
+                                        <ul className="space-y-2 text-sm">
+                                            <li className="flex items-center gap-2">
+                                                <ShieldCheck className="h-4 w-4 text-primary" />
+                                                <span>Up to 50 active listings</span>
+                                            </li>
+                                            <li className="flex items-center gap-2">
+                                                <ShieldCheck className="h-4 w-4 text-primary" />
+                                                <span>Verified Dealer Badge</span>
+                                            </li>
+                                            <li className="flex items-center gap-2">
+                                                <ShieldCheck className="h-4 w-4 text-primary" />
+                                                <span>Priority Support</span>
+                                            </li>
+                                            <li className="flex items-center gap-2">
+                                                <ShieldCheck className="h-4 w-4 text-primary" />
+                                                <span>2.5% transaction fee</span>
+                                            </li>
+                                        </ul>
+                                    </CardContent>
+                                    <CardFooter>
+                                        <Button className="w-full" asChild>
+                                            <Link href="/signup">Get Pro</Link>
+                                        </Button>
+                                    </CardFooter>
+                                </Card>
 
-            {/* How It Works */}
-            <section className="py-16 bg-muted/30">
-                <div className="container px-4 mx-auto">
-                    <h2 className="text-3xl font-bold text-center mb-4">Why Choose MarketBridge?</h2>
-                    <p className="text-center text-sm text-muted-foreground mb-12">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary font-medium">
-                            BETA VERSION - More features coming soon!
-                        </span>
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                        <div className="flex flex-col items-center p-6 bg-background rounded-xl shadow-sm">
-                            <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
-                                <ShieldCheck className="h-6 w-6" />
+                                {/* Enterprise Plan */}
+                                <Card className="flex flex-col bg-background">
+                                    <CardHeader>
+                                        <CardTitle className="text-xl">Enterprise</CardTitle>
+                                        <p className="text-sm text-muted-foreground">For large dealerships</p>
+                                    </CardHeader>
+                                    <CardContent className="flex-1">
+                                        <div className="mb-4">
+                                            <span className="text-3xl font-bold">₦20,000</span>
+                                            <span className="text-muted-foreground">/month</span>
+                                        </div>
+                                        <ul className="space-y-2 text-sm">
+                                            <li className="flex items-center gap-2">
+                                                <ShieldCheck className="h-4 w-4 text-primary" />
+                                                <span>Unlimited listings</span>
+                                            </li>
+                                            <li className="flex items-center gap-2">
+                                                <ShieldCheck className="h-4 w-4 text-primary" />
+                                                <span>Dedicated Account Manager</span>
+                                            </li>
+                                            <li className="flex items-center gap-2">
+                                                <ShieldCheck className="h-4 w-4 text-primary" />
+                                                <span>API Access</span>
+                                            </li>
+                                            <li className="flex items-center gap-2">
+                                                <ShieldCheck className="h-4 w-4 text-primary" />
+                                                <span>1% transaction fee</span>
+                                            </li>
+                                        </ul>
+                                    </CardContent>
+                                    <CardFooter>
+                                        <Button className="w-full" variant="outline" asChild>
+                                            <Link href="/contact">Contact Sales</Link>
+                                        </Button>
+                                    </CardFooter>
+                                </Card>
                             </div>
-                            <h3 className="text-xl font-bold mb-2">Verified Dealers</h3>
-                            <p className="text-muted-foreground">Every dealer undergoes a strict verification process to ensure your safety.</p>
                         </div>
-                        <div className="flex flex-col items-center p-6 bg-background rounded-xl shadow-sm">
-                            <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
-                                <Truck className="h-6 w-6" />
+                    </section>
+
+                    {/* How It Works */}
+                    <section className="py-16 bg-muted/30">
+                        <div className="container px-4 mx-auto">
+                            <h2 className="text-3xl font-bold text-center mb-4">Why Choose MarketBridge?</h2>
+                            <p className="text-center text-sm text-muted-foreground mb-12">
+                                <span className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary font-medium">
+                                    BETA VERSION - More features coming soon!
+                                </span>
+                            </p>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                                <div className="flex flex-col items-center p-6 bg-background rounded-xl shadow-sm">
+                                    <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
+                                        <ShieldCheck className="h-6 w-6" />
+                                    </div>
+                                    <h3 className="text-xl font-bold mb-2">Verified Dealers</h3>
+                                    <p className="text-muted-foreground">Every dealer undergoes a strict verification process to ensure your safety.</p>
+                                </div>
+                                <div className="flex flex-col items-center p-6 bg-background rounded-xl shadow-sm">
+                                    <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
+                                        <Truck className="h-6 w-6" />
+                                    </div>
+                                    <h3 className="text-xl font-bold mb-2">Secure Delivery</h3>
+                                    <p className="text-muted-foreground">Track your orders and enjoy reliable delivery services across Nigeria.</p>
+                                </div>
+                                <div className="flex flex-col items-center p-6 bg-background rounded-xl shadow-sm">
+                                    <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
+                                        <Star className="h-6 w-6" />
+                                    </div>
+                                    <h3 className="text-xl font-bold mb-2">Quality Assured</h3>
+                                    <p className="text-muted-foreground">Read real reviews from other customers and shop with confidence.</p>
+                                </div>
                             </div>
-                            <h3 className="text-xl font-bold mb-2">Secure Delivery</h3>
-                            <p className="text-muted-foreground">Track your orders and enjoy reliable delivery services across Nigeria.</p>
                         </div>
-                        <div className="flex flex-col items-center p-6 bg-background rounded-xl shadow-sm">
-                            <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
-                                <Star className="h-6 w-6" />
-                            </div>
-                            <h3 className="text-xl font-bold mb-2">Quality Assured</h3>
-                            <p className="text-muted-foreground">Read real reviews from other customers and shop with confidence.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                    </section>
+                </>
+            )}
         </div>
     );
 }
