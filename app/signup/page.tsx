@@ -253,17 +253,31 @@ function SignupContent() {
 
             if (signUpError) {
                 // If user already exists, they might have a "zombie" auth record without a profile
-                if (signUpError.message.includes('User already registered') || signUpError.status === 400) {
+                if (signUpError.message?.includes('User already registered') || signUpError.status === 400) {
                     console.log("User already exists in Auth, attempting to repair/update profile...");
                     // Try to proceed to profile creation/update (upsert will handle it)
-                    const { data: { user: existingUser } } = await supabase.auth.getUser();
-                    if (existingUser) {
-                        authData.user = existingUser as any;
+                    const { data: signInData } = await supabase.auth.signInWithPassword({
+                        email: emailToUse,
+                        password: formData.password
+                    });
+                    if (signInData.user) {
+                        authData.user = signInData.user as any;
                     } else {
                         throw new Error("This email is already registered. Please login instead.");
                     }
-                } else if (signUpError.message.includes('Database error saving new user')) {
-                    throw new Error("Critical: Database sync issue. Please ensure the 'FORCE SYNC' migration has been run in the Supabase SQL Editor.");
+                } else if (signUpError.message?.includes('Database error saving new user')) {
+                    console.warn("Trigger failed, but account might exist. Attempting background recovery...");
+                    // Attempt to sign in to see if the account was created despite the trigger error
+                    const { data: signInData } = await supabase.auth.signInWithPassword({
+                        email: emailToUse,
+                        password: formData.password
+                    });
+
+                    if (signInData.user) {
+                        authData.user = signInData.user as any;
+                    } else {
+                        throw new Error("Critical: Database is struggling to sync your profile. Please ensure the 'SUPER FIX' SQL has been run, or try a different email.");
+                    }
                 } else {
                     throw signUpError;
                 }
