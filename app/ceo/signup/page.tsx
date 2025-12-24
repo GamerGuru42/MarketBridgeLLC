@@ -110,6 +110,10 @@ export default function CEOSignupPage() {
 
                 // IMPORTANT: Refresh user profile so the app knows we are logged in
                 await refreshUser();
+
+                // Critical: Wait for AuthContext to fully update before navigation
+                await new Promise(resolve => setTimeout(resolve, 500));
+
                 router.push('/ceo');
             }
         } catch (err: any) {
