@@ -80,7 +80,8 @@ export default function ListingDetailPage() {
                         is_verified,
                         photo_url,
                         store_type,
-                        phone_number
+                        phone_number,
+                        subscription_plan
                     )
                 `)
                 .eq('id', params.id)
@@ -223,10 +224,20 @@ export default function ListingDetailPage() {
             listing.price,
             user.email,
             user.displayName,
-            '08000000000', // Default phone if not available
+            '08000000000',
             async (response: any) => {
                 console.log('Payment success:', response);
                 try {
+                    // Calculate Commission
+                    let commissionRate = 0.05; // Default Starter 5%
+                    const plan = (listing.dealer as any).subscription_plan; // Type assertion as interface update is implied
+
+                    if (plan === 'enterprise') commissionRate = 0.01;
+                    else if (plan === 'professional') commissionRate = 0.025;
+
+                    const platformFee = listing.price * commissionRate;
+                    const netAmount = listing.price - platformFee;
+
                     const { error } = await supabase
                         .from('orders')
                         .insert({
@@ -234,12 +245,13 @@ export default function ListingDetailPage() {
                             seller_id: listing.dealer.id,
                             listing_id: listing.id,
                             amount: listing.price,
+                            platform_fee: platformFee,
+                            net_amount: netAmount,
                             status: 'paid',
                             transaction_ref: response.tx_ref,
                             payment_provider: 'flutterwave'
                         });
-
-                    if (error) throw error;
+                    // ...                   if (error) throw error;
 
                     alert('Secure payment successful! Order placed.');
                     router.push('/orders');

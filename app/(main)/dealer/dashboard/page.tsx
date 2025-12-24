@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
     Package,
     ShoppingBag,
@@ -67,6 +69,11 @@ export default function DealerDashboardPage() {
     });
     const [loading, setLoading] = useState(true);
     const [updatingOrder, setUpdatingOrder] = useState<string | null>(null);
+    const [bankDetails, setBankDetails] = useState({
+        bankName: '',
+        accountNumber: '',
+        accountName: ''
+    });
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -81,9 +88,49 @@ export default function DealerDashboardPage() {
 
         if (user) {
             fetchOrders();
+            fetchBankDetails();
             subscribeToOrders();
         }
     }, [user, authLoading]);
+
+    const fetchBankDetails = async () => {
+        if (!user) return;
+        const { data, error } = await supabase
+            .from('users')
+            .select('bank_name, account_number, account_name')
+            .eq('id', user.id)
+            .single();
+
+        if (data) {
+            setBankDetails({
+                bankName: data.bank_name || '',
+                accountNumber: data.account_number || '',
+                accountName: data.account_name || ''
+            });
+        }
+    };
+
+    const updateBankDetails = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const { error } = await supabase
+                .from('users')
+                .update({
+                    bank_name: bankDetails.bankName,
+                    account_number: bankDetails.accountNumber,
+                    account_name: bankDetails.accountName
+                })
+                .eq('id', user!.id);
+
+            if (error) throw error;
+            alert('Bank details updated successfully');
+        } catch (err: any) {
+            alert('Failed to update bank details');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const fetchOrders = async () => {
         if (!user) return;
@@ -293,69 +340,116 @@ export default function DealerDashboardPage() {
                 </Button>
             </div>
 
-            {/* Orders Tabs */}
+            {/* Main Tabs */}
             <Card>
                 <CardHeader>
-                    <CardTitle>Orders</CardTitle>
+                    <CardTitle>Management</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <Tabs defaultValue="all">
-                        <TabsList className="grid w-full grid-cols-4">
-                            <TabsTrigger value="all">All</TabsTrigger>
-                            <TabsTrigger value="pending">Pending</TabsTrigger>
-                            <TabsTrigger value="confirmed">Shipped</TabsTrigger>
-                            <TabsTrigger value="completed">Completed</TabsTrigger>
+                    <Tabs defaultValue="orders">
+                        <TabsList className="grid w-full grid-cols-2 lg:w-[400px] mb-6">
+                            <TabsTrigger value="orders">Orders</TabsTrigger>
+                            <TabsTrigger value="settings">Settings</TabsTrigger>
                         </TabsList>
-                        <TabsContent value="all" className="space-y-4 mt-4">
-                            {orders.length === 0 ? (
-                                <div className="text-center py-12">
-                                    <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                                    <p className="text-muted-foreground">No orders yet</p>
-                                </div>
-                            ) : (
-                                orders.map(order => (
-                                    <OrderCard
-                                        key={order.id}
-                                        order={order}
-                                        onUpdateStatus={updateOrderStatus}
-                                        onOpenChat={openChat}
-                                        isUpdating={updatingOrder === order.id}
-                                    />
-                                ))
-                            )}
+
+                        <TabsContent value="orders">
+                            <Tabs defaultValue="all">
+                                <TabsList className="grid w-full grid-cols-4">
+                                    <TabsTrigger value="all">All</TabsTrigger>
+                                    <TabsTrigger value="pending">Pending</TabsTrigger>
+                                    <TabsTrigger value="confirmed">Shipped</TabsTrigger>
+                                    <TabsTrigger value="completed">Completed</TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="all" className="space-y-4 mt-4">
+                                    {orders.length === 0 ? (
+                                        <div className="text-center py-12">
+                                            <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                            <p className="text-muted-foreground">No orders yet</p>
+                                        </div>
+                                    ) : (
+                                        orders.map(order => (
+                                            <OrderCard
+                                                key={order.id}
+                                                order={order}
+                                                onUpdateStatus={updateOrderStatus}
+                                                onOpenChat={openChat}
+                                                isUpdating={updatingOrder === order.id}
+                                            />
+                                        ))
+                                    )}
+                                </TabsContent>
+                                <TabsContent value="pending" className="space-y-4 mt-4">
+                                    {orders.filter(o => o.status === 'pending').map(order => (
+                                        <OrderCard
+                                            key={order.id}
+                                            order={order}
+                                            onUpdateStatus={updateOrderStatus}
+                                            onOpenChat={openChat}
+                                            isUpdating={updatingOrder === order.id}
+                                        />
+                                    ))}
+                                </TabsContent>
+                                <TabsContent value="confirmed" className="space-y-4 mt-4">
+                                    {orders.filter(o => o.status === 'confirmed').map(order => (
+                                        <OrderCard
+                                            key={order.id}
+                                            order={order}
+                                            onUpdateStatus={updateOrderStatus}
+                                            onOpenChat={openChat}
+                                            isUpdating={updatingOrder === order.id}
+                                        />
+                                    ))}
+                                </TabsContent>
+                                <TabsContent value="completed" className="space-y-4 mt-4">
+                                    {orders.filter(o => o.status === 'completed').map(order => (
+                                        <OrderCard
+                                            key={order.id}
+                                            order={order}
+                                            onUpdateStatus={updateOrderStatus}
+                                            onOpenChat={openChat}
+                                            isUpdating={updatingOrder === order.id}
+                                        />
+                                    ))}
+                                </TabsContent>
+                            </Tabs>
                         </TabsContent>
-                        <TabsContent value="pending" className="space-y-4 mt-4">
-                            {orders.filter(o => o.status === 'pending').map(order => (
-                                <OrderCard
-                                    key={order.id}
-                                    order={order}
-                                    onUpdateStatus={updateOrderStatus}
-                                    onOpenChat={openChat}
-                                    isUpdating={updatingOrder === order.id}
-                                />
-                            ))}
-                        </TabsContent>
-                        <TabsContent value="confirmed" className="space-y-4 mt-4">
-                            {orders.filter(o => o.status === 'confirmed').map(order => (
-                                <OrderCard
-                                    key={order.id}
-                                    order={order}
-                                    onUpdateStatus={updateOrderStatus}
-                                    onOpenChat={openChat}
-                                    isUpdating={updatingOrder === order.id}
-                                />
-                            ))}
-                        </TabsContent>
-                        <TabsContent value="completed" className="space-y-4 mt-4">
-                            {orders.filter(o => o.status === 'completed').map(order => (
-                                <OrderCard
-                                    key={order.id}
-                                    order={order}
-                                    onUpdateStatus={updateOrderStatus}
-                                    onOpenChat={openChat}
-                                    isUpdating={updatingOrder === order.id}
-                                />
-                            ))}
+
+                        <TabsContent value="settings">
+                            <div className="max-w-md">
+                                <h3 className="text-lg font-medium mb-4">Bank Payout Details</h3>
+                                <form onSubmit={updateBankDetails} className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label>Bank Name</Label>
+                                        <Input
+                                            value={bankDetails.bankName}
+                                            onChange={e => setBankDetails({ ...bankDetails, bankName: e.target.value })}
+                                            placeholder="e.g. GTBank"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Account Number</Label>
+                                        <Input
+                                            value={bankDetails.accountNumber}
+                                            onChange={e => setBankDetails({ ...bankDetails, accountNumber: e.target.value })}
+                                            placeholder="0123456789"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Account Name</Label>
+                                        <Input
+                                            value={bankDetails.accountName}
+                                            onChange={e => setBankDetails({ ...bankDetails, accountName: e.target.value })}
+                                            placeholder="Account Holder Name"
+                                            required
+                                        />
+                                    </div>
+                                    <Button type="submit" disabled={loading}>
+                                        {loading ? 'Saving...' : 'Save Bank Details'}
+                                    </Button>
+                                </form>
+                            </div>
                         </TabsContent>
                     </Tabs>
                 </CardContent>
