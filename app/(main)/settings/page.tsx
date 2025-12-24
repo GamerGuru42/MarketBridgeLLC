@@ -45,17 +45,24 @@ export default function SettingsPage() {
         setUpdating(true);
         setSuccessMessage('');
         try {
+            // Prepare update data
+            const updateData: any = {
+                display_name: formData.displayName,
+                location: formData.location,
+                photo_url: formData.photoURL,
+                phone_number: formData.phone_number,
+                updated_at: new Date().toISOString()
+            };
+
+            // Only add business fields for dealers to avoid DB constraint issues
+            if (user.role === 'dealer') {
+                updateData.business_name = formData.businessName;
+                updateData.store_type = formData.storeType;
+            }
+
             const { error } = await supabase
                 .from('users')
-                .update({
-                    display_name: formData.displayName,
-                    location: formData.location,
-                    photo_url: formData.photoURL,
-                    phone_number: formData.phone_number,
-                    business_name: formData.businessName,
-                    store_type: formData.storeType,
-                    updated_at: new Date().toISOString()
-                })
+                .update(updateData)
                 .eq('id', user.id);
 
             if (error) throw error;
