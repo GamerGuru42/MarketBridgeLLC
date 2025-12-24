@@ -12,7 +12,7 @@ const ceoItems = [
 ];
 
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
 export default function CEOLayout({
@@ -22,12 +22,21 @@ export default function CEOLayout({
 }) {
     const { user, loading } = useAuth();
     const router = useRouter();
+    const pathname = usePathname();
+
+    const isAuthPage = pathname?.includes('/login') || pathname?.includes('/signup');
 
     React.useEffect(() => {
+        if (isAuthPage) return; // Skip check for auth pages
+
         if (!loading && (!user || !['ceo', 'cofounder'].includes(user.role))) {
             router.push('/ceo/login');
         }
-    }, [user, loading, router]);
+    }, [user, loading, router, pathname, isAuthPage]);
+
+    if (isAuthPage) {
+        return <>{children}</>;
+    }
 
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-black"><Loader2 className="h-8 w-8 animate-spin text-[#d4af37]" /></div>;
     if (!user) return null;

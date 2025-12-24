@@ -26,7 +26,7 @@ const adminItems = [
 import { Server, Activity, Zap } from 'lucide-react';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
 export default function AdminLayout({
@@ -36,12 +36,19 @@ export default function AdminLayout({
 }) {
     const { user, loading } = useAuth();
     const router = useRouter();
+    const pathname = usePathname();
+
+    const isAuthPage = pathname?.includes('/login') || pathname?.includes('/signup');
 
     React.useEffect(() => {
+        if (isAuthPage) return;
+
         if (!loading && (!user || !['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'cto', 'coo', 'ceo', 'cofounder'].includes(user.role))) {
             router.push('/admin/login');
         }
-    }, [user, loading, router]);
+    }, [user, loading, router, pathname, isAuthPage]);
+
+    if (isAuthPage) return <>{children}</>;
 
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-950"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
     if (!user) return null;
