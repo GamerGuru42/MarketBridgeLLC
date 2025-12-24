@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/sheet';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
-import { ShoppingCart, Menu, User, LogOut, LayoutDashboard, Package, Home, ListIcon, Users, DollarSign, Info, Phone, MessageCircle } from 'lucide-react';
+import { ShoppingCart, Menu, User, LogOut, LayoutDashboard, Package, Home, ListIcon, Users, DollarSign, Info, Phone, MessageCircle, Settings, Heart, Shield, CreditCard, HelpCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export const Header = () => {
@@ -118,122 +118,90 @@ export const Header = () => {
                                                 <span className="hidden xl:inline">{user?.displayName || 'Account'}</span>
                                             </Button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end" className="w-56">
-                                            <DropdownMenuLabel>
-                                                <div className="flex flex-col space-y-1">
+                                        <DropdownMenuContent align="end" className="w-64 p-2">
+                                            <DropdownMenuLabel className="font-normal">
+                                                <div className="flex flex-col space-y-1 py-1 px-1">
                                                     <p className="text-sm font-medium leading-none">{user?.displayName}</p>
                                                     <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
                                                 </div>
                                             </DropdownMenuLabel>
                                             <DropdownMenuSeparator />
+
+                                            <div className="py-1">
+                                                <DropdownMenuItem asChild>
+                                                    <Link href="/settings" className="cursor-pointer flex items-center py-2">
+                                                        <Settings className="mr-3 h-4 w-4 text-muted-foreground" />
+                                                        <span>Profile Settings</span>
+                                                    </Link>
+                                                </DropdownMenuItem>
+
+                                                <DropdownMenuItem asChild>
+                                                    <Link href="/wishlist" className="cursor-pointer flex items-center py-2">
+                                                        <Heart className="mr-3 h-4 w-4 text-muted-foreground" />
+                                                        <span>My Wishlist</span>
+                                                    </Link>
+                                                </DropdownMenuItem>
+
+                                                <DropdownMenuItem asChild>
+                                                    <Link href="/orders" className="cursor-pointer flex items-center py-2">
+                                                        <Package className="mr-3 h-4 w-4 text-muted-foreground" />
+                                                        <span>Order History</span>
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                            </div>
+
+                                            <DropdownMenuSeparator />
+
+                                            {/* Business / Role Specific */}
                                             {user?.role === 'dealer' && (
-                                                <>
+                                                <div className="py-1">
+                                                    <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground px-2 py-1.5 uppercase tracking-wider">
+                                                        Business
+                                                    </DropdownMenuLabel>
                                                     <DropdownMenuItem asChild>
-                                                        <Link href="/dealer/dashboard" className="cursor-pointer">
-                                                            <LayoutDashboard className="mr-2 h-4 w-4" />
-                                                            Dashboard
+                                                        <Link href="/dealer/dashboard" className="cursor-pointer flex items-center py-2">
+                                                            <LayoutDashboard className="mr-3 h-4 w-4 text-primary" />
+                                                            <span className="font-medium">Dealer Dashboard</span>
                                                         </Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem asChild>
-                                                        <Link href="/dealer/listings" className="cursor-pointer">
-                                                            <Package className="mr-2 h-4 w-4" />
-                                                            My Listings
+                                                        <Link href="/dealer/listings" className="cursor-pointer flex items-center py-2">
+                                                            <ListIcon className="mr-3 h-4 w-4 text-muted-foreground" />
+                                                            <span>Manage Listings</span>
                                                         </Link>
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuSeparator />
-                                                </>
+                                                </div>
                                             )}
-                                            {['technical_admin', 'operations_admin', 'marketing_admin'].includes(user?.role || '') && (
-                                                <>
+
+                                            {['ceo', 'cto', 'coo', 'cofounder', 'technical_admin', 'operations_admin', 'marketing_admin'].includes(user?.role || '') && (
+                                                <div className="py-1">
+                                                    <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground px-2 py-1.5 uppercase tracking-wider">
+                                                        Administration
+                                                    </DropdownMenuLabel>
                                                     <DropdownMenuItem asChild>
-                                                        <Link href="/admin" className="cursor-pointer font-bold text-primary">
-                                                            <LayoutDashboard className="mr-2 h-4 w-4" />
+                                                        <Link href="/admin" className="cursor-pointer flex items-center py-2 font-bold text-primary">
+                                                            <Shield className="mr-3 h-4 w-4" />
                                                             Admin Portal
                                                         </Link>
                                                     </DropdownMenuItem>
-                                                    {user?.role === 'technical_admin' && (
-                                                        <DropdownMenuItem asChild>
-                                                            <Link href="/admin/technical" className="cursor-pointer pl-6 italic text-xs">
-                                                                Technical Command
-                                                            </Link>
-                                                        </DropdownMenuItem>
-                                                    )}
-                                                    {user?.role === 'operations_admin' && (
-                                                        <DropdownMenuItem asChild>
-                                                            <Link href="/admin/operations" className="cursor-pointer pl-6 italic text-xs">
-                                                                Operations Hub
-                                                            </Link>
-                                                        </DropdownMenuItem>
-                                                    )}
-                                                    {user?.role === 'marketing_admin' && (
-                                                        <DropdownMenuItem asChild>
-                                                            <Link href="/admin/marketing" className="cursor-pointer pl-6 italic text-xs">
-                                                                Growth Dashboard
-                                                            </Link>
-                                                        </DropdownMenuItem>
-                                                    )}
-                                                    <DropdownMenuSeparator />
-                                                </>
+                                                </div>
                                             )}
-                                            {user?.role === 'ceo' && (
-                                                <>
-                                                    <DropdownMenuItem asChild>
-                                                        <Link href="/ceo" className="cursor-pointer">
-                                                            <LayoutDashboard className="mr-2 h-4 w-4" />
-                                                            CEO Dashboard
-                                                        </Link>
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuSeparator />
-                                                </>
-                                            )}
-                                            {user?.role === 'cto' && (
-                                                <>
-                                                    <DropdownMenuItem asChild>
-                                                        <Link href="/cto" className="cursor-pointer">
-                                                            <LayoutDashboard className="mr-2 h-4 w-4" />
-                                                            CTO Hub
-                                                        </Link>
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuSeparator />
-                                                </>
-                                            )}
-                                            {user?.role === 'coo' && (
-                                                <>
-                                                    <DropdownMenuItem asChild>
-                                                        <Link href="/coo" className="cursor-pointer">
-                                                            <LayoutDashboard className="mr-2 h-4 w-4" />
-                                                            Operations Command
-                                                        </Link>
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuSeparator />
-                                                </>
-                                            )}
-                                            {user?.role === 'cofounder' && (
-                                                <>
-                                                    <DropdownMenuItem asChild>
-                                                        <Link href="/cofounder" className="cursor-pointer">
-                                                            <LayoutDashboard className="mr-2 h-4 w-4" />
-                                                            Co-Founder Dashboard
-                                                        </Link>
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuSeparator />
-                                                </>
-                                            )}
-                                            {user?.role === 'customer' && (
-                                                <>
-                                                    <DropdownMenuItem asChild>
-                                                        <Link href="/orders" className="cursor-pointer">
-                                                            <Package className="mr-2 h-4 w-4" />
-                                                            My Orders
-                                                        </Link>
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuSeparator />
-                                                </>
-                                            )}
-                                            <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
-                                                <LogOut className="mr-2 h-4 w-4" />
-                                                Log out
-                                            </DropdownMenuItem>
+
+                                            <DropdownMenuSeparator />
+
+                                            <div className="py-1">
+                                                <DropdownMenuItem asChild>
+                                                    <Link href="/faq" className="cursor-pointer flex items-center py-2">
+                                                        <HelpCircle className="mr-3 h-4 w-4 text-muted-foreground" />
+                                                        <span>Help & Support</span>
+                                                    </Link>
+                                                </DropdownMenuItem>
+
+                                                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer flex items-center py-2 text-destructive focus:bg-destructive/10 focus:text-destructive">
+                                                    <LogOut className="mr-3 h-4 w-4" />
+                                                    <span>Log out</span>
+                                                </DropdownMenuItem>
+                                            </div>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </div>
@@ -249,8 +217,8 @@ export const Header = () => {
                                 <span className="sr-only">Menu</span>
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                            <SheetHeader>
+                        <SheetContent side="right" className="w-[300px] overflow-y-auto">
+                            <SheetHeader className="border-b pb-4">
                                 <SheetTitle>
                                     <div className="flex items-center gap-2">
                                         <Logo showText={false} />
@@ -258,99 +226,124 @@ export const Header = () => {
                                     </div>
                                 </SheetTitle>
                             </SheetHeader>
-                            <div className="flex flex-col gap-4 mt-8">
-                                {/* User Info */}
-                                {user && (
-                                    <div className="flex items-center gap-3 p-4 bg-muted rounded-lg">
-                                        {user?.photoURL ? (
-                                            <Image src={user.photoURL} alt={user.displayName || 'User'} width={40} height={40} className="h-10 w-10 rounded-full" />
-                                        ) : (
-                                            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                                <User className="h-5 w-5 text-primary" />
+                            <div className="flex flex-col gap-6 py-6">
+                                {/* User Profile Section */}
+                                {user ? (
+                                    <div className="flex flex-col gap-4 px-2">
+                                        <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-xl border border-border/50">
+                                            {user?.photoURL ? (
+                                                <div className="relative h-12 w-12 rounded-full overflow-hidden border-2 border-primary/20">
+                                                    <Image src={user.photoURL} alt={user.displayName || 'User'} fill className="object-cover" />
+                                                </div>
+                                            ) : (
+                                                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20">
+                                                    <User className="h-6 w-6 text-primary" />
+                                                </div>
+                                            )}
+                                            <div className="flex flex-col">
+                                                <p className="text-sm font-bold truncate max-w-[180px]">{user?.displayName}</p>
+                                                <p className="text-xs text-muted-foreground truncate max-w-[180px]">{user?.email}</p>
                                             </div>
-                                        )}
-                                        <div className="flex flex-col">
-                                            <p className="text-sm font-medium">{user?.displayName}</p>
-                                            <p className="text-xs text-muted-foreground">{user?.email}</p>
                                         </div>
+
+                                        {/* Personal Quick Links */}
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <Link href="/settings" onClick={closeMobileMenu} className="flex flex-col items-center justify-center gap-2 p-3 bg-card border rounded-lg hover:bg-muted transition-colors">
+                                                <Settings className="h-5 w-5 text-muted-foreground" />
+                                                <span className="text-[10px] font-medium uppercase tracking-tighter">Settings</span>
+                                            </Link>
+                                            <Link href="/wishlist" onClick={closeMobileMenu} className="flex flex-col items-center justify-center gap-2 p-3 bg-card border rounded-lg hover:bg-muted transition-colors">
+                                                <Heart className="h-5 w-5 text-muted-foreground" />
+                                                <span className="text-[10px] font-medium uppercase tracking-tighter">Wishlist</span>
+                                            </Link>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col gap-2 px-2">
+                                        <Button asChild className="w-full h-12 text-base shadow-lg shadow-primary/20">
+                                            <Link href="/signup" onClick={closeMobileMenu}>Create Account</Link>
+                                        </Button>
+                                        <Button variant="outline" asChild className="w-full h-12 text-base">
+                                            <Link href="/login" onClick={closeMobileMenu}>Sign In</Link>
+                                        </Button>
                                     </div>
                                 )}
 
-                                {/* Navigation Links */}
-                                <nav className="flex flex-col gap-2">
-                                    <Link href="/" onClick={closeMobileMenu} className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors">
-                                        <Home className="h-5 w-5" />
-                                        <span className="font-medium">Home</span>
-                                    </Link>
-                                    <Link href="/listings" onClick={closeMobileMenu} className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors">
-                                        <ListIcon className="h-5 w-5" />
-                                        <span className="font-medium">Listings</span>
-                                    </Link>
-                                    {user && (
-                                        <Link href="/chats" onClick={closeMobileMenu} className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors">
-                                            <MessageCircle className="h-5 w-5" />
-                                            <span className="font-medium">Messages</span>
+                                {/* Main Navigation */}
+                                <div className="space-y-1">
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] px-4 mb-2">Marketplace</p>
+                                    <nav className="flex flex-col">
+                                        <Link href="/" onClick={closeMobileMenu} className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-muted transition-colors">
+                                            <Home className="h-5 w-5 text-primary" />
+                                            <span className="font-semibold">Home</span>
                                         </Link>
-                                    )}
-                                    <Link href="/dealers" onClick={closeMobileMenu} className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors">
-                                        <Users className="h-5 w-5" />
-                                        <span className="font-medium">Find Dealers</span>
-                                    </Link>
-                                    <Link href="/pricing" onClick={closeMobileMenu} className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors">
-                                        <DollarSign className="h-5 w-5" />
-                                        <span className="font-medium">Pricing</span>
-                                    </Link>
-                                    <Link href="/about" onClick={closeMobileMenu} className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors">
-                                        <Info className="h-5 w-5" />
-                                        <span className="font-medium">About</span>
-                                    </Link>
-                                    <Link href="/contact" onClick={closeMobileMenu} className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors">
-                                        <Phone className="h-5 w-5" />
-                                        <span className="font-medium">Contact</span>
-                                    </Link>
-                                </nav>
+                                        <Link href="/listings" onClick={closeMobileMenu} className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-muted transition-colors">
+                                            <ListIcon className="h-5 w-5" />
+                                            <span>All Listings</span>
+                                        </Link>
+                                        <Link href="/dealers" onClick={closeMobileMenu} className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-muted transition-colors">
+                                            <Users className="h-5 w-5" />
+                                            <span>Find Dealers</span>
+                                        </Link>
+                                    </nav>
+                                </div>
 
-                                {/* User-specific Links */}
+                                {/* Account / Business Links */}
                                 {user && (
-                                    <>
-                                        <div className="border-t pt-4">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] px-4 mb-2">Activities</p>
+                                        <nav className="flex flex-col">
+                                            <Link href="/orders" onClick={closeMobileMenu} className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-muted transition-colors">
+                                                <Package className="h-5 w-5" />
+                                                <span>Order History</span>
+                                            </Link>
+                                            <Link href="/chats" onClick={closeMobileMenu} className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-muted transition-colors">
+                                                <MessageCircle className="h-5 w-5" />
+                                                <span>Messages</span>
+                                            </Link>
+
                                             {user?.role === 'dealer' && (
                                                 <>
-                                                    <Link href="/dealer/dashboard" onClick={closeMobileMenu} className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors">
+                                                    <DropdownMenuSeparator className="my-2" />
+                                                    <p className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] px-4 mb-2">Business</p>
+                                                    <Link href="/dealer/dashboard" onClick={closeMobileMenu} className="flex items-center gap-4 px-4 py-3 rounded-lg bg-primary/5 hover:bg-primary/10 text-primary transition-colors">
                                                         <LayoutDashboard className="h-5 w-5" />
-                                                        <span className="font-medium">Dashboard</span>
+                                                        <span className="font-bold">Dealer Dashboard</span>
                                                     </Link>
-                                                    <Link href="/dealer/listings" onClick={closeMobileMenu} className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors">
+                                                    <Link href="/dealer/listings" onClick={closeMobileMenu} className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-muted transition-colors">
                                                         <Package className="h-5 w-5" />
-                                                        <span className="font-medium">My Listings</span>
+                                                        <span>Manage Listings</span>
                                                     </Link>
                                                 </>
                                             )}
-                                            {user?.role === 'customer' && (
-                                                <Link href="/orders" onClick={closeMobileMenu} className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors">
-                                                    <Package className="h-5 w-5" />
-                                                    <span className="font-medium">My Orders</span>
+
+                                            {['ceo', 'cto', 'coo', 'cofounder', 'technical_admin', 'operations_admin', 'marketing_admin'].includes(user?.role || '') && (
+                                                <Link href="/admin" onClick={closeMobileMenu} className="flex items-center gap-4 px-4 py-3 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-500 transition-colors mt-2">
+                                                    <Shield className="h-5 w-5" />
+                                                    <span className="font-bold">Admin Portal</span>
                                                 </Link>
                                             )}
-                                        </div>
-                                        <Button onClick={() => { handleSignOut(); closeMobileMenu(); }} variant="destructive" className="w-full mt-4">
-                                            <LogOut className="mr-2 h-4 w-4" />
-                                            Log out
-                                        </Button>
-                                    </>
-                                )}
-
-                                {/* Auth Buttons for non-logged in users */}
-                                {!user && (
-                                    <div className="flex flex-col gap-2 mt-4">
-                                        <Button asChild className="w-full">
-                                            <Link href="/signup" onClick={closeMobileMenu}>Sign Up</Link>
-                                        </Button>
-                                        <Button variant="outline" asChild className="w-full">
-                                            <Link href="/login" onClick={closeMobileMenu}>Login</Link>
-                                        </Button>
+                                        </nav>
                                     </div>
                                 )}
+
+                                {/* Support & Other */}
+                                <div className="space-y-1 mt-auto pt-4 border-t px-2">
+                                    <Link href="/faq" onClick={closeMobileMenu} className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-muted transition-colors text-sm text-muted-foreground">
+                                        <HelpCircle className="h-4 w-4" />
+                                        <span>Help & Support</span>
+                                    </Link>
+                                    {user && (
+                                        <Button
+                                            onClick={() => { handleSignOut(); closeMobileMenu(); }}
+                                            variant="ghost"
+                                            className="w-full justify-start gap-4 px-4 py-6 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                        >
+                                            <LogOut className="h-5 w-5" />
+                                            <span className="font-bold">Log out</span>
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
                         </SheetContent>
                     </Sheet>
