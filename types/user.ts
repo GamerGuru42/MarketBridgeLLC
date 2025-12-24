@@ -13,6 +13,7 @@ export interface User {
     isVerified?: boolean;
     storeType?: string;
     businessName?: string;
+    cacNumber?: string;
     wishlist?: string[];
     subscriptionPlan?: SubscriptionPlan;
     subscriptionStatus?: SubscriptionStatus;

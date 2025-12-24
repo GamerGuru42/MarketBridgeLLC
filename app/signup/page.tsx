@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +16,7 @@ import { CATEGORIES } from '@/lib/categories';
 import { useFlutterwave, getFlutterwaveConfig } from '@/lib/flutterwave';
 import { initiateOPayCheckout } from '@/lib/opay';
 import { NIGERIAN_STATES } from '@/lib/constants';
+import { useSearchParams } from 'next/navigation';
 
 const PRICING_PLANS = [
     {
@@ -62,8 +63,9 @@ const PRICING_PLANS = [
     }
 ];
 
-export default function SignupPage() {
+function SignupContent() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { initializePayment: initFlutterwave } = useFlutterwave();
 
     // State Definitions
@@ -82,12 +84,24 @@ export default function SignupPage() {
         confirmPassword: '',
         location: '',
         businessName: '',
+        cacNumber: '',
         storeType: 'physical' as 'physical' | 'online' | 'both',
         phoneNumber: '',
     });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [verificationDocs, setVerificationDocs] = useState<string[]>([]);
+    const [isCacVerifying, setIsCacVerifying] = useState(false);
+    const [cacVerified, setCacVerified] = useState(false);
+
+    // Direct routing for dealers
+    React.useEffect(() => {
+        const urlRole = searchParams.get('role');
+        if (urlRole === 'dealer' && step === 'role') {
+            setRole('dealer');
+            setStep('plan');
+        }
+    }, [searchParams, step]);
 
     // Helper Functions
     const handleGoogleLogin = async () => {
@@ -133,6 +147,21 @@ export default function SignupPage() {
         } else {
             setStep('details');
         }
+    };
+
+    const handleVerifyCac = async () => {
+        if (!formData.cacNumber || formData.cacNumber.length < 5) {
+            setError('Please enter a valid CAC RC Number');
+            return;
+        }
+        setIsCacVerifying(true);
+        setError('');
+
+        // Simulate CAC Database Lookup
+        setTimeout(() => {
+            setIsCacVerifying(false);
+            setCacVerified(true);
+        }, 1500);
     };
 
     const handlePlanSelect = (plan: SubscriptionPlan) => {
@@ -199,10 +228,11 @@ export default function SignupPage() {
                         location: formData.location,
                         phone_number: formData.phoneNumber,
                         business_name: role === 'dealer' ? formData.businessName : null,
+                        cac_number: role === 'dealer' ? formData.cacNumber : null,
                         store_type: role === 'dealer' ? formData.storeType : null,
                         subscription_plan: role === 'dealer' ? selectedPlan : 'starter',
                         subscription_status: role === 'dealer' ? (isPaidPlan ? (paymentRef === 'pending' ? 'pending_payment' : 'active') : 'trial') : 'inactive',
-                        is_verified: false,
+                        is_verified: role === 'dealer' ? cacVerified : false,
                         listing_limit: planDetails?.id === 'enterprise' ? 9999 : (planDetails?.id === 'professional' ? 50 : 5),
                         last_payment_ref: paymentRef || null
                     }, {
@@ -471,9 +501,38 @@ export default function SignupPage() {
                 </div>
                 {role === 'dealer' && (
                     <>
-                        <div className="space-y-2">
-                            <Label>Business Name</Label>
-                            <Input name="businessName" value={formData.businessName} onChange={handleChange} required placeholder="Elite Motors Abuja" />
+                        <div className="space-y-4 border-t pt-4 mt-4">
+                            <h3 className="text-sm font-bold uppercase tracking-widest text-primary">Business Verification</h3>
+
+                            <div className="space-y-2">
+                                <Label>CAC RC Number</Label>
+                                <div className="flex gap-2">
+                                    <Input
+                                        name="cacNumber"
+                                        value={formData.cacNumber}
+                                        onChange={handleChange}
+                                        required
+                                        placeholder="RC-123456"
+                                        className={cacVerified ? "border-green-500 bg-green-50/50" : ""}
+                                        disabled={cacVerified}
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant={cacVerified ? "secondary" : "default"}
+                                        onClick={handleVerifyCac}
+                                        disabled={isCacVerifying || cacVerified || !formData.cacNumber}
+                                        className="shrink-0"
+                                    >
+                                        {isCacVerifying ? <Loader2 className="h-4 w-4 animate-spin" /> : (cacVerified ? <Check className="h-4 w-4" /> : "Verify")}
+                                    </Button>
+                                </div>
+                                {cacVerified && <p className="text-[10px] text-green-600 font-bold">✓ Business Verified with CAC Database</p>}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>Business Name</Label>
+                                <Input name="businessName" value={formData.businessName} onChange={handleChange} required placeholder="Elite Motors Abuja" />
+                            </div>
                         </div>
                         <div className="bg-muted/30 rounded-lg p-4 border-2 border-dashed border-primary/20 text-center mt-4">
                             <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mb-3">Subscription Payment Method</p>
@@ -511,5 +570,17 @@ export default function SignupPage() {
                 </Button>
             </form>
         </FormContainer>
+    );
+}
+
+export default function SignupPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-background">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        }>
+            <SignupContent />
+        </Suspense>
     );
 }

@@ -454,7 +454,7 @@ export default function HomePage() {
                                     </CardContent>
                                     <CardFooter>
                                         <Button className="w-full" variant="outline" asChild>
-                                            <Link href="/signup">Start Selling</Link>
+                                            <Link href="/signup?role=dealer">Start Selling</Link>
                                         </Button>
                                     </CardFooter>
                                 </Card>
@@ -494,7 +494,7 @@ export default function HomePage() {
                                     </CardContent>
                                     <CardFooter>
                                         <Button className="w-full" asChild>
-                                            <Link href="/signup">Get Pro</Link>
+                                            <Link href="/signup?role=dealer">Get Pro</Link>
                                         </Button>
                                     </CardFooter>
                                 </Card>
