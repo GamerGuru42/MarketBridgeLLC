@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { Loader2, Check, ArrowLeft, ShieldCheck, Mail, Phone, User as UserIcon, CreditCard, Globe, ShoppingCart } from 'lucide-react';
+import { Loader2, Check, ArrowLeft, ShieldCheck, Mail, Phone, User as UserIcon, CreditCard, Globe, ShoppingCart, Eye, EyeOff } from 'lucide-react';
 import { SubscriptionPlan } from '@/types/user';
 import { CATEGORIES } from '@/lib/categories';
 import { useFlutterwave, getFlutterwaveConfig } from '@/lib/flutterwave';
@@ -90,6 +90,7 @@ function SignupContent() {
     const [showAccessCodeInput, setShowAccessCodeInput] = useState(false);
     const [accessCode, setAccessCode] = useState('');
     const [targetRole, setTargetRole] = useState<'admin' | 'ceo' | null>(null);
+    const [showPassword, setShowPassword] = useState(false);
 
     const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan>('starter');
     const [paymentProvider, setPaymentProvider] = useState<'card' | 'transfer' | 'opay'>('card');
@@ -522,14 +523,36 @@ function SignupContent() {
                         <Input name="email" type="email" value={formData.email} onChange={handleChange} required placeholder="john@example.com" />
                     </div>
                 )}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label>Password</Label>
-                        <Input name="password" type="password" value={formData.password} onChange={handleChange} required />
+                        <div className="relative">
+                            <Input
+                                name="password"
+                                type={showPassword ? 'text' : 'password'}
+                                value={formData.password}
+                                onChange={handleChange}
+                                required
+                                className="pr-12"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </button>
+                        </div>
                     </div>
                     <div className="space-y-2">
-                        <Label>Confirm</Label>
-                        <Input name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} required />
+                        <Label>Confirm Password</Label>
+                        <Input
+                            name="confirmPassword"
+                            type={showPassword ? 'text' : 'password'}
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            required
+                        />
                     </div>
                 </div>
                 <div className="space-y-2">

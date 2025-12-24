@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { Loader2, ShieldCheck, Lock, Mail, ChevronRight, AlertCircle } from 'lucide-react';
+import { Loader2, ShieldCheck, Lock, Mail, ChevronRight, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 export default function AdminLoginPage() {
     const router = useRouter();
@@ -16,6 +16,7 @@ export default function AdminLoginPage() {
         email: '',
         password: ''
     });
+    const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -115,13 +116,20 @@ export default function AdminLoginPage() {
                                 <Input
                                     id="password"
                                     name="password"
-                                    type="password"
-                                    className="bg-slate-950 border-slate-800 pl-10 h-12 text-sm focus:ring-1 focus:ring-primary ring-offset-slate-900"
+                                    type={showPassword ? 'text' : 'password'}
+                                    className="bg-slate-950 border-slate-800 pl-10 pr-12 h-12 text-sm focus:ring-1 focus:ring-primary ring-offset-slate-900"
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
                                     placeholder="••••••••••••"
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 hover:text-primary transition-colors"
+                                >
+                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </button>
                             </div>
                         </div>
 
