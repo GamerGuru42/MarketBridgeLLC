@@ -7,6 +7,7 @@ export interface User {
     email: string;
     displayName: string;
     role: 'customer' | 'dealer' | 'admin' | 'ceo' | 'cofounder' | 'cto' | 'coo' | 'technical_admin' | 'operations_admin' | 'marketing_admin';
+    phone_number?: string;
     photoURL?: string;
     location?: string;
     isVerified?: boolean;

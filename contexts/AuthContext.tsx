@@ -67,6 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     ...data,
                     _id: data.id, // Map id to _id for backwards compatibility
                     displayName: data.display_name,
+                    phone_number: data.phone_number,
                     photoURL: data.photo_url,
                     isVerified: data.is_verified,
                     storeType: data.store_type,

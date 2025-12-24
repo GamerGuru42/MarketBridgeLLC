@@ -29,8 +29,19 @@ export default function LoginPage() {
         setError('');
 
         try {
+            let emailToUse = formData.email;
+
+            // simple check: if no '@', assume it's a phone number
+            if (!emailToUse.includes('@')) {
+                const cleanPhone = emailToUse.replace(/\D/g, '');
+                if (cleanPhone.length < 5) { // Basic length check
+                    throw new Error("Invalid phone number format");
+                }
+                emailToUse = `phone-${cleanPhone}@marketbridge.local`;
+            }
+
             const { data, error: signInError } = await supabase.auth.signInWithPassword({
-                email: formData.email,
+                email: emailToUse,
                 password: formData.password,
             });
 
@@ -187,15 +198,15 @@ export default function LoginPage() {
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="email">Email or Phone Number</Label>
                             <Input
                                 id="email"
                                 name="email"
-                                type="email"
+                                type="text"
                                 value={formData.email}
                                 onChange={handleChange}
                                 required
-                                placeholder="your.email@example.com"
+                                placeholder="Email or Phone Number"
                             />
                         </div>
                         <div className="space-y-2">
@@ -211,7 +222,7 @@ export default function LoginPage() {
                             />
                         </div>
                         <Button type="submit" className="w-full" disabled={isLoading}>
-                            {isLoading ? 'Logging in...' : 'Log in'}
+                            {isLoading ? 'Processing...' : 'Log in'}
                         </Button>
                     </form>
 

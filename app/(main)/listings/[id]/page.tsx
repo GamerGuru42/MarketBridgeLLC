@@ -8,11 +8,12 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
-import { Loader2, MapPin, Globe, MessageCircle, ShoppingCart, Package, ArrowLeft, ShieldCheck, Phone, Play } from 'lucide-react';
+import { Loader2, MapPin, Globe, MessageCircle, ShoppingCart, Package, ArrowLeft, ShieldCheck, Phone, Play, CreditCard } from 'lucide-react';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { ReviewsSection } from '@/components/ReviewsSection';
 import { useFlutterwave, getFlutterwaveConfig } from '@/lib/flutterwave';
+import { initiateOPayCheckout } from '@/lib/opay';
 
 interface Listing {
     id: string;
@@ -31,9 +32,9 @@ interface Listing {
         photo_url?: string;
         store_type?: string;
         phone_number?: string;
+        subscription_plan?: string;
     };
     created_at: string;
-    // Car-specific fields
     make?: string;
     model?: string;
     year?: number;
@@ -53,12 +54,13 @@ export default function ListingDetailPage() {
     const params = useParams();
     const router = useRouter();
     const { user } = useAuth();
-    const { initializePayment } = useFlutterwave();
+    const { initializePayment: initFlutterwave } = useFlutterwave();
     const [listing, setListing] = useState<Listing | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [actionLoading, setActionLoading] = useState(false);
     const [selectedImage, setSelectedImage] = useState(0);
+    const [paymentProvider, setPaymentProvider] = useState<'card' | 'transfer' | 'opay'>('card');
 
     useEffect(() => {
         if (params.id) {
@@ -107,7 +109,6 @@ export default function ListingDetailPage() {
 
         setActionLoading(true);
         try {
-            // Check if chat already exists
             const { data: existingChats } = await supabase
                 .from('chats')
                 .select('id')
@@ -116,10 +117,8 @@ export default function ListingDetailPage() {
                 .limit(1);
 
             if (existingChats && existingChats.length > 0) {
-                // Navigate to existing chat
                 router.push(`/chats/${existingChats[0].id}`);
             } else {
-                // Create new chat
                 const { data: newChat, error } = await supabase
                     .from('chats')
                     .insert({
@@ -130,7 +129,6 @@ export default function ListingDetailPage() {
                     .single();
 
                 if (error) throw error;
-
                 router.push(`/chats/${newChat.id}`);
             }
         } catch (err: any) {
@@ -143,7 +141,6 @@ export default function ListingDetailPage() {
     const handleWhatsAppDealer = () => {
         if (!listing) return;
         const phone = listing.dealer.phone_number || '2348000000000';
-        // Remove any non-numeric characters for WhatsApp
         const cleanPhone = phone.replace(/\D/g, '');
         const finalPhone = cleanPhone.startsWith('0') ? '234' + cleanPhone.substring(1) : cleanPhone;
         const message = encodeURIComponent(`Hello, I saw your ${listing.title} on MarketBridge. Is it still available?`);
@@ -162,7 +159,6 @@ export default function ListingDetailPage() {
 
     const handleAddToCart = () => {
         if (!listing) return;
-
         addToCart({
             listingId: listing.id,
             title: listing.title,
@@ -170,43 +166,7 @@ export default function ListingDetailPage() {
             image: listing.images[0] || '',
             dealerId: listing.dealer.id,
         });
-
-        // Optional: Show toast notification
         alert('Added to cart!');
-    };
-
-    const handleAddToWishlist = async () => {
-        if (!user) {
-            router.push('/login');
-            return;
-        }
-
-        if (!listing) return;
-
-        setActionLoading(true);
-        try {
-            const { error } = await supabase
-                .from('wishlist')
-                .insert({
-                    user_id: user.id,
-                    listing_id: listing.id
-                });
-
-            if (error) {
-                if (error.code === '23505') { // Unique violation
-                    alert('Item is already in your wishlist');
-                } else {
-                    throw error;
-                }
-            } else {
-                alert('Added to wishlist!');
-            }
-        } catch (err: any) {
-            console.error('Error adding to wishlist:', err);
-            alert('Failed to add to wishlist');
-        } finally {
-            setActionLoading(false);
-        }
     };
 
     const handlePlaceOrder = async () => {
@@ -219,56 +179,92 @@ export default function ListingDetailPage() {
 
         setActionLoading(true);
 
-        const config = getFlutterwaveConfig(
-            `TX-${Date.now()}-${user.id.slice(0, 5)}`,
-            listing.price,
-            user.email,
-            user.displayName,
-            '08000000000',
-            async (response: any) => {
-                console.log('Payment success:', response);
-                try {
-                    // Calculate Commission
-                    let commissionRate = 0.05; // Default Starter 5%
-                    const plan = (listing.dealer as any).subscription_plan; // Type assertion as interface update is implied
+        const txRef = `TX-${Date.now()}-${user.id.slice(0, 5)}`;
 
-                    if (plan === 'enterprise') commissionRate = 0.01;
-                    else if (plan === 'professional') commissionRate = 0.025;
+        const onSuccess = async (response: any) => {
+            try {
+                const { error } = await supabase
+                    .from('orders')
+                    .update({
+                        status: 'paid',
+                        updated_at: new Date().toISOString(),
+                    })
+                    .eq('transaction_ref', txRef);
 
-                    const platformFee = listing.price * commissionRate;
-                    const netAmount = listing.price - platformFee;
+                if (error) throw error;
 
-                    const { error } = await supabase
-                        .from('orders')
-                        .insert({
-                            buyer_id: user.id,
-                            seller_id: listing.dealer.id,
-                            listing_id: listing.id,
-                            amount: listing.price,
-                            platform_fee: platformFee,
-                            net_amount: netAmount,
-                            status: 'paid',
-                            transaction_ref: response.tx_ref,
-                            payment_provider: 'flutterwave'
-                        });
-                    // ...                   if (error) throw error;
+                alert('Secure payment successful! Order placed.');
+                router.push('/orders');
+            } catch (err: any) {
+                console.error('Error updating order:', err);
+                alert(err.message || 'Payment successful but failed to update order.');
+            } finally {
+                setActionLoading(false);
+            }
+        };
 
-                    alert('Secure payment successful! Order placed.');
-                    router.push('/orders');
-                } catch (err: any) {
-                    console.error('Error saving order:', err);
-                    alert(err.message || 'Payment successful but failed to save order.');
-                } finally {
+        const onCancel = () => {
+            setActionLoading(false);
+        };
+
+        try {
+            // Create pending order first for all payment types
+            let commissionRate = 0.05;
+            const plan = (listing.dealer as any).subscription_plan;
+            if (plan === 'enterprise') commissionRate = 0.01;
+            else if (plan === 'professional') commissionRate = 0.025;
+
+            const platformFee = listing.price * commissionRate;
+            const netAmount = listing.price - platformFee;
+
+            const { error: orderError } = await supabase
+                .from('orders')
+                .insert({
+                    buyer_id: user.id,
+                    seller_id: listing.dealer.id,
+                    listing_id: listing.id,
+                    amount: listing.price,
+                    platform_fee: platformFee,
+                    net_amount: netAmount,
+                    status: 'pending',
+                    transaction_ref: txRef,
+                    payment_provider: paymentProvider
+                });
+
+            if (orderError) throw orderError;
+
+            if (paymentProvider === 'opay') {
+                const res = await initiateOPayCheckout({
+                    amount: listing.price,
+                    email: user.email,
+                    reference: txRef,
+                    description: `Payment for ${listing.title} on MarketBridge`
+                });
+
+                if (!res.success) {
+                    alert(res.message);
                     setActionLoading(false);
                 }
-            },
-            () => {
-                setActionLoading(false);
-                console.log('Payment modal closed');
+                // If successful, user is redirected away
+            } else {
+                const flwOptions = paymentProvider === 'card' ? 'card' : 'banktransfer';
+                const config = getFlutterwaveConfig(
+                    txRef,
+                    listing.price,
+                    user.email,
+                    user.displayName,
+                    user.phone_number || '08000000000',
+                    onSuccess,
+                    onCancel,
+                    flwOptions
+                );
+                initFlutterwave(config);
             }
-        );
-
-        initializePayment(config);
+        } catch (err: any) {
+            console.error('Error initiating order:', err);
+            alert(err.message || 'Failed to initialize order.');
+            setActionLoading(false);
+        }
     };
 
     if (loading) {
@@ -298,14 +294,12 @@ export default function ListingDetailPage() {
     return (
         <div className="min-h-screen py-8">
             <div className="container px-4 mx-auto">
-                {/* Back Button */}
                 <Button variant="ghost" onClick={() => router.back()} className="mb-6">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back
                 </Button>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Images Section */}
                     <div className="space-y-4">
                         <div className="aspect-square bg-muted rounded-lg overflow-hidden">
                             {listing.images && listing.images.length > 0 ? (
@@ -344,8 +338,6 @@ export default function ListingDetailPage() {
                                 ))}
                             </div>
                         )}
-
-                        {/* Videos Section */}
                         {listing.videos && listing.videos.length > 0 && (
                             <div className="space-y-3">
                                 <h3 className="text-lg font-semibold flex items-center gap-2">
@@ -370,7 +362,6 @@ export default function ListingDetailPage() {
                         )}
                     </div>
 
-                    {/* Details Section */}
                     <div className="space-y-6">
                         <div>
                             <div className="flex items-start justify-between mb-2">
@@ -397,29 +388,6 @@ export default function ListingDetailPage() {
 
                         <Separator />
 
-                        {listing.inspection_report_url && (
-                            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="bg-blue-500 p-2 rounded-lg text-white">
-                                        <Package className="h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-blue-900">MarketBridge Inspection Report</p>
-                                        <p className="text-xs text-blue-700">This vehicle has passed our 150-point inspection.</p>
-                                    </div>
-                                </div>
-                                <Button
-                                    size="sm"
-                                    variant="secondary"
-                                    className="bg-white text-blue-600 hover:bg-blue-50 border-blue-200"
-                                    onClick={() => window.open(listing.inspection_report_url, '_blank')}
-                                >
-                                    View Report
-                                </Button>
-                            </div>
-                        )}
-
-                        {/* Car Specifications */}
                         <div className="grid grid-cols-2 gap-4">
                             <div className="p-3 bg-muted/30 rounded-lg">
                                 <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Make</p>
@@ -437,26 +405,10 @@ export default function ListingDetailPage() {
                                 <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Condition</p>
                                 <p className="font-semibold">{listing.condition || 'Tokunbo'}</p>
                             </div>
-                            <div className="p-3 bg-muted/30 rounded-lg">
-                                <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Transmission</p>
-                                <p className="font-semibold">{listing.transmission || 'Automatic'}</p>
-                            </div>
-                            <div className="p-3 bg-muted/30 rounded-lg">
-                                <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Mileage</p>
-                                <p className="font-semibold">{listing.mileage ? `${listing.mileage.toLocaleString()} km` : '42,000 km'}</p>
-                            </div>
                         </div>
-
-                        {listing.inspection_report_url && (
-                            <Button variant="outline" className="w-full border-dashed border-blue-500 text-blue-500 hover:bg-blue-50 flex items-center gap-2">
-                                <ShieldCheck className="h-4 w-4" />
-                                View MarketBridge Inspection Report (PDF)
-                            </Button>
-                        )}
 
                         <Separator />
 
-                        {/* Description */}
                         <div>
                             <h2 className="text-xl font-semibold mb-2">Description</h2>
                             <p className="text-muted-foreground whitespace-pre-wrap">{listing.description}</p>
@@ -464,7 +416,6 @@ export default function ListingDetailPage() {
 
                         <Separator />
 
-                        {/* Dealer Info */}
                         <Card>
                             <CardContent className="pt-6">
                                 <h3 className="text-lg font-semibold mb-4">Dealer Information</h3>
@@ -500,93 +451,70 @@ export default function ListingDetailPage() {
                             </CardContent>
                         </Card>
 
-                        <Separator />
-
-                        {/* Reviews */}
                         <ReviewsSection listingId={listing.id} dealerId={listing.dealer.id} />
 
-                        {/* Safety Tips */}
-                        <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
-                            <h4 className="text-sm font-bold text-orange-800 flex items-center gap-2 mb-2">
-                                <ShieldCheck className="h-4 w-4" /> MarketBridge Safety Tips
-                            </h4>
-                            <ul className="text-xs text-orange-700 space-y-1 list-disc pl-4">
-                                <li>Never pay for a car before physical inspection.</li>
-                                <li>Always meet the dealer at their verified physical showroom.</li>
-                                <li>Verify the car&apos;s documents (Customs, Ownership) before payment.</li>
-                                <li>MarketBridge Escrow protects your money until delivery is confirmed.</li>
-                            </ul>
-                        </div>
-
-                        {/* Actions */}
                         {user && user.id !== listing.dealer.id && (
                             <div className="flex flex-col gap-3">
                                 <div className="flex gap-3">
-                                    <Button
-                                        onClick={handleWhatsAppDealer}
-                                        className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-                                        disabled={actionLoading}
-                                    >
-                                        <MessageCircle className="mr-2 h-4 w-4" />
-                                        WhatsApp
+                                    <Button onClick={handleWhatsAppDealer} className="flex-1 bg-green-600 hover:bg-green-700 text-white" disabled={actionLoading}>
+                                        <MessageCircle className="mr-2 h-4 w-4" /> WhatsApp
                                     </Button>
-                                    <Button
-                                        onClick={handleCallDealer}
-                                        variant="outline"
-                                        className="flex-1 border-primary text-primary hover:bg-primary/10"
-                                        disabled={actionLoading}
-                                    >
-                                        <Phone className="mr-2 h-4 w-4" />
-                                        Call
+                                    <Button onClick={handleCallDealer} variant="outline" className="flex-1 border-primary text-primary hover:bg-primary/10" disabled={actionLoading}>
+                                        <Phone className="mr-2 h-4 w-4" /> Call
                                     </Button>
-                                    <Button
-                                        onClick={handleContactDealer}
-                                        variant="outline"
-                                        className="flex-1"
-                                        disabled={actionLoading}
-                                    >
-                                        <Globe className="mr-2 h-4 w-4" />
-                                        Chat
+                                    <Button onClick={handleContactDealer} variant="outline" className="flex-1" disabled={actionLoading}>
+                                        <Globe className="mr-2 h-4 w-4" /> Chat
                                     </Button>
                                 </div>
                                 <div className="flex gap-3">
-                                    <Button
-                                        onClick={handleAddToCart}
-                                        variant="secondary"
-                                        className="flex-1"
-                                    >
-                                        <ShoppingCart className="mr-2 h-4 w-4" />
-                                        Add to Cart
+                                    <Button onClick={handleAddToCart} variant="secondary" className="flex-1">
+                                        <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
                                     </Button>
-                                    <Button
-                                        onClick={handlePlaceOrder}
-                                        className="flex-1"
-                                        disabled={actionLoading}
-                                    >
-                                        {actionLoading ? (
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        ) : (
-                                            <Package className="mr-2 h-4 w-4" />
-                                        )}
+                                    <Button onClick={handlePlaceOrder} className="flex-1" disabled={actionLoading}>
+                                        {actionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Package className="mr-2 h-4 w-4" />}
                                         Buy Now
                                     </Button>
+                                </div>
+
+                                <div className="bg-muted/30 rounded-lg p-4 border-2 border-dashed border-primary/20 text-center">
+                                    <p className="text-xs text-muted-foreground uppercase font-black tracking-widest mb-3">Choose Secure Payment Method</p>
+                                    <div className="flex justify-center flex-wrap gap-2">
+                                        <button
+                                            onClick={() => setPaymentProvider('card')}
+                                            className={`px-4 py-2 rounded-xl text-xs font-bold border-2 transition-all flex items-center gap-2 ${paymentProvider === 'card' ? 'bg-primary border-primary text-white shadow-lg scale-105' : 'bg-background border-muted text-muted-foreground hover:border-primary/50'}`}
+                                        >
+                                            <CreditCard className="h-4 w-4" />
+                                            Card
+                                        </button>
+                                        <button
+                                            onClick={() => setPaymentProvider('transfer')}
+                                            className={`px-4 py-2 rounded-xl text-xs font-bold border-2 transition-all flex items-center gap-2 ${paymentProvider === 'transfer' ? 'bg-primary border-primary text-white shadow-lg scale-105' : 'bg-background border-muted text-muted-foreground hover:border-primary/50'}`}
+                                        >
+                                            <Globe className="h-4 w-4" />
+                                            Transfer
+                                        </button>
+                                        <button
+                                            onClick={() => setPaymentProvider('opay')}
+                                            className={`px-4 py-2 rounded-xl text-xs font-bold border-2 transition-all flex items-center gap-2 ${paymentProvider === 'opay' ? 'bg-primary border-primary text-white shadow-lg scale-105' : 'bg-background border-muted text-muted-foreground hover:border-primary/50'}`}
+                                        >
+                                            <ShoppingCart className="h-4 w-4" />
+                                            OPay
+                                        </button>
+                                    </div>
+                                    <p className="text-[10px] text-muted-foreground mt-3 italic font-medium">✨ All payments are protected by MarketBridge Escrow Service</p>
                                 </div>
                             </div>
                         )}
 
                         {!user && (
                             <div className="bg-muted/50 rounded-lg p-4 text-center">
-                                <p className="text-sm text-muted-foreground mb-3">
-                                    Please log in to contact the dealer or place an order
-                                </p>
-                                <Button onClick={() => router.push('/login')} className="w-full">
-                                    Log In
-                                </Button>
+                                <p className="text-sm text-muted-foreground mb-3">Please log in to contact the dealer or place an order</p>
+                                <Button onClick={() => router.push('/login')} className="w-full">Log In</Button>
                             </div>
                         )}
                     </div>
                 </div>
             </div>
-        </div >
+        </div>
     );
 }

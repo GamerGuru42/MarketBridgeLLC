@@ -10,10 +10,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { Loader2, Check, ArrowLeft } from 'lucide-react';
+import { Loader2, Check, ArrowLeft, ShieldCheck, Mail, Phone, User as UserIcon, CreditCard, Globe, ShoppingCart } from 'lucide-react';
 import { SubscriptionPlan } from '@/types/user';
 import { CATEGORIES } from '@/lib/categories';
 import { useFlutterwave, getFlutterwaveConfig } from '@/lib/flutterwave';
+import { initiateOPayCheckout } from '@/lib/opay';
 
 const PRICING_PLANS = [
     {
@@ -62,14 +63,17 @@ const PRICING_PLANS = [
 
 export default function SignupPage() {
     const router = useRouter();
-    const { initializePayment } = useFlutterwave();
-    const [step, setStep] = useState<'role' | 'plan' | 'details' | 'auth-method'>('role');
+    const { initializePayment: initFlutterwave } = useFlutterwave();
+
+    // State Definitions
+    const [step, setStep] = useState<'role' | 'plan' | 'details' | 'auth-method' | 'phone-signup'>('role');
     const [role, setRole] = useState<'customer' | 'dealer' | 'admin' | 'ceo'>('customer');
     const [showAccessCodeInput, setShowAccessCodeInput] = useState(false);
     const [accessCode, setAccessCode] = useState('');
     const [targetRole, setTargetRole] = useState<'admin' | 'ceo' | null>(null);
 
     const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan>('starter');
+    const [paymentProvider, setPaymentProvider] = useState<'card' | 'transfer' | 'opay'>('card');
     const [formData, setFormData] = useState({
         displayName: '',
         email: '',
@@ -78,11 +82,13 @@ export default function SignupPage() {
         location: '',
         businessName: '',
         storeType: 'physical' as 'physical' | 'online' | 'both',
+        phoneNumber: '',
     });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [verificationDocs, setVerificationDocs] = useState<string[]>([]);
 
+    // Helper Functions
     const handleGoogleLogin = async () => {
         setIsLoading(true);
         setError('');
@@ -102,15 +108,11 @@ export default function SignupPage() {
         }
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setVerificationDocs(prev => [...prev, reader.result as string]);
-            };
-            reader.readAsDataURL(file);
-        }
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData(prev => ({
+            ...prev,
+            [e.target.name]: e.target.value
+        }));
     };
 
     const handleRoleSelect = (selectedRole: 'customer' | 'dealer' | 'admin' | 'ceo') => {
@@ -132,6 +134,11 @@ export default function SignupPage() {
         }
     };
 
+    const handlePlanSelect = (plan: SubscriptionPlan) => {
+        setSelectedPlan(plan);
+        setStep('details');
+    };
+
     const verifyAccessCode = (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
@@ -151,123 +158,24 @@ export default function SignupPage() {
         }
     };
 
-    if (showAccessCodeInput) {
-        return (
-            <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-slate-950 font-sans">
-                <Card className="w-full max-w-md bg-slate-900 border-slate-800 text-slate-100 shadow-2xl">
-                    <CardHeader className="space-y-1 pb-8 text-center">
-                        <CardTitle className="text-xl font-bold uppercase tracking-widest text-white">
-                            Security Check
-                        </CardTitle>
-                        <CardDescription className="text-slate-400 font-mono text-xs">
-                            Enter the restricted access code for {targetRole === 'admin' ? 'Mission Control' : 'Vision Command'}.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {error && (
-                            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-xs text-red-400 font-mono text-center">
-                                {error}
-                            </div>
-                        )}
-                        <form onSubmit={verifyAccessCode} className="space-y-6">
-                            <div className="space-y-2">
-                                <Label className="text-xs text-slate-500 uppercase font-black tracking-widest">Access Code</Label>
-                                <Input
-                                    type="password"
-                                    className="bg-slate-950 border-slate-800 text-center tracking-[0.5em] font-mono text-lg"
-                                    value={accessCode}
-                                    onChange={(e) => setAccessCode(e.target.value)}
-                                    placeholder="••••••••••"
-                                    autoFocus
-                                />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    onClick={() => {
-                                        setShowAccessCodeInput(false);
-                                        setTargetRole(null);
-                                    }}
-                                    className="border border-slate-700 hover:bg-slate-800 text-slate-400"
-                                >
-                                    Cancel
-                                </Button>
-                                <Button type="submit" className="bg-primary hover:bg-primary/90 text-white font-bold">
-                                    Verify
-                                </Button>
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
-
-    if (step === 'auth-method') {
-        return (
-            <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-b from-background to-muted/20">
-                <Card className="w-full max-w-lg">
-                    <CardHeader className="space-y-1">
-                        <Button
-                            variant="ghost"
-                            onClick={() => setStep('role')}
-                            className="w-fit mb-2"
-                        >
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back
-                        </Button>
-                        <CardTitle className="text-2xl font-bold text-center">Customer Signup</CardTitle>
-                        <CardDescription className="text-center">
-                            How would you like to create your account?
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <Button variant="outline" type="button" className="w-full h-12 text-base" onClick={handleGoogleLogin} disabled={isLoading}>
-                            <svg className="mr-2 h-5 w-5" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
-                                <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path>
-                            </svg>
-                            Continue with Google
-                        </Button>
-
-                        <div className="relative">
-                            <div className="absolute inset-0 flex items-center">
-                                <span className="w-full border-t" />
-                            </div>
-                            <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-background px-2 text-muted-foreground">
-                                    Or
-                                </span>
-                            </div>
-                        </div>
-
-                        <Button
-                            className="w-full h-12 text-base"
-                            onClick={() => setStep('details')}
-                        >
-                            Continue with Email
-                        </Button>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
-
-    const handlePlanSelect = (plan: SubscriptionPlan) => {
-        setSelectedPlan(plan);
-        setStep('details');
-    };
-
     const createAccount = async (paymentRef?: string) => {
         try {
-            // Sign up with Supabase Auth
+            let emailToUse = formData.email;
+            if (step === 'phone-signup') {
+                const cleanPhone = formData.phoneNumber.replace(/\D/g, '');
+                if (!cleanPhone) throw new Error("Phone number required");
+                if (cleanPhone.length < 11) throw new Error("Please enter a valid phone number");
+                emailToUse = `phone-${cleanPhone}@marketbridge.local`;
+            }
+
             const { data: authData, error: signUpError } = await supabase.auth.signUp({
-                email: formData.email,
+                email: emailToUse,
                 password: formData.password,
                 options: {
                     data: {
                         display_name: formData.displayName,
                         role: role,
+                        phone_number: formData.phoneNumber
                     },
                 },
             });
@@ -275,35 +183,33 @@ export default function SignupPage() {
             if (signUpError) throw signUpError;
 
             if (authData.user) {
-                // Wait a moment for the trigger to create the basic user record
                 await new Promise(resolve => setTimeout(resolve, 1000));
 
                 const planDetails = PRICING_PLANS.find(p => p.id === selectedPlan);
                 const isPaidPlan = selectedPlan !== 'starter';
 
-                // Update user profile with additional details using upsert
                 const { error: profileError } = await supabase
                     .from('users')
                     .upsert({
                         id: authData.user.id,
-                        email: formData.email,
+                        email: emailToUse,
                         display_name: formData.displayName,
                         role: role,
                         location: formData.location,
+                        phone_number: formData.phoneNumber,
                         business_name: role === 'dealer' ? formData.businessName : null,
                         store_type: role === 'dealer' ? formData.storeType : null,
                         subscription_plan: role === 'dealer' ? selectedPlan : 'starter',
-                        subscription_status: role === 'dealer' ? (isPaidPlan ? 'active' : 'trial') : 'inactive',
+                        subscription_status: role === 'dealer' ? (isPaidPlan ? (paymentRef === 'pending' ? 'pending_payment' : 'active') : 'trial') : 'inactive',
                         is_verified: false,
-                        // Store payment ref if available, could be in a separate payments table in real app
-                        listing_limit: planDetails?.id === 'enterprise' ? 9999 : (planDetails?.id === 'professional' ? 50 : 5)
+                        listing_limit: planDetails?.id === 'enterprise' ? 9999 : (planDetails?.id === 'professional' ? 50 : 5),
+                        last_payment_ref: paymentRef || null
                     }, {
                         onConflict: 'id'
                     });
 
                 if (profileError) throw profileError;
 
-                // Redirect based on role
                 if (role === 'dealer') {
                     router.push('/vendor/dashboard');
                 } else {
@@ -333,400 +239,265 @@ export default function SignupPage() {
             return;
         }
 
-        // Handle Dealer Payment if Paid Plan
+        // Handle Dealer Subscription Payment
         if (role === 'dealer' && selectedPlan !== 'starter') {
             const plan = PRICING_PLANS.find(p => p.id === selectedPlan);
             if (plan) {
                 const amount = parseInt(plan.price.replace(/[^0-9]/g, ''));
+                const txRef = `SUB-${Date.now()}-${formData.email.slice(0, 3)}`;
 
-                const config = getFlutterwaveConfig(
-                    `SUB-${Date.now()}-${formData.email.slice(0, 3)}`,
-                    amount,
-                    formData.email,
-                    formData.displayName,
-                    '08000000000', // Capture phone in form if needed
-                    (response: any) => {
-                        console.log('Subscription payment success:', response);
-                        createAccount(response.tx_ref);
-                    },
-                    () => {
-                        setIsLoading(false);
-                        console.log('Payment modal closed');
+                const onSuccess = (response: any) => {
+                    // Update user status to active if payment successful in browser
+                    createAccount(response.tx_ref || response.reference);
+                };
+
+                const onCancel = () => {
+                    setIsLoading(false);
+                };
+
+                try {
+                    // 1. Create the account first in pending state
+                    await createAccount('pending');
+
+                    // 2. Initiate payment
+                    if (paymentProvider === 'opay') {
+                        const res = await initiateOPayCheckout({
+                            amount,
+                            email: formData.email,
+                            reference: txRef,
+                            description: `Dealer Subscription: ${plan.name} Plan`
+                        });
+                        if (!res.success) {
+                            alert(res.message);
+                            setIsLoading(false);
+                        }
+                    } else {
+                        const flwOptions = paymentProvider === 'card' ? 'card' : 'banktransfer';
+                        const config = getFlutterwaveConfig(
+                            txRef,
+                            amount,
+                            formData.email,
+                            formData.displayName,
+                            formData.phoneNumber || '08000000000',
+                            onSuccess,
+                            onCancel,
+                            flwOptions
+                        );
+                        initFlutterwave(config);
                     }
-                );
-
-                initializePayment(config);
-                return; // Wait for payment callback
+                } catch (err: any) {
+                    setError(err.message || 'Failed to initialize signup');
+                    setIsLoading(false);
+                }
+                return;
             }
         }
 
-        // Standard signup (Customer or Free Dealer)
         await createAccount();
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData(prev => ({
-            ...prev,
-            [e.target.name]: e.target.value
-        }));
-    };
+    // Render Logic
 
-    // Step 1: Role Selection
-    if (step === 'role') {
+    if (showAccessCodeInput) {
         return (
-            <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-b from-background to-muted/20">
-                <Card className="w-full max-w-4xl">
-                    <CardHeader className="space-y-1">
-                        <CardTitle className="text-3xl font-black text-center tracking-tighter uppercase italic">Join MarketBridge</CardTitle>
-                        <CardDescription className="text-center font-medium">
-                            Choose your specialized terminal to access the Abuja Automotive Marketplace
-                        </CardDescription>
+            <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-slate-950">
+                <Card className="w-full max-w-md bg-slate-900 border-slate-800 text-slate-100 shadow-2xl">
+                    <CardHeader className="text-center">
+                        <CardTitle className="text-xl font-bold uppercase tracking-widest">Security Check</CardTitle>
+                        <CardDescription className="text-slate-400">Enter restricted access code for {targetRole}</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-8">
-                        {error && (
-                            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 text-sm text-destructive">
-                                {error}
+                    <CardContent className="space-y-4">
+                        {error && <div className="text-red-400 text-xs font-mono text-center">{error}</div>}
+                        <form onSubmit={verifyAccessCode} className="space-y-6">
+                            <Input
+                                type="password"
+                                className="bg-slate-950 border-slate-800 text-center tracking-[0.5em] font-mono text-lg"
+                                value={accessCode}
+                                onChange={(e) => setAccessCode(e.target.value)}
+                                placeholder="••••••••"
+                                autoFocus
+                            />
+                            <div className="grid grid-cols-2 gap-4">
+                                <Button type="button" variant="ghost" onClick={() => setShowAccessCodeInput(false)}>Cancel</Button>
+                                <Button type="submit">Verify</Button>
                             </div>
-                        )}
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <Card
-                                className="group cursor-pointer hover:border-primary transition-all hover:shadow-xl border-slate-200 dark:border-slate-800 relative overflow-hidden"
-                                onClick={() => handleRoleSelect('customer')}
-                            >
-                                <CardContent className="p-6 text-center">
-                                    <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">🛍️</div>
-                                    <h3 className="font-black uppercase italic text-sm mb-2 tracking-widest">Customer</h3>
-                                    <p className="text-xs text-muted-foreground leading-relaxed">
-                                        Browse and purchase premium vehicles from verified Abuja dealers.
-                                    </p>
-                                </CardContent>
-                            </Card>
-
-                            <Card
-                                className="group cursor-pointer hover:border-primary transition-all hover:shadow-xl border-slate-200 dark:border-slate-800 relative overflow-hidden"
-                                onClick={() => handleRoleSelect('dealer')}
-                            >
-                                <CardContent className="p-6 text-center">
-                                    <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">🚗</div>
-                                    <h3 className="font-black uppercase italic text-sm mb-2 tracking-widest">Dealer</h3>
-                                    <p className="text-xs text-muted-foreground leading-relaxed">
-                                        Onboard your car dealership and reach high-intent verified buyers.
-                                    </p>
-                                </CardContent>
-                            </Card>
-
-                            <Card
-                                className="group cursor-pointer hover:border-blue-500 transition-all hover:shadow-xl bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 relative overflow-hidden"
-                                onClick={() => handleRoleSelect('admin')}
-                            >
-                                <div className="absolute top-0 right-0 p-1">
-                                    <Badge variant="outline" className="text-[8px] font-black uppercase border-blue-500 text-blue-500">Staff</Badge>
-                                </div>
-                                <CardContent className="p-6 text-center">
-                                    <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">🛡️</div>
-                                    <h3 className="font-black uppercase italic text-sm mb-2 tracking-widest text-blue-600">Admin</h3>
-                                    <p className="text-xs text-muted-foreground leading-relaxed">
-                                        Access Mission Control for technical and operational management.
-                                    </p>
-                                </CardContent>
-                            </Card>
-
-                            <Card
-                                className="group cursor-pointer hover:border-[#d4af37] transition-all hover:shadow-xl bg-black border-zinc-900 relative overflow-hidden"
-                                onClick={() => handleRoleSelect('ceo')}
-                            >
-                                <div className="absolute top-0 right-0 p-1">
-                                    <Badge variant="outline" className="text-[8px] font-black uppercase border-[#d4af37] text-[#d4af37]">Executive</Badge>
-                                </div>
-                                <CardContent className="p-6 text-center">
-                                    <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">👑</div>
-                                    <h3 className="font-black uppercase italic text-sm mb-2 tracking-widest text-[#d4af37]">CEO</h3>
-                                    <p className="text-xs text-zinc-500 leading-relaxed">
-                                        Vision Command access for founding partners and strategic oversight.
-                                    </p>
-                                </CardContent>
-                            </Card>
-                        </div>
-
-
-                        <p className="text-center text-sm text-muted-foreground">
-                            Already have an account?{' '}
-                            <Link href="/login" className="text-primary hover:underline">
-                                Log in
-                            </Link>
-                        </p>
+                        </form>
                     </CardContent>
                 </Card>
             </div>
         );
     }
 
-    // Step 2: Plan Selection (Dealers only)
+    if (step === 'role') {
+        return (
+            <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-b from-background to-muted/20">
+                <Card className="w-full max-w-4xl">
+                    <CardHeader className="text-center mb-8">
+                        <CardTitle className="text-4xl font-black italic uppercase tracking-tighter">Join MarketBridge</CardTitle>
+                        <CardDescription>Select your account type to continue</CardDescription>
+                    </CardHeader>
+                    <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <Card className="group cursor-pointer hover:border-primary transition-all p-6 text-center" onClick={() => handleRoleSelect('customer')}>
+                            <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">🛍️</div>
+                            <h3 className="font-bold uppercase text-xs mb-2">Customer</h3>
+                            <p className="text-[10px] text-muted-foreground">Buy premium vehicles</p>
+                        </Card>
+                        <Card className="group cursor-pointer hover:border-primary transition-all p-6 text-center" onClick={() => handleRoleSelect('dealer')}>
+                            <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">🚗</div>
+                            <h3 className="font-bold uppercase text-xs mb-2">Dealer</h3>
+                            <p className="text-[10px] text-muted-foreground">Sell your inventory</p>
+                        </Card>
+                        <Card className="group cursor-pointer hover:border-blue-500 transition-all p-6 text-center" onClick={() => handleRoleSelect('admin')}>
+                            <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">🛡️</div>
+                            <h3 className="font-bold uppercase text-xs mb-2">Admin</h3>
+                            <p className="text-[10px] text-muted-foreground">Staff management</p>
+                        </Card>
+                        <Card className="group cursor-pointer hover:border-amber-500 transition-all p-6 text-center" onClick={() => handleRoleSelect('ceo')}>
+                            <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">👑</div>
+                            <h3 className="font-bold uppercase text-xs mb-2">CEO</h3>
+                            <p className="text-[10px] text-muted-foreground">Executive oversight</p>
+                        </Card>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
+    const FormContainer = ({ title, description, children, onBack }: any) => (
+        <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-b from-background to-muted/20">
+            <Card className="w-full max-w-lg">
+                <CardHeader>
+                    <Button variant="ghost" onClick={onBack} className="w-fit mb-4"><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
+                    <CardTitle className="text-2xl font-bold">{title}</CardTitle>
+                    <CardDescription>{description}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {error && <div className="bg-destructive/10 text-destructive p-3 rounded-lg text-sm">{error}</div>}
+                    {children}
+                </CardContent>
+            </Card>
+        </div>
+    );
+
+    if (step === 'auth-method') {
+        return (
+            <FormContainer title="Welcome Customer" description="Choose your signup method" onBack={() => setStep('role')}>
+                <Button variant="outline" className="w-full h-12" onClick={handleGoogleLogin} disabled={isLoading}>
+                    <Mail className="mr-2 h-5 w-5" /> Continue with Google
+                </Button>
+                <div className="relative text-center text-xs uppercase text-muted-foreground my-4"><span className="bg-background px-2">Or</span></div>
+                <Button variant="outline" className="w-full h-12" onClick={() => setStep('phone-signup')}><Phone className="mr-2 h-5 w-5" /> Continue with Phone</Button>
+                <Button className="w-full h-12 mt-4" onClick={() => setStep('details')}><UserIcon className="mr-2 h-5 w-5" /> Continue with Email</Button>
+            </FormContainer>
+        );
+    }
+
     if (step === 'plan') {
         return (
             <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-b from-background to-muted/20">
                 <div className="w-full max-w-6xl">
                     <div className="text-center mb-8">
-                        <Button
-                            variant="ghost"
-                            onClick={() => setStep('role')}
-                            className="mb-4"
-                        >
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back
-                        </Button>
-                        <h1 className="text-3xl font-bold mb-2">Choose Your Plan</h1>
-                        <p className="text-muted-foreground">
-                            All plans include a 14-day free trial. Cancel anytime.
-                        </p>
+                        <Button variant="ghost" onClick={() => setStep('role')} className="mb-4"><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
+                        <h1 className="text-3xl font-bold font-sans uppercase tracking-widest italic">Choose Your Dealer Plan</h1>
+                        <p className="text-muted-foreground">Select a plan to start your 14-day free trial</p>
                     </div>
-
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {PRICING_PLANS.map((plan) => (
-                            <Card
-                                key={plan.id}
-                                className={`cursor-pointer transition-all hover:shadow-lg ${selectedPlan === plan.id ? 'border-primary shadow-md' : ''
-                                    } ${plan.popular ? 'border-primary' : ''} relative`}
-                                onClick={() => handlePlanSelect(plan.id)}
-                            >
-                                {plan.popular && (
-                                    <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">
-                                        POPULAR
-                                    </div>
-                                )}
+                        {PRICING_PLANS.map(plan => (
+                            <Card key={plan.id} className={`cursor-pointer transition-all ${selectedPlan === plan.id ? 'border-primary ring-2 ring-primary/20' : ''}`} onClick={() => handlePlanSelect(plan.id)}>
                                 <CardHeader>
-                                    <CardTitle className="text-xl">{plan.name}</CardTitle>
-                                    <CardDescription>{plan.description}</CardDescription>
+                                    <CardTitle className="text-xl font-bold">{plan.name}</CardTitle>
+                                    <div className="text-3xl font-black text-primary">{plan.price} <span className="text-xs font-normal text-muted-foreground">{plan.period}</span></div>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="mb-6">
-                                        <span className="text-3xl font-bold">{plan.price}</span>
-                                        {plan.period && <span className="text-muted-foreground">{plan.period}</span>}
-                                    </div>
-                                    <ul className="space-y-2">
-                                        {plan.features.map((feature, idx) => (
-                                            <li key={idx} className="flex items-start gap-2 text-sm">
-                                                <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                                                <span>{feature}</span>
-                                            </li>
-                                        ))}
+                                    <ul className="text-sm space-y-3 mb-6">
+                                        {plan.features.map((f, i) => <li key={i} className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> {f}</li>)}
                                     </ul>
                                 </CardContent>
                             </Card>
                         ))}
-                    </div>
-
-                    <div className="text-center mt-8">
-                        <Button
-                            size="lg"
-                            onClick={() => setStep('details')}
-                            disabled={!selectedPlan}
-                        >
-                            Continue with {PRICING_PLANS.find(p => p.id === selectedPlan)?.name}
-                        </Button>
                     </div>
                 </div>
             </div>
         );
     }
 
-    // Step 3: Details Form
     return (
-        <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-b from-background to-muted/20">
-            <Card className="w-full max-w-lg">
-                <CardHeader className="space-y-1">
-                    <Button
-                        variant="ghost"
-                        onClick={() => setStep(role === 'dealer' ? 'plan' : 'role')}
-                        className="w-fit mb-2"
-                        type="button"
-                    >
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back
-                    </Button>
-                    <CardTitle className="text-2xl font-bold">Complete Your Profile</CardTitle>
-                    <CardDescription>
-                        {role === 'dealer'
-                            ? `${PRICING_PLANS.find(p => p.id === selectedPlan)?.name} Plan - 14-day free trial`
-                            : 'Fill in your details to get started'
-                        }
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    {error && (
-                        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 text-sm text-destructive">
-                            {error}
-                        </div>
-                    )}
-
-                    <form onSubmit={handleSubmit} className="space-y-4">
+        <FormContainer
+            title={step === 'phone-signup' ? "Sign up with Phone" : "Complete Your Profile"}
+            description={role === 'dealer' ? `Onboarding ${selectedPlan} Plan` : "Fill in your details"}
+            onBack={() => setStep(role === 'dealer' ? 'plan' : 'auth-method')}
+        >
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                    <Label>Full Name</Label>
+                    <Input name="displayName" value={formData.displayName} onChange={handleChange} required placeholder="John Doe" />
+                </div>
+                {step === 'phone-signup' ? (
+                    <div className="space-y-2">
+                        <Label>Phone Number</Label>
+                        <Input name="phoneNumber" type="tel" value={formData.phoneNumber} onChange={handleChange} required placeholder="08012345678" />
+                    </div>
+                ) : (
+                    <div className="space-y-2">
+                        <Label>Email</Label>
+                        <Input name="email" type="email" value={formData.email} onChange={handleChange} required placeholder="john@example.com" />
+                    </div>
+                )}
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label>Password</Label>
+                        <Input name="password" type="password" value={formData.password} onChange={handleChange} required />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Confirm</Label>
+                        <Input name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} required />
+                    </div>
+                </div>
+                <div className="space-y-2">
+                    <Label>Location</Label>
+                    <Input name="location" value={formData.location} onChange={handleChange} required placeholder="Abuja, Nigeria" />
+                </div>
+                {role === 'dealer' && (
+                    <>
                         <div className="space-y-2">
-                            <Label htmlFor="displayName">Full Name</Label>
-                            <Input
-                                id="displayName"
-                                name="displayName"
-                                type="text"
-                                value={formData.displayName}
-                                onChange={handleChange}
-                                required
-                                placeholder="John Doe"
-                            />
+                            <Label>Business Name</Label>
+                            <Input name="businessName" value={formData.businessName} onChange={handleChange} required placeholder="Elite Motors Abuja" />
                         </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                name="email"
-                                type="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                required
-                                placeholder="your.email@example.com"
-                            />
+                        <div className="bg-muted/30 rounded-lg p-4 border-2 border-dashed border-primary/20 text-center mt-4">
+                            <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mb-3">Subscription Payment Method</p>
+                            <div className="flex justify-center flex-wrap gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setPaymentProvider('card')}
+                                    className={`px-4 py-2 rounded-xl text-xs font-bold border-2 transition-all flex items-center gap-2 ${paymentProvider === 'card' ? 'bg-primary border-primary text-white shadow-lg' : 'bg-background border-muted text-muted-foreground hover:border-primary/50'}`}
+                                >
+                                    <CreditCard className="h-4 w-4" />
+                                    Card
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setPaymentProvider('transfer')}
+                                    className={`px-4 py-2 rounded-xl text-xs font-bold border-2 transition-all flex items-center gap-2 ${paymentProvider === 'transfer' ? 'bg-primary border-primary text-white shadow-lg' : 'bg-background border-muted text-muted-foreground hover:border-primary/50'}`}
+                                >
+                                    <Globe className="h-4 w-4" />
+                                    Transfer
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setPaymentProvider('opay')}
+                                    className={`px-4 py-2 rounded-xl text-xs font-bold border-2 transition-all flex items-center gap-2 ${paymentProvider === 'opay' ? 'bg-primary border-primary text-white shadow-lg' : 'bg-background border-muted text-muted-foreground hover:border-primary/50'}`}
+                                >
+                                    <ShoppingCart className="h-4 w-4" />
+                                    OPay
+                                </button>
+                            </div>
                         </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
-                            <Input
-                                id="password"
-                                name="password"
-                                type="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                required
-                                placeholder="••••••••"
-                                minLength={6}
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="confirmPassword">Confirm Password</Label>
-                            <Input
-                                id="confirmPassword"
-                                name="confirmPassword"
-                                type="password"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                required
-                                placeholder="••••••••"
-                                minLength={6}
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="location">Location</Label>
-                            <Input
-                                id="location"
-                                name="location"
-                                type="text"
-                                value={formData.location}
-                                onChange={handleChange}
-                                required
-                                placeholder="e.g., Lagos, Nigeria"
-                            />
-                        </div>
-
-                        {role === 'dealer' && (
-                            <>
-                                <div className="space-y-2">
-                                    <Label>Primary Niche</Label>
-                                    <Select
-                                        value={CATEGORIES.find(c => c.isActive)?.name || ''}
-                                        disabled
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select your niche" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {CATEGORIES.map((category) => (
-                                                <SelectItem
-                                                    key={category.id}
-                                                    value={category.name}
-                                                    disabled={!category.isActive}
-                                                >
-                                                    {category.name} {!category.isActive && '(Coming Soon)'}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <p className="text-[0.8rem] text-muted-foreground">
-                                        We are currently onboarding <strong>{CATEGORIES.find(c => c.isActive)?.name}</strong> dealers only.
-                                    </p>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="businessName">Business Name</Label>
-                                    <Input
-                                        id="businessName"
-                                        name="businessName"
-                                        type="text"
-                                        value={formData.businessName}
-                                        onChange={handleChange}
-                                        required
-                                        placeholder="Your business name"
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="storeType">Store Type</Label>
-                                    <Select
-                                        value={formData.storeType}
-                                        onValueChange={(value: 'physical' | 'online' | 'both') =>
-                                            setFormData(prev => ({ ...prev, storeType: value }))
-                                        }
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select store type" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="physical">Physical Store</SelectItem>
-                                            <SelectItem value="online">Online Store</SelectItem>
-                                            <SelectItem value="both">Both</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="documents">Verification Documents (NIN, CAC, ID)</Label>
-                                    <Input
-                                        id="documents"
-                                        name="documents"
-                                        type="file"
-                                        onChange={handleFileChange}
-                                        accept="image/*,.pdf"
-                                    />
-                                    {verificationDocs.length > 0 && (
-                                        <p className="text-xs text-green-600">{verificationDocs.length} document(s) selected</p>
-                                    )}
-                                </div>
-
-                                <div className="bg-muted/50 p-3 rounded-md text-xs text-muted-foreground">
-                                    <p><strong>Note:</strong> Dealer accounts require verification which may take up to 24 hours. Your 14-day free trial starts after verification.</p>
-                                </div>
-                            </>
-                        )}
-
-                        <Button type="submit" className="w-full" disabled={isLoading}>
-                            {isLoading ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Creating account...
-                                </>
-                            ) : (
-                                'Create Account'
-                            )}
-                        </Button>
-                    </form>
-
-                    <p className="text-center text-sm text-muted-foreground">
-                        Already have an account?{' '}
-                        <Link href="/login" className="text-primary hover:underline">
-                            Log in
-                        </Link>
-                    </p>
-                </CardContent>
-            </Card>
-        </div>
+                    </>
+                )}
+                <Button type="submit" className="w-full h-12 text-lg font-bold mt-4" disabled={isLoading}>
+                    {isLoading ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : (role === 'dealer' && selectedPlan !== 'starter' ? "Pay & Create Account" : "Create Account")}
+                </Button>
+            </form>
+        </FormContainer>
     );
 }

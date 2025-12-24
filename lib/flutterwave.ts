@@ -9,14 +9,15 @@ export const getFlutterwaveConfig = (
     name: string,
     phoneNumber: string,
     onSuccess: (response: unknown) => void,
-    onClose: () => void
+    onClose: () => void,
+    paymentOptions: string = 'card,banktransfer,ussd'
 ) => {
     return {
         public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY,
         tx_ref: txRef,
         amount: amount.toString(),
         currency: 'NGN',
-        payment_options: 'card,banktransfer,ussd',
+        payment_options: paymentOptions,
         customer: {
             email,
             name,
