@@ -342,7 +342,7 @@ export default function HomePage() {
                             price: 22500000,
                             location: "Asokoro, Abuja",
                             rating: 4.7,
-                            image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=800&q=80"
+                            image: "/mercedes-c300.png"
                         },
                     ].map((item) => (
                         <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow group cursor-pointer border-border/50">
