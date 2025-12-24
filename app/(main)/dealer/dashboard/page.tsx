@@ -18,7 +18,10 @@ import {
     CheckCircle,
     Truck,
     MessageCircle,
-    Eye
+    Eye,
+    Zap,
+    AlertCircle,
+    RotateCcw
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -90,8 +93,31 @@ export default function DealerDashboardPage() {
             fetchOrders();
             fetchBankDetails();
             subscribeToOrders();
+            checkSubscriptionStatus();
         }
     }, [user, authLoading]);
+
+    const checkSubscriptionStatus = async () => {
+        if (!user || !user.subscription_expires_at) return;
+
+        const now = new Date();
+        const expiryDate = new Date(user.subscription_expires_at);
+
+        if (now > expiryDate && (user.subscriptionStatus === 'trial' || user.subscriptionStatus === 'active')) {
+            // Downgrade to starter
+            await supabase
+                .from('users')
+                .update({
+                    subscription_plan: 'starter',
+                    subscription_status: 'inactive',
+                    listing_limit: 5
+                })
+                .eq('id', user.id);
+
+            // Refresh local user data
+            window.location.reload();
+        }
+    };
 
     const fetchBankDetails = async () => {
         if (!user) return;
@@ -271,12 +297,105 @@ export default function DealerDashboardPage() {
         );
     }
 
+    const now = new Date();
+    const expiryDate = user?.subscription_expires_at ? new Date(user.subscription_expires_at) : null;
+    const daysRemaining = expiryDate ? Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)) : 0;
+    const isTrial = user?.subscriptionStatus === 'trial';
+    const isExpiringSoon = daysRemaining <= 3 && daysRemaining > 0;
+    const isExpired = daysRemaining <= 0 && expiryDate;
+
     return (
         <div className="container mx-auto px-4 py-8">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold mb-2">Dealer Dashboard</h1>
-                <p className="text-muted-foreground">Manage your orders and track your sales</p>
+            <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold mb-2 uppercase italic tracking-tighter">Dealer Dashboard</h1>
+                    <p className="text-muted-foreground">Manage your orders and track your sales</p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                    <Badge variant="outline" className="px-3 py-1 border-primary/20 bg-primary/5">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-primary">
+                            Current Plan: {user?.subscriptionPlan || 'Starter'}
+                        </span>
+                    </Badge>
+                </div>
             </div>
+
+            {/* Trial / Subscription Banners */}
+            {isTrial && (
+                <div className={`mb-8 p-6 rounded-2xl border-2 transition-all duration-500 ${isExpiringSoon ? 'bg-amber-50 border-amber-200 shadow-amber-100' : 'bg-primary/5 border-primary/10 shadow-sm'} flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative`}>
+                    {isExpiringSoon && <div className="absolute top-0 left-0 w-full h-1 bg-amber-400 animate-pulse" />}
+                    <div className="flex items-center gap-5">
+                        <div className={`h-14 w-14 rounded-full flex items-center justify-center ${isExpiringSoon ? 'bg-amber-100 text-amber-600' : 'bg-primary/20 text-primary'}`}>
+                            {isExpiringSoon ? <Clock className="h-7 w-7" /> : <Zap className="h-7 w-7" />}
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-bold uppercase tracking-tight">
+                                {isExpiringSoon ? "Trial Expiring Soon" : "Premium Trial Active"}
+                            </h3>
+                            <p className="text-sm text-muted-foreground font-medium italic">
+                                {daysRemaining} days left of full premium features and analytics access.
+                            </p>
+                        </div>
+                    </div>
+
+                    {isExpiringSoon ? (
+                        <Button asChild className="relative overflow-hidden bg-primary hover:bg-primary/90 text-white shadow-xl shadow-primary/30 group px-8 py-6 h-auto animate-[glow-pulse_2s_infinite]">
+                            <Link href="/pricing" className="flex items-center gap-3">
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]" />
+                                <span className="text-base font-black uppercase tracking-widest italic drop-shadow-sm">Upgrade Now</span>
+                                <Zap className="h-5 w-5 fill-white group-hover:scale-125 transition-transform" />
+                            </Link>
+                        </Button>
+                    ) : (
+                        <Button variant="outline" asChild className="border-primary/20 hover:bg-primary/10 transition-all">
+                            <Link href="/pricing" className="uppercase font-bold text-xs tracking-widest">View Upgrade Options</Link>
+                        </Button>
+                    )}
+                </div>
+            )}
+
+            {!isTrial && isExpiringSoon && (
+                <div className="mb-8 p-6 rounded-2xl bg-slate-900 border-2 border-primary/30 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 text-white relative">
+                    <div className="absolute inset-0 bg-primary/5 animate-pulse" />
+                    <div className="flex items-center gap-5 relative">
+                        <div className="h-14 w-14 rounded-full bg-primary/20 flex items-center justify-center text-primary-foreground">
+                            <RotateCcw className="h-7 w-7 animate-[spin_4s_linear_infinite]" />
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-bold uppercase tracking-tight italic">Subscription Renewal</h3>
+                            <p className="text-sm text-blue-200 font-medium italic">
+                                Your {user?.subscriptionPlan} plan expires in {daysRemaining} days. Renew to maintain business continuity.
+                            </p>
+                        </div>
+                    </div>
+                    <Button asChild className="relative bg-white text-slate-950 hover:bg-slate-200 font-black uppercase tracking-widest italic px-10 py-6 h-auto shadow-xl shadow-white/10 group">
+                        <Link href="/pricing" className="flex items-center gap-3">
+                            Renew Plan
+                            <TrendingUp className="h-5 w-5 group-hover:translate-y--1 transition-transform" />
+                        </Link>
+                    </Button>
+                </div>
+            )}
+
+            {isExpired && (
+                <div className="mb-8 p-6 rounded-2xl bg-destructive/5 border-2 border-destructive/20 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div className="flex items-center gap-5">
+                        <div className="h-14 w-14 rounded-full bg-destructive/10 flex items-center justify-center text-destructive">
+                            <AlertCircle className="h-7 w-7" />
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-bold uppercase tracking-tight text-destructive">Subscription Expired</h3>
+                            <p className="text-sm text-muted-foreground font-medium italic">
+                                You have been downgraded to the Basic plan. Some features may be restricted.
+                            </p>
+                        </div>
+                    </div>
+                    <Button asChild variant="destructive" className="font-black uppercase tracking-widest italic px-8">
+                        <Link href="/pricing">Re-activate Premium</Link>
+                    </Button>
+                </div>
+            )}
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">

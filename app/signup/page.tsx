@@ -63,6 +63,22 @@ const PRICING_PLANS = [
     }
 ];
 
+const FormContainer = ({ title, description, children, onBack, error }: any) => (
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-b from-background to-muted/20">
+        <Card className="w-full max-w-lg">
+            <CardHeader>
+                <Button variant="ghost" onClick={onBack} className="w-fit mb-4"><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
+                <CardTitle className="text-2xl font-bold">{title}</CardTitle>
+                <CardDescription>{description}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {error && <div className="bg-destructive/10 text-destructive p-3 rounded-lg text-sm">{error}</div>}
+                {children}
+            </CardContent>
+        </Card>
+    </div>
+);
+
 function SignupContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -149,6 +165,28 @@ function SignupContent() {
         }
     };
 
+    const urlRole = searchParams.get('role');
+
+    const handleBack = () => {
+        if (step === 'plan') {
+            if (urlRole === 'dealer') {
+                router.replace('/');
+            } else {
+                setStep('role');
+            }
+        } else if (step === 'auth-method') {
+            if (urlRole) {
+                router.replace('/');
+            } else {
+                setStep('role');
+            }
+        } else if (step === 'details' || step === 'phone-signup') {
+            setStep(role === 'dealer' ? 'plan' : 'auth-method');
+        } else {
+            router.replace('/');
+        }
+    };
+
     const handleVerifyCac = async () => {
         if (!formData.cacNumber || formData.cacNumber.length < 5) {
             setError('Please enter a valid CAC RC Number');
@@ -218,6 +256,10 @@ function SignupContent() {
                 const planDetails = PRICING_PLANS.find(p => p.id === selectedPlan);
                 const isPaidPlan = selectedPlan !== 'starter';
 
+                const now = new Date();
+                const trialEndDate = new Date();
+                trialEndDate.setDate(now.getDate() + 14);
+
                 const { error: profileError } = await supabase
                     .from('users')
                     .upsert({
@@ -232,8 +274,10 @@ function SignupContent() {
                         store_type: role === 'dealer' ? formData.storeType : null,
                         subscription_plan: role === 'dealer' ? selectedPlan : 'starter',
                         subscription_status: role === 'dealer' ? (isPaidPlan ? (paymentRef === 'pending' ? 'pending_payment' : 'active') : 'trial') : 'inactive',
+                        subscription_expires_at: role === 'dealer' ? trialEndDate.toISOString() : null,
+                        trial_start_date: role === 'dealer' ? now.toISOString() : null,
                         is_verified: role === 'dealer' ? cacVerified : false,
-                        listing_limit: planDetails?.id === 'enterprise' ? 9999 : (planDetails?.id === 'professional' ? 50 : 5),
+                        listing_limit: role === 'dealer' ? 999 : (planDetails?.id === 'enterprise' ? 9999 : (planDetails?.id === 'professional' ? 50 : 5)),
                         last_payment_ref: paymentRef || null
                     }, {
                         onConflict: 'id'
@@ -271,10 +315,16 @@ function SignupContent() {
         }
 
         // Handle Dealer Subscription Payment
-        if (role === 'dealer' && selectedPlan !== 'starter') {
+        if (role === 'dealer' && (selectedPlan !== 'starter' || paymentProvider)) {
             const plan = PRICING_PLANS.find(p => p.id === selectedPlan);
             if (plan) {
-                const amount = parseInt(plan.price.replace(/[^0-9]/g, ''));
+                const amount = selectedPlan === 'starter' ? (paymentProvider ? 100 : 0) : parseInt(plan.price.replace(/[^0-9]/g, ''));
+
+                if (amount === 0) {
+                    await createAccount();
+                    return;
+                }
+
                 const txRef = `SUB-${Date.now()}-${formData.email.slice(0, 3)}`;
 
                 const onSuccess = (response: any) => {
@@ -394,25 +444,10 @@ function SignupContent() {
         );
     }
 
-    const FormContainer = ({ title, description, children, onBack }: any) => (
-        <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-b from-background to-muted/20">
-            <Card className="w-full max-w-lg">
-                <CardHeader>
-                    <Button variant="ghost" onClick={onBack} className="w-fit mb-4"><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
-                    <CardTitle className="text-2xl font-bold">{title}</CardTitle>
-                    <CardDescription>{description}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    {error && <div className="bg-destructive/10 text-destructive p-3 rounded-lg text-sm">{error}</div>}
-                    {children}
-                </CardContent>
-            </Card>
-        </div>
-    );
 
     if (step === 'auth-method') {
         return (
-            <FormContainer title="Welcome Customer" description="Choose your signup method" onBack={() => setStep('role')}>
+            <FormContainer title="Welcome Customer" description="Choose your signup method" onBack={handleBack}>
                 <Button variant="outline" className="w-full h-12" onClick={handleGoogleLogin} disabled={isLoading}>
                     <Mail className="mr-2 h-5 w-5" /> Continue with Google
                 </Button>
@@ -428,7 +463,15 @@ function SignupContent() {
             <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-b from-background to-muted/20">
                 <div className="w-full max-w-6xl">
                     <div className="text-center mb-8">
-                        <Button variant="ghost" onClick={() => setStep('role')} className="mb-4"><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
+                        {urlRole === 'dealer' ? (
+                            <Button asChild variant="ghost" className="mb-4">
+                                <Link href="/"><ArrowLeft className="mr-2 h-4 w-4" /> Back</Link>
+                            </Button>
+                        ) : (
+                            <Button variant="ghost" onClick={handleBack} className="mb-4">
+                                <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                            </Button>
+                        )}
                         <h1 className="text-3xl font-bold font-sans uppercase tracking-widest italic">Choose Your Dealer Plan</h1>
                         <p className="text-muted-foreground">Select a plan to start your 14-day free trial</p>
                     </div>
@@ -456,7 +499,8 @@ function SignupContent() {
         <FormContainer
             title={step === 'phone-signup' ? "Sign up with Phone" : "Complete Your Profile"}
             description={role === 'dealer' ? `Onboarding ${selectedPlan} Plan` : "Fill in your details"}
-            onBack={() => setStep(role === 'dealer' ? 'plan' : 'auth-method')}
+            onBack={handleBack}
+            error={error}
         >
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
@@ -566,7 +610,7 @@ function SignupContent() {
                     </>
                 )}
                 <Button type="submit" className="w-full h-12 text-lg font-bold mt-4" disabled={isLoading}>
-                    {isLoading ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : (role === 'dealer' && selectedPlan !== 'starter' ? "Pay & Create Account" : "Create Account")}
+                    {isLoading ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : (role === 'dealer' ? (selectedPlan === 'starter' ? (paymentProvider ? "Verify & Create Account" : "Create Account") : "Pay & Create Account") : "Create Account")}
                 </Button>
             </form>
         </FormContainer>

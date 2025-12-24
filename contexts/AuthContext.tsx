@@ -76,6 +76,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     subscriptionStatus: data.subscription_status,
                     subscriptionStartDate: data.subscription_start_date,
                     subscriptionEndDate: data.subscription_end_date,
+                    subscription_expires_at: data.subscription_expires_at,
+                    trial_start_date: data.trial_start_date,
                     listingLimit: data.listing_limit,
                 };
                 setUser(mappedUser as User);

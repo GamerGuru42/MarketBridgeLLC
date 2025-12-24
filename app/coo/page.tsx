@@ -3,7 +3,7 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Settings, Users, Truck, CheckCircle, Clock, AlertTriangle, BarChart3, ArrowUpRight } from 'lucide-react';
+import { Settings, Users, Truck, CheckCircle, Clock, AlertTriangle, BarChart3, ArrowUpRight, Zap, CreditCard } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -120,43 +120,51 @@ export default function COOPage() {
                     </CardContent>
                 </Card>
 
-                {/* Logistics & Escrow Health */}
-                <Card>
+                {/* Dealer Subscription Health */}
+                <Card className="lg:col-span-2">
                     <CardHeader>
-                        <CardTitle>Logistics & Escrow Status</CardTitle>
-                        <CardDescription>Abuja Inner-City Operations</CardDescription>
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <CardTitle>Dealer Subscription Health</CardTitle>
+                                <CardDescription>Monitoring the 14-day trial and renewal cycle</CardDescription>
+                            </div>
+                            <Badge variant="outline" className="animate-pulse border-primary text-primary">Live Monitoring</Badge>
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
-                                <div className="flex items-center gap-3">
-                                    <div className="h-10 w-10 rounded-full bg-green-500/20 flex items-center justify-center">
-                                        <CheckCircle className="h-5 w-5 text-green-600" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm font-bold text-green-900 italic underline">Funds in Escrow</p>
-                                        <p className="text-xs text-green-700 font-bold">Verified & Secure</p>
-                                    </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <Zap className="h-5 w-5 text-primary" />
+                                    <h4 className="font-bold text-sm italic">Active Trials</h4>
                                 </div>
-                                <div className="text-right">
-                                    <p className="text-lg font-bold text-green-900">₦42.5M</p>
-                                    <p className="text-[10px] text-green-600">Across 18 Active Deals</p>
-                                </div>
+                                <p className="text-2xl font-black">128</p>
+                                <p className="text-[10px] text-muted-foreground uppercase font-bold mt-1">First 14-day Window</p>
                             </div>
-
-                            <div className="space-y-4">
-                                <h4 className="text-sm font-bold uppercase tracking-tighter text-muted-foreground italic underline">Active Logistics Nodes</h4>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="p-3 border rounded-lg">
-                                        <p className="text-xs font-semibold">Maitama Hub</p>
-                                        <Badge className="mt-1 bg-green-500">Optimal</Badge>
-                                    </div>
-                                    <div className="p-3 border rounded-lg">
-                                        <p className="text-xs font-semibold">Wuse Dispatch</p>
-                                        <Badge className="mt-1 bg-green-500">Optimal</Badge>
-                                    </div>
+                            <div className="p-4 rounded-xl bg-orange-50 border border-orange-100">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <Clock className="h-5 w-5 text-orange-500" />
+                                    <h4 className="font-bold text-sm italic">Expiring Soon</h4>
                                 </div>
+                                <p className="text-2xl font-black">34</p>
+                                <p className="text-[10px] text-orange-600 uppercase font-bold mt-1">Last 3 Days of Trial</p>
                             </div>
+                            <div className="p-4 rounded-xl bg-slate-100 border border-slate-200">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <CreditCard className="h-5 w-5 text-slate-700" />
+                                    <h4 className="font-bold text-sm italic">Premium Active</h4>
+                                </div>
+                                <p className="text-2xl font-black">250</p>
+                                <p className="text-[10px] text-slate-500 uppercase font-bold mt-1">Paid Subscriptions</p>
+                            </div>
+                        </div>
+                        <div className="mt-6 flex items-center justify-between p-4 bg-muted/30 rounded-lg">
+                            <p className="text-xs font-medium text-muted-foreground italic">
+                                Total Dealers currently in the "Glowing Upgrade" phase based on 14-day lifecycle.
+                            </p>
+                            <Button variant="ghost" size="sm" className="text-primary font-bold gap-2">
+                                Detailed Report <ArrowUpRight className="h-3 w-3" />
+                            </Button>
                         </div>
                     </CardContent>
                 </Card>

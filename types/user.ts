@@ -19,6 +19,8 @@ export interface User {
     subscriptionStatus?: SubscriptionStatus;
     subscriptionStartDate?: string;
     subscriptionEndDate?: string;
+    subscription_expires_at?: string;
+    trial_start_date?: string;
     listingLimit?: number;
 }
 
