@@ -318,7 +318,7 @@ export default function HomePage() {
                             price: 18500000,
                             location: "Maitama, Abuja",
                             rating: 4.9,
-                            image: "https://images.unsplash.com/photo-1598282361110-3487f879309a?auto=format&fit=crop&w=800&q=80"
+                            image: "/toyota-camry.png"
                         },
                         {
                             id: 2,
@@ -326,7 +326,7 @@ export default function HomePage() {
                             price: 15200000,
                             location: "Wuse II, Abuja",
                             rating: 4.8,
-                            image: "https://images.unsplash.com/photo-1617469767053-d8229a9a6114?auto=format&fit=crop&w=800&q=80"
+                            image: "/honda-accord.png"
                         },
                         {
                             id: 3,
