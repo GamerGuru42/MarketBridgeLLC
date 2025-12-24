@@ -12,6 +12,7 @@ import { Loader2, MapPin, Globe, MessageCircle, ShoppingCart, Package, ArrowLeft
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { ReviewsSection } from '@/components/ReviewsSection';
+import { useFlutterwave, getFlutterwaveConfig } from '@/lib/flutterwave';
 
 interface Listing {
     id: string;
@@ -52,6 +53,7 @@ export default function ListingDetailPage() {
     const params = useParams();
     const router = useRouter();
     const { user } = useAuth();
+    const { initializePayment } = useFlutterwave();
     const [listing, setListing] = useState<Listing | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -215,28 +217,46 @@ export default function ListingDetailPage() {
         if (!listing) return;
 
         setActionLoading(true);
-        try {
-            // Create order with just listing ID for quick buy
-            const { error } = await supabase
-                .from('orders')
-                .insert({
-                    buyer_id: user.id,
-                    seller_id: listing.dealer.id,
-                    listing_id: listing.id,
-                    amount: listing.price,
-                    status: 'pending',
-                });
 
-            if (error) throw error;
+        const config = getFlutterwaveConfig(
+            `TX-${Date.now()}-${user.id.slice(0, 5)}`,
+            listing.price,
+            user.email,
+            user.displayName,
+            '08000000000', // Default phone if not available
+            async (response: any) => {
+                console.log('Payment success:', response);
+                try {
+                    const { error } = await supabase
+                        .from('orders')
+                        .insert({
+                            buyer_id: user.id,
+                            seller_id: listing.dealer.id,
+                            listing_id: listing.id,
+                            amount: listing.price,
+                            status: 'paid',
+                            transaction_ref: response.tx_ref,
+                            payment_provider: 'flutterwave'
+                        });
 
-            alert('Order placed successfully!');
-            router.push('/orders');
-        } catch (err: any) {
-            console.error('Error placing order:', err);
-            alert(err.message || 'Failed to place order');
-        } finally {
-            setActionLoading(false);
-        }
+                    if (error) throw error;
+
+                    alert('Secure payment successful! Order placed.');
+                    router.push('/orders');
+                } catch (err: any) {
+                    console.error('Error saving order:', err);
+                    alert(err.message || 'Payment successful but failed to save order.');
+                } finally {
+                    setActionLoading(false);
+                }
+            },
+            () => {
+                setActionLoading(false);
+                console.log('Payment modal closed');
+            }
+        );
+
+        initializePayment(config);
     };
 
     if (loading) {

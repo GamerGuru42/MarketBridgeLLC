@@ -64,11 +64,13 @@ CREATE TABLE IF NOT EXISTS public.orders (
     buyer_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
     seller_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
     listing_id UUID NOT NULL REFERENCES public.listings(id) ON DELETE CASCADE,
-    status TEXT NOT NULL CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled')) DEFAULT 'pending',
+    status TEXT NOT NULL CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled', 'paid', 'escrowed')) DEFAULT 'pending',
     amount NUMERIC(10, 2) NOT NULL,
     shipping_address TEXT,
     phone_number TEXT,
     notes TEXT,
+    transaction_ref TEXT,
+    payment_provider TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
