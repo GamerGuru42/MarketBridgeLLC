@@ -1,57 +1,50 @@
--- Supabase Storage Setup for Media Uploads
--- This script creates the necessary storage buckets and policies for image and video uploads
+-- ============================================
+-- SUPABASE STORAGE SETUP FOR PROFILE IMAGES
+-- ============================================
 
--- Create listings bucket for images (if not exists)
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('listings', 'listings', true)
-ON CONFLICT (id) DO NOTHING;
+-- This file documents the required Supabase Storage buckets
+-- Run these commands in the Supabase Dashboard under Storage
 
--- Create listings-videos bucket for videos
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('listings-videos', 'listings-videos', true)
-ON CONFLICT (id) DO NOTHING;
+-- 1. Create 'avatars' bucket for profile pictures
+-- Go to Storage > Create a new bucket
+-- Name: avatars
+-- Public: YES (so profile pictures can be viewed publicly)
+-- File size limit: 5MB
+-- Allowed MIME types: image/jpeg, image/png, image/webp, image/gif
 
--- Storage policies for listings bucket (images)
--- Allow authenticated users to upload images
-CREATE POLICY "Authenticated users can upload listing images"
+-- 2. Set up Storage Policies for 'avatars' bucket
+-- These policies allow authenticated users to upload and manage their own avatars
+
+-- Policy 1: Allow authenticated users to upload avatars
+CREATE POLICY "Authenticated users can upload avatars"
 ON storage.objects FOR INSERT
 TO authenticated
-WITH CHECK (bucket_id = 'listings');
+WITH CHECK (bucket_id = 'avatars');
 
--- Allow public to view listing images
-CREATE POLICY "Public can view listing images"
+-- Policy 2: Allow public read access to avatars
+CREATE POLICY "Public can view avatars"
 ON storage.objects FOR SELECT
 TO public
-USING (bucket_id = 'listings');
+USING (bucket_id = 'avatars');
 
--- Allow users to delete their own uploaded images
-CREATE POLICY "Users can delete their own listing images"
+-- Policy 3: Allow users to update their own avatars
+CREATE POLICY "Users can update their own avatars"
+ON storage.objects FOR UPDATE
+TO authenticated
+USING (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+-- Policy 4: Allow users to delete their own avatars
+CREATE POLICY "Users can delete their own avatars"
 ON storage.objects FOR DELETE
 TO authenticated
-USING (bucket_id = 'listings' AND auth.uid()::text = (storage.foldername(name))[1]);
+USING (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
 
--- Storage policies for listings-videos bucket
--- Allow authenticated users to upload videos
-CREATE POLICY "Authenticated users can upload listing videos"
-ON storage.objects FOR INSERT
-TO authenticated
-WITH CHECK (bucket_id = 'listings-videos');
-
--- Allow public to view listing videos
-CREATE POLICY "Public can view listing videos"
-ON storage.objects FOR SELECT
-TO public
-USING (bucket_id = 'listings-videos');
-
--- Allow users to delete their own uploaded videos
-CREATE POLICY "Users can delete their own listing videos"
-ON storage.objects FOR DELETE
-TO authenticated
-USING (bucket_id = 'listings-videos' AND auth.uid()::text = (storage.foldername(name))[1]);
-
--- Set file size limits (optional, can be configured in Supabase dashboard)
--- Images: 5MB
--- Videos: 50MB
-
--- Add comments for documentation
-COMMENT ON TABLE storage.buckets IS 'Storage buckets for MarketBridge media files';
+-- ============================================
+-- VERIFICATION
+-- ============================================
+-- After creating the bucket and policies:
+-- 1. Go to Settings page in the app
+-- 2. Click on the profile picture upload area
+-- 3. Select an image
+-- 4. The image should upload and display immediately
+-- 5. Click "Save Profile Changes" to persist the URL to the database
