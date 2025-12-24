@@ -58,7 +58,13 @@ export default function AdminLoginPage() {
                     .single();
 
                 if (profile && ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'cto', 'coo', 'ceo'].includes(profile.role)) {
-                    router.push('/admin');
+                    // Department-aware redirection
+                    let targetPath = '/admin';
+                    if (profile.role === 'technical_admin') targetPath = '/admin/technical';
+                    else if (profile.role === 'operations_admin') targetPath = '/admin/operations';
+                    else if (profile.role === 'marketing_admin') targetPath = '/admin/marketing';
+
+                    router.push(targetPath);
                 } else {
                     await supabase.auth.signOut();
                     setError('Access Denied: Non-administrative personnel detected.');
