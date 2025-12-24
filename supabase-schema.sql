@@ -23,6 +23,10 @@ CREATE TABLE IF NOT EXISTS public.users (
     subscription_end_date TIMESTAMPTZ,
     listing_limit INTEGER DEFAULT 5,
     phone_number TEXT,
+    -- Bank Details for Dealers
+    bank_name TEXT,
+    account_number TEXT,
+    account_name TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -64,8 +68,10 @@ CREATE TABLE IF NOT EXISTS public.orders (
     buyer_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
     seller_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
     listing_id UUID NOT NULL REFERENCES public.listings(id) ON DELETE CASCADE,
-    status TEXT NOT NULL CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled', 'paid', 'escrowed')) DEFAULT 'pending',
+    status TEXT NOT NULL CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled', 'paid', 'escrowed', 'refunded')) DEFAULT 'pending',
     amount NUMERIC(10, 2) NOT NULL,
+    platform_fee NUMERIC(10, 2), -- Calculated profit/commission
+    net_amount NUMERIC(10, 2), -- Amount to be settled to dealer
     shipping_address TEXT,
     phone_number TEXT,
     notes TEXT,
