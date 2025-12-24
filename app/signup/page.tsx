@@ -242,8 +242,10 @@ function SignupContent() {
                 options: {
                     data: {
                         display_name: formData.displayName,
+                        full_name: formData.displayName, // Fallback for various triggers
                         role: role,
-                        phone_number: formData.phoneNumber
+                        phone_number: formData.phoneNumber,
+                        location: formData.location
                     },
                 },
             });
@@ -269,13 +271,15 @@ function SignupContent() {
                         role: role,
                         location: formData.location,
                         phone_number: formData.phoneNumber,
-                        business_name: role === 'dealer' ? formData.businessName : null,
-                        cac_number: role === 'dealer' ? formData.cacNumber : null,
+                        business_name: role === 'dealer' ? (formData.businessName || null) : null,
+                        cac_number: role === 'dealer' ? (formData.cacNumber || null) : null,
                         store_type: role === 'dealer' ? formData.storeType : null,
                         subscription_plan: role === 'dealer' ? selectedPlan : 'starter',
                         subscription_status: role === 'dealer' ? (isPaidPlan ? (paymentRef === 'pending' ? 'pending_payment' : 'active') : 'trial') : 'inactive',
                         subscription_expires_at: role === 'dealer' ? trialEndDate.toISOString() : null,
                         trial_start_date: role === 'dealer' ? now.toISOString() : null,
+                        subscription_start_date: role === 'dealer' ? now.toISOString() : null,
+                        subscription_end_date: role === 'dealer' ? trialEndDate.toISOString() : null,
                         is_verified: role === 'dealer' ? cacVerified : false,
                         listing_limit: role === 'dealer' ? 999 : (planDetails?.id === 'enterprise' ? 9999 : (planDetails?.id === 'professional' ? 50 : 5)),
                         last_payment_ref: paymentRef || null

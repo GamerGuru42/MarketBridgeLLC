@@ -1,5 +1,5 @@
 export type SubscriptionPlan = 'starter' | 'professional' | 'enterprise';
-export type SubscriptionStatus = 'active' | 'inactive' | 'trial' | 'expired';
+export type SubscriptionStatus = 'active' | 'inactive' | 'trial' | 'expired' | 'pending_payment';
 
 export interface User {
     id: string; // Supabase UUID
