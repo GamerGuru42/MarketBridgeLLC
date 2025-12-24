@@ -108,7 +108,13 @@ export default function AdminSignupPage() {
                 // Critical: Wait for AuthContext to fully update before navigation
                 await new Promise(resolve => setTimeout(resolve, 500));
 
-                router.push('/admin');
+                // Department-aware redirection
+                let targetPath = '/admin';
+                if (role === 'technical_admin') targetPath = '/admin/technical';
+                else if (role === 'operations_admin') targetPath = '/admin/operations';
+                else if (role === 'marketing_admin') targetPath = '/admin/marketing';
+
+                router.push(targetPath);
             }
         } catch (err: any) {
             setError(err.message || 'Failed to create administrator account');
@@ -171,16 +177,15 @@ export default function AdminSignupPage() {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="role" className="text-xs text-slate-400 uppercase font-bold tracking-widest">Department</Label>
+                                <Label htmlFor="role" className="text-xs text-slate-400 uppercase font-bold tracking-widest">Leadership Post</Label>
                                 <Select value={role} onValueChange={(v: any) => setRole(v)}>
-                                    <SelectTrigger className="bg-slate-950 border-slate-800 focus:ring-primary">
-                                        <SelectValue placeholder="Select Role" />
+                                    <SelectTrigger className="bg-slate-950 border-slate-800 focus:ring-primary h-12 text-blue-400 font-bold italic">
+                                        <SelectValue placeholder="Select Department" />
                                     </SelectTrigger>
                                     <SelectContent className="bg-slate-900 border-slate-800 text-white">
-                                        <SelectItem value="admin">Global Admin</SelectItem>
-                                        <SelectItem value="technical_admin">Technical Dept</SelectItem>
-                                        <SelectItem value="operations_admin">Operations Dept</SelectItem>
-                                        <SelectItem value="marketing_admin">Marketing Dept</SelectItem>
+                                        <SelectItem value="technical_admin">Head of Technical</SelectItem>
+                                        <SelectItem value="operations_admin">Head of Operations</SelectItem>
+                                        <SelectItem value="marketing_admin">Head of Marketing</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
