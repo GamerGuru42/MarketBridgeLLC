@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/sheet';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
-import { ShoppingCart, Menu, User, LogOut, LayoutDashboard, Package, Home, ListIcon, Users, DollarSign, Info, Phone, MessageCircle, Settings, Heart, Shield, CreditCard, HelpCircle } from 'lucide-react';
+import { ShoppingCart, Menu, User, LogOut, LayoutDashboard, Package, Home, ListIcon, Users, DollarSign, Info, Phone, MessageCircle, Settings, Heart, Shield, CreditCard, HelpCircle, MapPin } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export const Header = () => {
@@ -123,6 +123,12 @@ export const Header = () => {
                                                 <div className="flex flex-col space-y-1 py-1 px-1">
                                                     <p className="text-sm font-medium leading-none">{user?.displayName}</p>
                                                     <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                                                    {user?.location && (
+                                                        <div className="flex items-center pt-1 text-[10px] text-primary/80 font-medium">
+                                                            <MapPin className="mr-1 h-3 w-3" />
+                                                            {user.location}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </DropdownMenuLabel>
                                             <DropdownMenuSeparator />
@@ -243,6 +249,12 @@ export const Header = () => {
                                             <div className="flex flex-col">
                                                 <p className="text-sm font-bold truncate max-w-[180px]">{user?.displayName}</p>
                                                 <p className="text-xs text-muted-foreground truncate max-w-[180px]">{user?.email}</p>
+                                                {user?.location && (
+                                                    <p className="text-[10px] text-primary font-medium flex items-center mt-0.5">
+                                                        <MapPin className="mr-1 h-3 w-3" />
+                                                        {user.location}
+                                                    </p>
+                                                )}
                                             </div>
                                         </div>
 

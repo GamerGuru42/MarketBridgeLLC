@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, CheckCircle, User, Building, Shield, Bell, MapPin, Phone, Mail } from 'lucide-react';
 import { ImageUpload } from '@/components/ImageUpload';
+import { NIGERIAN_STATES } from '@/lib/constants';
 
 export default function SettingsPage() {
     const { user, loading: authLoading, refreshUser } = useAuth();
@@ -190,15 +191,20 @@ export default function SettingsPage() {
                                             </div>
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="location">Location</Label>
+                                            <Label htmlFor="location">Location (State)</Label>
                                             <div className="relative">
-                                                <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                                <Input
+                                                <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
+                                                <select
                                                     id="location"
-                                                    className="pl-10"
+                                                    className="flex h-10 w-full rounded-md border border-input bg-background pl-10 pr-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none"
                                                     value={formData.location}
                                                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                                />
+                                                >
+                                                    <option value="">Select State</option>
+                                                    {NIGERIAN_STATES.map((state: string) => (
+                                                        <option key={state} value={state}>{state}</option>
+                                                    ))}
+                                                </select>
                                             </div>
                                         </div>
                                     </div>

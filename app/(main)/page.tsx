@@ -11,6 +11,7 @@ import {
 import Image from 'next/image';
 import { CATEGORIES, Category } from '@/lib/categories';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 import {
     Dialog,
     DialogContent,
@@ -20,7 +21,9 @@ import {
 } from "@/components/ui/dialog";
 
 export default function HomePage() {
+    const { user } = useAuth();
     const [comingSoonCategory, setComingSoonCategory] = useState<Category | null>(null);
+    // ... rest of state ...
     const [waitlistEmail, setWaitlistEmail] = useState('');
     const [waitlistPhone, setWaitlistPhone] = useState('');
     const [waitlistSubmitted, setWaitlistSubmitted] = useState(false);
@@ -63,6 +66,11 @@ export default function HomePage() {
                     </div>
                     <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
                         Shop Without <span className="text-primary">Fear</span>
+                        {user?.location && (
+                            <span className="block text-2xl md:text-3xl text-muted-foreground mt-2 font-medium">
+                                Shop the best deals in <span className="text-primary/80 font-bold">{user.location}</span>
+                            </span>
+                        )}
                     </h1>
                     <p className="text-lg md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto px-2">
                         Starting with new and used cars, we connect verified dealers with customers through transparency and trust. From small businesses to large enterprises, we're building Nigeria's most reliable marketplace.
@@ -75,7 +83,7 @@ export default function HomePage() {
                         </div>
                         <input
                             type="text"
-                            placeholder="Search dealers near you (e.g. Ikeja)"
+                            placeholder={user?.location ? `Search dealers in ${user.location}...` : "Search dealers near you (e.g. Ikeja)"}
                             className="w-full pl-10 pr-4 py-3 rounded-full border border-input bg-background shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') {

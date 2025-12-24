@@ -15,6 +15,7 @@ import { SubscriptionPlan } from '@/types/user';
 import { CATEGORIES } from '@/lib/categories';
 import { useFlutterwave, getFlutterwaveConfig } from '@/lib/flutterwave';
 import { initiateOPayCheckout } from '@/lib/opay';
+import { NIGERIAN_STATES } from '@/lib/constants';
 
 const PRICING_PLANS = [
     {
@@ -454,8 +455,19 @@ export default function SignupPage() {
                     </div>
                 </div>
                 <div className="space-y-2">
-                    <Label>Location</Label>
-                    <Input name="location" value={formData.location} onChange={handleChange} required placeholder="Abuja, Nigeria" />
+                    <Label>Location (State)</Label>
+                    <select
+                        name="location"
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none"
+                        value={formData.location}
+                        onChange={(e: any) => setFormData({ ...formData, location: e.target.value })}
+                        required
+                    >
+                        <option value="">Select State</option>
+                        {NIGERIAN_STATES.map(state => (
+                            <option key={state} value={state}>{state}</option>
+                        ))}
+                    </select>
                 </div>
                 {role === 'dealer' && (
                     <>
