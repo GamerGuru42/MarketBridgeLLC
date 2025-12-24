@@ -8,7 +8,6 @@ const withPWA = withPWAInit({
 
 const config: NextConfig = {
   reactStrictMode: true,
-  // eslint is no longer supported in next.config.ts in Next 16
   typescript: {
     ignoreBuildErrors: true,
   },

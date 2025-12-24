@@ -18,6 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_CLIENT_URL || 'http://localhost:3000'),
   title: "MarketBridge - Nigeria's Most Trusted Business Marketplace",
   description: "Starting with new and used cars, MarketBridge connects verified dealers with customers through escrow-protected transactions. From small businesses to large enterprises, shop with confidence.",
   manifest: "/manifest.json",
