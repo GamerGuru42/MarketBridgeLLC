@@ -13,6 +13,7 @@ import { supabase } from '@/lib/supabase';
 import { Loader2, Check, ArrowLeft, ShieldCheck, Mail, Phone, User as UserIcon, CreditCard, Globe, ShoppingCart, Eye, EyeOff } from 'lucide-react';
 import { SubscriptionPlan } from '@/types/user';
 import { CATEGORIES } from '@/lib/categories';
+import { useAuth } from '@/contexts/AuthContext';
 import { useFlutterwave, getFlutterwaveConfig } from '@/lib/flutterwave';
 import { initiateOPayCheckout } from '@/lib/opay';
 import { NIGERIAN_STATES } from '@/lib/constants';
@@ -83,6 +84,7 @@ function SignupContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { initializePayment: initFlutterwave } = useFlutterwave();
+    const { refreshUser } = useAuth();
 
     // State Definitions
     const [step, setStep] = useState<'role' | 'plan' | 'details' | 'auth-method' | 'phone-signup'>('role');
@@ -251,6 +253,8 @@ function SignupContent() {
                 },
             });
 
+            let activeUser = authData?.user;
+
             if (signUpError) {
                 // If user already exists, they might have a "zombie" auth record without a profile
                 if (signUpError.message?.includes('User already registered') || signUpError.status === 400) {
@@ -260,7 +264,7 @@ function SignupContent() {
                         password: formData.password
                     });
                     if (signInData.user) {
-                        authData.user = signInData.user as any;
+                        activeUser = signInData.user;
                     } else {
                         throw new Error("This email is already registered. Please login instead.");
                     }
@@ -273,7 +277,7 @@ function SignupContent() {
                     });
 
                     if (signInData.user) {
-                        authData.user = signInData.user as any;
+                        activeUser = signInData.user;
                     } else {
                         // If all else fails, it's a real email conflict or schema issue
                         throw new Error("Database sync timeout. Please refresh the page and try logging in. If that fails, please try a different email address.");
@@ -283,7 +287,7 @@ function SignupContent() {
                 }
             }
 
-            if (authData.user) {
+            if (activeUser) {
                 // Wait briefly for trigger to complete basic profile
                 await new Promise(resolve => setTimeout(resolve, 2000));
 
@@ -298,7 +302,7 @@ function SignupContent() {
                     const { error: profileError } = await supabase
                         .from('users')
                         .upsert({
-                            id: authData.user.id,
+                            id: activeUser.id,
                             email: emailToUse,
                             display_name: formData.displayName,
                             role: role,
@@ -328,6 +332,9 @@ function SignupContent() {
                 } catch (upsertErr) {
                     console.error('Unexpected error during profile hydration:', upsertErr);
                 }
+
+                // IMPORTANT: Refresh user profile so the Header/AuthContext knows we are logged in
+                await refreshUser();
 
                 if (role === 'dealer') {
                     router.push('/dealer/dashboard');
