@@ -251,10 +251,16 @@ function SignupContent() {
                 },
             });
 
-            if (signUpError) throw signUpError;
+            if (signUpError) {
+                if (signUpError.message.includes('Database error saving new user')) {
+                    throw new Error("Critical: Database sync issue. Please ensure the 'onboarding_database_fix.sql' migration has been run in the Supabase SQL Editor.");
+                }
+                throw signUpError;
+            }
 
             if (authData.user) {
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                // Wait briefly for trigger to complete basic profile
+                await new Promise(resolve => setTimeout(resolve, 1500));
 
                 const planDetails = PRICING_PLANS.find(p => p.id === selectedPlan);
                 const isPaidPlan = selectedPlan !== 'starter';
@@ -263,35 +269,43 @@ function SignupContent() {
                 const trialEndDate = new Date();
                 trialEndDate.setDate(now.getDate() + 14);
 
-                const { error: profileError } = await supabase
-                    .from('users')
-                    .upsert({
-                        id: authData.user.id,
-                        email: emailToUse,
-                        display_name: formData.displayName,
-                        role: role,
-                        location: formData.location,
-                        phone_number: formData.phoneNumber,
-                        business_name: role === 'dealer' ? (formData.businessName || null) : null,
-                        cac_number: role === 'dealer' ? (formData.cacNumber || null) : null,
-                        store_type: role === 'dealer' ? formData.storeType : null,
-                        subscription_plan: role === 'dealer' ? selectedPlan : 'starter',
-                        subscription_status: role === 'dealer' ? (isPaidPlan ? (paymentRef === 'pending' ? 'pending_payment' : 'active') : 'trial') : 'inactive',
-                        subscription_expires_at: role === 'dealer' ? trialEndDate.toISOString() : null,
-                        trial_start_date: role === 'dealer' ? now.toISOString() : null,
-                        subscription_start_date: role === 'dealer' ? now.toISOString() : null,
-                        subscription_end_date: role === 'dealer' ? trialEndDate.toISOString() : null,
-                        is_verified: role === 'dealer' ? cacVerified : false,
-                        listing_limit: role === 'dealer' ? 999 : (planDetails?.id === 'enterprise' ? 9999 : (planDetails?.id === 'professional' ? 50 : 5)),
-                        last_payment_ref: paymentRef || null
-                    }, {
-                        onConflict: 'id'
-                    });
+                try {
+                    const { error: profileError } = await supabase
+                        .from('users')
+                        .upsert({
+                            id: authData.user.id,
+                            email: emailToUse,
+                            display_name: formData.displayName,
+                            role: role,
+                            location: formData.location,
+                            phone_number: formData.phoneNumber,
+                            business_name: role === 'dealer' ? (formData.businessName || null) : null,
+                            cac_number: role === 'dealer' ? (formData.cacNumber || null) : null,
+                            store_type: role === 'dealer' ? formData.storeType : null,
+                            subscription_plan: role === 'dealer' ? selectedPlan : 'starter',
+                            subscription_status: role === 'dealer' ? (isPaidPlan ? (paymentRef === 'pending' ? 'pending_payment' : 'active') : 'trial') : 'inactive',
+                            subscription_expires_at: role === 'dealer' ? trialEndDate.toISOString() : null,
+                            trial_start_date: role === 'dealer' ? now.toISOString() : null,
+                            subscription_start_date: role === 'dealer' ? now.toISOString() : null,
+                            subscription_end_date: role === 'dealer' ? trialEndDate.toISOString() : null,
+                            is_verified: role === 'dealer' ? cacVerified : false,
+                            listing_limit: role === 'dealer' ? 999 : (planDetails?.id === 'enterprise' ? 9999 : (planDetails?.id === 'professional' ? 50 : 5)),
+                            last_payment_ref: paymentRef || null
+                        }, {
+                            onConflict: 'id'
+                        });
 
-                if (profileError) throw profileError;
+                    if (profileError) {
+                        console.error('Profile hydration failed, but account created:', profileError);
+                        // We don't throw here to avoid the 500 error if Auth succeeded but Profile update failed
+                        // Usually happens if migration wasn't run yet
+                    }
+                } catch (upsertErr) {
+                    console.error('Unexpected error during profile hydration:', upsertErr);
+                }
 
                 if (role === 'dealer') {
-                    router.push('/vendor/dashboard');
+                    router.push('/dealer/dashboard');
                 } else {
                     router.push('/');
                 }

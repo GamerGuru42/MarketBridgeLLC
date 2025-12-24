@@ -14,13 +14,16 @@ CREATE TABLE IF NOT EXISTS public.users (
     is_verified BOOLEAN DEFAULT FALSE,
     store_type TEXT CHECK (store_type IN ('physical', 'online', 'both')),
     business_name TEXT,
+    cac_number TEXT,
     flutterwave_id TEXT,
     verification_documents TEXT[],
     wishlist TEXT[],
     subscription_plan TEXT CHECK (subscription_plan IN ('starter', 'professional', 'enterprise')),
-    subscription_status TEXT CHECK (subscription_status IN ('inactive', 'trial', 'active', 'cancelled')),
+    subscription_status TEXT CHECK (subscription_status IN ('inactive', 'trial', 'active', 'cancelled', 'pending_payment', 'expired')),
     subscription_start_date TIMESTAMPTZ,
     subscription_end_date TIMESTAMPTZ,
+    subscription_expires_at TIMESTAMPTZ,
+    trial_start_date TIMESTAMPTZ,
     listing_limit INTEGER DEFAULT 5,
     phone_number TEXT,
     -- Bank Details for Dealers
@@ -218,17 +221,31 @@ CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON public.orders
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.users (id, email, display_name, role, photo_url)
+  INSERT INTO public.users (
+    id, 
+    email, 
+    display_name, 
+    role, 
+    photo_url,
+    location,
+    phone_number
+  )
   VALUES (
     NEW.id,
     NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', split_part(NEW.email, '@', 1)),
-    'customer',
-    NEW.raw_user_meta_data->>'avatar_url'
+    COALESCE(
+      NEW.raw_user_meta_data->>'display_name', 
+      NEW.raw_user_meta_data->>'full_name', 
+      split_part(NEW.email, '@', 1)
+    ),
+    COALESCE(NEW.raw_user_meta_data->>'role', 'customer'),
+    NEW.raw_user_meta_data->>'avatar_url',
+    NEW.raw_user_meta_data->>'location',
+    NEW.raw_user_meta_data->>'phone_number'
   );
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- Trigger to call the function on new user creation
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
