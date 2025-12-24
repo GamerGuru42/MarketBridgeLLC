@@ -89,9 +89,6 @@ function SignupContent() {
     // State Definitions
     const [step, setStep] = useState<'role' | 'plan' | 'details' | 'auth-method' | 'phone-signup'>('role');
     const [role, setRole] = useState<'customer' | 'dealer' | 'admin' | 'ceo'>('customer');
-    const [showAccessCodeInput, setShowAccessCodeInput] = useState(false);
-    const [accessCode, setAccessCode] = useState('');
-    const [targetRole, setTargetRole] = useState<'admin' | 'ceo' | null>(null);
     const [showPassword, setShowPassword] = useState(false);
 
     const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan>('starter');
@@ -112,6 +109,30 @@ function SignupContent() {
     const [verificationDocs, setVerificationDocs] = useState<string[]>([]);
     const [isCacVerifying, setIsCacVerifying] = useState(false);
     const [cacVerified, setCacVerified] = useState(false);
+    const [ceoExists, setCeoExists] = useState(false);
+    const [adminLimitReached, setAdminLimitReached] = useState(false);
+
+    React.useEffect(() => {
+        const checkLimits = async () => {
+            // Check CEO
+            const { count: ceoCount } = await supabase
+                .from('users')
+                .select('*', { count: 'exact', head: true })
+                .eq('role', 'ceo');
+
+            if (ceoCount !== null && ceoCount >= 1) setCeoExists(true);
+
+            // Check Admin
+            const adminRoles = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin'];
+            const { count: adminCount } = await supabase
+                .from('users')
+                .select('*', { count: 'exact', head: true })
+                .in('role', adminRoles);
+
+            if (adminCount !== null && adminCount >= 3) setAdminLimitReached(true);
+        };
+        checkLimits();
+    }, []);
 
     // Direct routing for dealers
     React.useEffect(() => {
@@ -150,19 +171,15 @@ function SignupContent() {
     };
 
     const handleRoleSelect = (selectedRole: 'customer' | 'dealer' | 'admin' | 'ceo') => {
-        if (selectedRole === 'admin' || selectedRole === 'ceo') {
-            setTargetRole(selectedRole);
-            setAccessCode('');
-            setError('');
-            setShowAccessCodeInput(true);
-            return;
-        }
-
         setRole(selectedRole);
         if (selectedRole === 'dealer') {
             setStep('plan');
         } else if (selectedRole === 'customer') {
             setStep('auth-method');
+        } else if (selectedRole === 'ceo') {
+            router.push('/ceo/signup');
+        } else if (selectedRole === 'admin') {
+            router.push('/admin/signup');
         } else {
             setStep('details');
         }
@@ -210,24 +227,7 @@ function SignupContent() {
         setStep('details');
     };
 
-    const verifyAccessCode = (e: React.FormEvent) => {
-        e.preventDefault();
-        setError('');
 
-        if (targetRole === 'admin') {
-            if (accessCode === '1029384756') {
-                router.push('/admin/signup');
-            } else {
-                setError('Invalid Administrator Access Code');
-            }
-        } else if (targetRole === 'ceo') {
-            if (accessCode === '244466666') {
-                router.push('/ceo/signup');
-            } else {
-                setError('Invalid Executive Access Code');
-            }
-        }
-    };
 
     const createAccount = async (paymentRef?: string) => {
         try {
@@ -430,35 +430,7 @@ function SignupContent() {
 
     // Render Logic
 
-    if (showAccessCodeInput) {
-        return (
-            <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-slate-950">
-                <Card className="w-full max-w-md bg-slate-900 border-slate-800 text-slate-100 shadow-2xl">
-                    <CardHeader className="text-center">
-                        <CardTitle className="text-xl font-bold uppercase tracking-widest">Security Check</CardTitle>
-                        <CardDescription className="text-slate-400">Enter restricted access code for {targetRole}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {error && <div className="text-red-400 text-xs font-mono text-center">{error}</div>}
-                        <form onSubmit={verifyAccessCode} className="space-y-6">
-                            <Input
-                                type="password"
-                                className="bg-slate-950 border-slate-800 text-center tracking-[0.5em] font-mono text-lg"
-                                value={accessCode}
-                                onChange={(e) => setAccessCode(e.target.value)}
-                                placeholder="••••••••"
-                                autoFocus
-                            />
-                            <div className="grid grid-cols-2 gap-4">
-                                <Button type="button" variant="ghost" onClick={() => setShowAccessCodeInput(false)}>Cancel</Button>
-                                <Button type="submit">Verify</Button>
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
+
 
     if (step === 'role') {
         return (
@@ -479,16 +451,20 @@ function SignupContent() {
                             <h3 className="font-bold uppercase text-xs mb-2">Dealer</h3>
                             <p className="text-[10px] text-muted-foreground">Sell your inventory</p>
                         </Card>
-                        <Card className="group cursor-pointer hover:border-blue-500 transition-all p-6 text-center" onClick={() => handleRoleSelect('admin')}>
-                            <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">🛡️</div>
-                            <h3 className="font-bold uppercase text-xs mb-2">Admin</h3>
-                            <p className="text-[10px] text-muted-foreground">Staff management</p>
-                        </Card>
-                        <Card className="group cursor-pointer hover:border-amber-500 transition-all p-6 text-center" onClick={() => handleRoleSelect('ceo')}>
-                            <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">👑</div>
-                            <h3 className="font-bold uppercase text-xs mb-2">CEO</h3>
-                            <p className="text-[10px] text-muted-foreground">Executive oversight</p>
-                        </Card>
+                        {!adminLimitReached && (
+                            <Card className="group cursor-pointer hover:border-blue-500 transition-all p-6 text-center" onClick={() => handleRoleSelect('admin')}>
+                                <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">🛡️</div>
+                                <h3 className="font-bold uppercase text-xs mb-2">Admin</h3>
+                                <p className="text-[10px] text-muted-foreground">Staff management</p>
+                            </Card>
+                        )}
+                        {!ceoExists && (
+                            <Card className="group cursor-pointer hover:border-amber-500 transition-all p-6 text-center" onClick={() => handleRoleSelect('ceo')}>
+                                <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">👑</div>
+                                <h3 className="font-bold uppercase text-xs mb-2">CEO</h3>
+                                <p className="text-[10px] text-muted-foreground">Executive oversight</p>
+                            </Card>
+                        )}
                     </CardContent>
                 </Card>
             </div>

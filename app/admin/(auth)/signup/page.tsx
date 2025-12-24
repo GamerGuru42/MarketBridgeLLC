@@ -20,7 +20,6 @@ export default function AdminSignupPage() {
         email: '',
         password: '',
         confirmPassword: '',
-        adminCode: '', // Mock security check
     });
     const [role, setRole] = useState<'admin' | 'technical_admin' | 'operations_admin' | 'marketing_admin'>('admin');
     const [isLoading, setIsLoading] = useState(false);
@@ -33,13 +32,6 @@ export default function AdminSignupPage() {
 
         if (formData.password !== formData.confirmPassword) {
             setError('Passwords do not match');
-            setIsLoading(false);
-            return;
-        }
-
-        // Mock verification code check
-        if (formData.adminCode !== 'MB-ADMIN-2024') {
-            setError('Invalid Administrator Verification Code');
             setIsLoading(false);
             return;
         }
@@ -211,22 +203,7 @@ export default function AdminSignupPage() {
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="adminCode" className="text-xs text-slate-400 uppercase font-bold tracking-widest text-orange-400">Verification Code</Label>
-                            <div className="relative">
-                                <Lock className="absolute left-3 top-3 h-4 w-4 text-orange-500/50" />
-                                <Input
-                                    id="adminCode"
-                                    name="adminCode"
-                                    type="text"
-                                    className="bg-slate-950 border-orange-500/20 pl-10 focus:ring-orange-500 font-mono text-orange-400"
-                                    value={formData.adminCode}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="MB-XXXX-XXXX"
-                                />
-                            </div>
-                        </div>
+
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">

@@ -19,7 +19,6 @@ export default function CEOSignupPage() {
         email: '',
         password: '',
         confirmPassword: '',
-        founderCode: '',
     });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
@@ -31,13 +30,6 @@ export default function CEOSignupPage() {
 
         if (formData.password !== formData.confirmPassword) {
             setError('Passwords do not match');
-            setIsLoading(false);
-            return;
-        }
-
-        // Extremely restrictive verification for CEO
-        if (formData.founderCode !== 'MB-FOUNDER-99') {
-            setError('Invalid Founder Authorization Code');
             setIsLoading(false);
             return;
         }
@@ -161,34 +153,18 @@ export default function CEOSignupPage() {
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="grid grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-bold uppercase tracking-widest text-[#d4af37]/60">Legal Name</Label>
-                                <div className="relative">
-                                    <User className="absolute left-3 top-3 h-4 w-4 text-slate-700" />
-                                    <Input
-                                        name="displayName"
-                                        className="bg-zinc-950 border-zinc-800 pl-10 h-12 focus:ring-[#d4af37] focus:border-[#d4af37]"
-                                        value={formData.displayName}
-                                        onChange={handleChange}
-                                        required
-                                        placeholder="Full Name"
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-bold uppercase tracking-widest text-[#d4af37]/60">Verification</Label>
-                                <div className="relative">
-                                    <Sparkles className="absolute left-3 top-3 h-4 w-4 text-[#d4af37]/40" />
-                                    <Input
-                                        name="founderCode"
-                                        className="bg-zinc-950 border-zinc-800 pl-10 h-12 font-mono text-[#d4af37]"
-                                        value={formData.founderCode}
-                                        onChange={handleChange}
-                                        required
-                                        placeholder="CODE"
-                                    />
-                                </div>
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-bold uppercase tracking-widest text-[#d4af37]/60">Legal Name</Label>
+                            <div className="relative">
+                                <User className="absolute left-3 top-3 h-4 w-4 text-slate-700" />
+                                <Input
+                                    name="displayName"
+                                    className="bg-zinc-950 border-zinc-800 pl-10 h-12 focus:ring-[#d4af37] focus:border-[#d4af37]"
+                                    value={formData.displayName}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="Full Name"
+                                />
                             </div>
                         </div>
 

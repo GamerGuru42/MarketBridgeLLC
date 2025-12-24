@@ -19,6 +19,22 @@ export default function AdminLoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [adminLimitReached, setAdminLimitReached] = useState(false);
+
+    React.useEffect(() => {
+        const checkAdminCount = async () => {
+            const adminRoles = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin'];
+            const { count, error: countError } = await supabase
+                .from('users')
+                .select('*', { count: 'exact', head: true })
+                .in('role', adminRoles);
+
+            if (!countError && count !== null && count >= 3) {
+                setAdminLimitReached(true);
+            }
+        };
+        checkAdminCount();
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -151,7 +167,9 @@ export default function AdminLoginPage() {
                         BY AUTHENTICATING, YOU AGREE TO COMPLY WITH ALL INTERNAL SECURITY POLICIES AND DATA INTEGRITY STANDARDS.
                     </p>
                     <div className="flex justify-center gap-6 text-[9px] text-slate-400 font-bold uppercase tracking-tighter">
-                        <Link href="/admin/signup" className="hover:text-primary transition-colors underline">Req Access</Link>
+                        {!adminLimitReached && (
+                            <Link href="/admin/signup" className="hover:text-primary transition-colors underline">Req Access</Link>
+                        )}
                         <Link href="/login" className="hover:text-white transition-colors">Staff Login</Link>
                         <Link href="/" className="hover:text-white transition-colors">Term Home</Link>
                     </div>

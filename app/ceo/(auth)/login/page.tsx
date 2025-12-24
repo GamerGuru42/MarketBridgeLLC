@@ -19,6 +19,21 @@ export default function CEOLoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [ceoExists, setCeoExists] = useState(false);
+
+    React.useEffect(() => {
+        const checkCeoCount = async () => {
+            const { count, error: countError } = await supabase
+                .from('users')
+                .select('*', { count: 'exact', head: true })
+                .eq('role', 'ceo');
+
+            if (!countError && count !== null && count >= 1) {
+                setCeoExists(true);
+            }
+        };
+        checkCeoCount();
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -154,7 +169,9 @@ export default function CEOLoginPage() {
 
                 <CardFooter className="flex flex-col items-center gap-6 py-12 relative z-10">
                     <div className="flex items-center gap-8">
-                        <Link href="/ceo/signup" className="text-[9px] font-bold text-zinc-600 hover:text-[#d4af37] uppercase tracking-widest transition-colors">Grant Onboarding</Link>
+                        {!ceoExists && (
+                            <Link href="/ceo/signup" className="text-[9px] font-bold text-zinc-600 hover:text-[#d4af37] uppercase tracking-widest transition-colors">Grant Onboarding</Link>
+                        )}
                         <Link href="/" className="text-[9px] font-bold text-zinc-600 hover:text-white uppercase tracking-widest transition-colors underline">Public Terminal</Link>
                     </div>
                     <div className="flex items-center gap-2 text-zinc-800">
