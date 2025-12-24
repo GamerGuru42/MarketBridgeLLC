@@ -8,10 +8,12 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, Crown, ShieldAlert, Sparkles, User, Mail, Lock } from 'lucide-react';
 
 export default function CEOSignupPage() {
     const router = useRouter();
+    const { refreshUser } = useAuth();
     const [formData, setFormData] = useState({
         displayName: '',
         email: '',
@@ -47,27 +49,67 @@ export default function CEOSignupPage() {
                 options: {
                     data: {
                         display_name: formData.displayName,
+                        full_name: formData.displayName,
                         role: 'ceo',
                     },
                 },
             });
 
-            if (signUpError) throw signUpError;
+            let activeUser = authData?.user;
 
-            if (authData.user) {
-                await new Promise(resolve => setTimeout(resolve, 1000));
-
-                const { error: profileError } = await supabase
-                    .from('users')
-                    .upsert({
-                        id: authData.user.id,
+            if (signUpError) {
+                if (signUpError.message?.includes('User already registered') || signUpError.status === 400) {
+                    console.log("CEO account exists, attempting recovery...");
+                    const { data: signInData } = await supabase.auth.signInWithPassword({
                         email: formData.email,
-                        display_name: formData.displayName,
-                        role: 'ceo',
-                        is_verified: true,
+                        password: formData.password
                     });
+                    if (signInData.user) {
+                        activeUser = signInData.user;
+                    } else {
+                        throw new Error("This email is already registered. Please use the login page.");
+                    }
+                } else if (signUpError.message?.includes('Database error saving new user')) {
+                    console.warn("Database trigger failed, attempting recovery...");
+                    const { data: signInData } = await supabase.auth.signInWithPassword({
+                        email: formData.email,
+                        password: formData.password
+                    });
+                    if (signInData.user) {
+                        activeUser = signInData.user;
+                    } else {
+                        throw new Error("Database sync issue. Please contact technical support.");
+                    }
+                } else {
+                    throw signUpError;
+                }
+            }
 
-                if (profileError) throw profileError;
+            if (activeUser) {
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                try {
+                    const { error: profileError } = await supabase
+                        .from('users')
+                        .upsert({
+                            id: activeUser.id,
+                            email: formData.email,
+                            display_name: formData.displayName,
+                            role: 'ceo',
+                            is_verified: true,
+                        }, {
+                            onConflict: 'id'
+                        });
+
+                    if (profileError) {
+                        console.error('Profile creation failed:', profileError);
+                    }
+                } catch (upsertErr) {
+                    console.error('Unexpected error during profile creation:', upsertErr);
+                }
+
+                // IMPORTANT: Refresh user profile so the app knows we are logged in
+                await refreshUser();
                 router.push('/ceo');
             }
         } catch (err: any) {
