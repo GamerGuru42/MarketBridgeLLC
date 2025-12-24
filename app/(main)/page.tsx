@@ -334,7 +334,7 @@ export default function HomePage() {
                             price: 12400000,
                             location: "Garki, Abuja",
                             rating: 5.0,
-                            image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80"
+                            image: "/lexus-rx350.png"
                         },
                         {
                             id: 4,
