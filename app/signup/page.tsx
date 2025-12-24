@@ -13,6 +13,7 @@ import { supabase } from '@/lib/supabase';
 import { Loader2, Check, ArrowLeft } from 'lucide-react';
 import { SubscriptionPlan } from '@/types/user';
 import { CATEGORIES } from '@/lib/categories';
+import { useFlutterwave, getFlutterwaveConfig } from '@/lib/flutterwave';
 
 const PRICING_PLANS = [
     {
@@ -61,6 +62,7 @@ const PRICING_PLANS = [
 
 export default function SignupPage() {
     const router = useRouter();
+    const { initializePayment } = useFlutterwave();
     const [step, setStep] = useState<'role' | 'plan' | 'details' | 'auth-method'>('role');
     const [role, setRole] = useState<'customer' | 'dealer' | 'admin' | 'ceo'>('customer');
     const [showAccessCodeInput, setShowAccessCodeInput] = useState(false);
@@ -256,23 +258,7 @@ export default function SignupPage() {
         setStep('details');
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setError('');
-
-        if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
-            setIsLoading(false);
-            return;
-        }
-
-        if (formData.password.length < 6) {
-            setError('Password must be at least 6 characters');
-            setIsLoading(false);
-            return;
-        }
-
+    const createAccount = async (paymentRef?: string) => {
         try {
             // Sign up with Supabase Auth
             const { data: authData, error: signUpError } = await supabase.auth.signUp({
@@ -292,6 +278,9 @@ export default function SignupPage() {
                 // Wait a moment for the trigger to create the basic user record
                 await new Promise(resolve => setTimeout(resolve, 1000));
 
+                const planDetails = PRICING_PLANS.find(p => p.id === selectedPlan);
+                const isPaidPlan = selectedPlan !== 'starter';
+
                 // Update user profile with additional details using upsert
                 const { error: profileError } = await supabase
                     .from('users')
@@ -304,8 +293,10 @@ export default function SignupPage() {
                         business_name: role === 'dealer' ? formData.businessName : null,
                         store_type: role === 'dealer' ? formData.storeType : null,
                         subscription_plan: role === 'dealer' ? selectedPlan : 'starter',
-                        subscription_status: role === 'dealer' ? 'trial' : 'inactive',
+                        subscription_status: role === 'dealer' ? (isPaidPlan ? 'active' : 'trial') : 'inactive',
                         is_verified: false,
+                        // Store payment ref if available, could be in a separate payments table in real app
+                        listing_limit: planDetails?.id === 'enterprise' ? 9999 : (planDetails?.id === 'professional' ? 50 : 5)
                     }, {
                         onConflict: 'id'
                     });
@@ -321,9 +312,56 @@ export default function SignupPage() {
             }
         } catch (err: any) {
             setError(err.message || 'Failed to create account');
-        } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError('');
+
+        if (formData.password !== formData.confirmPassword) {
+            setError('Passwords do not match');
+            setIsLoading(false);
+            return;
+        }
+
+        if (formData.password.length < 6) {
+            setError('Password must be at least 6 characters');
+            setIsLoading(false);
+            return;
+        }
+
+        // Handle Dealer Payment if Paid Plan
+        if (role === 'dealer' && selectedPlan !== 'starter') {
+            const plan = PRICING_PLANS.find(p => p.id === selectedPlan);
+            if (plan) {
+                const amount = parseInt(plan.price.replace(/[^0-9]/g, ''));
+
+                const config = getFlutterwaveConfig(
+                    `SUB-${Date.now()}-${formData.email.slice(0, 3)}`,
+                    amount,
+                    formData.email,
+                    formData.displayName,
+                    '08000000000', // Capture phone in form if needed
+                    (response: any) => {
+                        console.log('Subscription payment success:', response);
+                        createAccount(response.tx_ref);
+                    },
+                    () => {
+                        setIsLoading(false);
+                        console.log('Payment modal closed');
+                    }
+                );
+
+                initializePayment(config);
+                return; // Wait for payment callback
+            }
+        }
+
+        // Standard signup (Customer or Free Dealer)
+        await createAccount();
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
