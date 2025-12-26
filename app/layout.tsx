@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -79,6 +80,7 @@ export default function RootLayout({
               {children}
               <AiAssistant />
               <CookieConsent />
+              <SpeedInsights />
             </CartProvider>
           </AuthProvider>
         </ThemeProvider>
