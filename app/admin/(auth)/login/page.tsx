@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { normalizeIdentifier } from '@/lib/auth/utils';
+import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, ShieldCheck, Lock, Mail, ChevronRight, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 export default function AdminLoginPage() {
@@ -22,7 +23,18 @@ export default function AdminLoginPage() {
     const [error, setError] = useState('');
     const [adminLimitReached, setAdminLimitReached] = useState(false);
 
+    const { user, refreshUser, loading: authLoading } = useAuth();
+
     React.useEffect(() => {
+        // Redirect if already logged in as Admin
+        if (!authLoading && user && ['admin', 'technical_admin', 'operations_admin', 'marketing_admin'].includes(user.role)) {
+            let targetPath = '/admin';
+            if (user.role === 'technical_admin') targetPath = '/admin/technical';
+            else if (user.role === 'operations_admin') targetPath = '/admin/operations';
+            else if (user.role === 'marketing_admin') targetPath = '/admin/marketing';
+            router.push(targetPath);
+        }
+
         const checkAdminCount = async () => {
             const adminRoles = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin'];
             const { count, error: countError } = await supabase
@@ -35,7 +47,7 @@ export default function AdminLoginPage() {
             }
         };
         checkAdminCount();
-    }, []);
+    }, [user, authLoading, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -72,6 +84,12 @@ export default function AdminLoginPage() {
 
                 if (profile && ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'cto', 'coo', 'ceo'].includes(profile.role)) {
                     console.log('Privileges verified:', profile.role);
+
+                    // Sync the context first
+                    await refreshUser();
+                    // Brief delay to ensure context update
+                    await new Promise(r => setTimeout(r, 500));
+
                     // Department-aware redirection
                     let targetPath = '/admin';
                     if (profile.role === 'technical_admin') targetPath = '/admin/technical';
@@ -172,7 +190,11 @@ export default function AdminLoginPage() {
                             </div>
                         </div>
 
-                        <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white font-black italic tracking-widest h-12 transition-all group" disabled={isLoading}>
+                        <Button
+                            type="submit"
+                            className="w-full bg-primary hover:bg-primary/90 text-white font-black italic tracking-widest h-12 transition-all group z-50"
+                            disabled={isLoading}
+                        >
                             {isLoading ? (
                                 <Loader2 className="h-5 w-5 animate-spin" />
                             ) : (

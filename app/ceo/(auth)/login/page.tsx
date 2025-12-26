@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { normalizeIdentifier } from '@/lib/auth/utils';
+import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, Crown, Key, Lock, Mail, ChevronRight, Gavel, Eye, EyeOff } from 'lucide-react';
 
 export default function CEOLoginPage() {
@@ -22,7 +23,14 @@ export default function CEOLoginPage() {
     const [error, setError] = useState('');
     const [ceoExists, setCeoExists] = useState(false);
 
+    const { user, refreshUser, loading: authLoading } = useAuth();
+
     React.useEffect(() => {
+        // Redirect if already logged in as CEO
+        if (!authLoading && user && (user.role === 'ceo' || user.role === 'cofounder')) {
+            router.push('/ceo');
+        }
+
         const checkCeoCount = async () => {
             const { count, error: countError } = await supabase
                 .from('users')
@@ -34,7 +42,7 @@ export default function CEOLoginPage() {
             }
         };
         checkCeoCount();
-    }, []);
+    }, [user, authLoading, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -69,10 +77,15 @@ export default function CEOLoginPage() {
                 }
 
                 if (profile && profile.role === 'ceo') {
-                    console.log('CEO Clearance Confirmed. Redirecting...');
+                    console.log('CEO Clearance Confirmed. Syncing session...');
+                    await refreshUser();
+                    // Brief delay to ensure context update
+                    await new Promise(r => setTimeout(r, 500));
                     router.push('/ceo');
-                } else if (profile && profile.role === 'admin') {
-                    console.log('Admin Clearance Detected. Redirecting...');
+                } else if (profile && (profile.role === 'admin' || profile.role === 'technical_admin')) {
+                    console.log('Admin Clearance Detected. Syncing session...');
+                    await refreshUser();
+                    await new Promise(r => setTimeout(r, 500));
                     router.push('/admin');
                 } else {
                     console.warn('Unauthorized role detected:', profile?.role);
@@ -171,7 +184,11 @@ export default function CEOLoginPage() {
                             </div>
                         </div>
 
-                        <Button type="submit" className="w-full bg-[#d4af37] hover:bg-[#e5c150] text-black font-black uppercase tracking-[0.2em] h-14 rounded-none transition-all relative overflow-hidden group shadow-[0_0_20px_rgba(212,175,55,0.1)]" disabled={isLoading}>
+                        <Button
+                            type="submit"
+                            className="w-full bg-[#d4af37] hover:bg-[#e5c150] text-black font-black uppercase tracking-[0.2em] h-14 rounded-none transition-all relative overflow-hidden group shadow-[0_0_20px_rgba(212,175,55,0.1)] z-50"
+                            disabled={isLoading}
+                        >
                             {isLoading ? (
                                 <Loader2 className="h-6 w-6 animate-spin" />
                             ) : (
