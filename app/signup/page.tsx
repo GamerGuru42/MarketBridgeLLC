@@ -18,6 +18,7 @@ import { useFlutterwave, getFlutterwaveConfig } from '@/lib/flutterwave';
 import { initiateOPayCheckout } from '@/lib/opay';
 import { NIGERIAN_STATES } from '@/lib/constants';
 import { useSearchParams } from 'next/navigation';
+import { normalizeIdentifier } from '@/lib/auth/utils';
 
 const PRICING_PLANS = [
     {
@@ -84,7 +85,7 @@ function SignupContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { initializePayment: initFlutterwave } = useFlutterwave();
-    const { refreshUser } = useAuth();
+    const { refreshUser, signInWithGoogle } = useAuth();
 
     // State Definitions
     const [step, setStep] = useState<'role' | 'plan' | 'details' | 'auth-method' | 'phone-signup'>('role');
@@ -148,14 +149,7 @@ function SignupContent() {
         setIsLoading(true);
         setError('');
         try {
-            const { error: signInError } = await supabase.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                    redirectTo: `${window.location.origin}/auth/callback`,
-                },
-            });
-
-            if (signInError) throw signInError;
+            await signInWithGoogle();
         } catch (err: any) {
             console.error(err);
             setError('Failed to sign in with Google');
@@ -231,12 +225,10 @@ function SignupContent() {
 
     const createAccount = async (paymentRef?: string) => {
         try {
-            let emailToUse = formData.email;
-            if (step === 'phone-signup') {
-                const cleanPhone = formData.phoneNumber.replace(/\D/g, '');
-                if (!cleanPhone) throw new Error("Phone number required");
-                if (cleanPhone.length < 11) throw new Error("Please enter a valid phone number");
-                emailToUse = `phone-${cleanPhone}@marketbridge.local`;
+            const emailToUse = normalizeIdentifier(formData.email || formData.phoneNumber);
+
+            if (step === 'phone-signup' && !formData.phoneNumber.replace(/\D/g, '')) {
+                throw new Error("Phone number required");
             }
 
             const { data: authData, error: signUpError } = await supabase.auth.signUp({

@@ -9,8 +9,11 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { normalizeIdentifier } from '@/lib/auth/utils';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
+    const { signInWithGoogle } = useAuth();
     const router = useRouter();
     const [formData, setFormData] = useState({
         email: '',
@@ -31,16 +34,7 @@ export default function LoginPage() {
         setError('');
 
         try {
-            let emailToUse = formData.email;
-
-            // simple check: if no '@', assume it's a phone number
-            if (!emailToUse.includes('@')) {
-                const cleanPhone = emailToUse.replace(/\D/g, '');
-                if (cleanPhone.length < 5) { // Basic length check
-                    throw new Error("Invalid phone number format");
-                }
-                emailToUse = `phone-${cleanPhone}@marketbridge.local`;
-            }
+            const emailToUse = normalizeIdentifier(formData.email);
 
             const { data, error: signInError } = await supabase.auth.signInWithPassword({
                 email: emailToUse,
@@ -70,14 +64,7 @@ export default function LoginPage() {
         setIsLoading(true);
         setError('');
         try {
-            const { error: signInError } = await supabase.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                    redirectTo: `${window.location.origin}/auth/callback`,
-                },
-            });
-
-            if (signInError) throw signInError;
+            await signInWithGoogle();
         } catch (err: any) {
             console.error(err);
             setError('Failed to sign in with Google');

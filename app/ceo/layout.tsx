@@ -15,40 +15,35 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
+import { DashboardHeader } from '@/components/dashboard-header';
+
 export default function CEOLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
     const { user, loading } = useAuth();
-    const router = useRouter();
     const pathname = usePathname();
 
     const isAuthPage = pathname?.includes('/login') || pathname?.includes('/signup');
-
-    React.useEffect(() => {
-        if (isAuthPage) return; // Skip check for auth pages
-
-        if (!loading && (!user || !['ceo', 'cofounder'].includes(user.role))) {
-            router.push('/ceo/login');
-        }
-    }, [user, loading, router, pathname, isAuthPage]);
 
     if (isAuthPage) {
         return <>{children}</>;
     }
 
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-black"><Loader2 className="h-8 w-8 animate-spin text-[#d4af37]" /></div>;
-    if (!user) return null;
 
     return (
         <div className="flex min-h-screen">
             <div className="hidden md:block w-64 fixed h-full z-10">
                 <Sidebar items={ceoItems} title="CEO Dashboard" />
             </div>
-            <main className="flex-1 md:ml-64 p-8 bg-[#050505] text-white">
-                {children}
-            </main>
+            <div className="flex-1 md:ml-64 flex flex-col">
+                <DashboardHeader title="CEO Dashboard" sidebarItems={ceoItems} />
+                <main className="flex-1 p-4 md:p-8 bg-[#050505] text-white">
+                    {children}
+                </main>
+            </div>
         </div>
     );
 }

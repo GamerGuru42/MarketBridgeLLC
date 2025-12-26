@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -39,10 +40,14 @@ interface Listing {
 }
 
 export default function ListingsPage() {
+    const searchParams = useSearchParams();
+    const initialLocation = searchParams?.get('location') || '';
+
     const [listings, setListings] = useState<Listing[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
+    const [location, setLocation] = useState(initialLocation);
     const [category, setCategory] = useState('Automotive');
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
@@ -50,7 +55,7 @@ export default function ListingsPage() {
 
     useEffect(() => {
         fetchListings();
-    }, [category, condition]);
+    }, [category, condition, location]);
 
     const fetchListings = async () => {
         setLoading(true);

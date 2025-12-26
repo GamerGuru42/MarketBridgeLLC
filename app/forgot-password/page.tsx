@@ -6,8 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowLeft, Mail, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Mail, ShieldCheck, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { normalizeIdentifier } from '@/lib/auth/utils';
 
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState('');
@@ -20,7 +21,9 @@ export default function ForgotPasswordPage() {
         setMessage(null);
 
         try {
-            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            const emailToUse = normalizeIdentifier(email);
+
+            const { error } = await supabase.auth.resetPasswordForEmail(emailToUse, {
                 redirectTo: `${window.location.origin}/reset-password`,
             });
 
@@ -28,7 +31,7 @@ export default function ForgotPasswordPage() {
 
             setMessage({
                 type: 'success',
-                text: 'Password reset link sent! Check your email inbox.'
+                text: 'Password reset link sent! If the email or phone number is associated with an account, you will receive a link to set a new password.'
             });
         } catch (err: any) {
             setMessage({
@@ -57,8 +60,8 @@ export default function ForgotPasswordPage() {
                 <CardContent>
                     {message && (
                         <div className={`p-4 rounded-lg mb-6 flex items-start gap-3 ${message.type === 'success'
-                                ? 'bg-green-500/10 border border-green-500/20 text-green-600'
-                                : 'bg-destructive/10 border border-destructive/20 text-destructive'
+                            ? 'bg-green-500/10 border border-green-500/20 text-green-600'
+                            : 'bg-destructive/10 border border-destructive/20 text-destructive'
                             }`}>
                             {message.type === 'success' ? <ShieldCheck className="h-5 w-5 shrink-0" /> : <Mail className="h-5 w-5 shrink-0" />}
                             <p className="text-sm font-medium">{message.text}</p>
@@ -68,19 +71,29 @@ export default function ForgotPasswordPage() {
                     {!message || message.type !== 'success' ? (
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="email">Email Address</Label>
+                                <Label htmlFor="email">Email or Phone Number</Label>
                                 <Input
                                     id="email"
-                                    type="email"
-                                    placeholder="name@example.com"
+                                    type="text"
+                                    placeholder="your@email.com or 080..."
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
                                     className="h-12"
                                 />
+                                <p className="text-[10px] text-muted-foreground italic">
+                                    Dealers: Use the email or phone number you registered with.
+                                </p>
                             </div>
                             <Button type="submit" className="w-full h-12 text-base font-bold" disabled={isLoading}>
-                                {isLoading ? 'Sending Link...' : 'Reset Password'}
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Sending Link...
+                                    </>
+                                ) : (
+                                    'Reset Password'
+                                )}
                             </Button>
                         </form>
                     ) : (

@@ -305,11 +305,11 @@ export default function DealerDashboardPage() {
     const isExpired = daysRemaining <= 0 && expiryDate;
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="container mx-auto py-10 px-4 space-y-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold mb-2 uppercase italic tracking-tighter">Dealer Dashboard</h1>
-                    <p className="text-muted-foreground">Manage your orders and track your sales</p>
+                    <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">Dealer Hub</h1>
+                    <p className="text-muted-foreground mt-2">Strategic inventory management and revenue tracking for {user?.displayName}.</p>
                 </div>
 
                 <div className="flex items-center gap-3">

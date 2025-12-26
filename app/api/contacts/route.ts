@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
+import { withAuth } from '@/lib/auth/api-guard';
 
-export async function POST(request: Request) {
+async function handler(request: Request) {
     try {
         const body = await request.json();
 
@@ -18,3 +19,5 @@ export async function POST(request: Request) {
         );
     }
 }
+
+export const POST = withAuth(handler);

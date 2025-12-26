@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, ShieldCheck, Lock } from 'lucide-react';
+import Link from 'next/link';
+import { Eye, EyeOff, ShieldCheck, Lock, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 export default function ResetPasswordPage() {
@@ -15,8 +16,20 @@ export default function ResetPasswordPage() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isCheckingSession, setIsCheckingSession] = useState(true);
     const [error, setError] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
+
+    React.useEffect(() => {
+        const checkSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                setError('Invalid or expired reset link. Please request a new one.');
+            }
+            setIsCheckingSession(false);
+        };
+        checkSession();
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -52,6 +65,14 @@ export default function ResetPasswordPage() {
         }
     };
 
+    if (isCheckingSession) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-background">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        );
+    }
+
     if (isSuccess) {
         return (
             <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-b from-background to-muted/20">
@@ -84,48 +105,57 @@ export default function ResetPasswordPage() {
                 </CardHeader>
                 <CardContent>
                     {error && (
-                        <div className="p-3 bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-lg mb-6">
-                            {error}
+                        <div className="space-y-4">
+                            <div className="p-3 bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-lg">
+                                {error}
+                            </div>
+                            {error.includes('expired') && (
+                                <Button asChild variant="outline" className="w-full">
+                                    <Link href="/forgot-password">Request New Link</Link>
+                                </Button>
+                            )}
                         </div>
                     )}
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="password">New Password</Label>
-                            <div className="relative">
+                    {!error.includes('expired') && (
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="password">New Password</Label>
+                                <div className="relative">
+                                    <Input
+                                        id="password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                        className="h-12 pr-12"
+                                        placeholder="••••••••"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                    >
+                                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="confirmPassword">Confirm Password</Label>
                                 <Input
-                                    id="password"
+                                    id="confirmPassword"
                                     type={showPassword ? 'text' : 'password'}
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
                                     required
-                                    className="h-12 pr-12"
+                                    className="h-12"
                                     placeholder="••••••••"
                                 />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                                >
-                                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                                </button>
                             </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="confirmPassword">Confirm Password</Label>
-                            <Input
-                                id="confirmPassword"
-                                type={showPassword ? 'text' : 'password'}
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                required
-                                className="h-12"
-                                placeholder="••••••••"
-                            />
-                        </div>
-                        <Button type="submit" className="w-full h-12 text-base font-bold mt-2" disabled={isLoading}>
-                            {isLoading ? 'Updating...' : 'Update Password'}
-                        </Button>
-                    </form>
+                            <Button type="submit" className="w-full h-12 text-base font-bold mt-2" disabled={isLoading}>
+                                {isLoading ? 'Updating...' : 'Update Password'}
+                            </Button>
+                        </form>
+                    )}
                 </CardContent>
             </Card>
         </div>
