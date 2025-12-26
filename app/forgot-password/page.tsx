@@ -17,26 +17,33 @@ export default function ForgotPasswordPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log('INITIATING PASSWORD RECOVERY...');
         setIsLoading(true);
         setMessage(null);
 
         try {
             const emailToUse = normalizeIdentifier(email);
+            console.log('Recovery target:', emailToUse);
 
             const { error } = await supabase.auth.resetPasswordForEmail(emailToUse, {
                 redirectTo: `${window.location.origin}/reset-password`,
             });
 
-            if (error) throw error;
+            if (error) {
+                console.error('Reset request failed:', error);
+                throw error;
+            }
 
+            console.log('Recovery link dispatched successfully.');
             setMessage({
                 type: 'success',
                 text: 'Password reset link sent! If the email or phone number is associated with an account, you will receive a link to set a new password.'
             });
         } catch (err: any) {
+            console.error('Recovery exception:', err);
             setMessage({
                 type: 'error',
-                text: err.message || 'Failed to send reset link.'
+                text: err.message || 'Failed to send reset link - check connectivity.'
             });
         } finally {
             setIsLoading(false);

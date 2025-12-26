@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { normalizeIdentifier } from '@/lib/auth/utils';
 import { Loader2, ShieldCheck, Lock, Mail, User, Briefcase } from 'lucide-react';
 
 export default function AdminSignupPage() {
@@ -37,8 +38,11 @@ export default function AdminSignupPage() {
         }
 
         try {
+            const identifier = normalizeIdentifier(formData.email);
+            console.log('INITIATING ADMIN PROVISIONING FOR:', identifier);
+
             const { data: authData, error: signUpError } = await supabase.auth.signUp({
-                email: formData.email,
+                email: identifier,
                 password: formData.password,
                 options: {
                     data: {
@@ -87,7 +91,7 @@ export default function AdminSignupPage() {
                         .from('users')
                         .upsert({
                             id: activeUser.id,
-                            email: formData.email,
+                            email: identifier,
                             display_name: formData.displayName,
                             role: role,
                             is_verified: true,

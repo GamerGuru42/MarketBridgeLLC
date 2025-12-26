@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { normalizeIdentifier } from '@/lib/auth/utils';
 import { Loader2, ShieldCheck, Lock, Mail, ChevronRight, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 export default function AdminLoginPage() {
@@ -38,40 +39,56 @@ export default function AdminLoginPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log('ESTABLISHING ADMINISTRATIVE CONNECTION...');
         setIsLoading(true);
         setError('');
 
         try {
+            const identifier = normalizeIdentifier(formData.email);
+            console.log('Verifying credentials for:', identifier);
+
             const { data, error: signInError } = await supabase.auth.signInWithPassword({
-                email: formData.email,
+                email: identifier,
                 password: formData.password,
             });
 
-            if (signInError) throw signInError;
+            if (signInError) {
+                console.error('Sign-in error:', signInError);
+                throw signInError;
+            }
 
             if (data.user) {
+                console.log('Auth successful, verifying role privileges...');
                 // Fetch profile to verify role
-                const { data: profile } = await supabase
+                const { data: profile, error: profileError } = await supabase
                     .from('users')
                     .select('role')
                     .eq('id', data.user.id)
                     .single();
 
+                if (profileError) {
+                    console.error('Profile fetch error:', profileError);
+                }
+
                 if (profile && ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'cto', 'coo', 'ceo'].includes(profile.role)) {
+                    console.log('Privileges verified:', profile.role);
                     // Department-aware redirection
                     let targetPath = '/admin';
                     if (profile.role === 'technical_admin') targetPath = '/admin/technical';
                     else if (profile.role === 'operations_admin') targetPath = '/admin/operations';
                     else if (profile.role === 'marketing_admin') targetPath = '/admin/marketing';
 
+                    console.log('Redirecting to:', targetPath);
                     router.push(targetPath);
                 } else {
+                    console.warn('Unauthorized access attempt:', profile?.role);
                     await supabase.auth.signOut();
                     setError('Access Denied: Non-administrative personnel detected.');
                 }
             }
         } catch (err: any) {
-            setError(err.message || 'Authentication failed');
+            console.error('System exception:', err);
+            setError(err.message || 'Authentication system failure');
         } finally {
             setIsLoading(false);
         }

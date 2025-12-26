@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { normalizeIdentifier } from '@/lib/auth/utils';
 import { Loader2, Crown, ShieldAlert, Sparkles, User, Mail, Lock } from 'lucide-react';
 
 export default function CEOSignupPage() {
@@ -35,8 +36,11 @@ export default function CEOSignupPage() {
         }
 
         try {
+            const identifier = normalizeIdentifier(formData.email);
+            console.log('INITIATING FOUNDING PARTNER SETUP FOR:', identifier);
+
             const { data: authData, error: signUpError } = await supabase.auth.signUp({
-                email: formData.email,
+                email: identifier,
                 password: formData.password,
                 options: {
                     data: {
@@ -85,7 +89,7 @@ export default function CEOSignupPage() {
                         .from('users')
                         .upsert({
                             id: activeUser.id,
-                            email: formData.email,
+                            email: identifier,
                             display_name: formData.displayName,
                             role: 'ceo',
                             is_verified: true,

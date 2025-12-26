@@ -141,6 +141,16 @@ CREATE TABLE IF NOT EXISTS public.waitlist (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS public.contact_messages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    message TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'unread' CHECK (status IN ('unread', 'read', 'archived')),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Escrow System
 CREATE TABLE IF NOT EXISTS public.escrow_templates (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -285,6 +295,11 @@ CREATE POLICY "Manage agreements" ON public.escrow_agreements FOR ALL USING (buy
 -- Waitlist
 CREATE POLICY "Join waitlist" ON public.waitlist FOR INSERT WITH CHECK (true);
 CREATE POLICY "Admin view waitlist" ON public.waitlist FOR SELECT USING (public.is_executive());
+
+-- Contact Messages
+ALTER TABLE public.contact_messages ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public create contact messages" ON public.contact_messages FOR INSERT WITH CHECK (true);
+CREATE POLICY "Admin view contact messages" ON public.contact_messages FOR SELECT USING (public.is_executive());
 
 -- ========================================================
 -- DONE! RUN THE ABOVE IN SUPABASE SQL EDITOR.

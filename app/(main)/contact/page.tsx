@@ -16,14 +16,14 @@ export default function ContactPage() {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
 
         try {
-            const baseUrl = process.env.NEXT_PUBLIC_API_URL
-                || (process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : 'http://localhost:3000');
+            const baseUrl = window.location.origin;
             const response = await fetch(`${baseUrl}/api/contacts`, {
                 method: 'POST',
                 headers: {
@@ -32,20 +32,23 @@ export default function ContactPage() {
                 body: JSON.stringify(formData),
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                throw new Error('Failed to send message');
+                throw new Error(data.error || 'Failed to send message');
             }
 
             setSubmitted(true);
+            setSuccessMessage(data.message || 'Thank you for your message! We will get back to you soon.');
             setFormData({ name: '', email: '', subject: '', message: '' });
 
-            setTimeout(() => setSubmitted(false), 5000);
-        } catch (error) {
+            setTimeout(() => {
+                setSubmitted(false);
+                setSuccessMessage('');
+            }, 8000);
+        } catch (error: any) {
             console.error('Error sending message:', error);
-            // Fallback: Simulate success for demo purposes
-            setSubmitted(true);
-            setFormData({ name: '', email: '', subject: '', message: '' });
-            setTimeout(() => setSubmitted(false), 5000);
+            alert(error.message || 'Something went wrong. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -93,7 +96,8 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <h3 className="font-semibold mb-1">Phone</h3>
-                                        <p className="text-sm text-muted-foreground">+234 800 000 0000</p>
+                                        <p className="text-sm text-muted-foreground">+234 805 593 3107</p>
+                                        <p className="text-sm text-muted-foreground">+234 913 994 6753</p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -106,8 +110,9 @@ export default function ContactPage() {
                                         <MapPin className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold mb-1">Office</h3>
-                                        <p className="text-sm text-muted-foreground">Lagos, Nigeria</p>
+                                        <h3 className="font-semibold mb-1">Headquarters</h3>
+                                        <p className="text-sm text-muted-foreground">Abuja, Nigeria</p>
+                                        <p className="text-[10px] text-primary font-mono uppercase mt-1">Digital-First Operations</p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -121,9 +126,9 @@ export default function ContactPage() {
                         </CardHeader>
                         <CardContent>
                             {submitted ? (
-                                <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 text-center">
-                                    <p className="text-primary font-semibold">Thank you for your message!</p>
-                                    <p className="text-sm text-muted-foreground mt-2">We'll get back to you soon.</p>
+                                <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 text-center animate-in fade-in duration-500">
+                                    <p className="text-primary font-bold text-lg mb-2">Message Dispatched!</p>
+                                    <p className="text-sm text-muted-foreground">{successMessage}</p>
                                 </div>
                             ) : (
                                 <form onSubmit={handleSubmit} className="space-y-4">

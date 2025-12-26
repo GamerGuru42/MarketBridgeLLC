@@ -30,24 +30,31 @@ export default function LoginPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log('LOGIN ATTEMPT INITIATED...');
         setIsLoading(true);
         setError('');
 
         try {
             const emailToUse = normalizeIdentifier(formData.email);
+            console.log('Target account:', emailToUse);
 
             const { data, error: signInError } = await supabase.auth.signInWithPassword({
                 email: emailToUse,
                 password: formData.password,
             });
 
-            if (signInError) throw signInError;
+            if (signInError) {
+                console.error('Sign-in error details:', signInError);
+                throw signInError;
+            }
 
             if (data.user) {
+                console.log('Authentication successful for UID:', data.user.id);
                 router.push('/');
             }
         } catch (err: any) {
-            setError(err.message || 'Failed to login');
+            console.error('Auth handler exception:', err);
+            setError(err.message || 'Verification failure - check credentials and connectivity');
         } finally {
             setIsLoading(false);
         }

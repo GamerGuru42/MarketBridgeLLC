@@ -225,7 +225,9 @@ function SignupContent() {
 
     const createAccount = async (paymentRef?: string) => {
         try {
+            console.log('INITIATING ACCOUNT CREATION...');
             const emailToUse = normalizeIdentifier(formData.email || formData.phoneNumber);
+            console.log('Normalized Identifier:', emailToUse);
 
             if (step === 'phone-signup' && !formData.phoneNumber.replace(/\D/g, '')) {
                 throw new Error("Phone number required");
@@ -248,6 +250,7 @@ function SignupContent() {
             let activeUser = authData?.user;
 
             if (signUpError) {
+                console.error('Account creation error:', signUpError);
                 // If user already exists, they might have a "zombie" auth record without a profile
                 if (signUpError.message?.includes('User already registered') || signUpError.status === 400) {
                     console.log("User already exists in Auth, attempting to repair/update profile...");
@@ -269,6 +272,7 @@ function SignupContent() {
                     });
 
                     if (signInData.user) {
+                        console.log('Recovery sign-in successful.');
                         activeUser = signInData.user;
                     } else {
                         // If all else fails, it's a real email conflict or schema issue
@@ -291,6 +295,7 @@ function SignupContent() {
                 trialEndDate.setDate(now.getDate() + 14);
 
                 try {
+                    console.log('Hydrating user profile for:', activeUser.id);
                     const { error: profileError } = await supabase
                         .from('users')
                         .upsert({
@@ -320,6 +325,8 @@ function SignupContent() {
                         console.error('Profile hydration failed, but account created:', profileError);
                         // We don't throw here to avoid the 500 error if Auth succeeded but Profile update failed
                         // Usually happens if migration wasn't run yet
+                    } else {
+                        console.log('Profile hydration complete.');
                     }
                 } catch (upsertErr) {
                     console.error('Unexpected error during profile hydration:', upsertErr);

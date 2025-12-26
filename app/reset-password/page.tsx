@@ -22,9 +22,16 @@ export default function ResetPasswordPage() {
 
     React.useEffect(() => {
         const checkSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
+            console.log('VALIDATING RECOVERY SESSION...');
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            if (sessionError) {
+                console.error('Session check error:', sessionError);
+            }
             if (!session) {
+                console.warn('No active recovery session detected.');
                 setError('Invalid or expired reset link. Please request a new one.');
+            } else {
+                console.log('Recovery session active for UID:', session.user.id);
             }
             setIsCheckingSession(false);
         };
@@ -33,6 +40,7 @@ export default function ResetPasswordPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log('INITIATING PASSWORD UPDATE...');
         setIsLoading(true);
         setError('');
 
@@ -49,18 +57,23 @@ export default function ResetPasswordPage() {
         }
 
         try {
-            const { error } = await supabase.auth.updateUser({
+            const { data, error } = await supabase.auth.updateUser({
                 password: password
             });
 
-            if (error) throw error;
+            if (error) {
+                console.error('Update request failed:', error);
+                throw error;
+            }
 
+            console.log('Password update committed successfully.');
             setIsSuccess(true);
             setTimeout(() => {
                 router.push('/login');
             }, 3000);
         } catch (err: any) {
-            setError(err.message || 'Failed to update password');
+            console.error('Update exception:', err);
+            setError(err.message || 'Failed to update password - server rejected request');
             setIsLoading(false);
         }
     };

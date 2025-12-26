@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { normalizeIdentifier } from '@/lib/auth/utils';
 import { Loader2, Crown, Key, Lock, Mail, ChevronRight, Gavel, Eye, EyeOff } from 'lucide-react';
 
 export default function CEOLoginPage() {
@@ -37,35 +38,51 @@ export default function CEOLoginPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log('INITIATING EXECUTIVE SESSION...');
         setIsLoading(true);
         setError('');
 
         try {
+            const identifier = normalizeIdentifier(formData.email);
+            console.log('Verifying credentials for:', identifier);
+
             const { data, error: signInError } = await supabase.auth.signInWithPassword({
-                email: formData.email,
+                email: identifier,
                 password: formData.password,
             });
 
-            if (signInError) throw signInError;
+            if (signInError) {
+                console.error('Sign-in error:', signInError);
+                throw signInError;
+            }
 
             if (data.user) {
-                const { data: profile } = await supabase
+                console.log('Auth successful, verifying clearance...');
+                const { data: profile, error: profileError } = await supabase
                     .from('users')
                     .select('role')
                     .eq('id', data.user.id)
                     .single();
 
+                if (profileError) {
+                    console.error('Profile fetch error:', profileError);
+                }
+
                 if (profile && profile.role === 'ceo') {
+                    console.log('CEO Clearance Confirmed. Redirecting...');
                     router.push('/ceo');
                 } else if (profile && profile.role === 'admin') {
+                    console.log('Admin Clearance Detected. Redirecting...');
                     router.push('/admin');
                 } else {
+                    console.warn('Unauthorized role detected:', profile?.role);
                     await supabase.auth.signOut();
                     setError('ACCESS REVOKED: Only Founding Partners may enter this terminal.');
                 }
             }
         } catch (err: any) {
-            setError(err.message || 'Verification failure');
+            console.error('System exception:', err);
+            setError(err.message || 'Verification failure - check connectivity');
         } finally {
             setIsLoading(false);
         }
