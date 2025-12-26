@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, ListIcon, ShoppingCart, User } from 'lucide-react';
+import { Home, ListIcon, ShoppingCart, User, Crown } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import { cn } from '@/lib/utils';
@@ -39,9 +39,9 @@ export const MobileBottomNav = () => {
             badge: itemCount,
         },
         {
-            href: user?.role === 'dealer' ? '/dealer/dashboard' : '/orders',
-            label: user ? 'Account' : 'Login',
-            icon: User,
+            href: user?.role === 'ceo' ? '/ceo' : (user?.role === 'dealer' ? '/dealer/dashboard' : '/orders'),
+            label: user?.role === 'ceo' ? 'Dashboard' : (user ? 'Account' : 'Login'),
+            icon: user?.role === 'ceo' ? Crown : User,
             show: true,
         },
     ];

@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/sheet';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
-import { ShoppingCart, Menu, User, LogOut, LayoutDashboard, Package, Home, ListIcon, Users, DollarSign, Info, Phone, MessageCircle, Settings, Heart, Shield, CreditCard, HelpCircle, MapPin } from 'lucide-react';
+import { ShoppingCart, Menu, User, LogOut, LayoutDashboard, Package, Home, ListIcon, Users, DollarSign, Info, Phone, MessageCircle, Settings, Heart, Shield, CreditCard, HelpCircle, MapPin, Crown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export const Header = () => {
@@ -188,6 +188,14 @@ export const Header = () => {
                                                     <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground px-2 py-1.5 uppercase tracking-wider">
                                                         Administration
                                                     </DropdownMenuLabel>
+                                                    {user?.role === 'ceo' && (
+                                                        <DropdownMenuItem asChild>
+                                                            <Link href="/ceo" className="cursor-pointer flex items-center py-2 font-bold text-[#d4af37]">
+                                                                <Crown className="mr-3 h-4 w-4" />
+                                                                Vision Command
+                                                            </Link>
+                                                        </DropdownMenuItem>
+                                                    )}
                                                     <DropdownMenuItem asChild>
                                                         <Link href="/admin" className="cursor-pointer flex items-center py-2 font-bold text-primary">
                                                             <Shield className="mr-3 h-4 w-4" />
@@ -332,10 +340,18 @@ export const Header = () => {
                                                     )}
 
                                                     {['ceo', 'cto', 'coo', 'cofounder', 'technical_admin', 'operations_admin', 'marketing_admin'].includes(user?.role || '') && (
-                                                        <Link href="/admin" onClick={closeMobileMenu} className="flex items-center gap-4 px-4 py-3 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-500 transition-colors mt-2">
-                                                            <Shield className="h-5 w-5" />
-                                                            <span className="font-bold">Admin Portal</span>
-                                                        </Link>
+                                                        <div className="flex flex-col gap-2 mt-2">
+                                                            {user?.role === 'ceo' && (
+                                                                <Link href="/ceo" onClick={closeMobileMenu} className="flex items-center gap-4 px-4 py-3 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 transition-colors">
+                                                                    <Crown className="h-5 w-5" />
+                                                                    <span className="font-bold">Vision Command</span>
+                                                                </Link>
+                                                            )}
+                                                            <Link href="/admin" onClick={closeMobileMenu} className="flex items-center gap-4 px-4 py-3 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-500 transition-colors">
+                                                                <Shield className="h-5 w-5" />
+                                                                <span className="font-bold">Admin Portal</span>
+                                                            </Link>
+                                                        </div>
                                                     )}
                                                 </nav>
                                             </div>
