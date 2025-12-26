@@ -12,7 +12,7 @@ interface AuthContextType {
     signInWithGoogle: () => Promise<void>;
     signInWithFacebook: () => Promise<void>;
     logout: () => Promise<void>; // Renamed from signOut to match existing usage
-    refreshUser: () => Promise<void>;
+    refreshUser: (userId?: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -121,9 +121,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         window.location.href = '/'; // Redirect to home
     };
 
-    const refreshUser = async () => {
-        if (sessionUser) {
-            await fetchUserProfile(sessionUser.id);
+    const refreshUser = async (userId?: string) => {
+        const id = userId || sessionUser?.id;
+        if (id) {
+            await fetchUserProfile(id);
         }
     };
 

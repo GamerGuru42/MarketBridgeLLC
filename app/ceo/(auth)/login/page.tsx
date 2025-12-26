@@ -112,13 +112,12 @@ export default function CEOLoginPage() {
 
             // 5. Finalize Session
             setStatusMessage('ESTABLISHING SECURE CONNECTION...');
-            await refreshUser(); // Update global context
+            await refreshUser(authData.user.id);
 
-            // Artificial delay to allow middleware cookies to propagate
-            await new Promise(r => setTimeout(r, 1000));
-
+            // Hard redirect to force server-side session re-evaluation
             console.log('Redirecting to Vision Command...');
-            router.push('/ceo');
+            window.location.href = '/ceo';
+
 
         } catch (err: any) {
             console.error('Login processing error:', err);
