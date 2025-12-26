@@ -77,10 +77,24 @@ export default function CEOLoginPage() {
                 }
 
                 if (profile && profile.role === 'ceo') {
-                    console.log('CEO Clearance Confirmed. Syncing session...');
+                    console.log('CEO Clearance Confirmed. Verifying session metadata...');
+
+                    // Self-healing: Ensure metadata matches DB role to pass Middleware checks
+                    if (data.user.user_metadata?.role !== 'ceo') {
+                        console.log('Syncing session metadata to CEO role...');
+                        await supabase.auth.updateUser({
+                            data: { role: 'ceo' }
+                        });
+                        // Refresh session user object
+                        const { data: { user: refreshedUser } } = await supabase.auth.getUser();
+                        if (refreshedUser) {
+                            console.log('Session metadata synced.');
+                        }
+                    }
+
+                    console.log('Syncing global context...');
                     await refreshUser();
-                    // Brief delay to ensure context update
-                    await new Promise(r => setTimeout(r, 500));
+                    await new Promise(r => setTimeout(r, 800)); // Slightly longer for metadata propagation
                     router.push('/ceo');
                 } else if (profile && (profile.role === 'admin' || profile.role === 'technical_admin')) {
                     console.log('Admin Clearance Detected. Syncing session...');

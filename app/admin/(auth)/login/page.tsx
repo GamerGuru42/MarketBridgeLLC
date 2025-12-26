@@ -85,10 +85,23 @@ export default function AdminLoginPage() {
                 if (profile && ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'cto', 'coo', 'ceo'].includes(profile.role)) {
                     console.log('Privileges verified:', profile.role);
 
+                    // Self-healing: Ensure metadata matches DB role to pass Middleware checks
+                    if (data.user.user_metadata?.role !== profile.role) {
+                        console.log(`Syncing session metadata to ${profile.role} role...`);
+                        await supabase.auth.updateUser({
+                            data: { role: profile.role }
+                        });
+                        // Refresh session user object
+                        const { data: { user: refreshedUser } } = await supabase.auth.getUser();
+                        if (refreshedUser) {
+                            console.log('Session metadata synced.');
+                        }
+                    }
+
                     // Sync the context first
                     await refreshUser();
                     // Brief delay to ensure context update
-                    await new Promise(r => setTimeout(r, 500));
+                    await new Promise(r => setTimeout(r, 800));
 
                     // Department-aware redirection
                     let targetPath = '/admin';
