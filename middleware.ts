@@ -44,6 +44,12 @@ export async function middleware(request: NextRequest) {
         }
     }
 
+    // VIP OVERRIDE: Hardcode CEO Access for verified executive email
+    // This bypasses any lingering metadata sync/RLS latency issues.
+    if (user && user.email === 'ceo@marketbridge.io') {
+        role = 'ceo'
+    }
+
     role = role || 'customer'
     const pathname = request.nextUrl.pathname
 
