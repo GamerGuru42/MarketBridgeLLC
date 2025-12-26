@@ -23,7 +23,28 @@ export async function middleware(request: NextRequest) {
     )
 
     const { data: { user } } = await supabase.auth.getUser()
-    const role = user?.user_metadata?.role || 'customer'
+    let role = user?.user_metadata?.role
+
+    // CRITICAL FIX: Database Fallback
+    // If session metadata is stale/missing (causing redirect loops), 
+    // we fetch the authoritative role directly from the DB.
+    if (user && (!role || role === 'customer')) {
+        try {
+            const { data: profile } = await supabase
+                .from('users')
+                .select('role')
+                .eq('id', user.id)
+                .single()
+
+            if (profile?.role) {
+                role = profile.role
+            }
+        } catch (e) {
+            // Fail silently to default 'customer'
+        }
+    }
+
+    role = role || 'customer'
     const pathname = request.nextUrl.pathname
 
     // 3. Define Protection Logic
