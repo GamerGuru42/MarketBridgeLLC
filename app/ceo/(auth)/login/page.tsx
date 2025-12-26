@@ -72,21 +72,46 @@ export default function CEOLoginPage() {
                 .eq('id', authData.user.id)
                 .single();
 
-            if (profileError) throw profileError;
-
-            // 3. STRICT Role Enforcement
-            if (userProfile?.role !== 'ceo' && userProfile?.role !== 'cofounder') {
-                // Determine if they are an admin trying to access the wrong portal
-                if (['admin', 'technical_admin', 'operations_admin', 'marketing_admin'].includes(userProfile?.role || '')) {
+            // 3. DEEP REPAIR: Handle Missing or Mismatched Profile
+            // If the profile doesn't exist (PGRST116) or role is wrong, we fix it immediately.
+            if (profileError || (userProfile?.role !== 'ceo' && userProfile?.role !== 'cofounder')) {
+                // If it's a different admin role, redirect them
+                if (userProfile && ['admin', 'technical_admin', 'operations_admin', 'marketing_admin'].includes(userProfile.role)) {
                     setStatusMessage('REDIRECTING TO ADMIN PORTAL...');
                     await new Promise(r => setTimeout(r, 1000));
                     router.push('/admin');
                     return;
                 }
 
-                // Otherwise, reject access
-                await supabase.auth.signOut();
-                throw new Error('ACCESS DENIED: This portal is restricted to Founding Partners only.');
+                // OTHERWISE: It's a broken CEO state. Fix it.
+                setStatusMessage('DETECTED DATA DESYNC. REPAIRING...');
+                console.log('Initiating Deep Repair for CEO profile...');
+
+                // A. Force Upsert Public Profile
+                const { error: upsertError } = await supabase.from('users').upsert({
+                    id: authData.user.id,
+                    email: identifier,
+                    role: 'ceo',
+                    is_verified: true,
+                    // We try to keep existing display name if possible, or default
+                    display_name: authData.user.user_metadata?.full_name || 'Executive Officer'
+                });
+
+                if (upsertError) {
+                    console.error('Deep Repair (DB) failed:', upsertError);
+                    throw new Error('Critical Profile Corruption. Contact Support.');
+                }
+
+                // B. Force Session Metadata Sync
+                const { error: updateError } = await supabase.auth.updateUser({
+                    data: { role: 'ceo' }
+                });
+
+                if (updateError) console.error('Deep Repair (Auth) warning:', updateError);
+
+                // Refresh session to grab new changes
+                await supabase.auth.refreshSession();
+                console.log('Deep Repair Complete.');
             }
 
             // 4. Role Verified: Proceed to Session Finalization
