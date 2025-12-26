@@ -89,26 +89,7 @@ export default function CEOLoginPage() {
                 throw new Error('ACCESS DENIED: This portal is restricted to Founding Partners only.');
             }
 
-            // 4. METADATA HEALING (The "Magic" Fix)
-            // If the session metadata doesn't match the DB role, we force an update.
-            // This fixes the "Middleware Infinite Loop" issue.
-            const sessionRole = authData.user.user_metadata?.role;
-            if (sessionRole !== 'ceo') {
-                console.log('MISMATCH DETECTED: Executing Metadata Healing...');
-                setStatusMessage('SYNCHRONIZING SECURE SESSION...');
-
-                const { error: updateError } = await supabase.auth.updateUser({
-                    data: { role: 'ceo' }
-                });
-
-                if (updateError) {
-                    console.error('Metadata healing failed:', updateError);
-                    // We continue anyway, hoping the DB role is enough, but log it.
-                }
-
-                // Force a session refresh to bake in the new metadata
-                await supabase.auth.refreshSession();
-            }
+            // 4. Role Verified: Proceed to Session Finalization
 
             // 5. Finalize Session
             setStatusMessage('ESTABLISHING SECURE CONNECTION...');
