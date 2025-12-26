@@ -9,109 +9,122 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { normalizeIdentifier } from '@/lib/auth/utils';
-import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, Crown, Key, Lock, Mail, ChevronRight, Gavel, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function CEOLoginPage() {
     const router = useRouter();
+    const { refreshUser } = useAuth();
+
+    // Form state
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
     const [showPassword, setShowPassword] = useState(false);
+
+    // UI state
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [statusMessage, setStatusMessage] = useState('');
     const [ceoExists, setCeoExists] = useState(false);
 
-    const { user, refreshUser, loading: authLoading } = useAuth();
-
+    // Initial check for existing CEO
     React.useEffect(() => {
-        // Redirect if already logged in as CEO
-        if (!authLoading && user && (user.role === 'ceo' || user.role === 'cofounder')) {
-            router.push('/ceo');
-        }
-
         const checkCeoCount = async () => {
-            const { count, error: countError } = await supabase
+            const { count } = await supabase
                 .from('users')
                 .select('*', { count: 'exact', head: true })
                 .eq('role', 'ceo');
 
-            if (!countError && count !== null && count >= 1) {
+            if (count && count >= 1) {
                 setCeoExists(true);
             }
         };
         checkCeoCount();
-    }, [user, authLoading, router]);
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('INITIATING EXECUTIVE SESSION...');
         setIsLoading(true);
         setError('');
+        setStatusMessage('AUTHENTICATING...');
 
         try {
             const identifier = normalizeIdentifier(formData.email);
-            console.log('Verifying credentials for:', identifier);
+            console.log('Login attempt for:', identifier);
 
-            const { data, error: signInError } = await supabase.auth.signInWithPassword({
+            // 1. Authenticate with Supabase
+            const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
                 email: identifier,
                 password: formData.password,
             });
 
-            if (signInError) {
-                console.error('Sign-in error:', signInError);
-                throw signInError;
-            }
+            if (signInError) throw signInError;
+            if (!authData.user) throw new Error('Authentication failed');
 
-            if (data.user) {
-                console.log('Auth successful, verifying clearance...');
-                const { data: profile, error: profileError } = await supabase
-                    .from('users')
-                    .select('role')
-                    .eq('id', data.user.id)
-                    .single();
+            setStatusMessage('VERIFYING EXECUTIVE CLEARANCE...');
 
-                if (profileError) {
-                    console.error('Profile fetch error:', profileError);
-                }
+            // 2. Security Check: Verify Role in Database
+            const { data: userProfile, error: profileError } = await supabase
+                .from('users')
+                .select('role')
+                .eq('id', authData.user.id)
+                .single();
 
-                if (profile && profile.role === 'ceo') {
-                    console.log('CEO Clearance Confirmed. Verifying session metadata...');
+            if (profileError) throw profileError;
 
-                    // Self-healing: Ensure metadata matches DB role to pass Middleware checks
-                    if (data.user.user_metadata?.role !== 'ceo') {
-                        console.log('Syncing session metadata to CEO role...');
-                        await supabase.auth.updateUser({
-                            data: { role: 'ceo' }
-                        });
-                        // Refresh session user object
-                        const { data: { user: refreshedUser } } = await supabase.auth.getUser();
-                        if (refreshedUser) {
-                            console.log('Session metadata synced.');
-                        }
-                    }
-
-                    console.log('Syncing global context...');
-                    await refreshUser();
-                    await new Promise(r => setTimeout(r, 800)); // Slightly longer for metadata propagation
-                    router.push('/ceo');
-                } else if (profile && (profile.role === 'admin' || profile.role === 'technical_admin')) {
-                    console.log('Admin Clearance Detected. Syncing session...');
-                    await refreshUser();
-                    await new Promise(r => setTimeout(r, 500));
+            // 3. STRICT Role Enforcement
+            if (userProfile?.role !== 'ceo' && userProfile?.role !== 'cofounder') {
+                // Determine if they are an admin trying to access the wrong portal
+                if (['admin', 'technical_admin', 'operations_admin', 'marketing_admin'].includes(userProfile?.role || '')) {
+                    setStatusMessage('REDIRECTING TO ADMIN PORTAL...');
+                    await new Promise(r => setTimeout(r, 1000));
                     router.push('/admin');
-                } else {
-                    console.warn('Unauthorized role detected:', profile?.role);
-                    await supabase.auth.signOut();
-                    setError('ACCESS REVOKED: Only Founding Partners may enter this terminal.');
+                    return;
                 }
+
+                // Otherwise, reject access
+                await supabase.auth.signOut();
+                throw new Error('ACCESS DENIED: This portal is restricted to Founding Partners only.');
             }
+
+            // 4. METADATA HEALING (The "Magic" Fix)
+            // If the session metadata doesn't match the DB role, we force an update.
+            // This fixes the "Middleware Infinite Loop" issue.
+            const sessionRole = authData.user.user_metadata?.role;
+            if (sessionRole !== 'ceo') {
+                console.log('MISMATCH DETECTED: Executing Metadata Healing...');
+                setStatusMessage('SYNCHRONIZING SECURE SESSION...');
+
+                const { error: updateError } = await supabase.auth.updateUser({
+                    data: { role: 'ceo' }
+                });
+
+                if (updateError) {
+                    console.error('Metadata healing failed:', updateError);
+                    // We continue anyway, hoping the DB role is enough, but log it.
+                }
+
+                // Force a session refresh to bake in the new metadata
+                await supabase.auth.refreshSession();
+            }
+
+            // 5. Finalize Session
+            setStatusMessage('ESTABLISHING SECURE CONNECTION...');
+            await refreshUser(); // Update global context
+
+            // Artificial delay to allow middleware cookies to propagate
+            await new Promise(r => setTimeout(r, 1000));
+
+            console.log('Redirecting to Vision Command...');
+            router.push('/ceo');
+
         } catch (err: any) {
-            console.error('System exception:', err);
-            setError(err.message || 'Verification failure - check connectivity');
-        } finally {
+            console.error('Login processing error:', err);
+            setError(err.message || 'Authentication System Failure');
             setIsLoading(false);
+            setStatusMessage('');
         }
     };
 
@@ -149,9 +162,17 @@ export default function CEOLoginPage() {
 
                 <CardContent className="px-12 relative z-10">
                     {error && (
-                        <div className="bg-red-500/5 border border-red-500/10 rounded-lg p-3 mb-8 text-center">
+                        <div className="bg-red-500/5 border border-red-500/10 rounded-lg p-4 mb-8 text-center animate-in fade-in slide-in-from-top-2">
                             <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest leading-relaxed">
                                 Security Alert: {error}
+                            </p>
+                        </div>
+                    )}
+
+                    {statusMessage && !error && (
+                        <div className="bg-[#d4af37]/5 border border-[#d4af37]/10 rounded-lg p-4 mb-8 text-center animate-pulse">
+                            <p className="text-[10px] text-[#d4af37] font-bold uppercase tracking-widest leading-relaxed">
+                                {statusMessage}
                             </p>
                         </div>
                     )}
@@ -165,11 +186,12 @@ export default function CEOLoginPage() {
                                     id="email"
                                     name="email"
                                     type="email"
-                                    className="bg-transparent border-b border-zinc-900 border-x-0 border-t-0 rounded-none h-12 text-sm focus:ring-0 focus:border-[#d4af37] transition-all px-10 placeholder:text-zinc-800"
+                                    className="bg-transparent border-b border-zinc-900 border-x-0 border-t-0 rounded-none h-12 text-sm focus:ring-0 focus:border-[#d4af37] transition-all px-10 placeholder:text-zinc-800 text-white"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
                                     placeholder="Executive Email"
+                                    autoComplete="email"
                                 />
                             </div>
                         </div>
@@ -182,11 +204,12 @@ export default function CEOLoginPage() {
                                     id="password"
                                     name="password"
                                     type={showPassword ? 'text' : 'password'}
-                                    className="bg-transparent border-b border-zinc-900 border-x-0 border-t-0 rounded-none h-12 text-sm focus:ring-0 focus:border-[#d4af37] transition-all px-10 placeholder:text-zinc-800"
+                                    className="bg-transparent border-b border-zinc-900 border-x-0 border-t-0 rounded-none h-12 text-sm focus:ring-0 focus:border-[#d4af37] transition-all px-10 placeholder:text-zinc-800 text-white"
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
                                     placeholder="••••••••••••"
+                                    autoComplete="current-password"
                                 />
                                 <button
                                     type="button"

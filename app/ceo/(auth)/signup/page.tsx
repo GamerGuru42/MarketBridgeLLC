@@ -11,10 +11,13 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { normalizeIdentifier } from '@/lib/auth/utils';
 import { Loader2, Crown, ShieldAlert, Sparkles, User, Mail, Lock } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 export default function CEOSignupPage() {
     const router = useRouter();
     const { refreshUser } = useAuth();
+
+    // State
     const [formData, setFormData] = useState({
         displayName: '',
         email: '',
@@ -23,22 +26,27 @@ export default function CEOSignupPage() {
     });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [statusMessage, setStatusMessage] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
+        setStatusMessage('INITIALIZING FOUNDING PARTNER PROTOCOL...');
 
+        // 1. Validation
         if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
+            setError('Security Keys (Passwords) do not match.');
             setIsLoading(false);
             return;
         }
 
         try {
             const identifier = normalizeIdentifier(formData.email);
-            console.log('INITIATING FOUNDING PARTNER SETUP FOR:', identifier);
 
+            // 2. Create Authentication User
+            // Crucial: We set the "role: 'ceo'" inside the options.data immediately
+            // This ensures the very first JWT token has the correct role.
             const { data: authData, error: signUpError } = await supabase.auth.signUp({
                 email: identifier,
                 password: formData.password,
@@ -46,76 +54,62 @@ export default function CEOSignupPage() {
                     data: {
                         display_name: formData.displayName,
                         full_name: formData.displayName,
-                        role: 'ceo',
+                        role: 'ceo', // PRIMARY ROLE ASSIGNMENT
+                        is_executive: true
                     },
                 },
             });
 
-            let activeUser = authData?.user;
-
+            // Handle "User Already Exists" specifically
             if (signUpError) {
-                if (signUpError.message?.includes('User already registered') || signUpError.status === 400) {
-                    console.log("CEO account exists, attempting recovery...");
-                    const { data: signInData } = await supabase.auth.signInWithPassword({
-                        email: formData.email,
-                        password: formData.password
-                    });
-                    if (signInData.user) {
-                        activeUser = signInData.user;
-                    } else {
-                        throw new Error("This email is already registered. Please use the login page.");
-                    }
-                } else if (signUpError.message?.includes('Database error saving new user')) {
-                    console.warn("Database trigger failed, attempting recovery...");
-                    const { data: signInData } = await supabase.auth.signInWithPassword({
-                        email: formData.email,
-                        password: formData.password
-                    });
-                    if (signInData.user) {
-                        activeUser = signInData.user;
-                    } else {
-                        throw new Error("Database sync issue. Please contact technical support.");
-                    }
-                } else {
-                    throw signUpError;
+                if (signUpError.message?.includes('already registered') || signUpError.status === 400) {
+                    throw new Error('This Executive ID is already registered. Please use the Login portal.');
                 }
+                throw signUpError;
             }
 
-            if (activeUser) {
-                await new Promise(resolve => setTimeout(resolve, 2000));
-
-                try {
-                    const { error: profileError } = await supabase
-                        .from('users')
-                        .upsert({
-                            id: activeUser.id,
-                            email: identifier,
-                            display_name: formData.displayName,
-                            role: 'ceo',
-                            is_verified: true,
-                        }, {
-                            onConflict: 'id'
-                        });
-
-                    if (profileError) {
-                        console.error('Profile creation failed:', profileError);
-                    }
-                } catch (upsertErr) {
-                    console.error('Unexpected error during profile creation:', upsertErr);
-                }
-
-                // IMPORTANT: Refresh user profile so the app knows we are logged in
-                await refreshUser();
-
-                // Critical: Wait for AuthContext to fully update before navigation
-                await new Promise(resolve => setTimeout(resolve, 500));
-
-                router.push('/ceo');
+            if (!authData.user) {
+                throw new Error('Registration failed. No session created.');
             }
+
+            setStatusMessage('ESTABLISHING DATABASE RECORDS...');
+
+            // 3. Create Database Profile
+            // We use upsert to be safe, but this should be a new entry
+            const { error: profileError } = await supabase
+                .from('users')
+                .upsert({
+                    id: authData.user.id,
+                    email: identifier,
+                    display_name: formData.displayName,
+                    role: 'ceo', // SECONDARY ROLE ASSIGNMENT (Database)
+                    is_verified: true,
+                }, {
+                    onConflict: 'id'
+                });
+
+            if (profileError) {
+                console.error('Profile creation error:', profileError);
+                throw new Error('Auth successful, but Database Profile failed. Please contact Support.');
+            }
+
+            // 4. Verification & Clean-up
+            setStatusMessage('FINALIZING EXECUTIVE CLEARANCE...');
+
+            // Force a profile refresh in the app context
+            await refreshUser();
+
+            // Wait for context to settle
+            await new Promise(r => setTimeout(r, 1000));
+
+            router.push('/ceo');
+
         } catch (err: any) {
+            console.error('Signup Error:', err);
             setError(err.message || 'Failed to establish CEO profile');
         } finally {
             setIsLoading(false);
+            if (error) setStatusMessage('');
         }
     };
 
@@ -150,9 +144,16 @@ export default function CEOSignupPage() {
 
                 <CardContent className="px-10 pb-10">
                     {error && (
-                        <div className="bg-red-950/40 border border-red-900/50 rounded-lg p-4 mb-6 flex items-center gap-3">
+                        <div className="bg-red-950/40 border border-red-900/50 rounded-lg p-4 mb-6 flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
                             <ShieldAlert className="h-5 w-5 text-red-500 shrink-0" />
                             <p className="text-xs text-red-200 font-mono tracking-tight">{error}</p>
+                        </div>
+                    )}
+
+                    {statusMessage && !error && (
+                        <div className="bg-[#d4af37]/10 border border-[#d4af37]/20 rounded-lg p-4 mb-6 flex items-center justify-center gap-3 animate-pulse">
+                            <Sparkles className="h-4 w-4 text-[#d4af37]" />
+                            <p className="text-xs text-[#d4af37] font-bold tracking-widest uppercase">{statusMessage}</p>
                         </div>
                     )}
 
@@ -163,7 +164,7 @@ export default function CEOSignupPage() {
                                 <User className="absolute left-3 top-3 h-4 w-4 text-slate-700" />
                                 <Input
                                     name="displayName"
-                                    className="bg-zinc-950 border-zinc-800 pl-10 h-12 focus:ring-[#d4af37] focus:border-[#d4af37]"
+                                    className="bg-zinc-950 border-zinc-800 pl-10 h-12 focus:ring-[#d4af37] focus:border-[#d4af37] text-white"
                                     value={formData.displayName}
                                     onChange={handleChange}
                                     required
@@ -179,7 +180,7 @@ export default function CEOSignupPage() {
                                 <Input
                                     name="email"
                                     type="email"
-                                    className="bg-zinc-950 border-zinc-800 pl-10 h-12 focus:ring-[#d4af37]"
+                                    className="bg-zinc-950 border-zinc-800 pl-10 h-12 focus:ring-[#d4af37] text-white"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
@@ -196,12 +197,12 @@ export default function CEOSignupPage() {
                                     <Input
                                         name="password"
                                         type="password"
-                                        className="bg-zinc-950 border-zinc-800 pl-10 h-12 focus:ring-[#d4af37]"
+                                        className="bg-zinc-950 border-zinc-800 pl-10 h-12 focus:ring-[#d4af37] text-white"
                                         value={formData.password}
                                         onChange={handleChange}
                                         required
                                         placeholder="••••••••"
-                                        minLength={12}
+                                        minLength={6}
                                     />
                                 </div>
                             </div>
@@ -210,7 +211,7 @@ export default function CEOSignupPage() {
                                 <Input
                                     name="confirmPassword"
                                     type="password"
-                                    className="bg-zinc-950 border-zinc-800 h-12 focus:ring-[#d4af37]"
+                                    className="bg-zinc-950 border-zinc-800 h-12 focus:ring-[#d4af37] text-white"
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
                                     required
@@ -219,7 +220,7 @@ export default function CEOSignupPage() {
                             </div>
                         </div>
 
-                        <Button type="submit" className="w-full bg-gradient-to-r from-[#d4af37] to-[#b8860b] hover:from-[#e5c150] hover:to-[#d4af37] text-black font-black italic h-14 text-lg shadow-[0_4px_20px_rgba(212,175,55,0.2)]" disabled={isLoading}>
+                        <Button type="submit" className="w-full bg-gradient-to-r from-[#d4af37] to-[#b8860b] hover:from-[#e5c150] hover:to-[#d4af37] text-black font-black italic h-14 text-lg shadow-[0_4px_20px_rgba(212,175,55,0.2)] mt-4 transition-all hover:scale-[1.01]" disabled={isLoading}>
                             {isLoading ? (
                                 <Loader2 className="h-6 w-6 animate-spin" />
                             ) : (
@@ -240,5 +241,3 @@ export default function CEOSignupPage() {
         </div>
     );
 }
-
-import { Separator } from '@/components/ui/separator';
