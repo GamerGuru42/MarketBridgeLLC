@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-    ArrowRight, ShieldCheck, Truck, Star, MapPin, Sparkles
+    ArrowRight, ShieldCheck, Truck, Star, MapPin, Sparkles, Box, Search, ChevronRight
 } from 'lucide-react';
 import Image from 'next/image';
 import { CATEGORIES, Category } from '@/lib/categories';
@@ -23,7 +23,6 @@ import {
 export default function HomePage() {
     const { user } = useAuth();
     const [comingSoonCategory, setComingSoonCategory] = useState<Category | null>(null);
-    // ... rest of state ...
     const [waitlistEmail, setWaitlistEmail] = useState('');
     const [waitlistPhone, setWaitlistPhone] = useState('');
     const [waitlistSubmitted, setWaitlistSubmitted] = useState(false);
@@ -57,524 +56,269 @@ export default function HomePage() {
     };
 
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen bg-black overflow-x-hidden">
+            {/* Background Blobs */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#FFB800]/10 blur-[120px] rounded-full animate-pulse" />
+                <div className="absolute bottom-[20%] right-[-5%] w-[40%] h-[60%] bg-[#FF8A00]/10 blur-[100px] rounded-full rotate-45" />
+                <div className="absolute top-[30%] right-[10%] w-[300px] h-[300px] bg-[#FFB800]/5 blur-[80px] rounded-full" />
+            </div>
+
             {/* Hero Section */}
-            <section className="relative py-12 md:py-32 bg-gradient-to-b from-background to-muted/20 overflow-hidden">
-                <div className="container px-4 mx-auto text-center relative z-10">
-                    <div className="inline-block mb-4 px-4 py-2 bg-primary/10 rounded-full">
-                        <span className="text-sm font-semibold text-primary px-2">Nigeria's Most Trusted Business Marketplace</span>
+            <section className="relative min-h-[90vh] flex items-center justify-center pt-20 pb-32 z-10">
+                <div className="container px-4 mx-auto relative">
+                    {/* Glass Hero Card */}
+                    <div className="max-w-4xl mx-auto glass-card rounded-[2.5rem] p-8 md:p-16 text-center relative overflow-hidden group">
+                        {/* Shimmer effect */}
+                        <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none" />
+
+                        <div className="relative z-10">
+                            <div className="flex justify-center mb-8 animate-float">
+                                <div className="h-20 w-20 bg-gold-gradient rounded-3xl flex items-center justify-center shadow-[0_0_30px_rgba(255,184,0,0.4)] rotate-12">
+                                    <Box className="h-10 w-10 text-black" fill="currentColor" />
+                                </div>
+                            </div>
+
+                            <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-white mb-6 uppercase">
+                                shop <br className="md:hidden" />
+                                <span className="font-extralight italic lowercase opacity-80">without</span> <br className="md:hidden" />
+                                <span className="text-[#FFB800] text-glow italic">Fear!</span>
+                            </h1>
+
+                            <p className="text-zinc-400 text-lg md:text-xl max-w-xl mx-auto mb-12 font-medium leading-relaxed">
+                                market bridge is connecting you to verified dealers with through transparency and trust.
+                            </p>
+
+                            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                                <Button size="lg" asChild className="bg-gold-gradient text-black font-black uppercase tracking-widest px-10 h-14 rounded-full glow-on-hover border-none">
+                                    <Link href="/signup">Get started</Link>
+                                </Button>
+                                <Button size="lg" variant="outline" asChild className="bg-transparent border-white/20 text-white font-bold uppercase tracking-widest px-10 h-14 rounded-full hover:bg-white/5 transition-all">
+                                    <Link href="/listings">Explore listings</Link>
+                                </Button>
+                            </div>
+                        </div>
                     </div>
-                    <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
-                        Shop Without <span className="text-primary">Fear</span>
-                        {user?.location && (
-                            <span className="block text-2xl md:text-3xl text-muted-foreground mt-2 font-medium">
-                                Shop the best deals in <span className="text-primary/80 font-bold">{user.location}</span>
-                            </span>
-                        )}
-                    </h1>
-                    <p className="text-lg md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto px-2">
-                        Starting with new and used cars, we connect verified dealers with customers through transparency and trust. From small businesses to large enterprises, we're building Nigeria's most reliable marketplace.
+                </div>
+
+                {/* Bottom blurred shape */}
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[120%] h-32 bg-gradient-to-t from-black to-transparent z-20" />
+            </section>
+
+            {/* Verification & Features Section */}
+            <section className="relative py-24 z-10">
+                <div className="container px-4 mx-auto text-center mb-16">
+                    <div className="max-w-2xl mx-auto mb-12">
+                        <div className="relative flex items-center justify-center mb-8">
+                            <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                <Search className="h-5 w-5 text-zinc-500" />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Search for dealers near you (e.g Ikeja)"
+                                className="w-full max-w-lg pl-12 pr-6 py-4 rounded-full glass-border bg-white/5 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-[#FFB800]/50 transition-all font-medium"
+                            />
+                        </div>
+
+                        <h2 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter leading-tight">
+                            Nigeria's most trusted <br />
+                            <span className="text-[#FFB800] text-glow italic">Marketplace</span>
+                        </h2>
+                        <p className="text-zinc-500 mt-6 text-lg font-medium">
+                            we are bridging the trust gap by verifying every dealer and <br className="hidden md:block" /> securing every transactions with
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                        <Card className="glass-card border-none rounded-[2rem] p-8 text-left group hover:bg-white/[0.08] transition-all duration-500">
+                            <div className="h-16 w-16 glass-card rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                <ShieldCheck className="h-8 w-8 text-[#FFB800]" />
+                            </div>
+                            <h3 className="text-xl font-bold text-white mb-3 uppercase tracking-tight">Escrow Security</h3>
+                            <p className="text-zinc-500 text-sm leading-relaxed">
+                                Your payment stays in our vault until you've inspected and accepted your item to ensure satisfaction on both ends.
+                            </p>
+                        </Card>
+
+                        <Card className="glass-card border-none rounded-[2rem] p-8 text-left group hover:bg-white/[0.08] transition-all duration-500">
+                            <div className="h-16 w-16 glass-card rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                <Star className="h-8 w-8 text-[#FFB800]" />
+                            </div>
+                            <h3 className="text-xl font-bold text-white mb-3 uppercase tracking-tight">Verified Dealers</h3>
+                            <p className="text-zinc-500 text-sm leading-relaxed">
+                                Every dealer is physically and legally vetted. No ghost, No scams. All dealers remains within the system.
+                            </p>
+                        </Card>
+
+                        <Card className="glass-card border-none rounded-[2rem] p-8 text-left group hover:bg-white/[0.08] transition-all duration-500">
+                            <div className="h-16 w-16 glass-card rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                <Sparkles className="h-8 w-8 text-[#FFB800]" />
+                            </div>
+                            <h3 className="text-xl font-bold text-white mb-3 uppercase tracking-tight">Verified Reviews</h3>
+                            <p className="text-zinc-500 text-sm leading-relaxed">
+                                Only customers with completed purchases can leave reviews, to ensure 100% authentic feedback.
+                            </p>
+                        </Card>
+                    </div>
+                </div>
+            </section>
+
+            {/* Featured Listings Section */}
+            <section className="relative py-24 z-10 bg-zinc-950/20">
+                <div className="container px-4 mx-auto">
+                    <div className="flex justify-between items-end mb-12">
+                        <div>
+                            <h2 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter">Featured Listings</h2>
+                            <p className="text-zinc-500 mt-2 text-lg italic lowercase">explore our price listings</p>
+                        </div>
+                        <Button variant="outline" asChild className="rounded-full h-12 w-12 p-0 glass-border bg-white/5 hover:bg-[#FFB800] hover:text-black transition-all">
+                            <Link href="/listings"><ChevronRight className="h-6 w-6" /></Link>
+                        </Button>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {[
+                            { title: "ROWING RS5 V12 NIGHT RUNNER", price: "20.3m", dealer: "Motowns Abuja", rating: "4.9", image: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=800&auto=format&fit=crop" },
+                            { title: "BMW 320i M3 COMPETITION", price: "12.7m", dealer: "Motowns Abuja", rating: "4.9", image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=800&auto=format&fit=crop" },
+                            { title: "ASTON MARTIN 2022 V12 SPORT", price: "23.5m", dealer: "Motowns Abuja", rating: "4.8", image: "https://images.unsplash.com/photo-1592198084033-aade902d1aae?q=80&w=800&auto=format&fit=crop" },
+                            { title: "BYD WILDLANDS 2025 V12", price: "207.3m", dealer: "Motowns Abuja", rating: "4.9", image: "https://images.unsplash.com/photo-1616422285623-13ff0167c958?q=80&w=800&auto=format&fit=crop" },
+                            { title: "PORSCHE 911 V 2 2024 SPORT MOD", price: "347.3m", dealer: "Motowns Abuja", rating: "4.9", image: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=800&auto=format&fit=crop" },
+                            { title: "BYD WILDLANDS 2025 V12", price: "207.3m", dealer: "Motowns Abuja", rating: "4.9", image: "https://images.unsplash.com/photo-1616422285623-13ff0167c958?q=80&w=800&auto=format&fit=crop" },
+                        ].map((item, idx) => (
+                            <Card key={idx} className="bg-zinc-900/50 border-white/5 rounded-[2.5rem] overflow-hidden group cursor-pointer hover:translate-y-[-8px] transition-all duration-500">
+                                <div className="aspect-[4/3] relative">
+                                    <Image src={item.image} alt={item.title} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 to-transparent opacity-60" />
+                                </div>
+                                <CardHeader className="p-8 pt-6">
+                                    <h3 className="text-white font-black text-sm uppercase tracking-tight line-clamp-1 mb-2 italic">{item.title}</h3>
+                                    <div className="flex justify-between items-center">
+                                        <p className="text-[#FFB800] text-2xl font-black italic">₦{item.price}</p>
+                                        <div className="text-right">
+                                            <p className="text-white text-[10px] uppercase font-bold flex items-center gap-1 justify-end"><MapPin className="h-2 w-2" /> {item.dealer}</p>
+                                            <p className="text-[#00FF85] text-[10px] font-bold flex items-center gap-1 justify-end italic"><Star className="h-2 w-2 fill-[#00FF85]" /> {item.rating} rated</p>
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Pricing Section */}
+            <section className="relative py-32 z-10">
+                <div className="container px-4 mx-auto text-center">
+                    <div className="inline-block mb-6 px-4 py-2 bg-[#FFB800]/10 rounded-full glass-border">
+                        <span className="text-xs font-black text-[#FFB800] uppercase tracking-widest">Coming in Full Release</span>
+                    </div>
+
+                    <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter mb-6">Grow your Business</h2>
+                    <p className="text-zinc-500 mb-20 max-w-xl mx-auto font-medium lowercase">
+                        join hundreds of verified dealers reaching thousands of <br /> customers across nigeria.
                     </p>
 
-                    {/* Location Search */}
-                    <div className="max-w-md mx-auto mb-8 relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <MapPin className="h-5 w-5 text-muted-foreground" />
-                        </div>
-                        <input
-                            type="text"
-                            placeholder={user?.location ? `Search dealers in ${user.location}...` : "Search dealers near you (e.g. Ikeja)"}
-                            className="w-full pl-10 pr-4 py-3 rounded-full border border-input bg-background shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    window.location.href = `/listings?location=${e.currentTarget.value}`;
-                                }
-                            }}
-                        />
-                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                        {[
+                            { name: "Starter", sub: "for new dealers", price: "Freemium", features: ["Up to 5 active listings", "basic analytics", "5% transaction fee"], btn: "Start Selling" },
+                            { name: "Professional", sub: "for growing businesses", price: "₦ 5,000", period: "/monthly", features: ["Up to 50 active listings", "Verified Dealer Badge", "Priority Support", "2.5% transaction fee"], btn: "Get Pro", popular: true },
+                            { name: "Enterprise", sub: "for large dealership", price: "₦ 20,000", period: "/monthly", features: ["Unlimited listings", "Dedicated Account Manager", "API ACCESS", "1% transaction fee"], btn: "Contact Sales" }
+                        ].map((plan, idx) => (
+                            <Card key={idx} className="glass-card relative border-none rounded-[2.5rem] p-10 text-left overflow-hidden group hover:scale-[1.02] transition-all duration-500">
+                                {/* Background Blob in card */}
+                                <div className="absolute top-[-20%] right-[-20%] w-48 h-48 bg-gold-gradient blur-[60px] opacity-20 group-hover:opacity-40 transition-opacity" />
 
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Button size="lg" asChild className="text-lg px-8">
-                            <Link href="/listings">Browse Products</Link>
-                        </Button>
-                        <Button size="lg" variant="outline" asChild className="text-lg px-8">
-                            <Link href="/about">Learn More</Link>
-                        </Button>
-                    </div>
-                </div>
-
-                {/* Background Decorative Elements */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl -z-10" />
-            </section>
-
-            {/* Authenticated User Quick Actions */}
-            {user && (
-                <section className="py-12 bg-primary/5">
-                    <div className="container px-4 mx-auto">
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-background p-8 rounded-2xl border border-primary/10 shadow-sm transition-all hover:shadow-md">
-                            <div className="flex items-center gap-6">
-                                <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center">
-                                    <Sparkles className="h-8 w-8 text-primary" />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold italic tracking-tighter uppercase">Welcome back, {user.displayName.split(' ')[0]}!</h3>
-                                    <p className="text-muted-foreground text-sm italic">Pick up where you left off in your marketplace journey.</p>
-                                </div>
-                            </div>
-                            <div className="flex flex-wrap gap-3">
-                                <Button variant="outline" asChild size="sm">
-                                    <Link href="/settings">Account Settings</Link>
-                                </Button>
-                                <Button variant="outline" asChild size="sm">
-                                    <Link href="/wishlist">Saved Items</Link>
-                                </Button>
-                                <Button variant="outline" asChild size="sm">
-                                    <Link href="/orders">Order History</Link>
-                                </Button>
-                                {user.role === 'dealer' && (
-                                    <Button asChild size="sm" className="bg-primary hover:bg-primary/90">
-                                        <Link href="/dealer/dashboard">Dealer Portal</Link>
-                                    </Button>
+                                {plan.popular && (
+                                    <div className="absolute top-6 right-6 bg-gold-gradient text-black text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-tighter">
+                                        Popular
+                                    </div>
                                 )}
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            )}
 
-            {/* Guest Value Proposition - Why MarketBridge? */}
-            {!user && (
-                <section className="py-20 bg-muted/30">
-                    <div className="container px-4 mx-auto">
-                        <div className="text-center max-w-3xl mx-auto mb-16">
-                            <h2 className="text-3xl md:text-4xl font-black italic tracking-tighter uppercase mb-4">Nigeria's Most Trusted Marketplace</h2>
-                            <p className="text-muted-foreground text-lg">
-                                We are bridging the trust gap by verifying every dealer and securing every transaction.
-                            </p>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                            <div className="space-y-4 text-center p-8 bg-background rounded-3xl shadow-sm border border-border/50 hover:border-primary/50 transition-colors">
-                                <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto text-primary">
-                                    <ShieldCheck className="h-8 w-8" />
-                                </div>
-                                <h3 className="text-xl font-bold uppercase tracking-tight">Verified Sellers</h3>
-                                <p className="text-muted-foreground text-sm">Every dealer is physically and legally vetted. No ghosts. No scams.</p>
-                            </div>
-                            <div className="space-y-4 text-center p-8 bg-background rounded-3xl shadow-sm border border-border/50 hover:border-primary/50 transition-colors">
-                                <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto text-primary">
-                                    <Truck className="h-8 w-8" />
-                                </div>
-                                <h3 className="text-xl font-bold uppercase tracking-tight">Escrow Security</h3>
-                                <p className="text-muted-foreground text-sm">Your payment stays in our vault until you've inspected and accepted your item.</p>
-                            </div>
-                            <div className="space-y-4 text-center p-8 bg-background rounded-3xl shadow-sm border border-border/50 hover:border-primary/50 transition-colors">
-                                <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto text-primary">
-                                    <Star className="h-8 w-8" />
-                                </div>
-                                <h3 className="text-xl font-bold uppercase tracking-tight">Verified Reviews</h3>
-                                <p className="text-muted-foreground text-sm">Only customers with completed purchases can leave reviews. 100% authentic feedback.</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            )}
+                                <div className="relative z-10">
+                                    <h3 className="text-2xl font-black text-white uppercase italic">{plan.name}</h3>
+                                    <p className="text-zinc-500 text-xs mb-8 font-medium italic">{plan.sub}</p>
 
-            {/* Shop by Category */}
-            <section className="py-16 container px-4 mx-auto">
-                <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
-                    <div>
-                        <h2 className="text-3xl font-black uppercase italic tracking-tighter">Explore Marketplace</h2>
-                        <p className="text-muted-foreground mt-2 italic">Find premium vehicles and high-value items from trusted Nigerian dealers.</p>
-                    </div>
-                    {user?.role !== 'dealer' && (
-                        <div className="flex bg-muted p-1 rounded-xl">
-                            <Button size="sm" variant="ghost" className="rounded-lg font-bold">Buy</Button>
-                            <Button size="sm" asChild variant="ghost" className="rounded-lg text-muted-foreground hover:text-primary">
-                                <Link href="/signup?role=dealer">Sell</Link>
-                            </Button>
-                        </div>
-                    )}
-                </div>
-                {/* ... rest of the categories grid remains the same ... */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                    {CATEGORIES.map((category) => (
-                        <div key={category.name}>
-                            {category.isActive ? (
-                                <Link
-                                    href={`/listings?category=${category.name}`}
-                                    className="flex flex-col items-center justify-center p-6 bg-card hover:bg-muted/50 border border-border/50 rounded-xl transition-all hover:shadow-md group h-full"
-                                >
-                                    <div className={`h-14 w-14 ${category.bg} rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300`}>
-                                        <category.icon className={`h-7 w-7 ${category.color}`} />
+                                    <div className="mb-10">
+                                        <span className="text-3xl font-black text-[#FFB800] italic">{plan.price}</span>
+                                        {plan.period && <span className="text-zinc-600 text-xs font-bold uppercase ml-1">{plan.period}</span>}
                                     </div>
-                                    <span className="font-medium text-sm md:text-base">{category.name}</span>
-                                </Link>
-                            ) : (
-                                <div
-                                    onClick={() => handleCategoryClick(category)}
-                                    className="flex flex-col items-center justify-center p-6 bg-muted/20 border border-border/30 rounded-xl cursor-pointer hover:bg-muted/30 transition-all h-full relative overflow-hidden"
-                                >
-                                    <div className="absolute top-2 right-2 bg-muted-foreground/20 text-[10px] px-2 py-0.5 rounded-full uppercase font-bold tracking-wider text-muted-foreground">
-                                        Soon
-                                    </div>
-                                    <div className={`h-14 w-14 ${category.bg} opacity-50 rounded-full flex items-center justify-center mb-3 grayscale`}>
-                                        <category.icon className={`h-7 w-7 ${category.color}`} />
-                                    </div>
-                                    <span className="font-medium text-sm md:text-base text-muted-foreground">{category.name}</span>
+
+                                    <ul className="space-y-4 mb-12">
+                                        {plan.features.map(f => (
+                                            <li key={f} className="flex items-center gap-3 text-zinc-400 text-xs font-semibold uppercase tracking-tight">
+                                                <div className="h-5 w-5 glass-card rounded-md flex items-center justify-center text-[#FFB800]">
+                                                    <ShieldCheck className="h-3 w-3" />
+                                                </div>
+                                                {f}
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <Button className={`w-full h-14 rounded-2xl font-black uppercase tracking-widest transition-all ${plan.popular ? 'bg-gold-gradient text-black glow-on-hover' : 'bg-black border border-white/10 text-white hover:bg-white/5'}`}>
+                                        {plan.btn}
+                                    </Button>
                                 </div>
-                            )}
-                        </div>
-                    ))}
+                            </Card>
+                        ))}
+                    </div>
                 </div>
             </section>
 
+            {/* Category Dialog */}
             <Dialog open={!!comingSoonCategory} onOpenChange={(open) => {
                 if (!open) {
                     setComingSoonCategory(null);
                     setWaitlistSubmitted(false);
                 }
             }}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="bg-black border-white/10 rounded-[2rem] text-white">
                     <DialogHeader>
-                        <div className="mx-auto bg-primary/10 h-12 w-12 rounded-full flex items-center justify-center mb-4">
-                            <Sparkles className="h-6 w-6 text-primary" />
+                        <div className="mx-auto bg-[#FFB800]/10 h-16 w-16 rounded-3xl flex items-center justify-center mb-6">
+                            <Sparkles className="h-8 w-8 text-[#FFB800]" />
                         </div>
-                        <DialogTitle className="text-center text-xl">
+                        <DialogTitle className="text-center text-3xl font-black uppercase italic tracking-tighter">
                             {waitlistSubmitted ? "You're on the list!" : "Coming Soon"}
                         </DialogTitle>
-                        <DialogDescription className="text-center pt-2">
+                        <DialogDescription className="text-center text-zinc-500 pt-2 font-medium">
                             {waitlistSubmitted ? (
                                 <>
-                                    We&apos;ve added you to the <strong>{comingSoonCategory?.name}</strong> waitlist.
-                                    We&apos;ll notify you as soon as we launch this category with verified partners.
+                                    We&apos;ve added you to the <span className="text-[#FFB800]">{comingSoonCategory?.name}</span> waitlist.
                                 </>
                             ) : (
                                 <>
-                                    We&apos;re currently perfecting our verification process for <strong>{comingSoonCategory?.name}</strong>.
-                                    Join the waitlist to be notified when this category goes live.
+                                    We&apos;re currently perfecting our verification process for <span className="text-[#FFB800]">{comingSoonCategory?.name}</span>.
                                 </>
                             )}
                         </DialogDescription>
                     </DialogHeader>
 
                     {!waitlistSubmitted ? (
-                        <form onSubmit={handleWaitlistSubmit} className="flex flex-col gap-3 mt-4">
+                        <form onSubmit={handleWaitlistSubmit} className="flex flex-col gap-4 mt-6">
                             <div className="space-y-1">
-                                <Label htmlFor="waitlist-email" className="text-xs">Email Address</Label>
+                                <Label className="text-[10px] uppercase font-bold text-zinc-600 ml-1">Email Address</Label>
                                 <input
-                                    id="waitlist-email"
                                     type="email"
                                     required
                                     value={waitlistEmail}
                                     onChange={(e) => setWaitlistEmail(e.target.value)}
-                                    placeholder="your@email.com"
-                                    className="w-full px-4 py-2 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                    placeholder="founder@example.com"
+                                    className="w-full px-6 py-4 rounded-2xl border border-white/10 bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-[#FFB800]/50"
                                 />
                             </div>
-                            <div className="space-y-1">
-                                <Label htmlFor="waitlist-phone" className="text-xs">Phone Number (Optional)</Label>
-                                <input
-                                    id="waitlist-phone"
-                                    type="tel"
-                                    value={waitlistPhone}
-                                    onChange={(e) => setWaitlistPhone(e.target.value)}
-                                    placeholder="08012345678"
-                                    className="w-full px-4 py-2 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                                />
-                            </div>
-                            <Button type="submit" className="w-full mt-2">
+                            <Button type="submit" className="w-full h-14 bg-gold-gradient text-black font-black uppercase tracking-widest rounded-2xl glow-on-hover transition-all mt-4">
                                 Join Waitlist
-                            </Button>
-                            <Button variant="ghost" type="button" onClick={() => setComingSoonCategory(null)} className="w-full">
-                                Not now
                             </Button>
                         </form>
                     ) : (
-                        <div className="mt-4">
-                            <Button onClick={() => setComingSoonCategory(null)} className="w-full">
-                                Great, thanks!
+                        <div className="mt-8 text-center pb-4">
+                            <p className="text-zinc-400 mb-6 font-medium">We'll reach out once the gate opens.</p>
+                            <Button onClick={() => setComingSoonCategory(null)} className="w-full h-14 bg-white/5 border border-white/10 text-white font-bold rounded-2xl">
+                                Return to Terminal
                             </Button>
                         </div>
                     )}
                 </DialogContent>
             </Dialog>
-
-            {/* Featured Listings */}
-            <section className="py-16 container px-4 mx-auto">
-                <div className="flex justify-between items-center mb-8">
-                    <h2 className="text-3xl font-bold">Featured Listings</h2>
-                    <Button variant="ghost" asChild>
-                        <Link href="/listings" className="flex items-center gap-2">
-                            View All <ArrowRight className="h-4 w-4" />
-                        </Link>
-                    </Button>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {[
-                        {
-                            id: 1,
-                            title: "2018 Toyota Camry XLE",
-                            price: 18500000,
-                            location: "Maitama, Abuja",
-                            rating: 4.9,
-                            image: "/toyota-camry.png"
-                        },
-                        {
-                            id: 2,
-                            title: "2020 Honda Accord Sport",
-                            price: 15200000,
-                            location: "Wuse II, Abuja",
-                            rating: 4.8,
-                            image: "/honda-accord.png"
-                        },
-                        {
-                            id: 3,
-                            title: "2015 Lexus RX 350",
-                            price: 12400000,
-                            location: "Garki, Abuja",
-                            rating: 5.0,
-                            image: "/lexus-rx350.png"
-                        },
-                        {
-                            id: 4,
-                            title: "2017 Mercedes-Benz C300",
-                            price: 22500000,
-                            location: "Asokoro, Abuja",
-                            rating: 4.7,
-                            image: "/mercedes-c300.png"
-                        },
-                    ].map((item) => (
-                        <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow group cursor-pointer border-border/50">
-                            <div className="aspect-square bg-muted relative flex items-center justify-center overflow-hidden">
-                                <Image
-                                    src={item.image}
-                                    alt={item.title}
-                                    fill
-                                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                                />
-                            </div>
-                            <CardHeader className="p-4">
-                                <div className="flex justify-between items-start mb-2">
-                                    <CardTitle className="text-lg line-clamp-1 font-semibold">{item.title}</CardTitle>
-                                    <ShieldCheck className="h-4 w-4 text-blue-500 shrink-0" aria-label="Verified Dealer" />
-                                </div>
-                                <p className="text-primary font-bold text-lg">₦{item.price.toLocaleString()}</p>
-                            </CardHeader>
-                            <CardFooter className="p-4 pt-0 text-sm text-muted-foreground flex justify-between">
-                                <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {item.location}</span>
-                                <span className="flex items-center gap-1"><Star className="h-3 w-3 fill-primary text-primary" /> {item.rating}</span>
-                            </CardFooter>
-                        </Card>
-                    ))}
-                </div>
-            </section>
-
-            {/* Coming Soon Features */}
-            <section className="py-16 container px-4 mx-auto">
-                <div className="text-center mb-12">
-                    <div className="inline-block mb-4 px-4 py-2 bg-primary/10 rounded-full">
-                        <span className="text-sm font-semibold text-primary">Coming in Full Release</span>
-                    </div>
-                    <h2 className="text-3xl font-bold mb-4">Exciting Features on the Way</h2>
-                    <p className="text-muted-foreground max-w-2xl mx-auto">
-                        We're working hard to bring you even more features. Here's what's coming soon!
-                    </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div className="p-6 bg-muted/30 rounded-xl border border-border">
-                        <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
-                            <span className="text-2xl">💬</span>
-                        </div>
-                        <h3 className="text-lg font-bold mb-2">Live Chat System</h3>
-                        <p className="text-sm text-muted-foreground">Real-time messaging with dealers, complete with image sharing and chat history.</p>
-                    </div>
-                    <div className="p-6 bg-muted/30 rounded-xl border border-border">
-                        <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
-                            <span className="text-2xl">⭐</span>
-                        </div>
-                        <h3 className="text-lg font-bold mb-2">Advanced Reviews</h3>
-                        <p className="text-sm text-muted-foreground">Detailed product reviews with photos, verified purchase badges, and helpful voting.</p>
-                    </div>
-                    <div className="p-6 bg-muted/30 rounded-xl border border-border">
-                        <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
-                            <span className="text-2xl">📊</span>
-                        </div>
-                        <h3 className="text-lg font-bold mb-2">Dealer Analytics</h3>
-                        <p className="text-sm text-muted-foreground">Comprehensive insights and performance metrics for dealer accounts.</p>
-                    </div>
-                    <div className="p-6 bg-muted/30 rounded-xl border border-border">
-                        <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
-                            <span className="text-2xl">📱</span>
-                        </div>
-                        <h3 className="text-lg font-bold mb-2">Mobile App</h3>
-                        <p className="text-sm text-muted-foreground">Native iOS and Android apps for shopping on the go.</p>
-                    </div>
-                </div>
-            </section>
-
-            {/* Dealer Plans - Show only to non-dealers */}
-            {user?.role !== 'dealer' && (
-                <>
-                    <section className="py-20 bg-muted/20 border-y border-border/50">
-                        <div className="container px-4 mx-auto">
-                            <div className="text-center max-w-3xl mx-auto mb-16">
-                                <h2 className="text-3xl md:text-4xl font-black italic tracking-tighter uppercase mb-4">Grow Your Business</h2>
-                                <p className="text-muted-foreground text-lg">
-                                    Join hundreds of verified dealers reaching thousands of customers across Nigeria.
-                                </p>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                                {/* Starter Plan */}
-                                <Card className="flex flex-col bg-background">
-                                    <CardHeader>
-                                        <CardTitle className="text-xl">Starter</CardTitle>
-                                        <p className="text-sm text-muted-foreground">For new sellers</p>
-                                    </CardHeader>
-                                    <CardContent className="flex-1">
-                                        <div className="mb-4">
-                                            <span className="text-3xl font-bold">Free</span>
-                                        </div>
-                                        <ul className="space-y-2 text-sm">
-                                            <li className="flex items-center gap-2">
-                                                <ShieldCheck className="h-4 w-4 text-primary" />
-                                                <span>Up to 5 active listings</span>
-                                            </li>
-                                            <li className="flex items-center gap-2">
-                                                <ShieldCheck className="h-4 w-4 text-primary" />
-                                                <span>Basic analytics</span>
-                                            </li>
-                                            <li className="flex items-center gap-2">
-                                                <ShieldCheck className="h-4 w-4 text-primary" />
-                                                <span>5% transaction fee</span>
-                                            </li>
-                                        </ul>
-                                    </CardContent>
-                                    <CardFooter>
-                                        <Button className="w-full" variant="outline" asChild>
-                                            <Link href="/signup?role=dealer">Start Selling</Link>
-                                        </Button>
-                                    </CardFooter>
-                                </Card>
-
-                                {/* Pro Plan */}
-                                <Card className="flex flex-col bg-background border-primary shadow-lg relative transform md:-translate-y-4">
-                                    <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">
-                                        POPULAR
-                                    </div>
-                                    <CardHeader>
-                                        <CardTitle className="text-xl">Professional</CardTitle>
-                                        <p className="text-sm text-muted-foreground">For growing businesses</p>
-                                    </CardHeader>
-                                    <CardContent className="flex-1">
-                                        <div className="mb-4">
-                                            <span className="text-3xl font-bold">₦5,000</span>
-                                            <span className="text-muted-foreground">/month</span>
-                                        </div>
-                                        <ul className="space-y-2 text-sm">
-                                            <li className="flex items-center gap-2">
-                                                <ShieldCheck className="h-4 w-4 text-primary" />
-                                                <span>Up to 50 active listings</span>
-                                            </li>
-                                            <li className="flex items-center gap-2">
-                                                <ShieldCheck className="h-4 w-4 text-primary" />
-                                                <span>Verified Dealer Badge</span>
-                                            </li>
-                                            <li className="flex items-center gap-2">
-                                                <ShieldCheck className="h-4 w-4 text-primary" />
-                                                <span>Priority Support</span>
-                                            </li>
-                                            <li className="flex items-center gap-2">
-                                                <ShieldCheck className="h-4 w-4 text-primary" />
-                                                <span>2.5% transaction fee</span>
-                                            </li>
-                                        </ul>
-                                    </CardContent>
-                                    <CardFooter>
-                                        <Button className="w-full" asChild>
-                                            <Link href="/signup?role=dealer">Get Pro</Link>
-                                        </Button>
-                                    </CardFooter>
-                                </Card>
-
-                                {/* Enterprise Plan */}
-                                <Card className="flex flex-col bg-background">
-                                    <CardHeader>
-                                        <CardTitle className="text-xl">Enterprise</CardTitle>
-                                        <p className="text-sm text-muted-foreground">For large dealerships</p>
-                                    </CardHeader>
-                                    <CardContent className="flex-1">
-                                        <div className="mb-4">
-                                            <span className="text-3xl font-bold">₦20,000</span>
-                                            <span className="text-muted-foreground">/month</span>
-                                        </div>
-                                        <ul className="space-y-2 text-sm">
-                                            <li className="flex items-center gap-2">
-                                                <ShieldCheck className="h-4 w-4 text-primary" />
-                                                <span>Unlimited listings</span>
-                                            </li>
-                                            <li className="flex items-center gap-2">
-                                                <ShieldCheck className="h-4 w-4 text-primary" />
-                                                <span>Dedicated Account Manager</span>
-                                            </li>
-                                            <li className="flex items-center gap-2">
-                                                <ShieldCheck className="h-4 w-4 text-primary" />
-                                                <span>API Access</span>
-                                            </li>
-                                            <li className="flex items-center gap-2">
-                                                <ShieldCheck className="h-4 w-4 text-primary" />
-                                                <span>1% transaction fee</span>
-                                            </li>
-                                        </ul>
-                                    </CardContent>
-                                    <CardFooter>
-                                        <Button className="w-full" variant="outline" asChild>
-                                            <Link href="/contact">Contact Sales</Link>
-                                        </Button>
-                                    </CardFooter>
-                                </Card>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* How It Works */}
-                    <section className="py-16 bg-muted/30">
-                        <div className="container px-4 mx-auto">
-                            <h2 className="text-3xl font-bold text-center mb-4">Why Choose MarketBridge?</h2>
-                            <p className="text-center text-sm text-muted-foreground mb-12">
-                                <span className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary font-medium">
-                                    BETA VERSION - More features coming soon!
-                                </span>
-                            </p>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                                <div className="flex flex-col items-center p-6 bg-background rounded-xl shadow-sm">
-                                    <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
-                                        <ShieldCheck className="h-6 w-6" />
-                                    </div>
-                                    <h3 className="text-xl font-bold mb-2">Verified Dealers</h3>
-                                    <p className="text-muted-foreground">Every dealer undergoes a strict verification process to ensure your safety.</p>
-                                </div>
-                                <div className="flex flex-col items-center p-6 bg-background rounded-xl shadow-sm">
-                                    <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
-                                        <Truck className="h-6 w-6" />
-                                    </div>
-                                    <h3 className="text-xl font-bold mb-2">Secure Delivery</h3>
-                                    <p className="text-muted-foreground">Track your orders and enjoy reliable delivery services across Nigeria.</p>
-                                </div>
-                                <div className="flex flex-col items-center p-6 bg-background rounded-xl shadow-sm">
-                                    <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
-                                        <Star className="h-6 w-6" />
-                                    </div>
-                                    <h3 className="text-xl font-bold mb-2">Quality Assured</h3>
-                                    <p className="text-muted-foreground">Read real reviews from other customers and shop with confidence.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </>
-            )}
         </div>
     );
 }
