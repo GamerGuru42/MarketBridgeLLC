@@ -9,52 +9,31 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { normalizeIdentifier } from '@/lib/auth/utils';
-import { Loader2, Crown, Key, Lock, Mail, ChevronRight, Gavel, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Crown, Lock, Mail, ChevronRight, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function CEOLoginPage() {
     const router = useRouter();
     const { refreshUser } = useAuth();
 
-    // Form state
+    // State
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
     const [showPassword, setShowPassword] = useState(false);
-
-    // UI state
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-    const [statusMessage, setStatusMessage] = useState('');
-    const [ceoExists, setCeoExists] = useState(false);
-
-    // Initial check for existing CEO
-    React.useEffect(() => {
-        const checkCeoCount = async () => {
-            const { count } = await supabase
-                .from('users')
-                .select('*', { count: 'exact', head: true })
-                .eq('role', 'ceo');
-
-            if (count && count >= 1) {
-                setCeoExists(true);
-            }
-        };
-        checkCeoCount();
-    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
-        setStatusMessage('AUTHENTICATING...');
 
         try {
             const identifier = normalizeIdentifier(formData.email);
-            console.log('Login attempt for:', identifier);
 
-            // 1. Authenticate with Supabase
+            // 1. Authenticate
             const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
                 email: identifier,
                 password: formData.password,
@@ -63,73 +42,37 @@ export default function CEOLoginPage() {
             if (signInError) throw signInError;
             if (!authData.user) throw new Error('Authentication failed');
 
-            setStatusMessage('VERIFYING EXECUTIVE CLEARANCE...');
-
-            // 2. Security Check: Verify Role in Database
-            const { data: userProfile, error: profileError } = await supabase
+            // 2. Fetch profile to verify role
+            const { data: profile, error: profileError } = await supabase
                 .from('users')
                 .select('role')
                 .eq('id', authData.user.id)
                 .single();
 
-            // 3. DEEP REPAIR: Handle Missing or Mismatched Profile
-            // If the profile doesn't exist (PGRST116) or role is wrong, we fix it immediately.
-            if (profileError || (userProfile?.role !== 'ceo' && userProfile?.role !== 'cofounder')) {
-                // If it's a different admin role, redirect them
-                if (userProfile && ['admin', 'technical_admin', 'operations_admin', 'marketing_admin'].includes(userProfile.role)) {
-                    setStatusMessage('REDIRECTING TO ADMIN PORTAL...');
-                    await new Promise(r => setTimeout(r, 1000));
-                    router.push('/admin');
+            // Check if profile exists and role is correct
+            const role = profile?.role || authData.user.user_metadata?.role;
+
+            if (role !== 'ceo' && role !== 'cofounder') {
+                // If they are an admin, redirect them to admin login
+                if (['admin', 'technical_admin', 'operations_admin', 'marketing_admin'].includes(role || '')) {
+                    router.push('/admin/login');
                     return;
                 }
 
-                // OTHERWISE: It's a broken CEO state. Fix it.
-                setStatusMessage('DETECTED DATA DESYNC. REPAIRING...');
-                console.log('Initiating Deep Repair for CEO profile...');
-
-                // A. Force Upsert Public Profile
-                const { error: upsertError } = await supabase.from('users').upsert({
-                    id: authData.user.id,
-                    email: identifier,
-                    role: 'ceo',
-                    is_verified: true,
-                    // We try to keep existing display name if possible, or default
-                    display_name: authData.user.user_metadata?.full_name || 'Executive Officer'
-                });
-
-                if (upsertError) {
-                    console.error('Deep Repair (DB) failed:', upsertError);
-                    throw new Error('Critical Profile Corruption. Contact Support.');
-                }
-
-                // B. Force Session Metadata Sync
-                const { error: updateError } = await supabase.auth.updateUser({
-                    data: { role: 'ceo' }
-                });
-
-                if (updateError) console.error('Deep Repair (Auth) warning:', updateError);
-
-                // Refresh session to grab new changes
-                await supabase.auth.refreshSession();
-                console.log('Deep Repair Complete.');
+                await supabase.auth.signOut();
+                throw new Error('Access denied. Executive clearance required.');
             }
 
-            // 4. Role Verified: Proceed to Session Finalization
-
-            // 5. Finalize Session
-            setStatusMessage('ESTABLISHING SECURE CONNECTION...');
+            // 3. Update local context
             await refreshUser(authData.user.id);
 
-            // Hard redirect to force server-side session re-evaluation
-            console.log('Redirecting to Vision Command...');
+            // 4. Hard redirect to ensure middleware picks up the session
             window.location.href = '/ceo';
 
-
         } catch (err: any) {
-            console.error('Login processing error:', err);
-            setError(err.message || 'Authentication System Failure');
+            console.error('Login Error:', err);
+            setError(err.message || 'Verification failed. Please check credentials.');
             setIsLoading(false);
-            setStatusMessage('');
         }
     };
 
@@ -141,19 +84,15 @@ export default function CEOLoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-black">
+        <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-black overflow-hidden relative">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(212,175,55,0.05),transparent)] pointer-events-none"></div>
 
             <Card className="w-full max-w-lg bg-zinc-950 border-none shadow-[0_30px_100px_rgba(0,0,0,1)] relative overflow-hidden ring-1 ring-white/5">
-                {/* Visual Accent */}
                 <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#d4af37]/40 to-transparent"></div>
 
-                <CardHeader className="space-y-6 pt-16 pb-10 text-center relative z-10">
-                    <div className="relative mx-auto group">
-                        <div className="absolute -inset-4 bg-[#d4af37]/10 rounded-full blur-xl group-hover:bg-[#d4af37]/20 transition-all"></div>
-                        <div className="relative h-24 w-24 rounded-full border border-[#d4af37]/30 bg-black flex items-center justify-center">
-                            <Crown className="h-12 w-12 text-[#d4af37] drop-shadow-[0_0_10px_rgba(212,175,55,0.4)]" />
-                        </div>
+                <CardHeader className="space-y-6 pt-16 pb-10 text-center">
+                    <div className="mx-auto h-24 w-24 rounded-full border border-[#d4af37]/30 bg-black flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.1)]">
+                        <Crown className="h-12 w-12 text-[#d4af37]" />
                     </div>
                     <div>
                         <CardTitle className="text-2xl font-black tracking-[0.3em] text-white uppercase italic">
@@ -165,19 +104,11 @@ export default function CEOLoginPage() {
                     </div>
                 </CardHeader>
 
-                <CardContent className="px-12 relative z-10">
+                <CardContent className="px-12">
                     {error && (
-                        <div className="bg-red-500/5 border border-red-500/10 rounded-lg p-4 mb-8 text-center animate-in fade-in slide-in-from-top-2">
+                        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-8 text-center">
                             <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest leading-relaxed">
                                 Security Alert: {error}
-                            </p>
-                        </div>
-                    )}
-
-                    {statusMessage && !error && (
-                        <div className="bg-[#d4af37]/5 border border-[#d4af37]/10 rounded-lg p-4 mb-8 text-center animate-pulse">
-                            <p className="text-[10px] text-[#d4af37] font-bold uppercase tracking-widest leading-relaxed">
-                                {statusMessage}
                             </p>
                         </div>
                     )}
@@ -188,7 +119,6 @@ export default function CEOLoginPage() {
                             <div className="relative group">
                                 <Mail className="absolute left-3 top-3 h-4 w-4 text-zinc-700 group-focus-within:text-[#d4af37] transition-colors" />
                                 <Input
-                                    id="email"
                                     name="email"
                                     type="email"
                                     className="bg-transparent border-b border-zinc-900 border-x-0 border-t-0 rounded-none h-12 text-sm focus:ring-0 focus:border-[#d4af37] transition-all px-10 placeholder:text-zinc-800 text-white"
@@ -196,7 +126,6 @@ export default function CEOLoginPage() {
                                     onChange={handleChange}
                                     required
                                     placeholder="Executive Email"
-                                    autoComplete="email"
                                 />
                             </div>
                         </div>
@@ -206,7 +135,6 @@ export default function CEOLoginPage() {
                             <div className="relative group">
                                 <Lock className="absolute left-3 top-3 h-4 w-4 text-zinc-700 group-focus-within:text-[#d4af37] transition-colors" />
                                 <Input
-                                    id="password"
                                     name="password"
                                     type={showPassword ? 'text' : 'password'}
                                     className="bg-transparent border-b border-zinc-900 border-x-0 border-t-0 rounded-none h-12 text-sm focus:ring-0 focus:border-[#d4af37] transition-all px-10 placeholder:text-zinc-800 text-white"
@@ -214,7 +142,6 @@ export default function CEOLoginPage() {
                                     onChange={handleChange}
                                     required
                                     placeholder="••••••••••••"
-                                    autoComplete="current-password"
                                 />
                                 <button
                                     type="button"
@@ -228,7 +155,7 @@ export default function CEOLoginPage() {
 
                         <Button
                             type="submit"
-                            className="w-full bg-[#d4af37] hover:bg-[#e5c150] text-black font-black uppercase tracking-[0.2em] h-14 rounded-none transition-all relative overflow-hidden group shadow-[0_0_20px_rgba(212,175,55,0.1)] z-50"
+                            className="w-full bg-[#d4af37] hover:bg-[#e5c150] text-black font-black uppercase tracking-[0.2em] h-14 rounded-none transition-all relative overflow-hidden group shadow-[0_0_20px_rgba(212,175,55,0.1)]"
                             disabled={isLoading}
                         >
                             {isLoading ? (
@@ -245,14 +172,8 @@ export default function CEOLoginPage() {
 
                 <CardFooter className="flex flex-col items-center gap-6 py-12 relative z-10">
                     <div className="flex items-center gap-8">
-                        {!ceoExists && (
-                            <Link href="/ceo/signup" className="text-[9px] font-bold text-zinc-600 hover:text-[#d4af37] uppercase tracking-widest transition-colors">Grant Onboarding</Link>
-                        )}
+                        <Link href="/ceo/signup" className="text-[9px] font-bold text-zinc-600 hover:text-[#d4af37] uppercase tracking-widest transition-colors">Apply for Access</Link>
                         <Link href="/" className="text-[9px] font-bold text-zinc-600 hover:text-white uppercase tracking-widest transition-colors underline">Public Terminal</Link>
-                    </div>
-                    <div className="flex items-center gap-2 text-zinc-800">
-                        <Gavel className="h-3 w-3" />
-                        <span className="text-[8px] font-bold uppercase tracking-[0.3em]">MarketBridge Legal Protocol 2024</span>
                     </div>
                 </CardFooter>
             </Card>
