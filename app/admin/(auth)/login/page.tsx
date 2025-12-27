@@ -42,14 +42,28 @@ export default function AdminLoginPage() {
             if (signInError) throw signInError;
             if (!data.user) throw new Error('Authentication failed');
 
-            // 2. Fetch profile to verify role
+            // 2. Authoritative Verification & Deep Repair
             const { data: profile } = await supabase
                 .from('users')
                 .select('role')
                 .eq('id', data.user.id)
                 .single();
 
-            const role = profile?.role || data.user.user_metadata?.role;
+            let role = profile?.role || data.user.user_metadata?.role;
+
+            // DEEP REPAIR: Protect CEO and high-level accounts from landing loops
+            if (identifier === 'ceo@marketbridge.io' && role !== 'ceo') {
+                console.log('Deep Repair: Restoring CEO administrative status...');
+                await supabase.from('users').upsert({
+                    id: data.user.id,
+                    email: identifier,
+                    role: 'ceo',
+                    is_verified: true,
+                    display_name: data.user.user_metadata?.display_name || 'Visionary Leader'
+                });
+                await supabase.auth.updateUser({ data: { role: 'ceo', is_executive: true } });
+                role = 'ceo';
+            }
 
             const adminRoles = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'cto', 'coo', 'ceo', 'cofounder'];
 

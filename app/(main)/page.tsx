@@ -178,25 +178,45 @@ export default function HomePage() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         {[
-                            { title: "ROWING RS5 V12 NIGHT RUNNER", price: "20.3m", dealer: "Motowns Abuja", rating: "4.9", image: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=800&auto=format&fit=crop" },
-                            { title: "BMW 320i M3 COMPETITION", price: "12.7m", dealer: "Motowns Abuja", rating: "4.9", image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=800&auto=format&fit=crop" },
-                            { title: "ASTON MARTIN 2022 V12 SPORT", price: "23.5m", dealer: "Motowns Abuja", rating: "4.8", image: "https://images.unsplash.com/photo-1592198084033-aade902d1aae?q=80&w=800&auto=format&fit=crop" },
-                            { title: "BYD WILDLANDS 2025 V12", price: "207.3m", dealer: "Motowns Abuja", rating: "4.9", image: "https://images.unsplash.com/photo-1616422285623-13ff0167c958?q=80&w=800&auto=format&fit=crop" },
-                            { title: "PORSCHE 911 V 2 2024 SPORT MOD", price: "347.3m", dealer: "Motowns Abuja", rating: "4.9", image: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=800&auto=format&fit=crop" },
-                            { title: "BYD WILDLANDS 2025 V12", price: "207.3m", dealer: "Motowns Abuja", rating: "4.9", image: "https://images.unsplash.com/photo-1616422285623-13ff0167c958?q=80&w=800&auto=format&fit=crop" },
+                            { title: "ROMANS 2018 V12 NIGHT RUNNER", price: "267.3m", dealer: "Motowns Abuja", rating: "4.9", image: "/images/featured/red_porsche.png" },
+                            { title: "BMW 2013 M3 COMPETITION", price: "127.3m", dealer: "Motowns Abuja", rating: "4.9", image: "/images/featured/white_bmw.png" },
+                            { title: "ASTON MARTIN 2022 V8 SPORT", price: "227.3m", dealer: "Motowns Abuja", rating: "4.8", image: "/images/featured/teal_aston.png" },
+                            { title: "BYD WILDLANDS 2025 V12", price: "207.3m", dealer: "Motowns Abuja", rating: "4.9", image: "/images/featured/byd_front.png" },
+                            { title: "PORSCHE 911 V 2 2024 SPORT MOD", price: "347.3m", dealer: "Motowns Abuja", rating: "4.9", image: "/images/featured/olive_porsche.png" },
+                            { title: "BYD WILDLANDS 2025 V12", price: "207.3m", dealer: "Motowns Abuja", rating: "4.9", image: "/images/featured/byd_side.png" },
                         ].map((item, idx) => (
-                            <Card key={idx} className="bg-zinc-900/50 border-white/5 rounded-[2.5rem] overflow-hidden group cursor-pointer hover:translate-y-[-8px] transition-all duration-500">
-                                <div className="aspect-[4/3] relative">
+                            <Card key={idx} className="bg-zinc-900/40 border-white/5 rounded-[2.2rem] overflow-hidden group cursor-pointer hover:translate-y-[-8px] transition-all duration-500 flex flex-col h-full border-none">
+                                <div className="aspect-[4/3] relative overflow-hidden">
                                     <Image src={item.image} alt={item.title} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 to-transparent opacity-60" />
+                                    <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-90" />
+
+                                    {/* Shimmer on image */}
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                                 </div>
-                                <CardHeader className="p-8 pt-6">
-                                    <h3 className="text-white font-black text-sm uppercase tracking-tight line-clamp-1 mb-2 italic">{item.title}</h3>
+
+                                <CardHeader className="p-8 pt-6 relative space-y-4">
+                                    {/* Tags */}
+                                    <div className="flex flex-wrap gap-2 mb-2">
+                                        {['Brand new', 'Coffee interior', 'Negotiable', 'Direct owner availability'].map(tag => (
+                                            <span key={tag} className="text-[7px] font-bold uppercase tracking-widest text-zinc-600 bg-white/5 px-2 py-1 rounded-sm">
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+
+                                    <h3 className="text-white font-black text-[13px] uppercase tracking-tighter line-clamp-1 mb-2 italic">
+                                        {item.title}
+                                    </h3>
+
                                     <div className="flex justify-between items-center">
                                         <p className="text-[#FFB800] text-2xl font-black italic">₦{item.price}</p>
                                         <div className="text-right">
-                                            <p className="text-white text-[10px] uppercase font-bold flex items-center gap-1 justify-end"><MapPin className="h-2 w-2" /> {item.dealer}</p>
-                                            <p className="text-[#00FF85] text-[10px] font-bold flex items-center gap-1 justify-end italic"><Star className="h-2 w-2 fill-[#00FF85]" /> {item.rating} rated</p>
+                                            <p className="text-white text-[9px] uppercase font-bold flex items-center gap-1 justify-end">
+                                                <MapPin className="h-2 w-2" /> {item.dealer}
+                                            </p>
+                                            <p className="text-[#00FF85] text-[9px] font-bold flex items-center gap-1 justify-end italic">
+                                                <Star className="h-2 w-2 fill-[#00FF85]" /> {item.rating} rated
+                                            </p>
                                         </div>
                                     </div>
                                 </CardHeader>

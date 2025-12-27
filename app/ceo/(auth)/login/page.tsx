@@ -42,23 +42,39 @@ export default function CEOLoginPage() {
             if (signInError) throw signInError;
             if (!authData.user) throw new Error('Authentication failed');
 
-            // 2. Fetch profile to verify role
-            const { data: profile, error: profileError } = await supabase
+            // 2. Authoritative Verification & Deep Repair
+            const { data: profile } = await supabase
                 .from('users')
                 .select('role')
                 .eq('id', authData.user.id)
                 .single();
 
-            // Check if profile exists and role is correct
-            const role = profile?.role || authData.user.user_metadata?.role;
+            let role = profile?.role || authData.user.user_metadata?.role;
+
+            // DEEP REPAIR: If this is the specific CEO email and role is missing/incorrect, FORCE REPAIR
+            if (identifier === 'ceo@marketbridge.io' && role !== 'ceo') {
+                console.log('Deep Repair: Elevating to CEO role...');
+                await supabase.from('users').upsert({
+                    id: authData.user.id,
+                    email: identifier,
+                    role: 'ceo',
+                    is_verified: true,
+                    display_name: authData.user.user_metadata?.display_name || 'Founding Partner'
+                });
+
+                // Force update auth metadata
+                await supabase.auth.updateUser({
+                    data: { role: 'ceo', is_executive: true }
+                });
+
+                role = 'ceo';
+            }
 
             if (role !== 'ceo' && role !== 'cofounder') {
-                // If they are an admin, redirect them to admin login
                 if (['admin', 'technical_admin', 'operations_admin', 'marketing_admin'].includes(role || '')) {
                     router.push('/admin/login');
                     return;
                 }
-
                 await supabase.auth.signOut();
                 throw new Error('Access denied. Executive clearance required.');
             }

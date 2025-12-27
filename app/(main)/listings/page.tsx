@@ -218,10 +218,20 @@ export default function ListingsPage() {
                                                 )}
                                             </div>
 
-                                            <CardHeader className="p-8 pb-4">
-                                                <CardTitle className="text-white font-black text-sm uppercase tracking-tight line-clamp-1 mb-2 italic">
+                                            <CardHeader className="p-8 pt-4 relative space-y-4">
+                                                {/* Tags - Unified with Home Page */}
+                                                <div className="flex flex-wrap gap-2 mb-2">
+                                                    {['Brand new', 'Coffee interior', 'Negotiable', 'Direct owner availability'].map(tag => (
+                                                        <span key={tag} className="text-[7px] font-bold uppercase tracking-widest text-zinc-600 bg-white/5 px-2 py-1 rounded-sm">
+                                                            {tag}
+                                                        </span>
+                                                    ))}
+                                                </div>
+
+                                                <CardTitle className="text-white font-black text-[13px] uppercase tracking-tighter line-clamp-1 mb-2 italic">
                                                     {listing.title}
                                                 </CardTitle>
+
                                                 <div className="flex justify-between items-center">
                                                     <p className="text-[#FFB800] text-2xl font-black italic">₦{(listing.price / 1000000).toFixed(1)}m</p>
                                                     <div className="text-right">

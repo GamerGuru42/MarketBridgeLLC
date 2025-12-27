@@ -57,7 +57,9 @@ export default function CEOSignupPage() {
 
             if (signUpError) {
                 if (signUpError.message?.includes('already registered')) {
-                    throw new Error('This email is already registered. Please login.');
+                    setError('Identity detected. This email is already registered in the executive vault.');
+                    setIsLoading(false);
+                    return;
                 }
                 throw signUpError;
             }
@@ -145,10 +147,17 @@ export default function CEOSignupPage() {
 
                 <CardContent className="px-10">
                     {error && (
-                        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-6">
-                            <p className="text-xs text-red-500 font-bold uppercase tracking-widest text-center">
-                                Registration Blocked: {error}
+                        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-5 mb-6 text-center space-y-3">
+                            <p className="text-xs text-red-500 font-bold uppercase tracking-widest leading-relaxed">
+                                {error}
                             </p>
+                            {error.includes('already registered') && (
+                                <div className="pt-2">
+                                    <Button asChild variant="outline" className="border-[#d4af37]/50 text-[#d4af37] hover:bg-[#d4af37]/10 h-9 text-[10px] uppercase font-black px-6 rounded-none">
+                                        <Link href="/ceo/login">Initialize Login Sequence</Link>
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     )}
 
