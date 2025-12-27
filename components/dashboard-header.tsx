@@ -16,37 +16,41 @@ export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
     const { user } = useAuth();
 
     return (
-        <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b bg-background/95 backdrop-blur px-4 md:px-8">
-            <div className="flex items-center gap-4">
+        <header className="sticky top-0 z-40 flex h-24 w-full items-center justify-between border-b border-white/5 bg-black/40 backdrop-blur-2xl px-6 md:px-12">
+            <div className="flex items-center gap-6">
                 <Sheet>
                     <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon" className="md:hidden">
-                            <Menu className="h-5 w-5" />
+                        <Button variant="ghost" size="icon" className="md:hidden text-white">
+                            <Menu className="h-6 w-6" />
                             <span className="sr-only">Toggle Menu</span>
                         </Button>
                     </SheetTrigger>
-                    <SheetContent side="left" className="p-0 w-64">
-                        <Sidebar items={sidebarItems} title={title} className="border-0" />
+                    <SheetContent side="left" className="p-0 w-72 bg-black border-r border-white/10">
+                        <Sidebar items={sidebarItems} title={title} className="border-0 shadow-none" />
                     </SheetContent>
                 </Sheet>
-                <h1 className="text-lg font-bold tracking-tight md:text-xl">{title}</h1>
+                <h1 className="text-xl md:text-2xl font-black italic tracking-widest text-[#FFB800] uppercase">
+                    {title}
+                </h1>
             </div>
 
-            <div className="flex items-center gap-2 md:gap-4">
-                <Button variant="ghost" size="icon" className="relative">
+            <div className="flex items-center gap-4 md:gap-8">
+                <Button variant="ghost" size="icon" className="relative text-zinc-500 hover:text-[#FFB800] transition-colors">
                     <Bell className="h-5 w-5" />
-                    <span className="absolute top-2 right-2 flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
+                    <span className="absolute top-2.5 right-2.5 flex h-1.5 w-1.5 rounded-full bg-[#FF8A00] animate-pulse"></span>
                 </Button>
 
-                <div className="flex items-center gap-3 pl-2 border-l ml-2">
+                <div className="flex items-center gap-4 pl-6 border-l border-white/5">
                     <div className="hidden md:flex flex-col text-right">
-                        <span className="text-xs font-bold leading-none">{user?.displayName || 'User'}</span>
-                        <span className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1">
-                            {user?.role?.replace('_', ' ')}
+                        <span className="text-[11px] font-black text-white uppercase italic tracking-wider">
+                            {user?.displayName || 'Authorized User'}
+                        </span>
+                        <span className="text-[9px] text-[#FFB800] font-black uppercase tracking-[0.2em] mt-1 italic">
+                            {user?.role?.replace('_', ' ')} unit
                         </span>
                     </div>
-                    <div className="h-8 w-8 rounded-full bg-primary/10 border flex items-center justify-center text-primary">
-                        <User className="h-4 w-4" />
+                    <div className="h-10 w-10 rounded-2xl glass-card border-none flex items-center justify-center text-[#FFB800] shadow-[0_0_15px_rgba(255,184,0,0.1)] group cursor-pointer hover:scale-105 transition-transform">
+                        <User className="h-5 w-5" />
                     </div>
                 </div>
             </div>

@@ -50,19 +50,9 @@ export async function middleware(request: NextRequest) {
 
     // 3. Define Protection Logic
 
-    // CEO PROTECTION
+    // CEO DECOMMISSIONED - Redirect to Admin
     if (pathname.startsWith('/ceo')) {
-        // Exempt login/signup
-        if (pathname === '/ceo/login' || pathname === '/ceo/signup') {
-            if (user && (role === 'ceo' || role === 'cofounder')) {
-                return NextResponse.redirect(new URL('/ceo', request.url))
-            }
-            return response
-        }
-
-        if (!user || !['ceo', 'cofounder'].includes(role)) {
-            return NextResponse.redirect(new URL('/ceo/login', request.url))
-        }
+        return NextResponse.redirect(new URL('/admin/login', request.url))
     }
 
     // ADMIN PROTECTION

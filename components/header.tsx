@@ -87,7 +87,7 @@ export const Header = () => {
                                     )}
                                     {['ceo', 'cofounder'].includes(user.role) && (
                                         <DropdownMenuItem asChild className="focus:bg-white/10 rounded-xl cursor-pointer text-[#FFB800]">
-                                            <Link href="/ceo" className="flex items-center gap-3 py-2.5 font-bold">
+                                            <Link href="/admin" className="flex items-center gap-3 py-2.5 font-bold">
                                                 <Crown className="h-4 w-4" /> Vision Command
                                             </Link>
                                         </DropdownMenuItem>

@@ -43,16 +43,23 @@ export default function AdminLayout({
 
     if (isAuthPage) return <>{children}</>;
 
-    if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-950"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+    if (loading) return (
+        <div className="min-h-screen flex items-center justify-center bg-black">
+            <Loader2 className="h-12 w-12 animate-spin text-[#FFB800]" />
+        </div>
+    );
 
     return (
-        <div className="flex min-h-screen">
-            <div className="hidden md:block w-64 fixed h-full z-10">
-                <Sidebar items={adminItems} title="Admin Portal" />
+        <div className="flex min-h-screen bg-black">
+            <div className="hidden md:block w-72 fixed h-full z-20">
+                <Sidebar items={adminItems} title="VISION COMMAND" />
             </div>
-            <div className="flex-1 md:ml-64 flex flex-col">
-                <DashboardHeader title="Admin Portal" sidebarItems={adminItems} />
-                <main className="flex-1 p-4 md:p-8 bg-slate-50 dark:bg-slate-900/50">
+            <div className="flex-1 md:ml-72 flex flex-col relative">
+                {/* Global Background Blobs */}
+                <div className="fixed top-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#FFB800]/5 blur-[120px] rounded-full pointer-events-none" />
+
+                <DashboardHeader title="MISSION CONTROL" sidebarItems={adminItems} />
+                <main className="flex-1 p-6 md:p-10 relative z-10">
                     {children}
                 </main>
             </div>
