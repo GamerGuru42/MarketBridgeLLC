@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
-import { Loader2, MapPin, Globe, MessageCircle, ShoppingCart, Package, ArrowLeft, ShieldCheck, Phone, Play, CreditCard, Zap, Share2, AlertTriangle, Box, Activity } from 'lucide-react';
+import { Loader2, MapPin, MessageCircle, ShoppingCart, ArrowLeft, ShieldCheck, Phone, CreditCard, Zap, AlertTriangle, Box, Activity } from 'lucide-react';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { ReviewsSection } from '@/components/ReviewsSection';

@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
     ArrowRight, ShieldCheck, Truck, Star, MapPin, Sparkles, Box, Search, ChevronRight,
-    Lock, CheckCircle2, TrendingUp, Users, Smartphone, RefreshCw
+    Lock, CheckCircle2, TrendingUp, Users, RefreshCw
 } from 'lucide-react';
 import Image from 'next/image';
 import { CATEGORIES, Category } from '@/lib/categories';
