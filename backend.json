@@ -1,0 +1,58 @@
+{
+    "users": {
+        "firebaseUid": "string (unique)",
+        "email": "string (unique)",
+        "displayName": "string",
+        "role": "enum(customer, dealer, admin, ceo, cofounder)",
+        "photoURL": "string",
+        "location": "string",
+        "isVerified": "boolean",
+        "storeType": "enum(physical, online)",
+        "createdAt": "date"
+    },
+    "listings": {
+        "dealer": "ObjectId(User)",
+        "title": "string",
+        "description": "string",
+        "price": "number",
+        "category": "string",
+        "images": [
+            "string"
+        ],
+        "status": "enum(active, sold, inactive)",
+        "location": "string",
+        "createdAt": "date"
+    },
+    "orders": {
+        "buyer": "ObjectId(User)",
+        "seller": "ObjectId(User)",
+        "listing": "ObjectId(Listing)",
+        "status": "enum(pending, confirmed, completed, cancelled)",
+        "amount": "number",
+        "createdAt": "date"
+    },
+    "chats": {
+        "participants": [
+            "ObjectId(User)"
+        ],
+        "listing": "ObjectId(Listing)",
+        "lastMessage": "string",
+        "lastMessageTimestamp": "date",
+        "createdAt": "date"
+    },
+    "messages": {
+        "chat": "ObjectId(Chat)",
+        "sender": "ObjectId(User)",
+        "content": "string",
+        "read": "boolean",
+        "createdAt": "date"
+    },
+    "reviews": {
+        "dealer": "ObjectId(User)",
+        "reviewer": "ObjectId(User)",
+        "listing": "ObjectId(Listing)",
+        "rating": "number (1-5)",
+        "comment": "string",
+        "createdAt": "date"
+    }
+}

@@ -1,0 +1,145 @@
+'use client';
+
+import React, { useState, useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import { supabase } from '@/lib/supabase';
+import { Loader2, Upload, X, Image as ImageIcon } from 'lucide-react';
+import Image from 'next/image';
+
+interface ImageUploadProps {
+    onImagesSelected: (urls: string[]) => void;
+    defaultImages?: string[];
+    maxImages?: number;
+    bucketName?: string;
+}
+
+export function ImageUpload({
+    onImagesSelected,
+    defaultImages = [],
+    maxImages = 5,
+    bucketName = 'listings'
+}: ImageUploadProps) {
+    const [images, setImages] = useState<string[]>(defaultImages);
+    const [uploading, setUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || e.target.files.length === 0) return;
+
+        const files = Array.from(e.target.files);
+
+        if (images.length + files.length > maxImages) {
+            alert(`You can only upload a maximum of ${maxImages} images.`);
+            return;
+        }
+
+        setUploading(true);
+        const newUrls: string[] = [];
+
+        try {
+            for (const file of files) {
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    alert(`File ${file.name} is not an image.`);
+                    continue;
+                }
+
+                // Validate file size (e.g., 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(`File ${file.name} is too large (max 5MB).`);
+                    continue;
+                }
+
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+                const filePath = `${fileName}`;
+
+                const { error: uploadError } = await supabase.storage
+                    .from(bucketName)
+                    .upload(filePath, file);
+
+                if (uploadError) {
+                    throw uploadError;
+                }
+
+                const { data } = supabase.storage
+                    .from(bucketName)
+                    .getPublicUrl(filePath);
+
+                newUrls.push(data.publicUrl);
+            }
+
+            const updatedImages = [...images, ...newUrls];
+            setImages(updatedImages);
+            onImagesSelected(updatedImages);
+        } catch (error: any) {
+            console.error('Error uploading image:', error);
+            alert('Error uploading image. Please try again.');
+        } finally {
+            setUploading(false);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        }
+    };
+
+    const removeImage = (index: number) => {
+        const newImages = images.filter((_, i) => i !== index);
+        setImages(newImages);
+        onImagesSelected(newImages);
+    };
+
+    return (
+        <div className="space-y-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {images.map((url, index) => (
+                    <div key={index} className="relative aspect-square rounded-lg overflow-hidden border bg-muted group">
+                        <Image
+                            src={url}
+                            alt={`Uploaded image ${index + 1}`}
+                            fill
+                            className="object-cover"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute top-2 right-2 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                            <X className="h-4 w-4" />
+                        </button>
+                    </div>
+                ))}
+
+                {images.length < maxImages && (
+                    <div
+                        onClick={() => fileInputRef.current?.click()}
+                        className="aspect-square rounded-lg border-2 border-dashed border-muted-foreground/25 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
+                    >
+                        {uploading ? (
+                            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                        ) : (
+                            <>
+                                <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                                <span className="text-xs text-muted-foreground font-medium">Upload Image</span>
+                            </>
+                        )}
+                    </div>
+                )}
+            </div>
+
+            <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="image/*"
+                multiple
+                className="hidden"
+                disabled={uploading}
+            />
+
+            <p className="text-xs text-muted-foreground">
+                Supported formats: JPG, PNG, WEBP. Max size: 5MB.
+            </p>
+        </div>
+    );
+}
