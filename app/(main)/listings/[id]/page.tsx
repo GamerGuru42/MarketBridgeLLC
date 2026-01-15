@@ -8,12 +8,13 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
-import { Loader2, MapPin, Globe, MessageCircle, ShoppingCart, Package, ArrowLeft, ShieldCheck, Phone, Play, CreditCard } from 'lucide-react';
+import { Loader2, MapPin, Globe, MessageCircle, ShoppingCart, Package, ArrowLeft, ShieldCheck, Phone, Play, CreditCard, Zap, Share2, AlertTriangle, Box, Activity } from 'lucide-react';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { ReviewsSection } from '@/components/ReviewsSection';
 import { useFlutterwave, getFlutterwaveConfig } from '@/lib/flutterwave';
 import { initiateOPayCheckout } from '@/lib/opay';
+import { cn } from '@/lib/utils';
 
 interface Listing {
     id: string;
@@ -269,41 +270,62 @@ export default function ListingDetailPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <div className="min-h-screen bg-black flex items-center justify-center text-white">
+                <Loader2 className="h-10 w-10 animate-spin text-[#FFB800]" />
             </div>
         );
     }
 
     if (error || !listing) {
         return (
-            <div className="min-h-screen flex items-center justify-center px-4">
-                <Card className="w-full max-w-md">
-                    <CardContent className="pt-6 text-center">
-                        <p className="text-destructive mb-4">{error || 'Listing not found'}</p>
-                        <Button onClick={() => router.push('/listings')}>
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back to Listings
-                        </Button>
-                    </CardContent>
-                </Card>
+            <div className="min-h-screen bg-black flex items-center justify-center px-4 text-white">
+                <div className="glass-card p-10 rounded-[2.5rem] border-red-500/20 text-center max-w-md">
+                    <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-6" />
+                    <p className="text-red-400 font-bold uppercase tracking-widest mb-6">{error || 'Asset Protocol Failed'}</p>
+                    <Button onClick={() => router.push('/listings')} className="bg-white/10 text-white hover:bg-white/20">
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Return to Stream
+                    </Button>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen py-8">
-            <div className="container px-4 mx-auto">
-                <Button variant="ghost" onClick={() => router.back()} className="mb-6">
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back
-                </Button>
+        <div className="min-h-screen bg-black text-white relative selection:bg-[#FFB800] selection:text-black pt-28 pb-20">
+            {/* Background Grid */}
+            <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="container px-4 mx-auto relative z-10 max-w-7xl">
+                {/* Header / Breadcrumb */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-white/5 pb-8">
                     <div className="space-y-4">
-                        <div className="aspect-square bg-muted rounded-lg overflow-hidden">
-                            {listing.images && listing.images.length > 0 ? (
-                                <div className="relative w-full h-full">
+                        <Button
+                            variant="ghost"
+                            onClick={() => router.back()}
+                            className="text-[#FFB800] hover:text-[#FFD700] hover:bg-transparent p-0 h-auto text-[10px] font-black uppercase tracking-[0.2em] font-heading"
+                        >
+                            <ArrowLeft className="mr-2 h-3 w-3" /> Return to Signal
+                        </Button>
+                        <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter italic font-heading">
+                            {listing.title}
+                        </h1>
+                        <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-zinc-500">
+                            <span className="flex items-center gap-1.5 text-[#00FF85]"><Activity className="h-3 w-3" /> Active Protocol</span>
+                            <span className="w-1 h-1 rounded-full bg-zinc-700" />
+                            <span className="text-white">{listing.category}</span>
+                            <span className="w-1 h-1 rounded-full bg-zinc-700" />
+                            <span>ID: #{listing.id.slice(0, 8).toUpperCase()}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    {/* Left Column: Visuals */}
+                    <div className="space-y-6">
+                        <div className="glass-card rounded-[2.5rem] overflow-hidden p-2 border-white/5 relative group">
+                            <div className="aspect-[4/3] rounded-[2rem] overflow-hidden relative bg-zinc-900">
+                                {listing.images && listing.images.length > 0 ? (
                                     <Image
                                         src={listing.images[selectedImage]}
                                         alt={listing.title}
@@ -311,207 +333,131 @@ export default function ListingDetailPage() {
                                         className="object-cover"
                                         priority
                                     />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-zinc-700 font-black uppercase tracking-widest">
+                                        No Visual Signal
+                                    </div>
+                                )}
+
+                                {/* Overlay Badges */}
+                                <div className="absolute top-6 left-6 flex flex-col gap-3">
+                                    {(listing.is_verified_listing || listing.verification_status === 'verified') && (
+                                        <div className="bg-[#FFB800] text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-[#FFB800]/20 font-heading italic">
+                                            <ShieldCheck className="h-3 w-3" /> Verified Node
+                                        </div>
+                                    )}
                                 </div>
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                                    No Image Available
-                                </div>
-                            )}
+                            </div>
                         </div>
+
+                        {/* Thumbnails */}
                         {listing.images && listing.images.length > 1 && (
-                            <div className="grid grid-cols-4 gap-2">
+                            <div className="grid grid-cols-4 gap-4">
                                 {listing.images.map((img, idx) => (
                                     <button
                                         key={idx}
                                         onClick={() => setSelectedImage(idx)}
-                                        className={`aspect-square rounded-md overflow-hidden border-2 transition-all ${selectedImage === idx ? 'border-primary' : 'border-transparent'}`}
+                                        className={cn(
+                                            "aspect-square rounded-2xl overflow-hidden border transition-all relative group",
+                                            selectedImage === idx
+                                                ? "border-[#FFB800] ring-1 ring-[#FFB800]"
+                                                : "border-white/10 hover:border-white/30"
+                                        )}
                                     >
-                                        <div className="relative w-full h-full">
-                                            <Image
-                                                src={img}
-                                                alt={`${listing.title} ${idx + 1}`}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        </div>
+                                        <Image
+                                            src={img}
+                                            alt={`${listing.title} thumbnail`}
+                                            fill
+                                            className="object-cover opacity-60 group-hover:opacity-100 transition-opacity"
+                                        />
                                     </button>
                                 ))}
                             </div>
                         )}
-                        {listing.videos && listing.videos.length > 0 && (
-                            <div className="space-y-3">
-                                <h3 className="text-lg font-semibold flex items-center gap-2">
-                                    <Play className="h-5 w-5" />
-                                    Product Videos
-                                </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {listing.videos.map((videoUrl, idx) => (
-                                        <div key={idx} className="aspect-video rounded-lg overflow-hidden border bg-muted">
-                                            <video
-                                                src={videoUrl}
-                                                controls
-                                                className="w-full h-full object-cover"
-                                                preload="metadata"
-                                            >
-                                                Your browser does not support the video tag.
-                                            </video>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
                     </div>
 
-                    <div className="space-y-6">
-                        <div>
-                            <div className="flex items-start justify-between mb-2">
-                                <div className="space-y-1">
-                                    <h1 className="text-2xl md:text-3xl font-bold">{listing.title}</h1>
-                                    <div className="flex items-center gap-2">
-                                        <Badge variant="outline">{listing.category}</Badge>
-                                        {(listing.is_verified_listing || listing.verification_status === 'verified') && (
-                                            <Badge className="bg-blue-500 hover:bg-blue-600">
-                                                <ShieldCheck className="h-3 w-3 mr-1" /> Verified Listing
-                                            </Badge>
-                                        )}
-                                    </div>
-                                </div>
-                                <p className="text-2xl md:text-3xl font-bold text-primary whitespace-nowrap">
+                    {/* Right Column: Interaction & Data */}
+                    <div className="space-y-8">
+                        {/* Price Card */}
+                        <div className="glass-card rounded-[2.5rem] p-8 border-white/5 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-8 opacity-50">
+                                <Zap className="h-24 w-24 text-[#FFB800]/10" />
+                            </div>
+
+                            <div className="relative z-10">
+                                <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] font-heading mb-2">Market Valuation</p>
+                                <div className="text-6xl font-black text-white italic font-heading tracking-tighter mb-6">
                                     ₦{listing.price.toLocaleString()}
-                                </p>
-                            </div>
-                            <div className="flex items-center gap-2 text-muted-foreground">
-                                <MapPin className="h-4 w-4" />
-                                <span>{listing.location || 'Abuja, Nigeria'}</span>
+                                </div>
+
+                                {user && user.id !== listing.dealer.id ? (
+                                    <div className="space-y-4">
+                                        <div className="flex gap-4">
+                                            <Button
+                                                onClick={handlePlaceOrder}
+                                                disabled={actionLoading}
+                                                className="flex-3 h-16 bg-[#FFB800] text-black hover:bg-[#FFD700] rounded-2xl font-black uppercase tracking-widest text-xs font-heading italic flex-1"
+                                            >
+                                                {actionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
+                                                Secure Asset Now
+                                            </Button>
+                                            <Button
+                                                onClick={handleAddToCart}
+                                                variant="outline"
+                                                className="h-16 aspect-square rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 text-white flex items-center justify-center p-0"
+                                            >
+                                                <ShoppingCart className="h-5 w-5" />
+                                            </Button>
+                                        </div>
+
+                                        {/* Contact Grid */}
+                                        <div className="grid grid-cols-2 gap-3 pt-4 border-t border-white/5">
+                                            <Button onClick={handleContactDealer} variant="outline" className="h-12 rounded-xl border-white/10 bg-transparent text-zinc-400 hover:text-white hover:bg-white/5 text-[10px] uppercase font-bold tracking-widest">
+                                                <MessageCircle className="mr-2 h-3 w-3" /> Secure Chat
+                                            </Button>
+                                            <Button onClick={handleWhatsAppDealer} variant="outline" className="h-12 rounded-xl border-green-500/20 bg-green-500/5 text-green-500 hover:bg-green-500/10 text-[10px] uppercase font-bold tracking-widest">
+                                                <Phone className="mr-2 h-3 w-3" /> Direct Uplink
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="bg-zinc-900/50 rounded-2xl p-4 border border-white/5 text-center">
+                                        <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Owner Mode Active</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
-                        <Separator />
-
+                        {/* Specs Grid */}
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="p-3 bg-muted/30 rounded-lg">
-                                <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Make</p>
-                                <p className="font-semibold">{listing.make || 'Toyota'}</p>
-                            </div>
-                            <div className="p-3 bg-muted/30 rounded-lg">
-                                <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Model</p>
-                                <p className="font-semibold">{listing.model || 'Camry'}</p>
-                            </div>
-                            <div className="p-3 bg-muted/30 rounded-lg">
-                                <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Year</p>
-                                <p className="font-semibold">{listing.year || '2018'}</p>
-                            </div>
-                            <div className="p-3 bg-muted/30 rounded-lg">
-                                <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Condition</p>
-                                <p className="font-semibold">{listing.condition || 'Tokunbo'}</p>
-                            </div>
+                            {[
+                                { label: 'Location Node', value: listing.location, icon: MapPin },
+                                { label: 'Asset Make', value: listing.make, icon: Box },
+                                { label: 'Asset Model', value: listing.model, icon: Box },
+                                { label: 'Condition', value: listing.condition, icon: Activity },
+                                { label: 'Year', value: listing.year, icon: Activity },
+                                { label: 'Mileage', value: listing.mileage ? `${listing.mileage} KM` : 'N/A', icon: Activity },
+                            ].map((spec, i) => (
+                                <div key={i} className="glass-card p-5 rounded-2xl border-white/5">
+                                    <div className="flex items-center gap-2 mb-2 text-zinc-500">
+                                        <spec.icon className="h-3 w-3" />
+                                        <span className="text-[9px] font-black uppercase tracking-widest">{spec.label}</span>
+                                    </div>
+                                    <p className="text-sm font-bold text-white uppercase truncate">{spec.value || 'N/A'}</p>
+                                </div>
+                            ))}
                         </div>
 
-                        <Separator />
-
-                        <div>
-                            <h2 className="text-xl font-semibold mb-2">Description</h2>
-                            <p className="text-muted-foreground whitespace-pre-wrap">{listing.description}</p>
+                        {/* Description */}
+                        <div className="glass-card p-8 rounded-[2.5rem] border-white/5">
+                            <h3 className="text-white font-black uppercase text-xs tracking-[0.2em] font-heading mb-6 flex items-center gap-3">
+                                <span className="h-1.5 w-1.5 rounded-full bg-[#FFB800]" />
+                                Technical Manifest
+                            </h3>
+                            <p className="text-zinc-400 text-sm leading-relaxed font-medium whitespace-pre-wrap">
+                                {listing.description}
+                            </p>
                         </div>
-
-                        <Separator />
-
-                        <Card>
-                            <CardContent className="pt-6">
-                                <h3 className="text-lg font-semibold mb-4">Dealer Information</h3>
-                                <div className="flex items-center gap-3 mb-4">
-                                    {listing.dealer.photo_url ? (
-                                        <div className="relative h-12 w-12 shrink-0">
-                                            <Image
-                                                src={listing.dealer.photo_url}
-                                                alt={listing.dealer.display_name}
-                                                fill
-                                                className="rounded-full object-cover"
-                                            />
-                                        </div>
-                                    ) : (
-                                        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">
-                                            {listing.dealer.display_name.charAt(0).toUpperCase()}
-                                        </div>
-                                    )}
-                                    <div>
-                                        <p className="font-semibold flex items-center gap-2">
-                                            {listing.dealer.display_name}
-                                            {listing.dealer.is_verified && (
-                                                <ShieldCheck className="h-4 w-4 text-primary" />
-                                            )}
-                                        </p>
-                                        {listing.dealer.store_type && (
-                                            <p className="text-sm text-muted-foreground capitalize">
-                                                {listing.dealer.store_type} Store
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <ReviewsSection listingId={listing.id} dealerId={listing.dealer.id} />
-
-                        {user && user.id !== listing.dealer.id && (
-                            <div className="flex flex-col gap-3">
-                                <div className="flex gap-3">
-                                    <Button onClick={handleWhatsAppDealer} className="flex-1 bg-green-600 hover:bg-green-700 text-white" disabled={actionLoading}>
-                                        <MessageCircle className="mr-2 h-4 w-4" /> WhatsApp
-                                    </Button>
-                                    <Button onClick={handleCallDealer} variant="outline" className="flex-1 border-primary text-primary hover:bg-primary/10" disabled={actionLoading}>
-                                        <Phone className="mr-2 h-4 w-4" /> Call
-                                    </Button>
-                                    <Button onClick={handleContactDealer} variant="outline" className="flex-1" disabled={actionLoading}>
-                                        <Globe className="mr-2 h-4 w-4" /> Chat
-                                    </Button>
-                                </div>
-                                <div className="flex gap-3">
-                                    <Button onClick={handleAddToCart} variant="secondary" className="flex-1">
-                                        <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
-                                    </Button>
-                                    <Button onClick={handlePlaceOrder} className="flex-1" disabled={actionLoading}>
-                                        {actionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Package className="mr-2 h-4 w-4" />}
-                                        Buy Now
-                                    </Button>
-                                </div>
-
-                                <div className="bg-muted/30 rounded-lg p-4 border-2 border-dashed border-primary/20 text-center">
-                                    <p className="text-xs text-muted-foreground uppercase font-black tracking-widest mb-3">Choose Secure Payment Method</p>
-                                    <div className="flex justify-center flex-wrap gap-2">
-                                        <button
-                                            onClick={() => setPaymentProvider('card')}
-                                            className={`px-4 py-2 rounded-xl text-xs font-bold border-2 transition-all flex items-center gap-2 ${paymentProvider === 'card' ? 'bg-primary border-primary text-white shadow-lg scale-105' : 'bg-background border-muted text-muted-foreground hover:border-primary/50'}`}
-                                        >
-                                            <CreditCard className="h-4 w-4" />
-                                            Card
-                                        </button>
-                                        <button
-                                            onClick={() => setPaymentProvider('transfer')}
-                                            className={`px-4 py-2 rounded-xl text-xs font-bold border-2 transition-all flex items-center gap-2 ${paymentProvider === 'transfer' ? 'bg-primary border-primary text-white shadow-lg scale-105' : 'bg-background border-muted text-muted-foreground hover:border-primary/50'}`}
-                                        >
-                                            <Globe className="h-4 w-4" />
-                                            Transfer
-                                        </button>
-                                        <button
-                                            onClick={() => setPaymentProvider('opay')}
-                                            className={`px-4 py-2 rounded-xl text-xs font-bold border-2 transition-all flex items-center gap-2 ${paymentProvider === 'opay' ? 'bg-primary border-primary text-white shadow-lg scale-105' : 'bg-background border-muted text-muted-foreground hover:border-primary/50'}`}
-                                        >
-                                            <ShoppingCart className="h-4 w-4" />
-                                            OPay
-                                        </button>
-                                    </div>
-                                    <p className="text-[10px] text-muted-foreground mt-3 italic font-medium">✨ All payments are protected by MarketBridge Escrow Service</p>
-                                </div>
-                            </div>
-                        )}
-
-                        {!user && (
-                            <div className="bg-muted/50 rounded-lg p-4 text-center">
-                                <p className="text-sm text-muted-foreground mb-3">Please log in to contact the dealer or place an order</p>
-                                <Button onClick={() => router.push('/login')} className="w-full">Log In</Button>
-                            </div>
-                        )}
                     </div>
                 </div>
             </div>

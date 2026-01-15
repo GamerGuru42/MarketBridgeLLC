@@ -288,16 +288,21 @@ export default function HomePage() {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 px-4">
-                    {CATEGORIES.map((cat, idx) => (
-                        <button
-                            key={idx}
-                            onClick={() => handleCategoryClick(cat)}
-                            className="bg-white/5 border border-white/5 p-6 flex flex-col items-center justify-center gap-4 hover:bg-[#FFB800] hover:text-black hover:border-transparent transition-all duration-300 group"
-                        >
-                            <span className="text-3xl grayscale group-hover:grayscale-0 transition-all">{cat.icon}</span>
-                            <span className="text-xs font-black uppercase tracking-widest">{cat.name}</span>
-                        </button>
-                    ))}
+                    {CATEGORIES.map((cat, idx) => {
+                        const Icon = cat.icon;
+                        return (
+                            <button
+                                key={idx}
+                                onClick={() => handleCategoryClick(cat)}
+                                className="bg-white/5 border border-white/5 p-6 flex flex-col items-center justify-center gap-4 hover:bg-[#FFB800] hover:text-black hover:border-transparent transition-all duration-300 group"
+                            >
+                                <span className="grayscale group-hover:grayscale-0 transition-all">
+                                    <Icon className="h-8 w-8" />
+                                </span>
+                                <span className="text-xs font-black uppercase tracking-widest">{cat.name}</span>
+                            </button>
+                        );
+                    })}
                 </div>
             </section>
 
