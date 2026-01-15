@@ -61,3 +61,5 @@ public/workbox-*.js
 # Old client directory
 client/
 .gitignore.client
+
+.vercel
