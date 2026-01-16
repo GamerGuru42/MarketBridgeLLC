@@ -73,6 +73,10 @@ export async function middleware(request: NextRequest) {
     if (pathname.startsWith('/admin')) {
         if (pathname === '/admin/login' || pathname === '/admin/signup') {
             if (user && isAdmin) {
+                // Redirect to specific dashboard based on role to avoid confusion
+                if (role === 'marketing_admin') return NextResponse.redirect(new URL('/admin/marketing', request.url))
+                if (role === 'operations_admin') return NextResponse.redirect(new URL('/admin/operations', request.url))
+                if (role === 'technical_admin') return NextResponse.redirect(new URL('/admin/technical', request.url))
                 return NextResponse.redirect(new URL('/admin', request.url))
             }
             return supabaseResponse
@@ -80,6 +84,22 @@ export async function middleware(request: NextRequest) {
 
         if (!user || !isAdmin) {
             return NextResponse.redirect(new URL('/admin/login', request.url))
+        }
+
+        // Granular Access Control
+        const superAdmins = ['admin', 'ceo', 'cofounder', 'cto', 'coo'];
+        const isSuperAdmin = superAdmins.includes(role);
+
+        if (!isSuperAdmin) {
+            if (pathname.startsWith('/admin/marketing') && role !== 'marketing_admin') {
+                return NextResponse.redirect(new URL('/admin', request.url)) // Or their own dashboard
+            }
+            if (pathname.startsWith('/admin/operations') && role !== 'operations_admin') {
+                return NextResponse.redirect(new URL('/admin', request.url))
+            }
+            if (pathname.startsWith('/admin/technical') && role !== 'technical_admin') {
+                return NextResponse.redirect(new URL('/admin', request.url))
+            }
         }
     }
 

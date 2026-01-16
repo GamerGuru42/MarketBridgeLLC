@@ -13,20 +13,7 @@ import { Loader2, ArrowLeft, Zap, Box, MapPin, Search } from 'lucide-react';
 import Link from 'next/link';
 import { ImageUpload } from '@/components/ImageUpload';
 import { VideoUpload } from '@/components/VideoUpload';
-import { cn } from '@/lib/utils';
-
-const CATEGORIES = [
-    'Electronics',
-    'Fashion',
-    'Home & Garden',
-    'Sports',
-    'Automotive',
-    'Beauty',
-    'Real Estate',
-    'Services',
-    'Kids & Babies',
-    'Groceries'
-];
+import { CATEGORIES } from '@/lib/categories';
 
 export default function NewListingPage() {
     const router = useRouter();
@@ -195,8 +182,8 @@ export default function NewListingPage() {
                                         </SelectTrigger>
                                         <SelectContent className="bg-zinc-900 border-white/10 text-white font-heading text-[10px] uppercase font-black tracking-widest">
                                             {CATEGORIES.map((cat) => (
-                                                <SelectItem key={cat} value={cat} className="focus:bg-[#FFB800] focus:text-black py-3">
-                                                    {cat}
+                                                <SelectItem key={cat.id} value={cat.name} disabled={cat.locked} className="focus:bg-[#FFB800] focus:text-black py-3">
+                                                    {cat.name} {cat.locked ? '(COMING SOON)' : ''}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>

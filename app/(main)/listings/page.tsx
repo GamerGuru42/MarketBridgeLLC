@@ -175,8 +175,8 @@ export default function ListingsPage() {
                                         >
                                             <option value="All Categories">All Categories</option>
                                             {CATEGORIES.map((cat) => (
-                                                <option key={cat.id} value={cat.name} disabled={!cat.isActive} className="bg-zinc-900">
-                                                    {cat.name}
+                                                <option key={cat.id} value={cat.name} disabled={cat.locked} className="bg-zinc-900">
+                                                    {cat.name} {cat.locked ? '(COMING SOON)' : ''}
                                                 </option>
                                             ))}
                                         </select>

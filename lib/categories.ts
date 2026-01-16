@@ -10,6 +10,7 @@ export interface Category {
     color: string;
     bg: string;
     isActive: boolean;
+    locked?: boolean;
     description: string;
     slug: string;
 }
@@ -22,6 +23,7 @@ export const CATEGORIES: Category[] = [
         color: 'text-orange-500',
         bg: 'bg-orange-500/10',
         isActive: true,
+        locked: false,
         slug: 'automotive',
         description: 'New and used cars from verified dealers. All sizes of businesses welcome.'
     },
@@ -32,6 +34,7 @@ export const CATEGORIES: Category[] = [
         color: 'text-blue-500',
         bg: 'bg-blue-500/10',
         isActive: false,
+        locked: true,
         slug: 'electronics',
         description: 'Gadgets, phones, and computers.'
     },
@@ -42,6 +45,7 @@ export const CATEGORIES: Category[] = [
         color: 'text-pink-500',
         bg: 'bg-pink-500/10',
         isActive: false,
+        locked: true,
         slug: 'fashion',
         description: 'Clothing, shoes, and accessories.'
     },
@@ -52,6 +56,7 @@ export const CATEGORIES: Category[] = [
         color: 'text-green-500',
         bg: 'bg-green-500/10',
         isActive: false,
+        locked: true,
         slug: 'home-garden',
         description: 'Furniture, decor, and appliances.'
     },
@@ -62,6 +67,7 @@ export const CATEGORIES: Category[] = [
         color: 'text-purple-500',
         bg: 'bg-purple-500/10',
         isActive: false,
+        locked: true,
         slug: 'beauty',
         description: 'Cosmetics, skincare, and personal care.'
     },
@@ -72,6 +78,7 @@ export const CATEGORIES: Category[] = [
         color: 'text-red-500',
         bg: 'bg-red-500/10',
         isActive: false,
+        locked: true,
         slug: 'sports',
         description: 'Gym equipment and sportswear.'
     },
@@ -82,6 +89,7 @@ export const CATEGORIES: Category[] = [
         color: 'text-cyan-500',
         bg: 'bg-cyan-500/10',
         isActive: false,
+        locked: true,
         slug: 'real-estate',
         description: 'Properties for rent and sale.'
     },
@@ -92,6 +100,7 @@ export const CATEGORIES: Category[] = [
         color: 'text-slate-500',
         bg: 'bg-slate-500/10',
         isActive: false,
+        locked: true,
         slug: 'services',
         description: 'Professional services and freelancers.'
     },
@@ -102,6 +111,7 @@ export const CATEGORIES: Category[] = [
         color: 'text-yellow-500',
         bg: 'bg-yellow-500/10',
         isActive: false,
+        locked: true,
         slug: 'kids-babies',
         description: 'Toys, clothing, and essentials.'
     },
@@ -112,6 +122,7 @@ export const CATEGORIES: Category[] = [
         color: 'text-emerald-500',
         bg: 'bg-emerald-500/10',
         isActive: false,
+        locked: true,
         slug: 'groceries',
         description: 'Fresh produce and daily essentials.'
     },

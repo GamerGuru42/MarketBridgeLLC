@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -28,6 +29,16 @@ import { cn } from '@/lib/utils';
 export default function AdminPage() {
     const { user } = useAuth();
 
+    const router = useRouter();
+
+    useEffect(() => {
+        if (user) {
+            if (user.role === 'marketing_admin') router.replace('/admin/marketing');
+            else if (user.role === 'operations_admin') router.replace('/admin/operations');
+            else if (user.role === 'technical_admin') router.replace('/admin/technical');
+        }
+    }, [user, router]);
+
     const adminTourSteps = [
         {
             title: "Mission Control Briefing",
@@ -52,6 +63,7 @@ export default function AdminPage() {
             <Loader2 className="h-10 w-10 animate-spin text-[#FFB800] relative z-10" />
         </div>
     );
+
 
     return (
         <div className="min-h-screen bg-black text-white relative flex flex-col selection:bg-[#FFB800] selection:text-black">

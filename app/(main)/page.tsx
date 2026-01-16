@@ -294,12 +294,23 @@ export default function HomePage() {
                             <button
                                 key={idx}
                                 onClick={() => handleCategoryClick(cat)}
-                                className="bg-white/5 border border-white/5 p-6 flex flex-col items-center justify-center gap-4 hover:bg-[#FFB800] hover:text-black hover:border-transparent transition-all duration-300 group"
+                                className={`relative bg-white/5 border border-white/5 p-6 flex flex-col items-center justify-center gap-4 transition-all duration-300 group overflow-hidden ${cat.locked
+                                        ? 'opacity-60 grayscale cursor-not-allowed hover:opacity-100 hover:grayscale-0'
+                                        : 'hover:bg-[#FFB800] hover:text-black hover:border-transparent'
+                                    }`}
                             >
-                                <span className="grayscale group-hover:grayscale-0 transition-all">
+                                {cat.locked && (
+                                    <div className="absolute top-2 right-2">
+                                        <Lock className="h-3 w-3 text-[#FFB800]" />
+                                    </div>
+                                )}
+                                <span className="transition-all">
                                     <Icon className="h-8 w-8" />
                                 </span>
                                 <span className="text-xs font-black uppercase tracking-widest">{cat.name}</span>
+                                {cat.locked && (
+                                    <span className="absolute bottom-1 text-[8px] font-bold text-[#FFB800] uppercase tracking-tighter">Locked</span>
+                                )}
                             </button>
                         );
                     })}

@@ -12,9 +12,19 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { normalizeIdentifier } from '@/lib/auth/utils';
 import { Loader2, ShieldCheck, Lock, Mail, User, Briefcase } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+
+const ALLOWED_ADMINS = {
+    marketing_admin: 'adael_marketing@marketbridge.com',
+    operations_admin: 'abdultareeq_ops@marketbridge.com',
+    technical_admin: 'terumah_technical@marketbridge.com',
+};
 
 export default function AdminSignupPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const dept = searchParams.get('dept');
+
     const { refreshUser } = useAuth();
     const [formData, setFormData] = useState({
         displayName: '',
@@ -22,7 +32,10 @@ export default function AdminSignupPage() {
         password: '',
         confirmPassword: '',
     });
-    const [role, setRole] = useState<'admin' | 'technical_admin' | 'operations_admin' | 'marketing_admin'>('admin');
+
+    // Auto-set role based on dept parameter
+    const initialRole = dept ? `${dept}_admin` as any : 'admin';
+    const [role, setRole] = useState<'admin' | 'technical_admin' | 'operations_admin' | 'marketing_admin'>(initialRole);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -31,6 +44,16 @@ export default function AdminSignupPage() {
         setIsLoading(true);
         setError('');
 
+        const identifier = normalizeIdentifier(formData.email);
+
+        // Enforce Email Restriction
+        const expectedEmail = ALLOWED_ADMINS[role as keyof typeof ALLOWED_ADMINS];
+        if (expectedEmail && identifier !== normalizeIdentifier(expectedEmail)) {
+            setError(`UNAUTHORIZED IDENTITY. This post is restricted to ${expectedEmail}`);
+            setIsLoading(false);
+            return;
+        }
+
         if (formData.password !== formData.confirmPassword) {
             setError('Passwords do not match');
             setIsLoading(false);
@@ -38,7 +61,6 @@ export default function AdminSignupPage() {
         }
 
         try {
-            const identifier = normalizeIdentifier(formData.email);
             console.log('INITIATING ADMIN PROVISIONING FOR:', identifier);
 
             const { data: authData, error: signUpError } = await supabase.auth.signUp({
@@ -66,17 +88,6 @@ export default function AdminSignupPage() {
                         activeUser = signInData.user;
                     } else {
                         throw new Error("This email is already registered. Please use the login page.");
-                    }
-                } else if (signUpError.message?.includes('Database error saving new user')) {
-                    console.warn("Database trigger failed, attempting recovery...");
-                    const { data: signInData } = await supabase.auth.signInWithPassword({
-                        email: formData.email,
-                        password: formData.password
-                    });
-                    if (signInData.user) {
-                        activeUser = signInData.user;
-                    } else {
-                        throw new Error("Database sync issue. Please contact technical support.");
                     }
                 } else {
                     throw signUpError;
@@ -106,13 +117,9 @@ export default function AdminSignupPage() {
                     console.error('Unexpected error during profile creation:', upsertErr);
                 }
 
-                // IMPORTANT: Refresh user profile so the app knows we are logged in
                 await refreshUser();
-
-                // Critical: Wait for AuthContext to fully update before navigation
                 await new Promise(resolve => setTimeout(resolve, 500));
 
-                // Department-aware redirection
                 let targetPath = '/admin';
                 if (role === 'technical_admin') targetPath = '/admin/technical';
                 else if (role === 'operations_admin') targetPath = '/admin/operations';
