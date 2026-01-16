@@ -49,16 +49,62 @@ export default function AdminLayout({
         </div>
     );
 
+    const getSidebarItems = () => {
+        const role = user?.role;
+        const basicItems = [
+            { label: 'Executive Chat', href: '/admin/executive-chat', icon: MessageSquare },
+        ];
+
+        if (role === 'marketing_admin') {
+            return [
+                { label: 'Marketing Growth', href: '/admin/marketing', icon: BarChart3 },
+                { label: 'Listings Manager', href: '/admin/listings', icon: ShoppingBag },
+                ...basicItems
+            ];
+        }
+        if (role === 'operations_admin') {
+            return [
+                { label: 'Operations Hub', href: '/admin/operations', icon: Activity },
+                { label: 'Dispute Center', href: '/admin/disputes', icon: ShieldAlert },
+                { label: 'Users Manager', href: '/admin/users', icon: Users },
+                { label: 'Listings Manager', href: '/admin/listings', icon: ShoppingBag },
+                ...basicItems
+            ];
+        }
+        if (role === 'technical_admin') {
+            return [
+                { label: 'Technical Node', href: '/admin/technical', icon: Server },
+                { label: 'Users Manager', href: '/admin/users', icon: Users },
+                ...basicItems
+            ];
+        }
+
+        // Super Admin (or fallback) gets everything
+        return [
+            { label: 'Mission Control', href: '/admin', icon: LayoutDashboard },
+            { label: 'Technical Node', href: '/admin/technical', icon: Server },
+            { label: 'Operations Hub', href: '/admin/operations', icon: Activity },
+            { label: 'Marketing Growth', href: '/admin/marketing', icon: BarChart3 },
+            { label: 'Strategic Proposal', href: '/admin/proposals/new', icon: Zap },
+            { label: 'Users Manager', href: '/admin/users', icon: Users },
+            { label: 'Listings Manager', href: '/admin/listings', icon: ShoppingBag },
+            { label: 'Dispute Center', href: '/admin/disputes', icon: ShieldAlert },
+            ...basicItems
+        ];
+    };
+
+    const filteredItems = getSidebarItems();
+
     return (
         <div className="flex min-h-screen bg-black">
             <div className="hidden md:block w-72 fixed h-full z-20">
-                <Sidebar items={adminItems} title="VISION COMMAND" />
+                <Sidebar items={filteredItems} title="VISION COMMAND" />
             </div>
             <div className="flex-1 md:ml-72 flex flex-col relative">
                 {/* Global Background Blobs */}
                 <div className="fixed top-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#FFB800]/5 blur-[120px] rounded-full pointer-events-none" />
 
-                <DashboardHeader title="MISSION CONTROL" sidebarItems={adminItems} />
+                <DashboardHeader title="MISSION CONTROL" sidebarItems={filteredItems} />
                 <main className="flex-1 p-6 md:p-10 relative z-10">
                     {children}
                 </main>

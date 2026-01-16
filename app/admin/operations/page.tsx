@@ -10,6 +10,8 @@ import Link from 'next/link';
 import { Progress } from '@/components/ui/progress';
 import { TourGuide } from '@/components/tour-guide';
 
+import { supabase } from '@/lib/supabase';
+
 const opsTourSteps = [
     {
         title: "Active Escrows",
@@ -30,6 +32,46 @@ const opsTourSteps = [
 
 export default function OperationsAdminPage() {
     const { user } = useAuth();
+    const [stats, setStats] = React.useState({
+        pendingVerifications: 0,
+        activeShipments: 0,
+        escrowVolume: 0,
+        disputeRate: 0
+    });
+
+    React.useEffect(() => {
+        const fetchStats = async () => {
+            // 1. Pending Verifications
+            const { count: pendingCount } = await supabase
+                .from('users')
+                .select('*', { count: 'exact', head: true })
+                .eq('role', 'dealer')
+                .eq('is_verified', false);
+
+            // 2. Active Shipments (Confirmed Orders)
+            const { count: shipmentCount } = await supabase
+                .from('orders')
+                .select('*', { count: 'exact', head: true })
+                .eq('status', 'confirmed');
+
+            // 3. Escrow Volume (Pending + Confirmed Orders)
+            const { data: escrowOrders } = await supabase
+                .from('orders')
+                .select('amount')
+                .in('status', ['pending', 'confirmed']);
+
+            const volume = escrowOrders?.reduce((acc: number, order: { amount: number }) => acc + order.amount, 0) || 0;
+
+            setStats({
+                pendingVerifications: pendingCount || 0,
+                activeShipments: shipmentCount || 0,
+                escrowVolume: volume,
+                disputeRate: 0.8 // Keeping static for now as we don't have dispute data
+            });
+        };
+
+        fetchStats();
+    }, []);
 
     return (
         <div className="container mx-auto py-10 px-4 space-y-8">
@@ -64,8 +106,8 @@ export default function OperationsAdminPage() {
                         <Clock className="h-4 w-4 text-orange-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">42</div>
-                        <p className="text-xs text-orange-600 font-medium">Avg wait: 4.5 hours</p>
+                        <div className="text-2xl font-bold">{stats.pendingVerifications}</div>
+                        <p className="text-xs text-orange-600 font-medium">Dealers awaiting approval</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -74,8 +116,8 @@ export default function OperationsAdminPage() {
                         <Truck className="h-4 w-4 text-primary" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">128</div>
-                        <p className="text-xs text-muted-foreground">86 in Abuja Metropolis</p>
+                        <div className="text-2xl font-bold">{stats.activeShipments}</div>
+                        <p className="text-xs text-muted-foreground">In transit verification</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -84,8 +126,8 @@ export default function OperationsAdminPage() {
                         <ShoppingBag className="h-4 w-4 text-green-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">₦154.2M</div>
-                        <p className="text-xs text-green-600 font-medium">+18% growth this month</p>
+                        <div className="text-2xl font-bold">₦{stats.escrowVolume.toLocaleString()}</div>
+                        <p className="text-xs text-green-600 font-medium">Held in secure vaults</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -94,7 +136,7 @@ export default function OperationsAdminPage() {
                         <AlertTriangle className="h-4 w-4 text-red-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">0.8%</div>
+                        <div className="text-2xl font-bold">{stats.disputeRate}%</div>
                         <p className="text-xs text-muted-foreground">Well within target (2%)</p>
                     </CardContent>
                 </Card>
