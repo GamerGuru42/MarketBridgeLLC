@@ -33,19 +33,16 @@ export const Header = () => {
         <header className="fixed top-0 z-[100] w-full bg-black/50 backdrop-blur-xl border-b border-white/5 h-20 flex items-center">
             <div className="container mx-auto px-4 flex items-center justify-between">
                 {/* Logo */}
+                {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 group">
-                    <div className="relative h-10 w-10 overflow-hidden rounded-full border border-white/10 group-hover:border-[#FFB800] transition-colors">
+                    <div className="relative h-12 w-12 overflow-hidden rounded-xl group-hover:border-[#FFB800] transition-all">
                         <Image
-                            src="/logo.png"
-                            alt="MarketBridge Logo"
+                            src="/logo-icon.png"
+                            alt="MarketBridge"
                             fill
-                            className="object-cover"
+                            className="object-contain"
                         />
                     </div>
-                    <span className="hidden md:block text-white font-black text-xl tracking-tighter uppercase group-hover:opacity-80 transition-opacity">
-                        Market <span className="text-[#FFB800] italic">Bridge</span>
-                    </span>
-                    <span className="text-[10px] font-black bg-[#FFB800] text-black px-1.5 py-0.5 rounded leading-none">BETA</span>
                 </Link>
 
                 {/* Desktop Nav */}
