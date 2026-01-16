@@ -113,14 +113,32 @@ export function ImageUpload({
                 {images.length < maxImages && (
                     <div
                         onClick={() => fileInputRef.current?.click()}
-                        className="aspect-square rounded-lg border-2 border-dashed border-muted-foreground/25 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
+                        onDragOver={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }}
+                        onDrop={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                                // Create a synthetic event to reuse handleFileChange logic
+                                const syntheticEvent = {
+                                    target: { files: e.dataTransfer.files }
+                                } as unknown as React.ChangeEvent<HTMLInputElement>;
+
+                                handleFileChange(syntheticEvent);
+                            }
+                        }}
+                        className="aspect-square rounded-lg border-2 border-dashed border-muted-foreground/25 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 hover:border-[#FFB800]/50 hover:text-[#FFB800] transition-all"
                     >
                         {uploading ? (
                             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                         ) : (
                             <>
-                                <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                                <span className="text-xs text-muted-foreground font-medium">Upload Image</span>
+                                <Upload className="h-8 w-8 text-muted-foreground mb-2 group-hover:text-[#FFB800] transition-colors" />
+                                <span className="text-xs text-muted-foreground font-medium group-hover:text-[#FFB800] transition-colors">
+                                    Click or Drag Images
+                                </span>
                             </>
                         )}
                     </div>

@@ -35,6 +35,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
+import { DealerGuide } from '@/components/DealerGuide';
 
 interface Order {
     id: string;
@@ -309,6 +310,8 @@ export default function DealerDashboardPage() {
         <div className="min-h-screen bg-black text-white relative flex flex-col selection:bg-[#FFB800] selection:text-black">
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
+
+            <DealerGuide />
 
             <div className="container mx-auto py-12 px-6 relative z-10 space-y-12 pb-24">
                 {/* Header Section */}
