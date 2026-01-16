@@ -1,10 +1,13 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
+import { User } from '@supabase/supabase-js';
+
+type AuthHandler = (request: Request, user: User, ...args: any[]) => Promise<NextResponse> | NextResponse;
 
 /**
  * Higher-order function to protect API routes based on user role.
  */
-export function withAuth(handler: Function, allowedRoles?: string[]) {
+export function withAuth(handler: AuthHandler, allowedRoles?: string[]) {
     return async (request: Request, ...args: any[]) => {
         const supabase = await createClient();
         const { data: { user }, error } = await supabase.auth.getUser();

@@ -85,9 +85,10 @@ export default function CEOLoginPage() {
             // 4. Hard redirect to ensure middleware picks up the session
             window.location.href = '/ceo';
 
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Login Error:', err);
-            setError(err.message || 'Verification failed. Please check credentials.');
+            const message = err instanceof Error ? err.message : 'Verification failed. Please check credentials.';
+            setError(message);
             setIsLoading(false);
         }
     };

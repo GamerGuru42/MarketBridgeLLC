@@ -85,9 +85,10 @@ export default function AdminLoginPage() {
 
             window.location.href = targetPath;
 
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Admin Login Error:', err);
-            setError(err.message || 'Verification failed.');
+            const message = err instanceof Error ? err.message : 'Verification failed.';
+            setError(message);
             setIsLoading(false);
         }
     };

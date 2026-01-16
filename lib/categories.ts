@@ -6,7 +6,7 @@ import {
 export interface Category {
     id: string;
     name: string;
-    icon: any;
+    icon: React.ElementType;
     color: string;
     bg: string;
     isActive: boolean;

@@ -46,8 +46,9 @@ export async function POST(req: Request) {
         }
 
         return NextResponse.json({ status: 'ok' });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Flutterwave Webhook Error:', error);
-        return NextResponse.json({ status: 'error', message: error.message }, { status: 500 });
+        const message = error instanceof Error ? error.message : 'Server error';
+        return NextResponse.json({ status: 'error', message }, { status: 500 });
     }
 }

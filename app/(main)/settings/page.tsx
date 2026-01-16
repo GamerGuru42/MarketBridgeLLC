@@ -46,7 +46,7 @@ export default function SettingsPage() {
         setSuccessMessage('');
         try {
             // Prepare update data
-            const updateData: any = {
+            const updateData: Record<string, string | null> = {
                 display_name: formData.displayName,
                 location: formData.location,
                 photo_url: formData.photoURL,
@@ -70,9 +70,10 @@ export default function SettingsPage() {
             await refreshUser();
             setSuccessMessage('Settings updated successfully!');
             setTimeout(() => setSuccessMessage(''), 3000);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Update settings error:', err);
-            alert(err.message || 'Failed to update settings');
+            const message = err instanceof Error ? err.message : 'Failed to update settings';
+            alert(message);
         } finally {
             setUpdating(false);
         }

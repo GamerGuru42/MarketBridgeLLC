@@ -127,8 +127,9 @@ function SignupContent() {
             if (role === 'dealer') router.push('/dealer/dashboard');
             else router.push('/');
 
-        } catch (err: any) {
-            setError(err.message || "Failed to create account.");
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : "Failed to create account.";
+            setError(message);
             setIsLoading(false);
         }
     };
@@ -149,12 +150,15 @@ function SignupContent() {
             const amount = parseInt(plan?.price.replace(/[^0-9]/g, '') || '0');
             const txRef = `SUB-${Date.now()}`;
 
-            const onSuccess = (response: any) => createAccount(response.tx_ref || response.reference);
+            const onSuccess = (response: unknown) => {
+                const res = response as { tx_ref?: string; reference?: string };
+                createAccount(res.tx_ref || res.reference);
+            };
             const onCancel = () => setIsLoading(false);
 
             if (paymentProvider === 'opay') {
                 const res = await initiateOPayCheckout({ amount, email: formData.email, reference: txRef, description: `Subscription: ${plan?.name}` });
-                if (!res.success) { setError(res.message); setIsLoading(false); }
+                if (!res.success) { setError(res.message || 'OPay initialization failed'); setIsLoading(false); }
             } else {
                 const config = getFlutterwaveConfig(txRef, amount, formData.email, formData.displayName, formData.phoneNumber || '000', onSuccess, onCancel, paymentProvider === 'card' ? 'card' : 'banktransfer');
                 initFlutterwave(config);
@@ -187,7 +191,7 @@ function SignupContent() {
                             <Card
                                 key={item.id}
                                 className="glass-card border-white/5 rounded-[2rem] p-8 text-center group cursor-pointer hover:bg-white/[0.08] hover:translate-y-[-8px] transition-all duration-500"
-                                onClick={() => handleRoleSelect(item.id as any)}
+                                onClick={() => handleRoleSelect(item.id as 'customer' | 'dealer' | 'admin' | 'ceo')}
                             >
                                 <div className="h-16 w-16 glass-card rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                                     <item.icon className={`h-8 w-8 ${item.color}`} />
@@ -323,7 +327,7 @@ function SignupContent() {
 
                         <div className="space-y-2">
                             <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Operational Region</label>
-                            <select name="location" className="w-full h-14 px-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase" value={formData.location} onChange={(e: any) => setFormData({ ...formData, location: e.target.value })} required>
+                            <select name="location" className="w-full h-14 px-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase" value={formData.location} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData({ ...formData, location: e.target.value })} required>
                                 <option value="" className="bg-zinc-900">Select Node State</option>
                                 {NIGERIAN_STATES.map(s => <option key={s} value={s} className="bg-zinc-900">{s}</option>)}
                             </select>
@@ -344,8 +348,8 @@ function SignupContent() {
                                 <div className="glass-card p-8 rounded-[2rem] border-white/5 text-center">
                                     <p className="text-[9px] uppercase font-black text-zinc-600 mb-6 tracking-[0.3em]">Payment Terminal</p>
                                     <div className="flex justify-center gap-4">
-                                        {['card', 'transfer', 'opay'].map(p => (
-                                            <button key={p} type="button" onClick={() => setPaymentProvider(p as any)} className={`h-11 px-6 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${paymentProvider === p ? 'bg-gold-gradient text-black shadow-[0_0_20px_rgba(255,184,0,0.3)]' : 'border border-white/10 text-zinc-500 hover:text-white'}`}>
+                                        {(['card', 'transfer', 'opay'] as const).map(p => (
+                                            <button key={p} type="button" onClick={() => setPaymentProvider(p)} className={`h-11 px-6 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${paymentProvider === p ? 'bg-gold-gradient text-black shadow-[0_0_20px_rgba(255,184,0,0.3)]' : 'border border-white/10 text-zinc-500 hover:text-white'}`}>
                                                 {p}
                                             </button>
                                         ))}

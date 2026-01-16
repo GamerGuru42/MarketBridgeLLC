@@ -77,7 +77,7 @@ export function VideoUpload({
             const updatedVideos = [...videos, ...newUrls];
             setVideos(updatedVideos);
             onVideosSelected(updatedVideos);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error uploading video:', error);
             alert('Error uploading video. Please try again.');
         } finally {

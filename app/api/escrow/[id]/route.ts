@@ -4,10 +4,10 @@ import { supabase } from '@/lib/supabase';
 // GET /api/escrow/[id]
 export async function GET(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const orderId = params.id;
+        const { id: orderId } = await params;
 
         // In this system, "escrow" is represented by an Order with status 'paid' or 'held'
         const { data: order, error } = await supabase
@@ -36,8 +36,8 @@ export async function GET(
                 createdAt: order.created_at
             }
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Get Escrow Error:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
     }
 }

@@ -153,7 +153,8 @@ export default function DealerDashboardPage() {
             if (error) throw error;
             // Using a basic toast would be better, but keeping original alert for logic consistency
             alert('Bank details updated successfully');
-        } catch (err: any) {
+        } catch (err: unknown) {
+            console.error('Failed to update bank details:', err);
             alert('Failed to update bank details');
         } finally {
             setLoading(false);
@@ -179,10 +180,10 @@ export default function DealerDashboardPage() {
             setOrders(data || []);
 
             const totalOrders = data?.length || 0;
-            const pendingOrders = data?.filter(o => o.status === 'pending').length || 0;
-            const completedOrders = data?.filter(o => o.status === 'completed').length || 0;
-            const totalRevenue = data?.filter(o => o.status === 'completed')
-                .reduce((sum, o) => sum + o.amount, 0) || 0;
+            const pendingOrders = data?.filter((o: Order) => o.status === 'pending').length || 0;
+            const completedOrders = data?.filter((o: Order) => o.status === 'completed').length || 0;
+            const totalRevenue = data?.filter((o: Order) => o.status === 'completed')
+                .reduce((sum: number, o: Order) => sum + o.amount, 0) || 0;
 
             setStats({
                 totalOrders,
@@ -473,20 +474,20 @@ export default function DealerDashboardPage() {
                                                 <p className="text-zinc-500 font-black uppercase tracking-widest text-xs font-heading italic">Zero orders detected in current sector</p>
                                             </div>
                                         ) : (
-                                            orders.map(order => (
+                                            orders.map((order: Order) => (
                                                 <OrderCard key={order.id} order={order} onUpdateStatus={updateOrderStatus} onOpenChat={openChat} isUpdating={updatingOrder === order.id} />
                                             ))
                                         )}
                                     </TabsContent>
                                     {['pending', 'confirmed', 'completed'].map(status => (
                                         <TabsContent key={status} value={status} className="space-y-6 m-0 border-none">
-                                            {orders.filter(o => o.status === status).length === 0 ? (
+                                            {orders.filter((o: Order) => o.status === status).length === 0 ? (
                                                 <div className="text-center py-24 glass-card border-dashed">
                                                     <Package className="h-16 w-16 text-zinc-700 mx-auto mb-6" />
                                                     <p className="text-zinc-500 font-black uppercase tracking-widest text-xs font-heading italic">No {status} orders found</p>
                                                 </div>
                                             ) : (
-                                                orders.filter(o => o.status === status).map(order => (
+                                                orders.filter((o: Order) => o.status === status).map((order: Order) => (
                                                     <OrderCard key={order.id} order={order} onUpdateStatus={updateOrderStatus} onOpenChat={openChat} isUpdating={updatingOrder === order.id} />
                                                 ))
                                             )}
@@ -610,7 +611,7 @@ function OrderCard({
                 </Button>
 
                 {order.status === 'pending' && (
-                    <Select onValueChange={(value) => onUpdateStatus(order.id, value as any)} disabled={isUpdating}>
+                    <Select onValueChange={(value) => onUpdateStatus(order.id, value as 'pending' | 'confirmed' | 'completed' | 'cancelled')} disabled={isUpdating}>
                         <SelectTrigger className="flex-1 md:w-40 h-12 rounded-xl bg-[#FFB800] border-none text-black font-black uppercase tracking-widest text-[10px] font-heading shadow-lg shadow-[#FFB800]/10 hover:bg-[#FFD700] transition-all">
                             <SelectValue placeholder="Dispatch" />
                         </SelectTrigger>

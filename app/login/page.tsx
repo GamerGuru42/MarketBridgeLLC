@@ -65,9 +65,10 @@ export default function LoginPage() {
                     router.push('/');
                 }
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Login Error:', err);
-            setError(err.message || 'Login failed. Check credentials.');
+            const message = err instanceof Error ? err.message : 'Login failed. Check credentials.';
+            setError(message);
             setIsLoading(false);
         }
     };
@@ -84,7 +85,7 @@ export default function LoginPage() {
         setError('');
         try {
             await signInWithGoogle();
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error(err);
             setError('Google sign-in failed.');
             setIsLoading(false);

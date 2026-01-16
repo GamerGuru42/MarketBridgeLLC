@@ -46,7 +46,9 @@ interface Chat {
     };
 }
 
-export default function ChatPage({ params }: { params: { id: string } }) {
+import { EscrowAgreement, EscrowStep } from '@/components/chat/EscrowProgress';
+
+export default function ChatPage({ params }: { params: Promise<{ id: string }> }) {
     const { user, loading: authLoading } = useAuth();
     const router = useRouter();
     const [chat, setChat] = useState<Chat | null>(null);
@@ -63,8 +65,13 @@ export default function ChatPage({ params }: { params: { id: string } }) {
     // Smart Escrow State
     const [showEscrowModal, setShowEscrowModal] = useState(false);
     const [escrowAmount, setEscrowAmount] = useState('');
-    const [activeAgreement, setActiveAgreement] = useState<any>(null);
-    const [escrowSteps, setEscrowSteps] = useState<any[]>([]);
+    const [activeAgreement, setActiveAgreement] = useState<EscrowAgreement | null>(null);
+    const [escrowSteps, setEscrowSteps] = useState<EscrowStep[]>([]);
+    const [chatId, setChatId] = useState<string | null>(null);
+
+    useEffect(() => {
+        params.then(p => setChatId(p.id));
+    }, [params]);
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -72,15 +79,20 @@ export default function ChatPage({ params }: { params: { id: string } }) {
             return;
         }
 
-        if (user) {
+        if (user && chatId) {
             fetchChat();
             fetchMessages();
             fetchActiveEscrow();
-            subscribeToMessages();
-            subscribeToEscrow();
+            const unsubscribeMessages = subscribeToMessages();
+            const unsubscribeEscrow = subscribeToEscrow();
             markMessagesAsRead();
+
+            return () => {
+                unsubscribeMessages();
+                unsubscribeEscrow();
+            };
         }
-    }, [user, authLoading, params.id]);
+    }, [user, authLoading, chatId]);
 
     useEffect(() => {
         scrollToBottom();
@@ -97,7 +109,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
             const { data: chatData, error } = await supabase
                 .from('chats')
                 .select('*')
-                .eq('id', params.id)
+                .eq('id', chatId)
                 .single();
 
             if (error) throw error;
@@ -145,7 +157,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
                     *,
                     sender:users!messages_sender_id_fkey(display_name, photo_url)
                 `)
-                .eq('chat_id', params.id)
+                .eq('chat_id', chatId)
                 .order('created_at', { ascending: true });
 
             if (error) throw error;
@@ -161,7 +173,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
             const { data: agreement, error } = await supabase
                 .from('escrow_agreements')
                 .select('*')
-                .eq('chat_id', params.id)
+                .eq('chat_id', chatId)
                 .in('status', ['pending', 'active'])
                 .single();
 
@@ -183,14 +195,14 @@ export default function ChatPage({ params }: { params: { id: string } }) {
 
     const subscribeToMessages = () => {
         const subscription = supabase
-            .channel(`chat:${params.id}`)
+            .channel(`chat:${chatId}`)
             .on(
                 'postgres_changes',
                 {
                     event: 'INSERT',
                     schema: 'public',
                     table: 'messages',
-                    filter: `chat_id=eq.${params.id}`,
+                    filter: `chat_id=eq.${chatId}`,
                 },
                 async (payload) => {
                     const { data: senderData } = await supabase
@@ -218,18 +230,18 @@ export default function ChatPage({ params }: { params: { id: string } }) {
 
     const subscribeToEscrow = () => {
         const subscription = supabase
-            .channel(`escrow:${params.id}`)
+            .channel(`escrow:${chatId}`)
             .on(
                 'postgres_changes',
                 {
                     event: '*',
                     schema: 'public',
                     table: 'escrow_agreements',
-                    filter: `chat_id=eq.${params.id}`,
+                    filter: `chat_id=eq.${chatId}`,
                 },
                 (payload) => {
                     if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
-                        setActiveAgreement(payload.new);
+                        setActiveAgreement(payload.new as EscrowAgreement);
                         fetchActiveEscrow(); // Refresh steps too
                     }
                 }
@@ -258,7 +270,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
         await supabase
             .from('messages')
             .update({ read: true })
-            .eq('chat_id', params.id)
+            .eq('chat_id', chatId)
             .neq('sender_id', user.id)
             .eq('read', false);
     };
@@ -287,7 +299,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
         try {
             const fileExt = file.name.split('.').pop();
             const fileName = `${user?.id}-${Date.now()}.${fileExt}`;
-            const filePath = `${params.id}/${fileName}`;
+            const filePath = `${chatId}/${fileName}`;
 
             const { error: uploadError } = await supabase.storage
                 .from('chat-images')
@@ -321,7 +333,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
             }
 
             const { error } = await supabase.from('messages').insert({
-                chat_id: params.id,
+                chat_id: chatId,
                 sender_id: user.id,
                 content: newMessage.trim() || (imageUrl ? '📷 Image' : ''),
                 image_url: imageUrl,
@@ -336,7 +348,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
                     last_message: newMessage.trim() || '📷 Image',
                     last_message_timestamp: new Date().toISOString(),
                 })
-                .eq('id', params.id);
+                .eq('id', chatId);
 
             setNewMessage('');
             clearSelectedImage();
@@ -348,15 +360,20 @@ export default function ChatPage({ params }: { params: { id: string } }) {
         }
     };
 
-    const handleCreateEscrow = async (data: any) => {
-        if (!user || !chat?.other_user) return;
+    const handleCreateEscrow = async (data: {
+        amount: number;
+        type: 'default' | 'custom';
+        steps: string[];
+        tosText: string;
+    }) => {
+        if (!user || !chat || !chat.other_user) return;
 
         try {
             // 1. Create Agreement
             const { data: agreement, error: agreementError } = await supabase
                 .from('escrow_agreements')
                 .insert({
-                    chat_id: params.id,
+                    chat_id: chatId,
                     buyer_id: user.id,
                     seller_id: chat.other_user.id,
                     amount: data.amount,
@@ -385,7 +402,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
 
             // 3. Send System Message
             await supabase.from('messages').insert({
-                chat_id: params.id,
+                chat_id: chatId,
                 sender_id: user.id,
                 content: `🔒 Smart Escrow initiated for ₦${data.amount.toLocaleString()}. Please review and accept the conditions.`,
             });

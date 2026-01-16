@@ -39,11 +39,12 @@ export default function ForgotPasswordPage() {
                 type: 'success',
                 text: 'Password reset link sent! If the email or phone number is associated with an account, you will receive a link to set a new password.'
             });
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Recovery exception:', err);
+            const messageText = err instanceof Error ? err.message : 'Failed to send reset link - check connectivity.';
             setMessage({
                 type: 'error',
-                text: err.message || 'Failed to send reset link - check connectivity.'
+                text: messageText
             });
         } finally {
             setIsLoading(false);

@@ -72,7 +72,7 @@ export function ImageUpload({
             const updatedImages = [...images, ...newUrls];
             setImages(updatedImages);
             onImagesSelected(updatedImages);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error uploading image:', error);
             alert('Error uploading image. Please try again.');
         } finally {

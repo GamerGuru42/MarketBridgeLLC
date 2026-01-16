@@ -4,10 +4,10 @@ import { supabase } from '@/lib/supabase';
 // POST /api/escrow/[id]/dispute
 export async function POST(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const orderId = params.id;
+        const { id: orderId } = await params;
         const { reason, description } = await req.json();
 
         // Update the order status to 'disputed'
@@ -33,7 +33,7 @@ export async function POST(
                     status: 'open',
                     created_at: new Date().toISOString()
                 });
-        } catch (e) {
+        } catch (e: unknown) {
             console.log('Disputes table might not exist, but order status was updated.');
         }
 
@@ -41,8 +41,8 @@ export async function POST(
             success: true,
             message: 'Dispute filed successfully'
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('File Dispute Error:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
     }
 }

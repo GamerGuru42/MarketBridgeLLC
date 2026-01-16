@@ -24,7 +24,12 @@ export default function DisputePage() {
     const router = useRouter();
     const params = useParams();
     const { user } = useAuth();
-    const [escrow, setEscrow] = useState<any>(null);
+    const [escrow, setEscrow] = useState<{
+        id: string;
+        order_id: string;
+        amount: number;
+        status: string;
+    } | null>(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
@@ -41,14 +46,17 @@ export default function DisputePage() {
 
     const fetchEscrow = async () => {
         try {
-            const response = await escrowAPI.getEscrowForOrder(params.id as string) as any;
+            const orderId = params?.id as string;
+            const response = await escrowAPI.getEscrowForOrder(orderId);
             if (response.escrow) {
                 setEscrow(response.escrow);
             } else {
                 setError('Escrow not found for this order');
             }
-        } catch (err: any) {
-            setError(err.message || 'Failed to load escrow details');
+        } catch (err: unknown) {
+            console.error('Fetch escrow error:', err);
+            const message = err instanceof Error ? err.message : 'Failed to load escrow details';
+            setError(message);
         } finally {
             setLoading(false);
         }
@@ -65,10 +73,17 @@ export default function DisputePage() {
         setError('');
 
         try {
+            if (!escrow) {
+                setError('Escrow data missing');
+                setSubmitting(false);
+                return;
+            }
             await escrowAPI.disputeEscrow(escrow.id, formData.reason, formData.description);
             router.push('/orders');
-        } catch (err: any) {
-            setError(err.message || 'Failed to file dispute');
+        } catch (err: unknown) {
+            console.error('Dispute error:', err);
+            const message = err instanceof Error ? err.message : 'Failed to file dispute';
+            setError(message);
             setSubmitting(false);
         }
     };

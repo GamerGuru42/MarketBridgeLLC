@@ -87,9 +87,10 @@ export default function NewListingPage() {
             if (error) throw error;
 
             router.push('/dealer/listings');
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Failed to create listing:', err);
-            alert(err.message || 'Failed to create listing');
+            const message = err instanceof Error ? err.message : 'Failed to create listing';
+            alert(message);
         } finally {
             setLoading(false);
         }

@@ -31,11 +31,11 @@ export const initiateOPayCheckout = async (data: {
         } else {
             throw new Error(result.error || 'Failed to initialize OPay checkout');
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('OPay Checkout Error:', error);
         return {
             success: false,
-            message: error.message || "Could not connect to OPay gateway."
+            message: error instanceof Error ? error.message : "Could not connect to OPay gateway."
         };
     }
 };

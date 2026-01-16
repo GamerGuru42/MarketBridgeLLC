@@ -30,8 +30,9 @@ export async function POST(req: Request) {
         } else {
             return NextResponse.json({ error: response.message || 'OPay initialization failed' }, { status: 400 });
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('OPay API Route Error:', error);
-        return NextResponse.json({ error: error.message || 'Server error' }, { status: 500 });
+        const message = error instanceof Error ? error.message : 'Server error';
+        return NextResponse.json({ error: message }, { status: 500 });
     }
 }

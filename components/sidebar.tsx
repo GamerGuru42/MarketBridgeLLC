@@ -10,7 +10,7 @@ import { LogOut } from 'lucide-react';
 
 import { useAuth } from '@/contexts/AuthContext';
 
-interface SidebarItem {
+export interface SidebarItem {
     label: string;
     href: string;
     icon: React.ElementType;

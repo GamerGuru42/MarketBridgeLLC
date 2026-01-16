@@ -9,7 +9,7 @@ const OPAY_SECRET_KEY = process.env.OPAY_SECRET_KEY;
 const OPAY_MERCHANT_ID = process.env.OPAY_MERCHANT_ID;
 const OPAY_BASE_URL = 'https://testapi.opayweb.com/api/v1/payment';
 
-export async function opayRequest(endpoint: string, data: any) {
+export async function opayRequest(endpoint: string, data: Record<string, unknown>) {
     try {
         const response = await axios({
             method: 'POST',
@@ -22,9 +22,12 @@ export async function opayRequest(endpoint: string, data: any) {
             data
         });
         return response.data;
-    } catch (error: any) {
-        console.error('OPay API Error:', error.response?.data || error.message);
-        throw new Error(error.response?.data?.message || 'OPay gateway error');
+    } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+            console.error('OPay API Error:', error.response?.data || error.message);
+            throw new Error(error.response?.data?.message || 'OPay gateway error');
+        }
+        throw error;
     }
 }
 

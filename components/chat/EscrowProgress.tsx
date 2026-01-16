@@ -8,7 +8,7 @@ import { CheckCircle, Circle, Clock, AlertTriangle, Loader2 } from 'lucide-react
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 
-interface EscrowStep {
+export interface EscrowStep {
     id: string;
     step_order: number;
     description: string;
@@ -17,7 +17,7 @@ interface EscrowStep {
     seller_confirmed_at: string | null;
 }
 
-interface EscrowAgreement {
+export interface EscrowAgreement {
     id: string;
     amount: number;
     status: string;
@@ -46,7 +46,7 @@ export function EscrowProgress({ agreement, steps, onUpdate }: EscrowProgressPro
 
         setLoading(true);
         try {
-            const updateData: any = {};
+            const updateData: { buyer_confirmed_at?: string; seller_confirmed_at?: string } = {};
             if (isBuyer) updateData.buyer_confirmed_at = new Date().toISOString();
             if (isSeller) updateData.seller_confirmed_at = new Date().toISOString();
 
@@ -108,7 +108,7 @@ export function EscrowProgress({ agreement, steps, onUpdate }: EscrowProgressPro
                         </Badge>
                         <span className="text-primary">₦{agreement.amount.toLocaleString()}</span>
                     </CardTitle>
-                    <Badge variant={agreement.status === 'completed' ? 'success' : 'secondary'}>
+                    <Badge variant={agreement.status === 'completed' ? 'default' : 'secondary'}>
                         {agreement.status.toUpperCase()}
                     </Badge>
                 </div>

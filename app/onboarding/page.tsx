@@ -51,7 +51,7 @@ export default function OnboardingPage() {
 
         setLoading(true);
         try {
-            const updateData: any = {
+            const updateData: Record<string, string | null> = {
                 display_name: formData.displayName,
                 location: formData.location,
                 photo_url: formData.photoURL,
@@ -78,9 +78,10 @@ export default function OnboardingPage() {
             } else {
                 router.push('/');
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Failed to update profile:', err);
-            alert(err.message || 'Failed to update profile');
+            const message = err instanceof Error ? err.message : 'Failed to update profile';
+            alert(message);
         } finally {
             setLoading(false);
         }
@@ -189,7 +190,7 @@ export default function OnboardingPage() {
                                                 <Label>Store Type *</Label>
                                                 <RadioGroup
                                                     value={formData.storeType}
-                                                    onValueChange={(value: any) => setFormData({ ...formData, storeType: value })}
+                                                    onValueChange={(value: 'physical' | 'online' | 'both') => setFormData({ ...formData, storeType: value })}
                                                     className="mt-2"
                                                 >
                                                     <div className="flex items-center space-x-2">

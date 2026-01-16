@@ -15,14 +15,25 @@ import { supabase } from '@/lib/supabase';
 interface SmartEscrowModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onConfirm: (data: any) => Promise<void>;
+    onConfirm: (data: {
+        amount: number;
+        type: 'default' | 'custom';
+        steps: string[];
+        tosText: string;
+    }) => Promise<void>;
     amount: string;
     setAmount: (val: string) => void;
 }
 
 export function SmartEscrowModal({ isOpen, onClose, onConfirm, amount, setAmount }: SmartEscrowModalProps) {
     const [mode, setMode] = useState<'default' | 'custom'>('default');
-    const [templates, setTemplates] = useState<any[]>([]);
+    const [templates, setTemplates] = useState<{
+        id: string;
+        name: string;
+        category: string;
+        steps: string[];
+        tos_text: string;
+    }[]>([]);
     const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
     const [customSteps, setCustomSteps] = useState<string[]>(['Seller ships item', 'Buyer confirms receipt', 'Buyer inspects item']);
     const [tosAccepted, setTosAccepted] = useState(false);
@@ -131,7 +142,7 @@ export function SmartEscrowModal({ isOpen, onClose, onConfirm, amount, setAmount
                         />
                     </div>
 
-                    <Tabs value={mode} onValueChange={(v: any) => setMode(v)} className="w-full">
+                    <Tabs value={mode} onValueChange={(v: string) => setMode(v as 'default' | 'custom')} className="w-full">
                         <TabsList className="grid w-full grid-cols-2 mb-4">
                             <TabsTrigger value="default">Default Templates</TabsTrigger>
                             <TabsTrigger value="custom">Custom Conditions</TabsTrigger>

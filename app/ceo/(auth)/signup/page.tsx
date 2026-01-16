@@ -90,9 +90,10 @@ export default function CEOSignupPage() {
                 window.location.href = '/ceo';
             }, 1500);
 
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Signup Error:', err);
-            setError(err.message || 'An unexpected error occurred.');
+            const message = err instanceof Error ? err.message : 'An unexpected error occurred.';
+            setError(message);
             setIsLoading(false);
         }
     };

@@ -97,7 +97,7 @@ export default function ListingsPage() {
             if (fetchError) throw fetchError;
 
             setListings(data || []);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Error fetching listings:', err);
             setError('Failed to load listings. Please try again.');
         } finally {

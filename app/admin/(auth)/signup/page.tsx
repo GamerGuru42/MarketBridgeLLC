@@ -120,8 +120,9 @@ export default function AdminSignupPage() {
 
                 router.push(targetPath);
             }
-        } catch (err: any) {
-            setError(err.message || 'Failed to create administrator account');
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Failed to create administrator account';
+            setError(message);
         } finally {
             setIsLoading(false);
         }
@@ -184,7 +185,7 @@ export default function AdminSignupPage() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="role" className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Leadership Post</Label>
-                                <Select value={role} onValueChange={(v: any) => setRole(v)}>
+                                <Select value={role} onValueChange={(v: 'admin' | 'technical_admin' | 'operations_admin' | 'marketing_admin') => setRole(v)}>
                                     <SelectTrigger className="w-full h-12 bg-black border border-white/10 rounded-xl text-[#FFB800] font-black italic text-xs focus:ring-2 focus:ring-[#FFB800]/50">
                                         <SelectValue placeholder="Select Department" />
                                     </SelectTrigger>

@@ -4,10 +4,10 @@ import { supabase } from '@/lib/supabase';
 // POST /api/escrow/[id]/refund
 export async function POST(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const orderId = params.id;
+        const { id: orderId } = await params;
 
         const { error } = await supabase
             .from('orders')
@@ -23,8 +23,8 @@ export async function POST(
             success: true,
             message: 'Refund processed successfully'
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Refund Escrow Error:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
     }
 }

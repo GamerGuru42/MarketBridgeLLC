@@ -46,9 +46,10 @@ export default function ContactPage() {
                 setSubmitted(false);
                 setSuccessMessage('');
             }, 8000);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error sending message:', error);
-            alert(error.message || 'Something went wrong. Please try again.');
+            const message = error instanceof Error ? error.message : 'Something went wrong. Please try again.';
+            alert(message);
         } finally {
             setIsSubmitting(false);
         }

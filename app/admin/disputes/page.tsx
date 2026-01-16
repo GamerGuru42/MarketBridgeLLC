@@ -81,7 +81,7 @@ export default function DisputesPage() {
 
             if (error) throw error;
             setDisputes(data || []);
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Error fetching disputes:', error);
         } finally {
             setLoading(false);
@@ -109,7 +109,7 @@ export default function DisputesPage() {
             fetchDisputes();
             setSelectedDispute(null);
             setResolutionNotes('');
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Error updating dispute:', error);
         } finally {
             setActionLoading(false);
@@ -121,13 +121,13 @@ export default function DisputesPage() {
             case 'open':
                 return <Badge variant="destructive">Open</Badge>;
             case 'under_review':
-                return <Badge variant="warning" className="bg-yellow-500">Under Review</Badge>;
+                return <Badge variant="secondary" className="bg-yellow-500">Under Review</Badge>;
             case 'resolved':
-                return <Badge variant="success" className="bg-green-500">Resolved</Badge>;
+                return <Badge variant="default" className="bg-green-500">Resolved</Badge>;
             case 'rejected':
                 return <Badge variant="secondary">Rejected</Badge>;
             default:
-                return <Badge>{status}</Badge>;
+                return <Badge variant="outline">{status}</Badge>;
         }
     };
 

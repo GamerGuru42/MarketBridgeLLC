@@ -92,7 +92,7 @@ export default function ListingDetailPage() {
 
             if (error) throw error;
             setListing(data);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Error fetching listing:', err);
             setError('Failed to load listing');
         } finally {
@@ -132,8 +132,9 @@ export default function ListingDetailPage() {
                 if (error) throw error;
                 router.push(`/chats/${newChat.id}`);
             }
-        } catch (err: any) {
-            alert(err.message || 'Failed to start chat');
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Failed to start chat';
+            alert(message);
         } finally {
             setActionLoading(false);
         }
@@ -182,7 +183,7 @@ export default function ListingDetailPage() {
 
         const txRef = `TX-${Date.now()}-${user.id.slice(0, 5)}`;
 
-        const onSuccess = async (response: any) => {
+        const onSuccess = async (response: unknown) => {
             try {
                 const { error } = await supabase
                     .from('orders')
@@ -196,9 +197,10 @@ export default function ListingDetailPage() {
 
                 alert('Secure payment successful! Order placed.');
                 router.push('/orders');
-            } catch (err: any) {
+            } catch (err: unknown) {
                 console.error('Error updating order:', err);
-                alert(err.message || 'Payment successful but failed to update order.');
+                const message = err instanceof Error ? err.message : 'Payment successful but failed to update order.';
+                alert(message);
             } finally {
                 setActionLoading(false);
             }
@@ -211,7 +213,7 @@ export default function ListingDetailPage() {
         try {
             // Create pending order first for all payment types
             let commissionRate = 0.05;
-            const plan = (listing.dealer as any).subscription_plan;
+            const plan = listing.dealer.subscription_plan;
             if (plan === 'enterprise') commissionRate = 0.01;
             else if (plan === 'professional') commissionRate = 0.025;
 
@@ -261,9 +263,10 @@ export default function ListingDetailPage() {
                 );
                 initFlutterwave(config);
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Error initiating order:', err);
-            alert(err.message || 'Failed to initialize order.');
+            const message = err instanceof Error ? err.message : 'Failed to initialize order.';
+            alert(message);
             setActionLoading(false);
         }
     };

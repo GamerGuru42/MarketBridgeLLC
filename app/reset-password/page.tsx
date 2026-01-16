@@ -71,9 +71,10 @@ export default function ResetPasswordPage() {
             setTimeout(() => {
                 router.push('/login');
             }, 3000);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Update exception:', err);
-            setError(err.message || 'Failed to update password - server rejected request');
+            const messageText = err instanceof Error ? err.message : 'Failed to update password - server rejected request';
+            setError(messageText);
             setIsLoading(false);
         }
     };

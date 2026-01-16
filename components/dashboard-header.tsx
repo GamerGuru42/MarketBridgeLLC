@@ -4,12 +4,12 @@ import React from 'react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Menu, User, Bell } from 'lucide-react';
-import { Sidebar } from '@/components/sidebar';
+import { Sidebar, SidebarItem } from '@/components/sidebar';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface DashboardHeaderProps {
     title: string;
-    sidebarItems: any[];
+    sidebarItems: SidebarItem[];
 }
 
 export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
