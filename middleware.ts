@@ -1,33 +1,47 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { updateSession } from '@/lib/supabase/middleware'
 import { createServerClient } from '@supabase/ssr'
 
 export async function middleware(request: NextRequest) {
-    // 1. Refresh session
-    const response = await updateSession(request)
+    // Standard Supabase Next.js Middleware pattern
+    let supabaseResponse = NextResponse.next({
+        request,
+    })
 
-    // 2. Get user with role (Server-side check)
-    const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-            cookies: {
-                getAll() {
-                    return request.cookies.getAll()
-                },
-                setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
-                },
-            },
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    // Fallback if environment variables are missing to prevent middleware crash
+    if (!supabaseUrl || !supabaseAnonKey) {
+        if (process.env.NODE_ENV !== 'production') {
+            console.error('CRITICAL: Supabase environment variables missing in middleware.')
         }
-    )
+        return supabaseResponse
+    }
 
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+        cookies: {
+            getAll() {
+                return request.cookies.getAll()
+            },
+            setAll(cookiesToSet) {
+                cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+                supabaseResponse = NextResponse.next({
+                    request,
+                })
+                cookiesToSet.forEach(({ name, value, options }) =>
+                    supabaseResponse.cookies.set(name, value, options)
+                )
+            },
+        },
+    })
+
+    // refreshing the auth token (authoritative check)
     const { data: { user } } = await supabase.auth.getUser()
-    let role = user?.user_metadata?.role
 
-    // CRITICAL FIX: Database Fallback
-    // If session metadata is stale/missing (causing redirect loops), 
-    // we fetch the authoritative role directly from the DB.
+    let role = user?.user_metadata?.role
+    const pathname = request.nextUrl.pathname
+
+    // CRITICAL FIX: Database Fallback for stale metadata
     if (user && (!role || role === 'customer')) {
         try {
             const { data: profile } = await supabase
@@ -40,32 +54,31 @@ export async function middleware(request: NextRequest) {
                 role = profile.role
             }
         } catch (e) {
-            // Fail silently to default 'customer'
+            // Silence DB errors to maintain performance
         }
     }
 
-
     role = role || 'customer'
-    const pathname = request.nextUrl.pathname
 
-    // 3. Define Protection Logic
+    // PROTECTION LOGIC
 
     // CEO DECOMMISSIONED - Redirect to Admin
     if (pathname.startsWith('/ceo')) {
         return NextResponse.redirect(new URL('/admin/login', request.url))
     }
 
+    const isAdmin = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'cto', 'coo', 'ceo', 'cofounder'].includes(role)
+
     // ADMIN PROTECTION
     if (pathname.startsWith('/admin')) {
-        // Exempt login/signup
         if (pathname === '/admin/login' || pathname === '/admin/signup') {
-            if (user && ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'cto', 'coo', 'ceo', 'cofounder'].includes(role)) {
+            if (user && isAdmin) {
                 return NextResponse.redirect(new URL('/admin', request.url))
             }
-            return response
+            return supabaseResponse
         }
 
-        if (!user || !['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'cto', 'coo', 'ceo', 'cofounder'].includes(role)) {
+        if (!user || !isAdmin) {
             return NextResponse.redirect(new URL('/admin/login', request.url))
         }
     }
@@ -77,7 +90,7 @@ export async function middleware(request: NextRequest) {
         }
     }
 
-    return response
+    return supabaseResponse
 }
 
 export const config = {
