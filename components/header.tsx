@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { ShoppingCart, Menu, User, LogOut, LayoutDashboard, Package, Shield, Crown, MessageCircle } from 'lucide-react';
@@ -33,7 +34,15 @@ export const Header = () => {
             <div className="container mx-auto px-4 flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 group">
-                    <span className="text-white font-black text-xl tracking-tighter uppercase group-hover:opacity-80 transition-opacity">
+                    <div className="relative h-10 w-10 overflow-hidden rounded-full border border-white/10 group-hover:border-[#FFB800] transition-colors">
+                        <Image
+                            src="/logo.png"
+                            alt="MarketBridge Logo"
+                            fill
+                            className="object-cover"
+                        />
+                    </div>
+                    <span className="hidden md:block text-white font-black text-xl tracking-tighter uppercase group-hover:opacity-80 transition-opacity">
                         Market <span className="text-[#FFB800] italic">Bridge</span>
                     </span>
                     <span className="text-[10px] font-black bg-[#FFB800] text-black px-1.5 py-0.5 rounded leading-none">BETA</span>
