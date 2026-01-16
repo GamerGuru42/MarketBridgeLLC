@@ -113,11 +113,11 @@ export function ImageUpload({
                 {images.length < maxImages && (
                     <div
                         onClick={() => fileInputRef.current?.click()}
-                        onDragOver={(e) => {
+                        onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
                             e.preventDefault();
                             e.stopPropagation();
                         }}
-                        onDrop={(e) => {
+                        onDrop={(e: React.DragEvent<HTMLDivElement>) => {
                             e.preventDefault();
                             e.stopPropagation();
                             if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
