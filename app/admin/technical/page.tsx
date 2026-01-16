@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Link from 'next/link';
-import { Server, Database, Activity, Lock, Search, Code, Cpu, Globe, AlertCircle, Terminal, Zap, LayoutDashboard } from 'lucide-react';
+import { Server, Database, Activity, Lock, Search, Code, Cpu, Globe, AlertCircle, Terminal, Zap, LayoutDashboard, UserPlus, FileText } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -14,23 +15,102 @@ import { TourGuide } from '@/components/tour-guide';
 const techTourSteps = [
     {
         title: "System Status Console",
-        description: "Real-time monitoring of Abuja and Lagos API nodes, database latency, and error rates.",
+        description: "Real-time monitoring of database integrity and API responsiveness.",
         icon: <Activity size={24} />
     },
     {
         title: "Security & Audits",
-        description: "Review access logs, failed login attempts, and active firewall rules for the platform.",
+        description: "Review recent system entrance logs and activity.",
         icon: <Lock size={24} />
     },
     {
         title: "Deployment Controls",
-        description: "Trigger rollbacks or enable maintenance mode during critical infrastructure updates.",
+        description: "Trigger maintenance modes or review API configs.",
         icon: <Terminal size={24} />
     }
 ];
 
+interface SysLog {
+    id: string;
+    type: 'USER' | 'LISTING';
+    message: string;
+    timestamp: string;
+    level: 'INFO' | 'WARN' | 'CRIT';
+}
+
 export default function TechnicalAdminPage() {
     const { user } = useAuth();
+    const [stats, setStats] = useState({
+        dbRowCount: 0,
+        storageEstimate: 0,
+        apiLatency: 12, // simulated baseline
+        activeSessions: 0
+    });
+    const [logs, setLogs] = useState<SysLog[]>([]);
+
+    useEffect(() => {
+        const fetchSystemStats = async () => {
+            const start = performance.now();
+
+            // 1. Database Row Counts
+            const { count: userCount } = await supabase.from('users').select('*', { count: 'exact', head: true });
+            const { count: listingsCount } = await supabase.from('listings').select('*', { count: 'exact', head: true });
+            const { count: ordersCount } = await supabase.from('orders').select('*', { count: 'exact', head: true });
+            const { count: messagesCount } = await supabase.from('messages').select('*', { count: 'exact', head: true });
+
+            const totalRows = (userCount || 0) + (listingsCount || 0) + (ordersCount || 0) + (messagesCount || 0);
+
+            // Estimate size (avg 2KB per row for rough estimate)
+            const sizeMB = (totalRows * 2) / 1024;
+
+            const end = performance.now();
+            const latency = Math.round(end - start);
+
+            // 2. Recent Audit Logs (Simulated from Users/Listings created_at)
+            // Fetch recent users
+            const { data: recentUsers } = await supabase
+                .from('users')
+                .select('id, email, created_at')
+                .order('created_at', { ascending: false })
+                .limit(3);
+
+            // Fetch recent listings
+            const { data: recentListings } = await supabase
+                .from('listings')
+                .select('id, title, created_at')
+                .order('created_at', { ascending: false })
+                .limit(3);
+
+            const sysLogs: SysLog[] = [];
+            recentUsers?.forEach(u => sysLogs.push({
+                id: u.id,
+                type: 'USER',
+                message: `New account provisioned: ${u.email}`,
+                timestamp: u.created_at,
+                level: 'INFO'
+            }));
+            recentListings?.forEach(l => sysLogs.push({
+                id: l.id,
+                type: 'LISTING',
+                message: `Listing initialized: ${l.title}`,
+                timestamp: l.created_at,
+                level: 'INFO'
+            }));
+
+            // Sort by time
+            sysLogs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+            setStats({
+                dbRowCount: totalRows,
+                storageEstimate: parseFloat(sizeMB.toFixed(2)),
+                apiLatency: latency, // Real latency of these requests
+                activeSessions: 0 // Cannot get easily
+            });
+            setLogs(sysLogs);
+        };
+
+        fetchSystemStats();
+    }, []);
 
     return (
         <div className="container mx-auto py-10 px-4 space-y-8">
@@ -60,32 +140,32 @@ export default function TechnicalAdminPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <Card className="border-l-4 border-l-green-500 shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-mono uppercase tracking-tighter">Cluster Response</CardTitle>
+                        <CardTitle className="text-xs font-mono uppercase tracking-tighter">Cluster Latency</CardTitle>
                         <Activity className="h-4 w-4 text-green-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-mono font-bold">12ms</div>
-                        <p className="text-[10px] text-green-600 font-bold uppercase">Optimal Performance</p>
+                        <div className="text-2xl font-mono font-bold">{stats.apiLatency}ms</div>
+                        <p className="text-[10px] text-green-600 font-bold uppercase">Real-time Ping</p>
                     </CardContent>
                 </Card>
                 <Card className="border-l-4 border-l-blue-500 shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-mono uppercase tracking-tighter">DB Thread Pool</CardTitle>
+                        <CardTitle className="text-xs font-mono uppercase tracking-tighter">Database Records</CardTitle>
                         <Database className="h-4 w-4 text-blue-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-mono font-bold">84/200</div>
-                        <p className="text-[10px] text-blue-600 font-bold uppercase">42% Capacity Utilized</p>
+                        <div className="text-2xl font-mono font-bold">{stats.dbRowCount.toLocaleString()}</div>
+                        <p className="text-[10px] text-blue-600 font-bold uppercase">Total Rows Indexed</p>
                     </CardContent>
                 </Card>
                 <Card className="border-l-4 border-l-orange-500 shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-mono uppercase tracking-tighter">Memory Snapshot</CardTitle>
+                        <CardTitle className="text-xs font-mono uppercase tracking-tighter">Storage Est.</CardTitle>
                         <Cpu className="h-4 w-4 text-orange-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-mono font-bold">1.2 GB</div>
-                        <p className="text-[10px] text-orange-600 font-bold uppercase">Stable Leak Check Pass</p>
+                        <div className="text-2xl font-mono font-bold">{stats.storageEstimate} MB</div>
+                        <p className="text-[10px] text-orange-600 font-bold uppercase">Structured Data (Est)</p>
                     </CardContent>
                 </Card>
                 <Card className="border-l-4 border-l-purple-500 shadow-sm">
@@ -94,8 +174,8 @@ export default function TechnicalAdminPage() {
                         <Globe className="h-4 w-4 text-purple-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-mono font-bold">94k/hr</div>
-                        <p className="text-[10px] text-purple-600 font-bold uppercase">Origin: Abuja West</p>
+                        <div className="text-2xl font-mono font-bold">Online</div>
+                        <p className="text-[10px] text-purple-600 font-bold uppercase">Origin: Client Side</p>
                     </CardContent>
                 </Card>
             </div>
@@ -106,11 +186,11 @@ export default function TechnicalAdminPage() {
                     <CardHeader className="border-b border-slate-800 bg-slate-950/50">
                         <div className="flex items-center justify-between">
                             <CardTitle className="text-sm flex items-center gap-2">
-                                <AlertCircle className="h-4 w-4 text-red-500" />
-                                Real-time Runtime Exception Log
+                                <AlertCircle className="h-4 w-4 text-blue-500" />
+                                Recent System Activity Log
                             </CardTitle>
-                            <Badge variant="outline" className="text-[10px] text-red-400 border-red-900 bg-red-950/20">
-                                2 CRITICAL
+                            <Badge variant="outline" className="text-[10px] text-blue-400 border-blue-900 bg-blue-950/20">
+                                LIVE STREAM
                             </Badge>
                         </div>
                     </CardHeader>
@@ -121,42 +201,28 @@ export default function TechnicalAdminPage() {
                                     <tr>
                                         <th className="px-4 py-2 text-left">Timestamp</th>
                                         <th className="px-4 py-2 text-left">Level</th>
-                                        <th className="px-4 py-2 text-left">Origin</th>
+                                        <th className="px-4 py-2 text-left">Internal ID</th>
                                         <th className="px-4 py-2 text-left">Payload</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-800/50">
-                                    <tr className="hover:bg-slate-800/30">
-                                        <td className="px-4 py-2 text-slate-500">22:14:12</td>
-                                        <td className="px-4 py-2 text-red-400 font-bold">CRIT</td>
-                                        <td className="px-4 py-2 text-blue-400">authService.ts</td>
-                                        <td className="px-4 py-2 italic text-slate-300">"JWT decryption failed: secret rotation mismatch"</td>
-                                    </tr>
-                                    <tr className="hover:bg-slate-800/30 text-yellow-400">
-                                        <td className="px-4 py-2 text-slate-500">22:13:58</td>
-                                        <td className="px-4 py-2 font-bold">WARN</td>
-                                        <td className="px-4 py-2 text-blue-400">VideoUpload.tsx</td>
-                                        <td className="px-4 py-2 italic text-slate-300">"S3 bucket upload slow: latency &gt; 5000ms"</td>
-                                    </tr>
-                                    <tr className="hover:bg-slate-800/30">
-                                        <td className="px-4 py-2 text-slate-500">22:12:44</td>
-                                        <td className="px-4 py-2 text-red-400 font-bold">CRIT</td>
-                                        <td className="px-4 py-2 text-blue-400">dbProxy.sql</td>
-                                        <td className="px-4 py-2 italic text-slate-300">"Deadlock detected on table 'listings' row 452"</td>
-                                    </tr>
-                                    <tr className="hover:bg-slate-800/30 text-slate-400">
-                                        <td className="px-4 py-2 text-slate-500">22:10:05</td>
-                                        <td className="px-4 py-2 font-bold">INFO</td>
-                                        <td className="px-4 py-2 text-blue-400">workerNode.js</td>
-                                        <td className="px-4 py-2 italic text-slate-300">"Garbage collection cycle completed (150ms)"</td>
-                                    </tr>
+                                    {logs.length === 0 ? (
+                                        <tr><td colSpan={4} className="p-4 text-center text-slate-500">System idle...</td></tr>
+                                    ) : logs.map(log => (
+                                        <tr key={log.id} className="hover:bg-slate-800/30">
+                                            <td className="px-4 py-2 text-slate-500">{new Date(log.timestamp).toLocaleTimeString()}</td>
+                                            <td className="px-4 py-2 text-blue-400 font-bold">INFO</td>
+                                            <td className="px-4 py-2 text-slate-600">{log.id.slice(0, 8)}</td>
+                                            <td className="px-4 py-2 italic text-slate-300">"{log.message}"</td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>
                     </CardContent>
                 </Card>
 
-                {/* Infrastructure Management */}
+                {/* Infrastructure Management (Keeping static for now as it's configuration) */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-lg">Environment Control</CardTitle>

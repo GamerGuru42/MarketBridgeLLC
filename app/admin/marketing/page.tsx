@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { BarChart3, TrendingUp, Users, Mail, Megaphone, Share2, Search, Target, MousePointer2, Sparkles, LayoutDashboard } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +13,7 @@ import { TourGuide } from '@/components/tour-guide';
 const marketingTourSteps = [
     {
         title: "Growth Metrics",
-        description: "Analyze Customer Acquisition Cost (CAC) and ROI across all channels.",
+        description: "Analyze user acquisition and revenue growth.",
         icon: <BarChart3 size={24} />
     },
     {
@@ -29,6 +30,53 @@ const marketingTourSteps = [
 
 export default function MarketingAdminPage() {
     const { user } = useAuth();
+    const [stats, setStats] = useState({
+        totalUsers: 0,
+        totalRevenue: 0,
+        dealerRatio: 0,
+        activeListings: 0,
+        newsletterReach: 0
+    });
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            // 1. Total Users
+            const { count: userCount } = await supabase
+                .from('users')
+                .select('*', { count: 'exact', head: true });
+
+            // 2. Total Dealers
+            const { count: dealerCount } = await supabase
+                .from('users')
+                .select('*', { count: 'exact', head: true })
+                .eq('role', 'dealer');
+
+            // 3. Active Listings
+            const { count: listingsCount } = await supabase
+                .from('listings')
+                .select('*', { count: 'exact', head: true });
+
+            // 4. Revenue (Sum of amounts from Orders)
+            const { data: orders } = await supabase
+                .from('orders')
+                .select('amount')
+                .in('status', ['confirmed', 'completed']);
+
+            const revenue = orders?.reduce((acc, order) => acc + order.amount, 0) || 0;
+
+            const ratio = userCount ? (dealerCount || 0) / userCount * 100 : 0;
+
+            setStats({
+                totalUsers: userCount || 0,
+                totalRevenue: revenue,
+                dealerRatio: ratio,
+                activeListings: listingsCount || 0,
+                newsletterReach: userCount || 0 // Assuming all users are reachable
+            });
+        };
+
+        fetchStats();
+    }, []);
 
     return (
         <div className="container mx-auto py-10 px-4 space-y-8 text-slate-900">
@@ -59,41 +107,41 @@ export default function MarketingAdminPage() {
                         <Users className="h-4 w-4 text-blue-600" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">12,452</div>
+                        <div className="text-2xl font-bold">{stats.totalUsers.toLocaleString()}</div>
                         <p className="text-xs text-blue-600 font-medium flex items-center gap-1">
                             <TrendingUp className="h-3 w-3" />
-                            +12.5% this month
+                            Registered Accounts
                         </p>
                     </CardContent>
                 </Card>
                 <Card className="bg-gradient-to-br from-white to-green-50/30">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Marketing ROI</CardTitle>
+                        <CardTitle className="text-sm font-medium">Platform Revenue</CardTitle>
                         <BarChart3 className="h-4 w-4 text-green-600" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">4.2x</div>
-                        <p className="text-xs text-green-600 font-medium">CAC: ₦850 / user</p>
+                        <div className="text-2xl font-bold">₦{stats.totalRevenue.toLocaleString()}</div>
+                        <p className="text-xs text-green-600 font-medium">Gross Transaction Volume</p>
                     </CardContent>
                 </Card>
                 <Card className="bg-gradient-to-br from-white to-purple-50/30">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Conv. Rate</CardTitle>
+                        <CardTitle className="text-sm font-medium">Dealer Ratio</CardTitle>
                         <Target className="h-4 w-4 text-purple-600" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">3.8%</div>
-                        <p className="text-xs text-purple-600 font-medium">Above target (3.5%)</p>
+                        <div className="text-2xl font-bold">{stats.dealerRatio.toFixed(1)}%</div>
+                        <p className="text-xs text-purple-600 font-medium">of users are Sellers</p>
                     </CardContent>
                 </Card>
                 <Card className="bg-gradient-to-br from-white to-orange-50/30">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Social Reach</CardTitle>
+                        <CardTitle className="text-sm font-medium">Inventory Reach</CardTitle>
                         <Share2 className="h-4 w-4 text-orange-600" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">85k</div>
-                        <p className="text-xs text-orange-600 font-medium">Impression Lift: 24%</p>
+                        <div className="text-2xl font-bold">{stats.activeListings.toLocaleString()}</div>
+                        <p className="text-xs text-orange-600 font-medium">Active Listings Live</p>
                     </CardContent>
                 </Card>
             </div>
@@ -104,7 +152,7 @@ export default function MarketingAdminPage() {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Megaphone className="h-5 w-5 text-primary" />
-                            Active Campaigns
+                            Active Campaigns (Simulated)
                         </CardTitle>
                         <CardDescription>Performance of current marketing initiatives</CardDescription>
                     </CardHeader>
@@ -154,7 +202,7 @@ export default function MarketingAdminPage() {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Search className="h-5 w-5 text-blue-500" />
-                            SEO Intelligence
+                            SEO Intelligence (External Beta)
                         </CardTitle>
                         <CardDescription>Search engine visibility and organic traffic</CardDescription>
                     </CardHeader>
@@ -217,12 +265,12 @@ export default function MarketingAdminPage() {
                             <Mail className="h-5 w-5 text-primary" />
                             Newsletter Broadcast
                         </h4>
-                        <p className="text-sm text-muted-foreground">Reach 4,821 verified car enthusiasts with a single click.</p>
+                        <p className="text-sm text-muted-foreground">Reach {stats.newsletterReach.toLocaleString()} verified accounts with a single click.</p>
                     </div>
                     <div className="flex items-center gap-4 mt-4 md:mt-0">
                         <div className="text-right">
-                            <p className="text-sm font-bold">Open Rate: 42.1%</p>
-                            <p className="text-xs text-muted-foreground">Global Benchmark: 22%</p>
+                            <p className="text-sm font-bold">Open Rate: --</p>
+                            <p className="text-xs text-muted-foreground">Campaign Pending</p>
                         </div>
                         <Button size="lg" className="shadow-lg">Compose Email</Button>
                     </div>
