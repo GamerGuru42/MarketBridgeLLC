@@ -33,8 +33,8 @@ export const CATEGORIES: Category[] = [
         icon: Smartphone,
         color: 'text-blue-500',
         bg: 'bg-blue-500/10',
-        isActive: false,
-        locked: true,
+        isActive: true,
+        locked: false,
         slug: 'electronics',
         description: 'Gadgets, phones, and computers.'
     },
@@ -99,8 +99,8 @@ export const CATEGORIES: Category[] = [
         icon: Briefcase,
         color: 'text-slate-500',
         bg: 'bg-slate-500/10',
-        isActive: false,
-        locked: true,
+        isActive: true,
+        locked: false,
         slug: 'services',
         description: 'Professional services and freelancers.'
     },
