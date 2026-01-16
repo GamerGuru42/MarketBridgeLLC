@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -57,6 +58,37 @@ export default function AdminPage() {
         }
     ];
 
+    const [dashboardStats, setDashboardStats] = React.useState({
+        pendingOps: 0,
+        marketingGrowth: 0,
+        techHealth: 99
+    });
+
+    useEffect(() => {
+        const fetchGlobalStats = async () => {
+            // Operstions: Pending Verifications + Pending Orders
+            const { count: pendingVerifications } = await supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'dealer').eq('is_verified', false);
+            const { count: pendingOrders } = await supabase.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'pending');
+
+            // Marketing: Total Users
+            const { count: totalUsers } = await supabase.from('users').select('*', { count: 'exact', head: true });
+
+            setDashboardStats({
+                pendingOps: (pendingVerifications || 0) + (pendingOrders || 0),
+                marketingGrowth: totalUsers || 0,
+                techHealth: 99.9 // Static for now unless we sniff API
+            });
+        };
+        fetchGlobalStats();
+    }, []);
+
+    const operationalNodes = [
+        { title: "Technical", href: "/admin/technical", icon: Cpu, color: "text-blue-400", label: "Infrastructure", status: "Status: Optimal", health: dashboardStats.techHealth },
+        { title: "Operations", href: "/admin/operations", icon: Activity, color: "text-[#FFB800]", label: "Exchange Flux", status: `${dashboardStats.pendingOps} Pending Actions`, health: 85 },
+        { title: "Marketing", href: "/admin/marketing", icon: Globe, color: "text-emerald-400", label: "Growth Vector", status: `${dashboardStats.marketingGrowth.toLocaleString()} Active Users`, health: 92 },
+        { title: "Proposal", href: "/admin/proposals/new", icon: Zap, color: "text-orange-400", label: "Direct Memo", status: "Priority Channel", health: 100, isNew: true },
+    ];
+
     if (!user) return (
         <div className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden">
             <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20 pointer-events-none" />
@@ -93,12 +125,7 @@ export default function AdminPage() {
 
                 {/* Operational Nodes Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {[
-                        { title: "Technical", href: "/admin/technical", icon: Cpu, color: "text-blue-400", label: "Infrastructure", status: "Optimal", health: 98 },
-                        { title: "Operations", href: "/admin/operations", icon: Activity, color: "text-[#FFB800]", label: "Exchange Flux", status: "12 Pending", health: 85 },
-                        { title: "Marketing", href: "/admin/marketing", icon: Globe, color: "text-emerald-400", label: "Growth Vector", status: "4.2x ROI", health: 92 },
-                        { title: "Proposal", href: "/admin/proposals/new", icon: Zap, color: "text-orange-400", label: "Direct Memo", status: "Priority", health: 100, isNew: true },
-                    ].map((node) => (
+                    {operationalNodes.map((node) => (
                         <Link key={node.title} href={node.href} className="group">
                             <div className="glass-card p-8 h-full flex flex-col space-y-8 transition-all duration-500 hover:translate-y-[-8px] hover:border-[#FFB800]/20">
                                 <div className="flex justify-between items-start">

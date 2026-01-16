@@ -37,24 +37,28 @@ export default function MarketingAdminPage() {
         activeListings: 0,
         newsletterReach: 0
     });
+    const [categoryDist, setCategoryDist] = useState<Record<string, number>>({});
+    const [recentUsers, setRecentUsers] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchStats = async () => {
             // 1. Total Users
-            const { count: userCount } = await supabase
-                .from('users')
-                .select('*', { count: 'exact', head: true });
+            const { count: userCount } = await supabase.from('users').select('*', { count: 'exact', head: true });
 
             // 2. Total Dealers
-            const { count: dealerCount } = await supabase
-                .from('users')
-                .select('*', { count: 'exact', head: true })
-                .eq('role', 'dealer');
+            const { count: dealerCount } = await supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'dealer');
 
-            // 3. Active Listings
-            const { count: listingsCount } = await supabase
-                .from('listings')
-                .select('*', { count: 'exact', head: true });
+            // 3. Active Listings & Categories
+            const { data: listings } = await supabase.from('listings').select('category');
+            const listingsCount = listings?.length || 0;
+
+            // Calculate distribution
+            const dist: Record<string, number> = {};
+            listings?.forEach(l => {
+                const cat = l.category || 'Uncategorized';
+                dist[cat] = (dist[cat] || 0) + 1;
+            });
+            setCategoryDist(dist);
 
             // 4. Revenue (Sum of amounts from Orders)
             const { data: orders } = await supabase
@@ -66,12 +70,20 @@ export default function MarketingAdminPage() {
 
             const ratio = userCount ? (dealerCount || 0) / userCount * 100 : 0;
 
+            // 5. Recent Users
+            const { data: usersData } = await supabase
+                .from('users')
+                .select('id, email, role, created_at')
+                .order('created_at', { ascending: false })
+                .limit(5);
+            setRecentUsers(usersData || []);
+
             setStats({
                 totalUsers: userCount || 0,
                 totalRevenue: revenue,
                 dealerRatio: ratio,
                 activeListings: listingsCount || 0,
-                newsletterReach: userCount || 0 // Assuming all users are reachable
+                newsletterReach: userCount || 0
             });
         };
 
@@ -147,111 +159,63 @@ export default function MarketingAdminPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Campaign Performance */}
+                {/* Market Inventory Distribution */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <Megaphone className="h-5 w-5 text-primary" />
-                            Active Campaigns (Simulated)
+                            <Target className="h-5 w-5 text-primary" />
+                            Market Inventory Impact
                         </CardTitle>
-                        <CardDescription>Performance of current marketing initiatives</CardDescription>
+                        <CardDescription>Listing distribution across categories</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div className="space-y-4">
-                            <div className="p-4 border rounded-xl space-y-3">
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <h4 className="font-bold text-sm">Abuja Automotive Wave Q4</h4>
-                                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tight">Instagram + Facebook PPC</p>
+                            {Object.entries(categoryDist).map(([cat, count]) => (
+                                <div key={cat} className="space-y-2">
+                                    <div className="flex justify-between text-sm">
+                                        <span className="font-bold capitalize">{cat}</span>
+                                        <span className="text-muted-foreground">{count} listings</span>
                                     </div>
-                                    <Badge className="bg-green-500">LIVE</Badge>
+                                    <Progress value={(count / stats.activeListings) * 100} className="h-2" />
                                 </div>
-                                <div className="grid grid-cols-3 gap-2">
-                                    <div className="text-center p-2 bg-muted/20 rounded-lg">
-                                        <p className="text-[10px] text-muted-foreground">Spend</p>
-                                        <p className="text-xs font-bold">₦2.4M</p>
-                                    </div>
-                                    <div className="text-center p-2 bg-muted/20 rounded-lg">
-                                        <p className="text-[10px] text-muted-foreground">CTR</p>
-                                        <p className="text-xs font-bold font-bold font-bold">2.41%</p>
-                                    </div>
-                                    <div className="text-center p-2 bg-muted/20 rounded-lg text-primary">
-                                        <p className="text-[10px] text-muted-foreground">Conv.</p>
-                                        <p className="text-xs font-bold">142</p>
-                                    </div>
-                                </div>
-                                <Progress value={75} className="h-1" />
-                            </div>
-
-                            <div className="p-4 border rounded-xl space-y-3 opacity-60 grayscale hover:grayscale-0 transition-all cursor-not-allowed">
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <h4 className="font-bold text-sm">Garki Market Outreach</h4>
-                                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tight">Direct SMS + Radio</p>
-                                    </div>
-                                    <Badge variant="outline">PAUSED</Badge>
-                                </div>
-                                <Progress value={0} className="h-1" />
-                            </div>
+                            ))}
+                            {Object.keys(categoryDist).length === 0 && (
+                                <p className="text-sm text-muted-foreground italic">No inventory data available yet.</p>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
 
-                {/* SEO & Search Performance */}
+                {/* Recent Acquisitions */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <Search className="h-5 w-5 text-blue-500" />
-                            SEO Intelligence (External Beta)
+                            <Users className="h-5 w-5 text-blue-500" />
+                            Recent Acquisitions
                         </CardTitle>
-                        <CardDescription>Search engine visibility and organic traffic</CardDescription>
+                        <CardDescription>Latest user registrations</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-6">
+                    <CardContent>
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between p-3 border-b">
-                                <div className="flex items-center gap-3">
-                                    <div className="h-8 w-8 rounded text-blue-500 bg-blue-50 flex items-center justify-center">
-                                        <MousePointer2 className="h-4 w-4" />
+                            {recentUsers.map(u => (
+                                <div key={u.id} className="flex items-center justify-between p-3 border-b last:border-0 hover:bg-slate-50 transition-colors rounded">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
+                                            {u.email[0].toUpperCase()}
+                                        </div>
+                                        <div className="space-y-0.5">
+                                            <p className="text-sm font-medium line-clamp-1">{u.email}</p>
+                                            <p className="text-[10px] text-muted-foreground">{new Date(u.created_at).toLocaleDateString()}</p>
+                                        </div>
                                     </div>
-                                    <span className="text-sm font-medium italic underline">"Used cars Abuja"</span>
+                                    <Badge variant={u.role === 'dealer' ? 'default' : 'secondary'} className="text-[10px] uppercase">
+                                        {u.role}
+                                    </Badge>
                                 </div>
-                                <div className="text-right">
-                                    <p className="text-xs font-bold text-green-600">Pos #3</p>
-                                    <p className="text-[10px] text-muted-foreground">Top 3 result</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center justify-between p-3 border-b">
-                                <div className="flex items-center gap-3">
-                                    <div className="h-8 w-8 rounded text-blue-500 bg-blue-50 flex items-center justify-center">
-                                        <MousePointer2 className="h-4 w-4" />
-                                    </div>
-                                    <span className="text-sm font-medium italic underline">"Verified car dealers Nigeria"</span>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-xs font-bold text-green-600">Pos #1</p>
-                                    <p className="text-[10px] text-muted-foreground">Featured Snippet</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center justify-between p-3 border-b">
-                                <div className="flex items-center gap-3">
-                                    <div className="h-8 w-8 rounded text-blue-500 bg-blue-50 flex items-center justify-center">
-                                        <MousePointer2 className="h-4 w-4" />
-                                    </div>
-                                    <span className="text-sm font-medium italic underline">"Buy Toyota Abuja"</span>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-xs font-bold text-orange-600">Pos #8</p>
-                                    <p className="text-[10px] text-muted-foreground">Falling -2 posts</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="p-4 bg-blue-50 rounded-lg border border-blue-100 flex items-start gap-3">
-                            <Sparkles className="h-5 w-5 text-blue-600 shrink-0" />
-                            <div>
-                                <p className="text-xs font-bold text-blue-900">AI SEO Suggestion</p>
-                                <p className="text-[10px] text-blue-700 mt-0.5">Content gap detected for "Luxury Escrow Services Nigeria". Creating a landing page for this could lift organic traffic by 14%.</p>
-                            </div>
+                            ))}
+                            {recentUsers.length === 0 && (
+                                <p className="text-sm text-muted-foreground italic">No recent signups found.</p>
+                            )}
                         </div>
                     </CardContent>
                 </Card>

@@ -36,7 +36,8 @@ export default function OperationsAdminPage() {
         pendingVerifications: 0,
         activeShipments: 0,
         escrowVolume: 0,
-        disputeRate: 0
+        disputeRate: 0,
+        recentActivity: [] as any[]
     });
 
     React.useEffect(() => {
@@ -54,24 +55,66 @@ export default function OperationsAdminPage() {
                 .select('*', { count: 'exact', head: true })
                 .eq('status', 'confirmed');
 
-            // 3. Escrow Volume (Pending + Confirmed Orders)
-            const { data: escrowOrders } = await supabase
+            // 3. Escrow Volume (Pending + Confirmed Orders) & Total Orders
+            const { data: allOrders } = await supabase
                 .from('orders')
-                .select('amount')
-                .in('status', ['pending', 'confirmed']);
+                .select('amount, status');
 
-            const volume = escrowOrders?.reduce((acc: number, order: { amount: number }) => acc + order.amount, 0) || 0;
+            const escrowOrders = allOrders?.filter(o => ['pending', 'confirmed'].includes(o.status)) || [];
+            const volume = escrowOrders.reduce((acc, order) => acc + order.amount, 0);
+            const totalOrders = allOrders?.length || 0;
+
+            // 4. Disputes
+            const { data: disputes } = await supabase
+                .from('disputes')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(3);
+
+            const disputeCount = disputes?.length || 0;
+            // Note: asking for *all* disputes count might be better for rate, but we can assume 'disputes' variable here is recent, 
+            // let's do a separate count fetch for accuracy if needed, or just use what we have. 
+            // Let's do exact count:
+            const { count: totalDisputes } = await supabase.from('disputes').select('*', { count: 'exact', head: true });
+
+            const realDisputeRate = totalOrders > 0 ? ((totalDisputes || 0) / totalOrders) * 100 : 0;
+
+            // 5. Recent Verified Dealers
+            const { data: recentDealers } = await supabase
+                .from('users')
+                .select('display_name, updated_at')
+                .eq('role', 'dealer')
+                .eq('is_verified', true)
+                .order('updated_at', { ascending: false })
+                .limit(3);
+
+            // Combine for Activity Feed
+            const activities = [
+                ...(disputes?.map(d => ({
+                    type: 'dispute',
+                    message: `Dispute filed for Order #${d.order_id?.slice(0, 8)}`,
+                    time: d.created_at
+                })) || []),
+                ...(recentDealers?.map(d => ({
+                    type: 'verification',
+                    message: `Dealer ${d.display_name} verified`,
+                    time: d.updated_at
+                })) || [])
+            ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 5);
 
             setStats({
                 pendingVerifications: pendingCount || 0,
                 activeShipments: shipmentCount || 0,
                 escrowVolume: volume,
-                disputeRate: 0.8 // Keeping static for now as we don't have dispute data
+                disputeRate: parseFloat(realDisputeRate.toFixed(2)),
+                recentActivity: activities
             });
         };
 
         fetchStats();
     }, []);
+
+    // ... (render return remains similar until the card)
 
     return (
         <div className="container mx-auto py-10 px-4 space-y-8">
@@ -137,7 +180,7 @@ export default function OperationsAdminPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{stats.disputeRate}%</div>
-                        <p className="text-xs text-muted-foreground">Well within target (2%)</p>
+                        <p className="text-xs text-muted-foreground">Of total orders</p>
                     </CardContent>
                 </Card>
             </div>
@@ -259,28 +302,23 @@ export default function OperationsAdminPage() {
                 </CardHeader>
                 <CardContent className="p-0">
                     <div className="divide-y">
-                        <div className="p-4 flex items-center justify-between hover:bg-muted/10 transition-colors">
-                            <div className="flex items-center gap-3">
-                                <div className="h-8 w-8 rounded bg-green-100 flex items-center justify-center text-green-600">
-                                    <ShieldCheck className="h-4 w-4" />
+                        {stats.recentActivity.length === 0 ? (
+                            <div className="p-4 text-center text-muted-foreground text-sm">No recent activity detected.</div>
+                        ) : (
+                            stats.recentActivity.map((activity, i) => (
+                                <div key={i} className="p-4 flex items-center justify-between hover:bg-muted/10 transition-colors">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`h-8 w-8 rounded flex items-center justify-center ${activity.type === 'dispute' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
+                                            {activity.type === 'dispute' ? <Activity className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
+                                        </div>
+                                        <div className="text-sm">
+                                            {activity.message}
+                                        </div>
+                                    </div>
+                                    <span className="text-xs text-muted-foreground">{new Date(activity.time).toLocaleTimeString()}</span>
                                 </div>
-                                <div className="text-sm">
-                                    <span className="font-bold underline italic">Admin-Alpha</span> verified <span className="font-bold">Total Energies Garki</span> dealer profile.
-                                </div>
-                            </div>
-                            <span className="text-xs text-muted-foreground">12m ago</span>
-                        </div>
-                        <div className="p-4 flex items-center justify-between hover:bg-muted/10 transition-colors">
-                            <div className="flex items-center gap-3">
-                                <div className="h-8 w-8 rounded bg-blue-100 flex items-center justify-center text-blue-600">
-                                    <Activity className="h-4 w-4" />
-                                </div>
-                                <div className="text-sm">
-                                    Escrow payout triggered for <span className="font-bold">Deal #ABJ-4552</span> (₦4.2M).
-                                </div>
-                            </div>
-                            <span className="text-xs text-muted-foreground">45m ago</span>
-                        </div>
+                            ))
+                        )}
                     </div>
                 </CardContent>
             </Card>
