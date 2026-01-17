@@ -11,7 +11,8 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { CATEGORIES, Category } from '@/lib/categories';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/client';
+const supabase = createClient();
 import { useAuth } from '@/contexts/AuthContext';
 import {
     Dialog,
@@ -295,8 +296,8 @@ export default function HomePage() {
                                 key={idx}
                                 onClick={() => handleCategoryClick(cat)}
                                 className={`relative bg-white/5 border border-white/5 p-6 flex flex-col items-center justify-center gap-4 transition-all duration-300 group overflow-hidden ${cat.locked
-                                        ? 'opacity-60 grayscale cursor-not-allowed hover:opacity-100 hover:grayscale-0'
-                                        : 'hover:bg-[#FFB800] hover:text-black hover:border-transparent'
+                                    ? 'opacity-60 grayscale cursor-not-allowed hover:opacity-100 hover:grayscale-0'
+                                    : 'hover:bg-[#FFB800] hover:text-black hover:border-transparent'
                                     }`}
                             >
                                 {cat.locked && (

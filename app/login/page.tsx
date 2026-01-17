@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Eye, EyeOff, Loader2, ChevronRight, Lock, User, Globe, ArrowLeft, Briefcase, ShieldCheck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/client';
+const supabase = createClient();
 import { normalizeIdentifier } from '@/lib/auth/utils';
 import { useAuth } from '@/contexts/AuthContext';
 
