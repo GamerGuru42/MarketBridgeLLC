@@ -49,19 +49,19 @@ export const metadata: Metadata = {
     siteName: "MarketBridge",
     images: [
       {
-        url: "/icon-512.png",
-        width: 512,
-        height: 512,
+        url: "/marketbridge_logo_branding.png",
+        width: 1200,
+        height: 630,
       },
     ],
     locale: "en_NG",
     type: "website",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "MarketBridge - Nigeria's Most Trusted Business Marketplace",
     description: "Starting with new and used cars. Escrow-protected transactions for businesses of all sizes.",
-    images: ["/icon-512.png"],
+    images: ["/marketbridge_logo_branding.png"],
   },
 };
 

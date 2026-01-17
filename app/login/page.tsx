@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/client';
 const supabase = createClient();
 import { normalizeIdentifier } from '@/lib/auth/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import { Logo } from '@/components/logo';
 
 export default function LoginPage() {
     const { signInWithGoogle, refreshUser } = useAuth();
@@ -197,8 +198,8 @@ export default function LoginPage() {
             <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white relative z-10">
                 <CardHeader className="p-0 mb-10 text-center">
                     <Button variant="ghost" onClick={() => setStep('role')} className="text-zinc-600 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> Switch Role</Button>
-                    <div className="mx-auto w-20 h-20 bg-gold-gradient rounded-3xl flex items-center justify-center mb-6 transform rotate-12 shadow-[0_0_30px_rgba(255,184,0,0.2)]">
-                        <Lock className="h-10 w-10 text-black shadow-inner" />
+                    <div className="flex justify-center mb-6">
+                        <Logo showText={false} className="scale-125" />
                     </div>
                     <CardTitle className="text-4xl font-black uppercase italic tracking-tighter">MarketBridge</CardTitle>
                     <CardDescription className="text-zinc-500 font-medium italic lowercase">

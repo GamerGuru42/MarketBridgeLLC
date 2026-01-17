@@ -56,11 +56,8 @@ export function ImageUpload({
                 const fileExt = file.name.split('.').pop();
                 const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
 
-                // CRITICAL: Upload to a predictable path that RLS can handle
-                // For 'avatars' bucket, we use the user's ID as a folder
-                const filePath = bucketName === 'avatars'
-                    ? `${user.id}/${fileName}`
-                    : `${fileName}`;
+                // ALWAYS upload to a user-specific folder for RLS compliance
+                const filePath = `${user.id}/${fileName}`;
 
                 const { error: uploadError } = await supabase.storage
                     .from(bucketName)

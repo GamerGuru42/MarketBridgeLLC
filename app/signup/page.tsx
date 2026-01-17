@@ -10,6 +10,7 @@ const supabase = createClient();
 import { Loader2, Check, ArrowLeft, Mail, Globe, Eye, EyeOff, ShieldCheck, User as UserIcon, Briefcase, Zap, Crown, Lock } from 'lucide-react';
 import { SubscriptionPlan } from '@/types/user';
 import { useAuth } from '@/contexts/AuthContext';
+import { Logo } from '@/components/logo';
 import { useFlutterwave, getFlutterwaveConfig } from '@/lib/flutterwave';
 import { initiateOPayCheckout } from '@/lib/opay';
 import { NIGERIAN_STATES } from '@/lib/constants';
@@ -228,6 +229,9 @@ function SignupContent() {
 
                 <div className="w-full max-w-5xl relative z-10">
                     <div className="text-center mb-16">
+                        <div className="flex justify-center mb-6">
+                            <Logo showText={false} className="scale-125" />
+                        </div>
                         <h1 className="text-5xl font-black uppercase tracking-tighter text-white italic mb-4">Join MarketBridge</h1>
                         <p className="text-zinc-500 font-medium lowercase italic">select your status to begin identity establishment</p>
                     </div>
@@ -409,6 +413,9 @@ function SignupContent() {
             <Card className="w-full max-w-xl glass-card border-none rounded-[3rem] p-12 text-white relative z-10">
                 <CardHeader className="p-0 mb-10 text-left">
                     <Button variant="ghost" onClick={() => setStep(role === 'dealer' ? 'plan' : 'auth-method')} className="text-zinc-600 hover:text-white p-0 h-auto mb-6 text-[10px] font-black uppercase tracking-widest"><ArrowLeft className="mr-2 h-3 w-3" /> Back</Button>
+                    <div className="mb-6">
+                        <Logo showText={false} />
+                    </div>
                     <CardTitle className="text-4xl font-black uppercase italic tracking-tighter mb-2">Establish Identity</CardTitle>
                     <CardDescription className="text-zinc-500 font-medium italic lowercase">
                         {role === 'dealer' ? `Establishing node for ${selectedPlan} protocol` : "Please define your global attributes"}

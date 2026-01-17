@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { Logo } from '@/components/logo';
 
 export const Footer = () => {
     return (
@@ -8,11 +9,7 @@ export const Footer = () => {
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-20">
                     <div className="space-y-6">
-                        <Link href="/" className="flex items-center gap-2 group">
-                            <span className="text-white font-black text-xl tracking-tighter uppercase">
-                                Market <span className="text-[#FFB800] italic">Bridge</span>
-                            </span>
-                        </Link>
+                        <Logo />
                         <p className="text-zinc-500 text-sm font-medium leading-relaxed">
                             MarketBridge is Nigeria's trusted digital marketplace, connecting verified dealers with everyday customers through transparency and trust.
                         </p>

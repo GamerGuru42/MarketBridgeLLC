@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import { Logo } from '@/components/logo';
 import { useAuth } from '@/contexts/AuthContext';
 import { ShoppingCart, Menu, User, LogOut, LayoutDashboard, Package, Shield, Crown, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -33,17 +34,7 @@ export const Header = () => {
         <header className="fixed top-0 z-[100] w-full bg-black/50 backdrop-blur-xl border-b border-white/5 h-20 flex items-center">
             <div className="container mx-auto px-4 flex items-center justify-between">
                 {/* Logo */}
-                {/* Logo */}
-                <Link href="/" className="flex items-center gap-2 group">
-                    <div className="relative h-12 w-12 overflow-hidden rounded-xl group-hover:border-[#FFB800] transition-all">
-                        <Image
-                            src="/logo-icon.png"
-                            alt="MarketBridge"
-                            fill
-                            className="object-contain"
-                        />
-                    </div>
-                </Link>
+                <Logo />
 
                 {/* Desktop Nav */}
                 <nav className="hidden lg:flex items-center gap-10 text-[11px] font-bold uppercase tracking-[0.2em]">
@@ -117,9 +108,7 @@ export const Header = () => {
                         </SheetTrigger>
                         <SheetContent side="right" className="w-full bg-black border-l border-white/5 p-8 flex flex-col">
                             <div className="flex justify-between items-center mb-16">
-                                <span className="text-white font-black text-xl tracking-tighter uppercase">
-                                    Market <span className="text-[#FFB800] italic">Bridge</span>
-                                </span>
+                                <Logo />
                             </div>
 
                             <nav className="flex flex-col gap-8 text-2xl font-black uppercase tracking-tighter italic">
