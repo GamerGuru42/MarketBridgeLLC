@@ -168,7 +168,7 @@ function SignupContent() {
             await refreshUser(authData.user.id);
 
             if (role === 'dealer') router.push('/dealer/dashboard');
-            else router.push('/');
+            else router.push('/listings');
 
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : "Failed to create account.";

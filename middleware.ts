@@ -67,6 +67,17 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/admin/login', request.url))
     }
 
+    // AUTH ENTROPY PREVENTION: Redirect logged-in users away from auth pages
+    if (user && (pathname === '/login' || pathname === '/signup' || pathname === '/forgot-password')) {
+        if (role === 'dealer') {
+            return NextResponse.redirect(new URL('/dealer/dashboard', request.url))
+        } else if (['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cto', 'coo', 'cofounder'].includes(role)) {
+            return NextResponse.redirect(new URL('/admin', request.url))
+        } else {
+            return NextResponse.redirect(new URL('/listings', request.url))
+        }
+    }
+
     const isAdmin = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'cto', 'coo', 'ceo', 'cofounder'].includes(role)
 
     // ADMIN PROTECTION
