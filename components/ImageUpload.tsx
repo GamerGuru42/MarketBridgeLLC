@@ -50,13 +50,24 @@ export function ImageUpload({
                     continue;
                 }
 
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) throw new Error("Not authenticated");
+
                 const fileExt = file.name.split('.').pop();
                 const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
-                const filePath = `${fileName}`;
+
+                // CRITICAL: Upload to a predictable path that RLS can handle
+                // For 'avatars' bucket, we use the user's ID as a folder
+                const filePath = bucketName === 'avatars'
+                    ? `${user.id}/${fileName}`
+                    : `${fileName}`;
 
                 const { error: uploadError } = await supabase.storage
                     .from(bucketName)
-                    .upload(filePath, file);
+                    .upload(filePath, file, {
+                        cacheControl: '3600',
+                        upsert: true
+                    });
 
                 if (uploadError) {
                     throw uploadError;

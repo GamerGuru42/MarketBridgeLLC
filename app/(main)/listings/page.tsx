@@ -7,7 +7,8 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/client';
+const supabase = createClient();
 import { Loader2, Search, MapPin, Store, Globe, ShieldCheck, Star, SlidersHorizontal, Zap } from 'lucide-react';
 import { CATEGORIES } from '@/lib/categories';
 import { cn } from '@/lib/utils';
@@ -96,7 +97,32 @@ export default function ListingsPage() {
 
             if (fetchError) throw fetchError;
 
-            setListings(data || []);
+            // Fallback to high-quality mock data if database is empty (for demo/launch)
+            if (!data || data.length === 0) {
+                const mockListings: Listing[] = [
+                    {
+                        id: 'mock-1', title: '2022 Toyota Camry XSE', description: 'Nigerian used, first body, super clean interior', price: 28500000, category: 'Automotive', location: 'Lagos', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1621007947382-bb3c3968e3bb?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, dealer: { id: 'mock', display_name: 'Elite Motors', is_verified: true }
+                    },
+                    {
+                        id: 'mock-2', title: '2019 Lexus RX 350', description: 'Foreign used, fully loaded, panoramic roof', price: 35000000, category: 'Automotive', location: 'Abuja', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1591533924719-79888126b0a1?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, dealer: { id: 'mock', display_name: 'Premium Autos Ltd', is_verified: true }
+                    },
+                    {
+                        id: 'mock-3', title: '2021 BMW M4 Competition', description: 'Turbocharged, carbon fiber interior, low mileage', price: 65000000, category: 'Automotive', location: 'Port Harcourt', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, dealer: { id: 'mock', display_name: 'Speed Nation', is_verified: true }
+                    },
+                    {
+                        id: 'mock-4', title: '2023 Mercedes-Benz S580', description: 'Brand new, luxury redefined, massaging seats', price: 185000000, category: 'Automotive', location: 'Lagos', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, dealer: { id: 'mock', display_name: 'Luxe Terminal', is_verified: true }
+                    },
+                    {
+                        id: 'mock-5', title: '2020 Honda Accord Sport', description: 'Clean title, reverse camera, Apple CarPlay', price: 18000000, category: 'Automotive', location: 'Enugu', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, dealer: { id: 'mock', display_name: 'Smart Wheels', is_verified: true }
+                    },
+                    {
+                        id: 'mock-6', title: '2024 Porsche 911 GT3 RS', description: 'Ultimate track machine, carbon ceramic brakes', price: 420000000, category: 'Automotive', location: 'Lagos', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, dealer: { id: 'mock', display_name: 'Crown Jewels Autos', is_verified: true }
+                    }
+                ];
+                setListings(mockListings);
+            } else {
+                setListings(data);
+            }
         } catch (err: unknown) {
             console.error('Error fetching listings:', err);
             setError('Failed to load listings. Please try again.');

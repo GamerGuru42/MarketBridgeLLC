@@ -36,6 +36,13 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "MarketBridge",
   },
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.png', type: 'image/png' },
+    ],
+    apple: '/apple-icon.png',
+  },
   openGraph: {
     title: "MarketBridge - Nigeria's Most Trusted Business Marketplace",
     description: "Starting with new and used cars. Escrow-protected transactions for businesses of all sizes.",
