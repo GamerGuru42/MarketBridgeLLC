@@ -12,13 +12,26 @@ export const Logo: React.FC<LogoProps> = ({ className = '', showText = true }) =
         <Link href="/" className={`flex items-center gap-2 ${className}`}>
             <div className="relative w-10 h-10 flex items-center justify-center">
                 <div className="absolute inset-0 bg-gold-gradient rounded-xl rotate-12 opacity-20 blur-sm group-hover:rotate-45 transition-transform duration-500" />
-                <Image
-                    src="/logo-icon.png"
-                    alt="MarketBridge Logo"
-                    width={40}
-                    height={40}
-                    className="w-8 h-8 relative z-10 object-contain"
-                />
+                <svg
+                    viewBox="0 0 100 100"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-8 h-8 relative z-10"
+                >
+                    <path
+                        d="M8 82 Q 50 5, 92 82"
+                        stroke="#FFB800"
+                        strokeWidth="20"
+                        strokeLinecap="round"
+                        fill="none"
+                    />
+                    <path
+                        d="M15 95 L 85 95"
+                        stroke="#FFB800"
+                        strokeWidth="12"
+                        strokeLinecap="round"
+                    />
+                </svg>
             </div>
             {showText && (
                 <span className="font-black text-xl tracking-tighter uppercase text-white">
