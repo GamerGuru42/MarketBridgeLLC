@@ -255,17 +255,19 @@ export default function ListingDetailPage() {
 
         if (!listing) return;
 
-        // Mock Handling
-        if (listing.id.startsWith('mock-') || listing.dealer.id.startsWith('mock_')) {
-            alert('DEMO MODE: Secure Payment Gateway initialized. (This is a mock listing, no real funds will be deducted).');
-            return;
-        }
+        const isMock = listing.id.startsWith('mock-') || listing.dealer.id.startsWith('mock_');
 
         setActionLoading(true);
 
         const txRef = `TX-${Date.now()}-${user.id.slice(0, 5)}`;
 
         const onSuccess = async (response: unknown) => {
+            if (isMock) {
+                alert('Mock Payment Successful! (No funds deducted)');
+                router.push('/listings'); // Redirect back to listings or orders
+                return;
+            }
+
             try {
                 const { error } = await supabase
                     .from('orders')
@@ -302,22 +304,24 @@ export default function ListingDetailPage() {
             const platformFee = listing.price * commissionRate;
             const netAmount = listing.price - platformFee;
 
-            // Only create database order if not a mock (redundant check but safe)
-            const { error: orderError } = await supabase
-                .from('orders')
-                .insert({
-                    buyer_id: user.id,
-                    seller_id: listing.dealer.id,
-                    listing_id: listing.id,
-                    amount: listing.price,
-                    platform_fee: platformFee,
-                    net_amount: netAmount,
-                    status: 'pending',
-                    transaction_ref: txRef,
-                    payment_provider: paymentProvider
-                });
+            // Only create database order if not a mock
+            if (!isMock) {
+                const { error: orderError } = await supabase
+                    .from('orders')
+                    .insert({
+                        buyer_id: user.id,
+                        seller_id: listing.dealer.id,
+                        listing_id: listing.id,
+                        amount: listing.price,
+                        platform_fee: platformFee,
+                        net_amount: netAmount,
+                        status: 'pending',
+                        transaction_ref: txRef,
+                        payment_provider: paymentProvider
+                    });
 
-            if (orderError) throw orderError;
+                if (orderError) throw orderError;
+            }
 
             if (paymentProvider === 'opay') {
                 const res = await initiateOPayCheckout({
