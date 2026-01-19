@@ -31,7 +31,7 @@ const config: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'gbengxoscojwmpbirgtp.supabase.co',
+        hostname: '**.supabase.co',
       },
     ],
   },

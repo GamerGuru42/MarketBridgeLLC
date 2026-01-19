@@ -51,12 +51,14 @@ export function ImageUpload({
                 }
 
                 const { data: { user } } = await supabase.auth.getUser();
-                if (!user) throw new Error("Not authenticated");
+                if (!user) throw new Error("Authentication required for upload.");
 
-                const fileExt = file.name.split('.').pop();
-                const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+                const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+                // Remove special chars from filename to prevent path issues
+                const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+                const fileName = `${Math.random().toString(36).substring(2, 10)}_${Date.now()}.${fileExt}`;
 
-                // ALWAYS upload to a user-specific folder for RLS compliance
+                // Upload to user-specific folder for RLS compliance
                 const filePath = `${user.id}/${fileName}`;
 
                 const { error: uploadError } = await supabase.storage
@@ -67,12 +69,16 @@ export function ImageUpload({
                     });
 
                 if (uploadError) {
-                    throw uploadError;
+                    throw new Error(`Upload failed: ${uploadError.message}`);
                 }
 
                 const { data } = supabase.storage
                     .from(bucketName)
                     .getPublicUrl(filePath);
+
+                if (!data || !data.publicUrl) {
+                    throw new Error("Failed to retrieve public URL.");
+                }
 
                 newUrls.push(data.publicUrl);
             }
@@ -80,9 +86,9 @@ export function ImageUpload({
             const updatedImages = [...images, ...newUrls];
             setImages(updatedImages);
             onImagesSelected(updatedImages);
-        } catch (error: unknown) {
+        } catch (error: any) {
             console.error('Error uploading image:', error);
-            alert('Error uploading image. Please try again.');
+            alert(error.message || 'Error uploading image. Please check your internet connection or permissions.');
         } finally {
             setUploading(false);
             if (fileInputRef.current) {

@@ -50,9 +50,12 @@ export function VideoUpload({
                     continue;
                 }
 
-                const fileExt = file.name.split('.').pop();
-                const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
-                const filePath = `${fileName}`;
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) throw new Error("Authentication required for upload.");
+
+                const fileExt = file.name.split('.').pop()?.toLowerCase() || 'mp4';
+                const fileName = `${Math.random().toString(36).substring(2, 10)}_${Date.now()}.${fileExt}`;
+                const filePath = `${user.id}/${fileName}`;
 
                 setUploadProgress(0);
 
@@ -60,16 +63,20 @@ export function VideoUpload({
                     .from(bucketName)
                     .upload(filePath, file, {
                         cacheControl: '3600',
-                        upsert: false
+                        upsert: false // Videos should ideally not be overwritten blindly
                     });
 
                 if (uploadError) {
-                    throw uploadError;
+                    throw new Error(`Upload failed: ${uploadError.message}`);
                 }
 
                 const { data } = supabase.storage
                     .from(bucketName)
                     .getPublicUrl(filePath);
+
+                if (!data || !data.publicUrl) {
+                    throw new Error("Failed to retrieve public URL.");
+                }
 
                 newUrls.push(data.publicUrl);
             }
@@ -77,9 +84,9 @@ export function VideoUpload({
             const updatedVideos = [...videos, ...newUrls];
             setVideos(updatedVideos);
             onVideosSelected(updatedVideos);
-        } catch (error: unknown) {
+        } catch (error: any) {
             console.error('Error uploading video:', error);
-            alert('Error uploading video. Please try again.');
+            alert(error.message || 'Error uploading video. Please check your internet connection or permissions.');
         } finally {
             setUploading(false);
             setUploadProgress(0);
