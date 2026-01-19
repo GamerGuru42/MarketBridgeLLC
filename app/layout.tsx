@@ -6,6 +6,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { AiAssistant } from "@/components/AiAssistant";
 import { CookieConsent } from "@/components/CookieConsent";
+import { LocationChecker } from "@/components/location-checker";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -90,7 +91,9 @@ export default function RootLayout({
         >
           <AuthProvider>
             <CartProvider>
-              {children}
+              <LocationChecker>
+                {children}
+              </LocationChecker>
               <AiAssistant />
               <CookieConsent />
             </CartProvider>
