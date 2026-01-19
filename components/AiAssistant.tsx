@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { MessageCircle, X, Send, Bot, User, Sparkles, Phone, Search, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { brain } from '@/lib/ai_brain';
 
 interface Message {
     id: string;
@@ -75,101 +76,33 @@ export function AiAssistant() {
         return matches.slice(0, 3);
     };
 
+    // Use the new AI Brain
     const generateResponse = (input: string): { content: string; searchResults?: SearchResult[]; supportTicket?: SupportTicket } => {
-        const lowerInput = input.toLowerCase();
+        // Import dynamically or use the imported instance if I were to import it at top level.
+        // For cleaner React effect, we'll use the imported 'brain' object.
+        const response = brain.processInput(input);
 
-        // Product search
-        if (lowerInput.includes('find') || lowerInput.includes('search') || lowerInput.includes('looking for') ||
-            lowerInput.includes('buy') || lowerInput.includes('need') || lowerInput.includes('want')) {
-            const results = searchProducts(lowerInput);
-            if (results.length > 0) {
-                return {
-                    content: `I found ${results.length} product(s) that match your search. Here are the top results:`,
-                    searchResults: results
-                };
-            }
-            return { content: "I couldn't find any exact matches, but you can browse our full catalog by category in the listings page." };
-        }
+        let supportTicket: SupportTicket | undefined;
 
-        // Technical support escalation
-        if (lowerInput.includes('not working') || lowerInput.includes('broken') || lowerInput.includes('error') ||
-            lowerInput.includes('bug') || lowerInput.includes('technical issue') || lowerInput.includes('can\'t login')) {
-            return {
-                content: "I understand you're experiencing a technical issue. Let me connect you with our Technical Support team who can assist you better.",
-                supportTicket: {
-                    ticketId: `TECH-${Date.now()}`,
-                    status: 'escalated',
-                    department: 'technical'
-                }
+        if (response.action === 'escalate_tech') {
+            supportTicket = {
+                ticketId: `TECH-${Date.now()}`,
+                status: 'escalated',
+                department: 'technical'
+            };
+        } else if (response.action === 'escalate_ops') {
+            supportTicket = {
+                ticketId: `OPS-${Date.now()}`,
+                status: 'escalated',
+                department: 'operations'
             };
         }
 
-        // Operations support escalation
-        if (lowerInput.includes('delivery') || lowerInput.includes('order') || lowerInput.includes('refund') ||
-            lowerInput.includes('payment issue') || lowerInput.includes('dispute')) {
-            return {
-                content: "I'm escalating this to our Operations team who specialize in order and delivery matters. They'll reach out to you shortly.",
-                supportTicket: {
-                    ticketId: `OPS-${Date.now()}`,
-                    status: 'escalated',
-                    department: 'operations'
-                }
-            };
-        }
-
-        // Personal/Conversational
-        if (lowerInput.includes('how are you') || lowerInput.includes('doing today') || lowerInput.includes('is it going')) {
-            return { content: "I'm doing great, thank you for asking! I'm here and ready to help you navigate MarketBridge. Whether you're looking for a new Lexus in Abuja or trying to upload videos for your latest listing, I've got you covered. How can I assist you?" };
-        }
-
-        if (lowerInput.includes('who are you') || lowerInput.includes('your name')) {
-            return { content: "I'm Sage, the MarketBridge AI assistant. My mission is to ensure you can shop and trade without fear by providing accurate information, troubleshooting help, and connecting you with our dedicated support teams." };
-        }
-
-        // Troubleshooting & How-To
-        if (lowerInput.includes('how do i') || lowerInput.includes('how to')) {
-            if (lowerInput.includes('upload') || lowerInput.includes('image') || lowerInput.includes('video') || lowerInput.includes('photo')) {
-                return { content: "Great question! Dealers can now upload both images and videos to their listings:\n\n**For Images:**\n• Max 5 images per listing\n• Formats: JPG, PNG, WEBP\n• Size limit: 5MB per image\n\n**For Videos:**\n• Max 3 videos per listing\n• Formats: MP4, MOV, AVI, WEBM\n• Size limit: 50MB per video\n\nYou can add these while creating a new listing or editing an existing one in your Dealer Dashboard." };
-            }
-            if (lowerInput.includes('verify') || lowerInput.includes('become a dealer')) {
-                return { content: "To become a verified dealer:\n1. Sign up with your business email\n2. Choose 'Dealer' during registration\n3. Upload your business documents (CAC certificate, ID)\n4. Wait 24-48 hours for verification\n\nNeed help with a specific step?" };
-            }
-            if (lowerInput.includes('pay') || lowerInput.includes('checkout')) {
-                return { content: "To complete a purchase:\n1. Add items to your cart\n2. Click 'Checkout'\n3. Enter delivery address\n4. Choose payment method (we support Paystack)\n5. Confirm your order\n\nYou can also pay on delivery for added security!" };
-            }
-            if (lowerInput.includes('dashboard') || lowerInput.includes('admin') || lowerInput.includes('executive')) {
-                return { content: "We've specialized our management interfaces for the Abuja launch:\n\n**CEO Dashboard:** Strategic Vision & Regional Performance\n**COO Dashboard:** Operations Hub, Logistics & Verification\n**CTO Hub:** Systems Infrastructure & Media Storage\n\n**Specialized Admin Dashboards:**\n• **Technical Admin:** System reliability, error logs, and API health.\n• **Operations Admin:** Detailed verification queue, logistics network, and escrow status.\n• **Marketing Admin:** Growth analytics, SEO performance, and campaign management.\n\nExecutives and Admins can access these directly from the Account menu or the Admin Sidebar. Need help finding a specific tool?" };
-            }
-            return { content: "I can help you with:\n• Uploading images and videos (New!)\n• Executive Dashboards (CEO, COO, CTO)\n• Account setup\n• Making purchases\n• Becoming a dealer\n\nWhat specifically would you like to know?" };
-        }
-
-        // Specific Multimedia/Video queries
-        if (lowerInput.includes('video') || lowerInput.includes('multimedia') || lowerInput.includes('media')) {
-            return { content: "We now support high-quality video walkthroughs for our listings! Dealers can upload 50MB videos to show their products in motion. This is especially great for cars—look for the 'Play' icon on listings to see them in action." };
-        }
-
-        // Out of Scope / Limits
-        if (lowerInput.includes('weather') || lowerInput.includes('news') || lowerInput.includes('stock market') || lowerInput.includes('politics')) {
-            return { content: "While I'd love to chat more, I'm specifically trained to help you with the MarketBridge platform and our Abuja automotive niche. For news or general inquiries, I recommend using a general-purpose assistant. How can I help you with your listings or shopping today?" };
-        }
-
-        // Trust & Safety
-        if (lowerInput.includes('trust') || lowerInput.includes('safe') || lowerInput.includes('fear') || lowerInput.includes('scam')) {
-            return { content: "MarketBridge is designed for you to shop without fear. We verify all dealers, hold payments in escrow until you receive items, and maintain public reviews. We also now support video verification for products to add an extra layer of trust!" };
-        }
-
-        // Greeting
-        if (lowerInput.includes('hello') || lowerInput.includes('hi') || lowerInput.includes('hey') || lowerInput.includes('good morning') || lowerInput.includes('good afternoon')) {
-            return { content: "Hello! I'm Sage, your AI assistant. I'm excited to help you explore MarketBridge! We've just added video upload support for our Abuja car dealers. What can I help you find or set up today?" };
-        }
-
-        // Farewell
-        if (lowerInput.includes('bye') || lowerInput.includes('goodbye') || lowerInput.includes('thanks') || lowerInput.includes('thank you')) {
-            return { content: "You're very welcome! If you need anything else—like help with our new video features or finding a verified dealer in Abuja—don't hesitate to reach out. Have a fantastic day shopping without fear!" };
-        }
-
-        // Default intelligent response
-        return { content: "I'm here to help! I can:\n• Search for specific products (including cars in Abuja)\n• Explain how to upload images and videos\n• Answer questions about the platform\n• Troubleshoot issues\n• Connect you with technical or operations support\n\nCould you please specify what you'd like assistance with?" };
+        return {
+            content: response.content,
+            searchResults: response.searchResults,
+            supportTicket
+        };
     };
 
     const handleSendMessage = async () => {
