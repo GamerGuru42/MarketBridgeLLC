@@ -43,13 +43,36 @@ export default function AdminLoginPage() {
             if (!data.user) throw new Error('Authentication failed');
 
             // 2. Authoritative Verification & Deep Repair
-            const { data: profile } = await supabase
+            const { data: profile, error: profileFetchError } = await supabase
                 .from('users')
                 .select('role')
                 .eq('id', data.user.id)
-                .single();
+                .maybeSingle(); // Use maybeSingle to avoid error on 0 rows
 
-            let role = profile?.role || data.user.user_metadata?.role;
+            if (profileFetchError) {
+                console.warn('Profile fetch warning:', profileFetchError);
+            }
+
+            // Robust Role Resolution: Check both sources
+            const dbRole = profile?.role;
+            const metaRole = data.user.user_metadata?.role;
+            let role = dbRole || metaRole;
+
+            console.log("Admin Login Role Resolution:", { dbRole, metaRole, resolved: role });
+
+            // SELF-HEALING: If DB profile is missing but Auth Metadata exists, restore the DB record
+            if (metaRole && !dbRole) {
+                console.log('Self-Healing: Restoring missing profile from Auth Metadata...');
+                const { error: healError } = await supabase.from('users').upsert({
+                    id: data.user.id,
+                    email: identifier,
+                    role: metaRole,
+                    is_verified: true,
+                    display_name: data.user.user_metadata?.display_name || 'Admin User'
+                });
+                if (healError) console.error('Self-Healing Failed:', healError);
+                // We proceed anyway since we have role from metadata
+            }
 
             // DEEP REPAIR: Protect CEO and high-level accounts from landing loops
             if (identifier === 'ceo@marketbridge.io' && role !== 'ceo') {
@@ -68,12 +91,14 @@ export default function AdminLoginPage() {
             const adminRoles = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'cto', 'coo', 'ceo', 'cofounder'];
 
             if (!adminRoles.includes(role || '')) {
+                console.error(`Access Denied. Role '${role}' is not in adminRoles list.`);
                 await supabase.auth.signOut();
                 throw new Error('Access Denied: Administrative privileges required.');
             }
 
             // 3. Sync and Redirect
             await refreshUser(data.user.id);
+            router.refresh(); // Critical: Ensure Next.js sees the new session state
 
             // Department-aware redirection
             let targetPath = '/admin';
@@ -83,6 +108,9 @@ export default function AdminLoginPage() {
             // CEO route is deprecated, redirecting to main admin
             else if (role === 'ceo' || role === 'cofounder') targetPath = '/admin';
 
+            // Use router.push for client-side nav, fallback to window.location if needed (but push is smoother)
+            // Actually, for auth changes, window.location is often safer to ensure middleware re-runs reliably
+            console.log(`Redirecting to ${targetPath}`);
             window.location.href = targetPath;
 
         } catch (err: unknown) {
