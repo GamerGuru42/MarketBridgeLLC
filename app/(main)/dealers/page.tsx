@@ -121,13 +121,12 @@ export default function FindDealersPage() {
                 {/* Header Section */}
                 <div className="space-y-8 mb-20">
                     <div className="space-y-4">
-                        <Button
-                            variant="ghost"
-                            onClick={() => router.back()}
-                            className="text-[#FFB800] hover:text-[#FFD700] hover:bg-transparent p-0 h-auto text-[10px] font-black uppercase tracking-[0.2em] font-heading"
+                        <Link
+                            href="/"
+                            className="inline-flex items-center text-[#FFB800] hover:text-[#FFD700] p-0 h-auto text-[10px] font-black uppercase tracking-[0.2em] font-heading mb-4"
                         >
                             <ArrowLeft className="mr-2 h-3 w-3" /> Return to Core
-                        </Button>
+                        </Link>
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading leading-none">
                             Authorized <span className="text-zinc-500">Nodes.</span>
                         </h1>

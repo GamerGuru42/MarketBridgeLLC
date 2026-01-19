@@ -9,7 +9,7 @@ import { Card, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { createClient } from '@/lib/supabase/client';
 const supabase = createClient();
-import { Loader2, Search, MapPin, Store, Globe, ShieldCheck, Star, SlidersHorizontal, Zap, Calendar, ArrowUpRight } from 'lucide-react';
+import { Loader2, Search, MapPin, Store, Globe, ShieldCheck, Star, SlidersHorizontal, Zap, Calendar, ArrowUpRight, ArrowLeft } from 'lucide-react';
 import { CATEGORIES } from '@/lib/categories';
 import { cn } from '@/lib/utils';
 
@@ -158,6 +158,9 @@ export default function ListingsPage() {
                             <span className="h-2 w-2 rounded-full bg-[#FFB800] animate-pulse" />
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading">Market Index Stream</span>
                         </div>
+                        <Link href="/" className="inline-flex items-center text-[#FFB800] hover:text-[#FFD700] uppercase text-[10px] font-black tracking-[0.2em] font-heading mb-2">
+                            <ArrowLeft className="mr-2 h-3 w-3" /> Return to Core
+                        </Link>
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
                             Asset <span className="text-[#FFB800]">Stream</span>
                         </h1>
