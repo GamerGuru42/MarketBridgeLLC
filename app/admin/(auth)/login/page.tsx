@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { normalizeIdentifier } from '@/lib/auth/utils';
 import { useAuth } from '@/contexts/AuthContext';
-import { Loader2, ShieldCheck, Lock, Mail, ChevronRight, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { Loader2, ShieldCheck, Lock, Mail, ChevronRight, AlertCircle, Eye, EyeOff, ShieldAlert } from 'lucide-react';
 
 export default function AdminLoginPage() {
     const router = useRouter();
@@ -22,6 +22,7 @@ export default function AdminLoginPage() {
         password: ''
     });
     const [showPassword, setShowPassword] = useState(false);
+    const [view, setView] = useState<'login' | 'failed'>('login');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -47,42 +48,39 @@ export default function AdminLoginPage() {
                 .from('users')
                 .select('role')
                 .eq('id', data.user.id)
-                .maybeSingle(); // Use maybeSingle to avoid error on 0 rows
+                .maybeSingle();
 
             if (profileFetchError) {
                 console.warn('Profile fetch warning:', profileFetchError);
             }
 
-            // Robust Role Resolution: Check both sources
+            // Robust Role Resolution
             const dbRole = profile?.role;
             const metaRole = data.user.user_metadata?.role;
             let role = dbRole || metaRole;
 
             console.log("Admin Login Role Resolution:", { dbRole, metaRole, resolved: role });
 
-            // SELF-HEALING: If DB profile is missing but Auth Metadata exists, restore the DB record
+            // Self-Healing
             if (metaRole && !dbRole) {
                 console.log('Self-Healing: Restoring missing profile from Auth Metadata...');
-                const { error: healError } = await supabase.from('users').upsert({
+                await supabase.from('users').upsert({
                     id: data.user.id,
                     email: identifier,
                     role: metaRole,
                     is_verified: true,
                     display_name: data.user.user_metadata?.display_name || 'Admin User'
                 });
-                if (healError) console.error('Self-Healing Failed:', healError);
-                // We proceed anyway since we have role from metadata
             }
 
-            // DEEP REPAIR: Protect CEO and high-level accounts from landing loops
+            // DEEP REPAIR: Protect CEO
             if (identifier === 'ceo@marketbridge.io' && role !== 'ceo') {
-                console.log('Deep Repair: Restoring CEO administrative status...');
                 await supabase.from('users').upsert({
                     id: data.user.id,
                     email: identifier,
                     role: 'ceo',
                     is_verified: true,
-                    display_name: data.user.user_metadata?.display_name || 'Visionary Leader'
+                    display_name: 'Visionary Leader'
                 });
                 await supabase.auth.updateUser({ data: { role: 'ceo', is_executive: true } });
                 role = 'ceo';
@@ -93,23 +91,19 @@ export default function AdminLoginPage() {
             if (!adminRoles.includes(role || '')) {
                 console.error(`Access Denied. Role '${role}' is not in adminRoles list.`);
                 await supabase.auth.signOut();
-                throw new Error('Access Denied: Administrative privileges required.');
+                throw new Error('Access Denied: You do not hold administrative privileges.');
             }
 
             // 3. Sync and Redirect
             await refreshUser(data.user.id);
-            router.refresh(); // Critical: Ensure Next.js sees the new session state
+            router.refresh();
 
-            // Department-aware redirection
             let targetPath = '/admin';
             if (role === 'technical_admin') targetPath = '/admin/technical';
             else if (role === 'operations_admin') targetPath = '/admin/operations';
             else if (role === 'marketing_admin') targetPath = '/admin/marketing';
-            // CEO route is deprecated, redirecting to main admin
             else if (role === 'ceo' || role === 'cofounder') targetPath = '/admin';
 
-            // Use router.push for client-side nav, fallback to window.location if needed (but push is smoother)
-            // Actually, for auth changes, window.location is often safer to ensure middleware re-runs reliably
             console.log(`Redirecting to ${targetPath}`);
             window.location.href = targetPath;
 
@@ -118,6 +112,8 @@ export default function AdminLoginPage() {
             const message = err instanceof Error ? err.message : 'Verification failed.';
             setError(message);
             setIsLoading(false);
+            setView('failed');
+            // Auto-reset view after 3 seconds? No, user wants a screen.
         }
     };
 
@@ -127,6 +123,44 @@ export default function AdminLoginPage() {
             [e.target.name]: e.target.value
         }));
     };
+
+    // Fail Screen Component
+    if (view === 'failed') {
+        return (
+            <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-black overflow-hidden relative">
+                <div className="absolute inset-0 bg-[#3a0000] pointer-events-none opacity-20 animate-pulse"></div>
+                <Card className="w-full max-w-lg glass-card border border-red-500/30 shadow-[0_0_80px_rgba(220,38,38,0.2)] bg-black relative overflow-hidden">
+                    <CardHeader className="text-center pt-12 pb-8">
+                        <div className="mx-auto h-24 w-24 rounded-full border-2 border-red-500 bg-red-950/30 flex items-center justify-center mb-6 animate-in fade-in zoom-in duration-300">
+                            <ShieldAlert className="h-12 w-12 text-red-500" />
+                        </div>
+                        <h2 className="text-2xl font-black text-red-500 tracking-[0.2em] uppercase">Access Denied</h2>
+                        <p className="text-zinc-500 text-xs font-mono mt-4 uppercase tracking-widest">
+                            Security Protocol Override Failed
+                        </p>
+                    </CardHeader>
+                    <CardContent className="px-10 text-center space-y-8">
+                        <div className="bg-red-950/20 border border-red-900/50 p-6 rounded-xl">
+                            <p className="text-red-400 text-sm font-medium">
+                                "{error}"
+                            </p>
+                        </div>
+                        <Button
+                            onClick={() => setView('login')}
+                            className="w-full bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-[0.2em] h-14 rounded-xl transition-all"
+                        >
+                            Retry Handshake
+                        </Button>
+                    </CardContent>
+                    <CardFooter className="justify-center pb-8">
+                        <Link href="/" className="text-[10px] text-zinc-600 hover:text-white uppercase tracking-widest transition-colors">
+                            Return to Public Portal
+                        </Link>
+                    </CardFooter>
+                </Card>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-black overflow-hidden relative">
@@ -152,14 +186,6 @@ export default function AdminLoginPage() {
                 </CardHeader>
 
                 <CardContent className="px-12">
-                    {error && (
-                        <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 mb-8 text-center">
-                            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest leading-relaxed">
-                                Security Alert: {error}
-                            </p>
-                        </div>
-                    )}
-
                     <form onSubmit={handleSubmit} className="space-y-8">
                         <div className="space-y-2">
                             <Label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Administrator ID</Label>
