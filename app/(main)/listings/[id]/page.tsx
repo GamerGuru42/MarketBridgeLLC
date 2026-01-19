@@ -78,6 +78,54 @@ export default function ListingDetailPage() {
 
             if (listingId && listingId.startsWith('mock-')) {
                 const mockListings: Record<string, any> = {
+                    'mock-1': {
+                        id: 'mock-1',
+                        title: '2022 TOYOTA CAMRY XSE',
+                        description: 'Nigerian used, first body, super clean interior, panoramic roof, leather seats, 4-cylinder engine. A perfect blend of reliability and style, this Camry offers a smooth ride with impressive fuel economy.',
+                        price: 28500000,
+                        category: 'Automotive',
+                        location: 'Lagos',
+                        dealer_id: 'mock_dealer_1',
+                        created_at: new Date().toISOString(),
+                        images: ['https://images.unsplash.com/photo-1621007947382-bb3c3968e3bb?auto=format&fit=crop&w=800&q=80'],
+                        is_verified_listing: true,
+                        year: 2022,
+                        make: 'Toyota',
+                        model: 'Camry',
+                        condition: 'Nigerian Used',
+                        dealer: {
+                            id: 'mock_dealer_1',
+                            display_name: 'Elite Motors',
+                            is_verified: true,
+                            store_type: 'physical',
+                            phone_number: '08011111111',
+                            subscription_plan: 'professional'
+                        }
+                    },
+                    'mock-2': {
+                        id: 'mock-2',
+                        title: '2019 LEXUS RX 350',
+                        description: 'Foreign used, fully loaded, panoramic roof, thumb-start, reverse camera, duty fully paid. This luxury SUV combines comfort with performance, maintained in pristine condition.',
+                        price: 35000000,
+                        category: 'Automotive',
+                        location: 'Abuja',
+                        dealer_id: 'mock_dealer_1',
+                        created_at: new Date().toISOString(),
+                        images: ['https://images.unsplash.com/photo-1591533924719-79888126b0a1?auto=format&fit=crop&w=800&q=80'],
+                        is_verified_listing: true,
+                        year: 2019,
+                        make: 'Lexus',
+                        model: 'RX 350',
+                        condition: 'Tokunbo',
+                        dealer: {
+                            id: 'mock_dealer_1',
+                            display_name: 'Premium Autos Ltd',
+                            is_verified: true,
+                            store_type: 'physical',
+                            phone_number: '08022222222',
+                            subscription_plan: 'enterprise'
+                        }
+                    },
                     'mock-3': {
                         id: 'mock-3',
                         title: '2021 BMW M4 COMPETITION',
@@ -106,6 +154,150 @@ export default function ListingDetailPage() {
                             store_type: 'physical',
                             phone_number: '08012345678',
                             subscription_plan: 'professional'
+                        }
+                    },
+                    'mock-4': {
+                        id: 'mock-4',
+                        title: '2023 MERCEDES-BENZ S580',
+                        description: 'Brand new, luxury redefined, massaging seats, 4matic, executive rear seat package. Experience the ultimate in automotive luxury and technology.',
+                        price: 185000000,
+                        category: 'Automotive',
+                        location: 'Lagos',
+                        dealer_id: 'mock_dealer_1',
+                        created_at: new Date().toISOString(),
+                        images: ['https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=800&q=80'],
+                        is_verified_listing: true,
+                        year: 2023,
+                        make: 'Mercedes-Benz',
+                        model: 'S580',
+                        condition: 'Brand New',
+                        dealer: {
+                            id: 'mock_dealer_1',
+                            display_name: 'Luxe Terminal',
+                            is_verified: true,
+                            store_type: 'online',
+                            phone_number: '08044444444',
+                            subscription_plan: 'enterprise'
+                        }
+                    },
+                    'mock-5': {
+                        id: 'mock-5',
+                        title: '2020 HONDA ACCORD SPORT',
+                        description: 'Clean title, reverse camera, Apple CarPlay, lane watch, alloy wheels. A sporty yet practical choice for the daily commuter.',
+                        price: 18000000,
+                        category: 'Automotive',
+                        location: 'Enugu',
+                        dealer_id: 'mock_dealer_1',
+                        created_at: new Date().toISOString(),
+                        images: ['https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=800&q=80'],
+                        is_verified_listing: true,
+                        year: 2020,
+                        make: 'Honda',
+                        model: 'Accord',
+                        condition: 'Nigerian Used',
+                        dealer: {
+                            id: 'mock_dealer_1',
+                            display_name: 'Smart Wheels',
+                            is_verified: true,
+                            store_type: 'physical',
+                            phone_number: '08055555555',
+                            subscription_plan: 'starter'
+                        }
+                    },
+                    'mock-6': {
+                        id: 'mock-6',
+                        title: '2024 PORSCHE 911 GT3 RS',
+                        description: 'Ultimate track machine, carbon ceramic brakes, aero package, magnesium wheels. For the serious driving enthusiast who demands precision and power.',
+                        price: 420000000,
+                        category: 'Automotive',
+                        location: 'Lagos',
+                        dealer_id: 'mock_dealer_1',
+                        created_at: new Date().toISOString(),
+                        images: ['https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=800&q=80'],
+                        is_verified_listing: true,
+                        year: 2024,
+                        make: 'Porsche',
+                        model: '911 GT3 RS',
+                        condition: 'Brand New',
+                        dealer: {
+                            id: 'mock_dealer_1',
+                            display_name: 'Crown Jewels Autos',
+                            is_verified: true,
+                            store_type: 'physical',
+                            phone_number: '08066666666',
+                            subscription_plan: 'enterprise'
+                        }
+                    },
+                    'mock-7': {
+                        id: 'mock-7',
+                        title: '2022 RANGE ROVER AUTOBIOGRAPHY',
+                        description: 'Long wheel base, rear entertainment, deployable side steps, executive seating. The definitive luxury SUV.',
+                        price: 165000000,
+                        category: 'Automotive',
+                        location: 'Abuja',
+                        dealer_id: 'mock_dealer_1',
+                        created_at: new Date().toISOString(),
+                        images: ['https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&w=800&q=80'],
+                        is_verified_listing: true,
+                        year: 2022,
+                        make: 'Land Rover',
+                        model: 'Range Rover',
+                        condition: 'Tokunbo',
+                        dealer: {
+                            id: 'mock_dealer_1',
+                            display_name: 'Royal Rides',
+                            is_verified: true,
+                            store_type: 'physical',
+                            phone_number: '08077777777',
+                            subscription_plan: 'professional'
+                        }
+                    },
+                    'mock-8': {
+                        id: 'mock-8',
+                        title: '2021 TOYOTA HILUX ADVENTURE',
+                        description: '4x4, diesel engine, leather seats, reverse camera, off-road package. Built tough for any terrain.',
+                        price: 45000000,
+                        category: 'Automotive',
+                        location: 'Kano',
+                        dealer_id: 'mock_dealer_1',
+                        created_at: new Date().toISOString(),
+                        images: ['https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=800&q=80'],
+                        is_verified_listing: true,
+                        year: 2021,
+                        make: 'Toyota',
+                        model: 'Hilux',
+                        condition: 'Nigerian Used',
+                        dealer: {
+                            id: 'mock_dealer_1',
+                            display_name: 'Kano Motors',
+                            is_verified: true,
+                            store_type: 'physical',
+                            phone_number: '08088888888',
+                            subscription_plan: 'starter'
+                        }
+                    },
+                    'mock-9': {
+                        id: 'mock-9',
+                        title: '2024 TESLA MODEL S PLAID',
+                        description: 'Zero to sixty in 1.9s, tri-motor AWD, autopilot, premium white interior. The future of electric performance is here.',
+                        price: 135000000,
+                        category: 'Automotive',
+                        location: 'Lagos',
+                        dealer_id: 'mock_dealer_1',
+                        created_at: new Date().toISOString(),
+                        images: ['https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=800&q=80'],
+                        is_verified_listing: true,
+                        year: 2024,
+                        make: 'Tesla',
+                        model: 'Model S',
+                        condition: 'Brand New',
+                        dealer: {
+                            id: 'mock_dealer_1',
+                            display_name: 'Future Drive',
+                            is_verified: true,
+                            store_type: 'online',
+                            phone_number: '08099999999',
+                            subscription_plan: 'enterprise'
                         }
                     }
                 };

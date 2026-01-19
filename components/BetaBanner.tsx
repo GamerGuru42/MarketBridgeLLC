@@ -8,7 +8,8 @@ export const BetaBanner = () => {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        const dismissed = localStorage.getItem('betaBannerDismissed');
+        // Changed key to ensure users see this new specific message
+        const dismissed = localStorage.getItem('simulationModeDismissed');
         if (!dismissed) {
             setIsVisible(true);
         }
@@ -16,27 +17,29 @@ export const BetaBanner = () => {
 
     const handleDismiss = () => {
         setIsVisible(false);
-        localStorage.setItem('betaBannerDismissed', 'true');
+        localStorage.setItem('simulationModeDismissed', 'true');
     };
 
     if (!isVisible) return null;
 
     return (
-        <div className="relative bg-gradient-to-r from-primary/90 via-primary to-primary/90 text-primary-foreground">
+        <div className="relative bg-[#FFB800] text-black border-b border-[#FFD700]">
             <div className="container mx-auto px-4 py-3">
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3 flex-1">
-                        <Sparkles className="h-5 w-5 flex-shrink-0 animate-pulse" />
-                        <p className="text-sm md:text-base font-medium">
-                            <span className="font-bold">BETA VERSION:</span> You're experiencing MarketBridge early! 
-                            <span className="hidden sm:inline"> The full version with enhanced features launches soon.</span>
+                        <div className="h-6 w-6 rounded-full bg-black/10 flex items-center justify-center flex-shrink-0">
+                            <Sparkles className="h-4 w-4 animate-pulse text-black" />
+                        </div>
+                        <p className="text-xs md:text-sm font-bold uppercase tracking-wide font-heading">
+                            <span className="bg-black text-[#FFB800] px-2 py-0.5 rounded mr-2">PROTOCOL TESTNET</span>
+                            Listings are currently <span className="italic">samples</span> for demonstration. Real dealer inventory initiates at MVP Launch.
                         </p>
                     </div>
                     <Button
                         variant="ghost"
                         size="icon"
                         onClick={handleDismiss}
-                        className="h-8 w-8 flex-shrink-0 hover:bg-primary-foreground/20"
+                        className="h-8 w-8 flex-shrink-0 hover:bg-black/10 text-black"
                         aria-label="Dismiss banner"
                     >
                         <X className="h-4 w-4" />
