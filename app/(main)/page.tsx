@@ -120,8 +120,8 @@ export default function HomePage() {
 
                             <div className="flex flex-col sm:flex-row gap-4 pt-4">
                                 <Button size="lg" asChild className="bg-[#FFB800] text-black font-black uppercase tracking-widest px-8 h-14 rounded-none skew-x-[-10deg] hover:skew-x-0 transition-all duration-300 hover:bg-[#FFD700] hover:scale-105">
-                                    <Link href="/signup?role=dealer">
-                                        <span className="skew-x-[10deg] inline-block">Become a Dealer</span>
+                                    <Link href={user ? (user.role === 'dealer' ? '/dealer/dashboard' : '/onboarding') : '/signup?role=dealer'}>
+                                        <span className="skew-x-[10deg] inline-block">{user && user.role === 'dealer' ? 'Dealer Dashboard' : 'Become a Dealer'}</span>
                                     </Link>
                                 </Button>
                                 <Button size="lg" variant="outline" asChild className="bg-transparent border border-white/20 text-white font-bold uppercase tracking-widest px-8 h-14 rounded-none skew-x-[-10deg] hover:skew-x-0 hover:bg-white hover:text-black transition-all duration-300">
@@ -352,8 +352,8 @@ export default function HomePage() {
 
                         <div className="flex flex-col sm:flex-row gap-6 justify-center">
                             <Button size="lg" className="bg-[#FFB800] text-black font-black uppercase tracking-widest px-12 h-16 rounded-full hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,184,0,0.3)]">
-                                <Link href="/signup?role=dealer">
-                                    Become a Dealer
+                                <Link href={user ? (user.role === 'dealer' ? '/dealer/dashboard' : '/onboarding') : '/signup?role=dealer'}>
+                                    {user && user.role === 'dealer' ? 'Go to Dashboard' : 'Become a Dealer'}
                                 </Link>
                             </Button>
                             <Button size="lg" variant="ghost" asChild className="text-white border border-white/10 font-bold uppercase tracking-widest px-12 h-16 rounded-full hover:bg-white/10">
