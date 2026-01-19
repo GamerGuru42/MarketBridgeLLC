@@ -178,6 +178,12 @@ export default function ListingDetailPage() {
 
         if (!listing) return;
 
+        // Mock Handling
+        if (listing.id.startsWith('mock-') || listing.dealer.id.startsWith('mock_')) {
+            alert('DEMO MODE: Secure Chat Interface initialized. (This is a mock listing, so no real chat will be created).');
+            return;
+        }
+
         setActionLoading(true);
         try {
             const { data: existingChats } = await supabase
@@ -249,6 +255,12 @@ export default function ListingDetailPage() {
 
         if (!listing) return;
 
+        // Mock Handling
+        if (listing.id.startsWith('mock-') || listing.dealer.id.startsWith('mock_')) {
+            alert('DEMO MODE: Secure Payment Gateway initialized. (This is a mock listing, no real funds will be deducted).');
+            return;
+        }
+
         setActionLoading(true);
 
         const txRef = `TX-${Date.now()}-${user.id.slice(0, 5)}`;
@@ -290,6 +302,7 @@ export default function ListingDetailPage() {
             const platformFee = listing.price * commissionRate;
             const netAmount = listing.price - platformFee;
 
+            // Only create database order if not a mock (redundant check but safe)
             const { error: orderError } = await supabase
                 .from('orders')
                 .insert({
@@ -321,12 +334,15 @@ export default function ListingDetailPage() {
                 // If successful, user is redirected away
             } else {
                 const flwOptions = paymentProvider === 'card' ? 'card' : 'banktransfer';
+                // Safe access to phone number
+                const phone = user.phone_number || '08000000000';
+
                 const config = getFlutterwaveConfig(
                     txRef,
                     listing.price,
                     user.email,
                     user.displayName,
-                    user.phone_number || '08000000000',
+                    phone,
                     onSuccess,
                     onCancel,
                     flwOptions
