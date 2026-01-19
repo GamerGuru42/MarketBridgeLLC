@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/password-input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -225,10 +225,9 @@ export default function AdminSignupPage() {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="password" title="Password" className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Passphrase</Label>
-                                <input
+                                <PasswordInput
                                     id="password"
                                     name="password"
-                                    type="password"
                                     className="w-full h-12 px-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FFB800]/50 transition-all font-medium text-xs"
                                     value={formData.password}
                                     onChange={handleChange}
@@ -239,10 +238,9 @@ export default function AdminSignupPage() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="confirmPassword" title="Confirm Password" className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Confirm</Label>
-                                <input
+                                <PasswordInput
                                     id="confirmPassword"
                                     name="confirmPassword"
-                                    type="password"
                                     className="w-full h-12 px-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FFB800]/50 transition-all font-medium text-xs"
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
