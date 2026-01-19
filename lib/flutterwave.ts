@@ -34,19 +34,25 @@ export const getFlutterwaveConfig = (
 };
 
 export const useFlutterwave = () => {
-    const initializePayment = (config: unknown) => {
-        // Load Flutterwave inline script if not already loaded
-        loadScript('https://checkout.flutterwave.com/v3.js')
-            .then(() => {
-                // @ts-expect-error - flutterwave object injected globally
-                const FlutterwaveCheckout = window.FlutterwaveCheckout;
-                if (FlutterwaveCheckout) {
-                    FlutterwaveCheckout(config);
-                } else {
-                    console.error('FlutterwaveCheckout not available');
-                }
-            })
-            .catch(err => console.error('Failed to load Flutterwave script', err));
+    const initializePayment = async (config: unknown): Promise<boolean> => {
+        try {
+            // Load Flutterwave inline script if not already loaded
+            await loadScript('https://checkout.flutterwave.com/v3.js');
+
+            // @ts-expect-error - flutterwave object injected globally
+            const FlutterwaveCheckout = window.FlutterwaveCheckout;
+
+            if (FlutterwaveCheckout) {
+                FlutterwaveCheckout(config);
+                return true;
+            } else {
+                console.error('FlutterwaveCheckout not available');
+                return false;
+            }
+        } catch (err) {
+            console.error('Failed to load Flutterwave script', err);
+            return false;
+        }
     };
 
     // Ensure script is loaded on mount

@@ -351,7 +351,12 @@ export default function ListingDetailPage() {
                     onCancel,
                     flwOptions
                 );
-                initFlutterwave(config);
+
+                const started = await initFlutterwave(config);
+                if (!started) {
+                    alert('Failed to launch payment gateway. Please disable ad-blockers or try again.');
+                    setActionLoading(false);
+                }
             }
         } catch (err: unknown) {
             console.error('Error initiating order:', err);
