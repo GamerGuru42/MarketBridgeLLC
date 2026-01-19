@@ -73,28 +73,98 @@ export default function ListingDetailPage() {
         setLoading(true);
         setError('');
         try {
+            // Handle mock data request explicitly
+            const listingId = Array.isArray(params.id) ? params.id[0] : params.id;
+
+            if (listingId && listingId.startsWith('mock-')) {
+                const mockListings: Record<string, any> = {
+                    'mock-3': {
+                        id: 'mock-3',
+                        title: '2021 BMW M4 COMPETITION',
+                        description: 'Turbocharged, carbon fiber interior, low mileage, competition package, full service history. This vehicle represents the pinnacle of German engineering with its aggressive styling and track-ready performance.',
+                        price: 65000000,
+                        category: 'Automotive',
+                        location: 'Port Harcourt',
+                        dealer_id: 'mock_dealer_1',
+                        created_at: new Date().toISOString(),
+                        images: ['https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1617531653332-bd46c24f2068?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1555215696-99ac972988c4?auto=format&fit=crop&w=800&q=80'],
+                        is_verified_listing: true,
+                        year: 2021,
+                        make: 'BMW',
+                        model: 'M4',
+                        condition: 'Tokunbo',
+                        mileage: 12500,
+                        fuel_type: 'Petrol',
+                        transmission: 'Automatic',
+                        body_type: 'Coupe',
+                        engine_size: '3.0L Twin-Turbo',
+                        vin: 'WBS234...',
+                        dealer: {
+                            id: 'mock_dealer_1',
+                            display_name: 'Speed Nation',
+                            is_verified: true,
+                            store_type: 'physical',
+                            phone_number: '08012345678',
+                            subscription_plan: 'professional'
+                        }
+                    }
+                };
+
+                const mockListing = mockListings[listingId];
+                if (mockListing) {
+                    // Force the type
+                    setListing(mockListing as unknown as Listing);
+                    setLoading(false);
+                    return;
+                }
+            }
+
             const { data, error } = await supabase
                 .from('listings')
                 .select(`
-                    *,
-                    dealer:users!listings_dealer_id_fkey(
-                        id,
-                        display_name,
-                        is_verified,
-                        photo_url,
-                        store_type,
-                        phone_number,
-                        subscription_plan
-                    )
-                `)
-                .eq('id', params.id)
+                        *,
+                        dealer:users!listings_dealer_id_fkey(
+                            id,
+                            display_name,
+                            is_verified,
+                            photo_url,
+                            store_type,
+                            phone_number,
+                            subscription_plan
+                        )
+                    `)
+                .eq('id', listingId)
                 .single();
 
-            if (error) throw error;
+            if (error) {
+                console.warn("Complex query failed, trying fallback...", error);
+
+                // Fallback query (step 1: get listing)
+                const { data: simpleListing, error: simpleError } = await supabase
+                    .from('listings')
+                    .select('*')
+                    .eq('id', listingId)
+                    .single();
+
+                if (simpleError) throw simpleError;
+
+                // (step 2: get dealer)
+                if (simpleListing) {
+                    const { data: dealerData } = await supabase
+                        .from('users')
+                        .select('id, display_name, is_verified, photo_url, store_type, phone_number, subscription_plan')
+                        .eq('id', simpleListing.dealer_id)
+                        .single();
+
+                    setListing({ ...simpleListing, dealer: dealerData || {} });
+                    return;
+                }
+            }
+
             setListing(data);
         } catch (err: unknown) {
             console.error('Error fetching listing:', err);
-            setError('Failed to load listing');
+            setError('Asset Signal Lost');
         } finally {
             setLoading(false);
         }
