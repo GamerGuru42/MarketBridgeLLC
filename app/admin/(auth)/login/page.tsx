@@ -96,6 +96,10 @@ export default function AdminLoginPage() {
 
             // 3. Sync and Redirect
             await refreshUser(data.user.id);
+
+            // OPTIMIZATION: Small delay to ensure DB propagation for middleware
+            await new Promise(resolve => setTimeout(resolve, 800));
+
             router.refresh();
 
             let targetPath = '/admin';
