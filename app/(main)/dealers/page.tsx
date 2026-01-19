@@ -123,9 +123,9 @@ export default function FindDealersPage() {
                     <div className="space-y-4">
                         <Link
                             href="/"
-                            className="inline-flex items-center text-[#FFB800] hover:text-[#FFD700] p-0 h-auto text-[10px] font-black uppercase tracking-[0.2em] font-heading mb-4"
+                            className="inline-flex items-center text-[#FFB800] hover:text-[#FFD700] p-0 h-auto text-[10px] font-black uppercase tracking-[0.2em] font-heading mb-4 py-3"
                         >
-                            <ArrowLeft className="mr-2 h-3 w-3" /> Return to Core
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Return to Core
                         </Link>
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading leading-none">
                             Authorized <span className="text-zinc-500">Nodes.</span>

@@ -124,7 +124,7 @@ export default function LoginPage() {
 
                 <div className="w-full max-w-5xl relative z-10">
                     <div className="text-center mb-16">
-                        <Link href="/" className="inline-flex items-center text-zinc-500 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest transition-colors">
+                        <Link href="/" className="inline-flex items-center text-zinc-500 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest transition-colors py-3">
                             <ArrowLeft className="mr-2 h-4 w-4" /> Return to Home
                         </Link>
                         <h1 className="text-5xl font-black uppercase tracking-tighter text-white italic mb-4">Welcome Back</h1>
