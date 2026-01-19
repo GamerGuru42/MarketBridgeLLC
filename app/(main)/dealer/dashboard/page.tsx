@@ -92,12 +92,18 @@ export default function DealerDashboardPage() {
             return;
         }
 
+        let unsubscribe: (() => void) | undefined;
+
         if (user) {
             fetchOrders();
             fetchBankDetails();
-            subscribeToOrders();
+            unsubscribe = subscribeToOrders();
             checkSubscriptionStatus();
         }
+
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
     }, [user, authLoading]);
 
     const checkSubscriptionStatus = async () => {
@@ -519,7 +525,7 @@ export default function DealerDashboardPage() {
                                             <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 font-heading">Account Serial</Label>
                                             <Input
                                                 value={bankDetails.accountNumber}
-                                                onChange={e => setBankDetails({ ...bankDetails, accountNumber: e.target.value })}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBankDetails({ ...bankDetails, accountNumber: e.target.value })}
                                                 placeholder="0123456789"
                                                 className="h-14 bg-white/5 border-white/10 rounded-xl focus:border-[#FFB800] focus:ring-1 focus:ring-[#FFB800] transition-colors font-mono tracking-tighter"
                                                 required
@@ -530,7 +536,7 @@ export default function DealerDashboardPage() {
                                         <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 font-heading">Entity Name</Label>
                                         <Input
                                             value={bankDetails.accountName}
-                                            onChange={e => setBankDetails({ ...bankDetails, accountName: e.target.value })}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBankDetails({ ...bankDetails, accountName: e.target.value })}
                                             placeholder="FULL ACCOUNT NAME"
                                             className="h-14 bg-white/5 border-white/10 rounded-xl focus:border-[#FFB800] focus:ring-1 focus:ring-[#FFB800] transition-colors font-heading text-sm uppercase tracking-widest"
                                             required
@@ -611,7 +617,7 @@ function OrderCard({
                 </Button>
 
                 {order.status === 'pending' && (
-                    <Select onValueChange={(value) => onUpdateStatus(order.id, value as 'pending' | 'confirmed' | 'completed' | 'cancelled')} disabled={isUpdating}>
+                    <Select onValueChange={(value: string) => onUpdateStatus(order.id, value as 'pending' | 'confirmed' | 'completed' | 'cancelled')} disabled={isUpdating}>
                         <SelectTrigger className="flex-1 md:w-40 h-12 rounded-xl bg-[#FFB800] border-none text-black font-black uppercase tracking-widest text-[10px] font-heading shadow-lg shadow-[#FFB800]/10 hover:bg-[#FFD700] transition-all">
                             <SelectValue placeholder="Dispatch" />
                         </SelectTrigger>

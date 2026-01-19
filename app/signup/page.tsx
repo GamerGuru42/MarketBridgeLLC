@@ -51,9 +51,18 @@ function SignupContent() {
     const { initializePayment: initFlutterwave } = useFlutterwave();
     const { refreshUser, signInWithGoogle } = useAuth();
 
+    const searchParams = useSearchParams();
+    const initialRole = searchParams.get('role') as 'customer' | 'dealer' | 'admin' | null;
+
     // Steps
-    const [step, setStep] = useState<'role' | 'plan' | 'details' | 'auth-method' | 'admin-code' | 'admin-dept'>('role');
-    const [role, setRole] = useState<'customer' | 'dealer' | 'admin'>('customer');
+    const [step, setStep] = useState<'role' | 'plan' | 'details' | 'auth-method' | 'admin-code' | 'admin-dept'>(() => {
+        if (initialRole === 'dealer') return 'plan';
+        if (initialRole === 'admin') return 'admin-code';
+        if (initialRole === 'customer') return 'auth-method'; // Skip role select for customer
+        return 'role';
+    });
+
+    const [role, setRole] = useState<'customer' | 'dealer' | 'admin'>(initialRole === 'dealer' ? 'dealer' : (initialRole === 'admin' ? 'admin' : (initialRole === 'customer' ? 'customer' : 'customer')));
 
     // Admin Flow
     const [adminCode, setAdminCode] = useState('');

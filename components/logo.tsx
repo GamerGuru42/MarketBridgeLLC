@@ -1,40 +1,79 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 
 interface LogoProps {
     className?: string;
     showText?: boolean;
 }
 
-export const Logo: React.FC<LogoProps> = ({ className = '', showText = true }) => {
+export const Logo: React.FC<LogoProps> = ({ className = '' }) => {
     return (
-        <Link href="/" className={`flex items-center gap-2 ${className}`}>
-            <div className="relative w-10 h-10 flex items-center justify-center">
-                <div className="absolute inset-0 bg-gold-gradient rounded-xl rotate-12 opacity-20 blur-sm group-hover:rotate-45 transition-transform duration-500" />
+        <Link href="/" className={`group flex items-center transition-transform active:scale-95 ${className}`}>
+            <div className="relative w-12 h-12 flex items-center justify-center">
+                {/* Ambient glow effect behind logo */}
+                <div className="absolute inset-0 bg-[#FF8A00]/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
                 <svg
-                    viewBox="0 0 100 100"
+                    viewBox="0 0 400 320"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
-                    className="w-8 h-8 relative z-10"
+                    className="w-full h-full relative z-10 drop-shadow-[0_4px_10px_rgba(0,0,0,0.3)]"
                 >
-                    {/* Double Arch Bridge Logo - Bolder & More Accurate */}
-                    <path d="M10 75 Q 50 62 90 75" stroke="#FF8A00" strokeWidth="8" strokeLinecap="round" />
+                    <defs>
+                        <linearGradient id="logoArchGradient" x1="0" y1="0" x2="400" y2="320" gradientUnits="userSpaceOnUse">
+                            <stop stopColor="#FFB800" />
+                            <stop offset="0.5" stopColor="#FF8A00" />
+                            <stop offset="1" stopColor="#E65100" />
+                        </linearGradient>
+                        <filter id="innerGlow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur" />
+                            <feOffset in="blur" dx="2" dy="2" result="offsetBlur" />
+                            <feComposite in="SourceGraphic" in2="offsetBlur" operator="out" result="glow" />
+                        </filter>
+                    </defs>
 
-                    <path d="M30 70 V 45 C 30 30 48 30 48 45 V 70" stroke="#FF8A00" strokeWidth="11" strokeLinejoin="round" />
-                    <line x1="36" y1="42" x2="36" y2="68" stroke="#FF8A00" strokeWidth="3" />
-                    <line x1="42" y1="42" x2="42" y2="68" stroke="#FF8A00" strokeWidth="3" />
+                    {/* Base Foundation Arc */}
+                    <path
+                        d="M40 240C150 190 250 190 360 240"
+                        stroke="url(#logoArchGradient)"
+                        strokeWidth="6"
+                        strokeLinecap="round"
+                        className="opacity-80"
+                    />
 
-                    <path d="M52 70 V 45 C 52 30 70 30 70 45 V 70" stroke="#FF8A00" strokeWidth="11" strokeLinejoin="round" />
-                    <line x1="58" y1="42" x2="58" y2="68" stroke="#FF8A00" strokeWidth="3" />
-                    <line x1="64" y1="42" x2="64" y2="68" stroke="#FF8A00" strokeWidth="3" />
+                    {/* Left Arch - Precision curved to match provided identity */}
+                    <path
+                        d="M60 230C60 50 195 50 195 230"
+                        stroke="url(#logoArchGradient)"
+                        strokeWidth="52"
+                        strokeLinecap="butt"
+                    />
+                    {/* Highlight layer for 3D effect */}
+                    <path
+                        d="M75 220C75 70 180 70 180 220"
+                        stroke="white"
+                        strokeWidth="4"
+                        strokeLinecap="round"
+                        className="opacity-20"
+                    />
+
+                    {/* Right Arch - Mirrored with slight overlap for structural continuity */}
+                    <path
+                        d="M205 230C205 50 340 50 340 230"
+                        stroke="url(#logoArchGradient)"
+                        strokeWidth="52"
+                        strokeLinecap="butt"
+                    />
+                    {/* Highlight layer for 3D effect */}
+                    <path
+                        d="M220 220C220 70 325 70 325 220"
+                        stroke="white"
+                        strokeWidth="4"
+                        strokeLinecap="round"
+                        className="opacity-20"
+                    />
                 </svg>
             </div>
-            {showText && (
-                <span className="font-black text-xl tracking-tighter uppercase text-white">
-                    MARKET <span className="text-[#FFB800] italic">BRIDGE</span>
-                </span>
-            )}
         </Link>
     );
 };

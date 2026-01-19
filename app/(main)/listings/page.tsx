@@ -9,7 +9,7 @@ import { Card, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { createClient } from '@/lib/supabase/client';
 const supabase = createClient();
-import { Loader2, Search, MapPin, Store, Globe, ShieldCheck, Star, SlidersHorizontal, Zap } from 'lucide-react';
+import { Loader2, Search, MapPin, Store, Globe, ShieldCheck, Star, SlidersHorizontal, Zap, Calendar, ArrowUpRight } from 'lucide-react';
 import { CATEGORIES } from '@/lib/categories';
 import { cn } from '@/lib/utils';
 
@@ -101,22 +101,31 @@ export default function ListingsPage() {
             if (!data || data.length === 0) {
                 const mockListings: Listing[] = [
                     {
-                        id: 'mock-1', title: '2022 Toyota Camry XSE', description: 'Nigerian used, first body, super clean interior', price: 28500000, category: 'Automotive', location: 'Lagos', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1621007947382-bb3c3968e3bb?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, dealer: { id: 'mock', display_name: 'Elite Motors', is_verified: true }
+                        id: 'mock-1', title: '2022 TOYOTA CAMRY XSE', description: 'Nigerian used, first body, super clean interior, panoramic roof, leather seats, 4-cylinder engine.', price: 28500000, category: 'Automotive', location: 'Lagos', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1621007947382-bb3c3968e3bb?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2022, make: 'Toyota', model: 'Camry', condition: 'Nigerian Used', dealer: { id: 'mock', display_name: 'Elite Motors', is_verified: true }
                     },
                     {
-                        id: 'mock-2', title: '2019 Lexus RX 350', description: 'Foreign used, fully loaded, panoramic roof', price: 35000000, category: 'Automotive', location: 'Abuja', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1591533924719-79888126b0a1?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, dealer: { id: 'mock', display_name: 'Premium Autos Ltd', is_verified: true }
+                        id: 'mock-2', title: '2019 LEXUS RX 350', description: 'Foreign used, fully loaded, panoramic roof, thumb-start, reverse camera, duty fully paid.', price: 35000000, category: 'Automotive', location: 'Abuja', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1591533924719-79888126b0a1?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2019, make: 'Lexus', model: 'RX 350', condition: 'Tokunbo', dealer: { id: 'mock', display_name: 'Premium Autos Ltd', is_verified: true }
                     },
                     {
-                        id: 'mock-3', title: '2021 BMW M4 Competition', description: 'Turbocharged, carbon fiber interior, low mileage', price: 65000000, category: 'Automotive', location: 'Port Harcourt', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, dealer: { id: 'mock', display_name: 'Speed Nation', is_verified: true }
+                        id: 'mock-3', title: '2021 BMW M4 COMPETITION', description: 'Turbocharged, carbon fiber interior, low mileage, competition package, full service history.', price: 65000000, category: 'Automotive', location: 'Port Harcourt', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2021, make: 'BMW', model: 'M4', condition: 'Tokunbo', dealer: { id: 'mock', display_name: 'Speed Nation', is_verified: true }
                     },
                     {
-                        id: 'mock-4', title: '2023 Mercedes-Benz S580', description: 'Brand new, luxury redefined, massaging seats', price: 185000000, category: 'Automotive', location: 'Lagos', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, dealer: { id: 'mock', display_name: 'Luxe Terminal', is_verified: true }
+                        id: 'mock-4', title: '2023 MERCEDES-BENZ S580', description: 'Brand new, luxury redefined, massaging seats, 4matic, executive rear seat package.', price: 185000000, category: 'Automotive', location: 'Lagos', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2023, make: 'Mercedes-Benz', model: 'S580', condition: 'Brand New', dealer: { id: 'mock', display_name: 'Luxe Terminal', is_verified: true }
                     },
                     {
-                        id: 'mock-5', title: '2020 Honda Accord Sport', description: 'Clean title, reverse camera, Apple CarPlay', price: 18000000, category: 'Automotive', location: 'Enugu', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, dealer: { id: 'mock', display_name: 'Smart Wheels', is_verified: true }
+                        id: 'mock-5', title: '2020 HONDA ACCORD SPORT', description: 'Clean title, reverse camera, Apple CarPlay, lane watch, alloy wheels.', price: 18000000, category: 'Automotive', location: 'Enugu', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2020, make: 'Honda', model: 'Accord', condition: 'Nigerian Used', dealer: { id: 'mock', display_name: 'Smart Wheels', is_verified: true }
                     },
                     {
-                        id: 'mock-6', title: '2024 Porsche 911 GT3 RS', description: 'Ultimate track machine, carbon ceramic brakes', price: 420000000, category: 'Automotive', location: 'Lagos', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, dealer: { id: 'mock', display_name: 'Crown Jewels Autos', is_verified: true }
+                        id: 'mock-6', title: '2024 PORSCHE 911 GT3 RS', description: 'Ultimate track machine, carbon ceramic brakes, aero package, magnesium wheels.', price: 420000000, category: 'Automotive', location: 'Lagos', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2024, make: 'Porsche', model: '911 GT3 RS', condition: 'Brand New', dealer: { id: 'mock', display_name: 'Crown Jewels Autos', is_verified: true }
+                    },
+                    {
+                        id: 'mock-7', title: '2022 RANGE ROVER AUTOBIOGRAPHY', description: 'Long wheel base, rear entertainment, deployable side steps, executive seating.', price: 165000000, category: 'Automotive', location: 'Abuja', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2022, make: 'Land Rover', model: 'Range Rover', condition: 'Tokunbo', dealer: { id: 'mock', display_name: 'Royal Rides', is_verified: true }
+                    },
+                    {
+                        id: 'mock-8', title: '2021 TOYOTA HILUX ADVENTURE', description: '4x4, diesel engine, leather seats, reverse camera, off-road package.', price: 45000000, category: 'Automotive', location: 'Kano', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2021, make: 'Toyota', model: 'Hilux', condition: 'Nigerian Used', dealer: { id: 'mock', display_name: 'Kano Motors', is_verified: true }
+                    },
+                    {
+                        id: 'mock-9', title: '2024 TESLA MODEL S PLAID', description: 'Zero to sixty in 1.9s, tri-motor AWD, autopilot, premium white interior.', price: 135000000, category: 'Automotive', location: 'Lagos', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2024, make: 'Tesla', model: 'Model S', condition: 'Brand New', dealer: { id: 'mock', display_name: 'Future Drive', is_verified: true }
                     }
                 ];
                 setListings(mockListings);
@@ -185,7 +194,7 @@ export default function ListingsPage() {
                                             type="text"
                                             placeholder="SEARCH..."
                                             value={search}
-                                            onChange={(e) => setSearch(e.target.value)}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
                                             className="w-full h-14 pl-12 pr-4 bg-black border border-white/5 rounded-2xl text-white text-xs font-bold focus:border-[#FFB800]/50 outline-none transition-all font-heading uppercase tracking-widest"
                                         />
                                     </div>
@@ -196,7 +205,7 @@ export default function ListingsPage() {
                                     <div className="relative">
                                         <select
                                             value={category}
-                                            onChange={(e) => setCategory(e.target.value)}
+                                            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCategory(e.target.value)}
                                             className="w-full h-14 px-5 bg-black border border-white/5 rounded-2xl text-white text-[10px] font-black uppercase tracking-widest focus:border-[#FFB800]/50 outline-none transition-all font-heading cursor-pointer appearance-none"
                                         >
                                             <option value="All Categories">All Categories</option>
@@ -220,7 +229,7 @@ export default function ListingsPage() {
                                                 type="number"
                                                 placeholder="MIN"
                                                 value={minPrice}
-                                                onChange={(e) => setMinPrice(e.target.value)}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMinPrice(e.target.value)}
                                                 className="w-full h-14 px-4 bg-black border border-white/5 rounded-2xl text-white text-[10px] font-black outline-none font-heading"
                                             />
                                         </div>
@@ -229,7 +238,7 @@ export default function ListingsPage() {
                                                 type="number"
                                                 placeholder="MAX"
                                                 value={maxPrice}
-                                                onChange={(e) => setMaxPrice(e.target.value)}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMaxPrice(e.target.value)}
                                                 className="w-full h-14 px-4 bg-black border border-white/5 rounded-2xl text-white text-[10px] font-black outline-none font-heading"
                                             />
                                         </div>
@@ -305,17 +314,23 @@ export default function ListingsPage() {
                                                     </h3>
                                                 </div>
 
-                                                <div className="grid grid-cols-2 gap-4 pb-6 border-b border-white/5">
+                                                <div className="grid grid-cols-3 gap-3 pb-6 border-b border-white/5">
                                                     <div className="space-y-1">
-                                                        <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest font-heading">Location</p>
-                                                        <div className="text-xs font-bold text-zinc-300 flex items-center gap-1.5 italic">
-                                                            <MapPin className="h-3 w-3 text-[#FFB800]" /> {listing.location || 'Lagos Node'}
+                                                        <p className="text-[8px] font-black text-zinc-700 uppercase tracking-widest font-heading">Node</p>
+                                                        <div className="text-[10px] font-bold text-zinc-300 flex items-center gap-1 italic truncate">
+                                                            <MapPin className="h-2.5 w-2.5 text-[#FFB800]" /> {listing.location || 'Lagos'}
                                                         </div>
                                                     </div>
                                                     <div className="space-y-1">
-                                                        <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest font-heading">Rating</p>
-                                                        <div className="text-xs font-bold text-[#00FF85] flex items-center gap-1.5 italic">
-                                                            <Star className="h-3 w-3 fill-[#00FF85]" /> 4.9 Score
+                                                        <p className="text-[8px] font-black text-zinc-700 uppercase tracking-widest font-heading">Year</p>
+                                                        <div className="text-[10px] font-bold text-zinc-300 flex items-center gap-1 italic">
+                                                            <Calendar className="h-2.5 w-2.5 text-[#FFB800]" /> {listing.year || '2022'}
+                                                        </div>
+                                                    </div>
+                                                    <div className="space-y-1">
+                                                        <p className="text-[8px] font-black text-zinc-700 uppercase tracking-widest font-heading">Rating</p>
+                                                        <div className="text-[10px] font-bold text-[#00FF85] flex items-center gap-1 italic">
+                                                            <Star className="h-2.5 w-2.5 fill-[#00FF85]" /> 4.9
                                                         </div>
                                                     </div>
                                                 </div>

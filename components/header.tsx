@@ -2,12 +2,11 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 import { useAuth } from '@/contexts/AuthContext';
-import { ShoppingCart, Menu, User, LogOut, LayoutDashboard, Package, Shield, Crown, MessageCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { Menu, User, LogOut, LayoutDashboard, Crown } from 'lucide-react';
+import { useRouter, usePathname } from 'next/navigation';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -19,16 +18,28 @@ import {
     SheetContent,
     SheetTrigger,
 } from '@/components/ui/sheet';
+import { cn } from '@/lib/utils';
 
 export const Header = () => {
     const { user, logout, loading } = useAuth();
     const router = useRouter();
+    const pathname = usePathname();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const handleSignOut = () => {
         logout();
         router.push('/');
     };
+
+    const isActive = (path: string) => {
+        if (path === '/') return pathname === '/';
+        return pathname?.startsWith(path);
+    };
+
+    const navLinkClass = (path: string) => cn(
+        "transition-colors relative after:absolute after:bottom-[-4px] after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-[#FFB800] after:rounded-full transition-all duration-300",
+        isActive(path) ? "text-white after:opacity-100 scale-110" : "text-zinc-500 hover:text-white after:opacity-0"
+    );
 
     return (
         <header className="fixed top-0 z-[100] w-full bg-black/50 backdrop-blur-xl border-b border-white/5 h-20 flex items-center">
@@ -38,10 +49,10 @@ export const Header = () => {
 
                 {/* Desktop Nav */}
                 <nav className="hidden lg:flex items-center gap-10 text-[11px] font-bold uppercase tracking-[0.2em]">
-                    <Link href="/" className="text-white hover:text-[#FFB800] transition-colors relative after:absolute after:bottom-[-4px] after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-[#FFB800] after:rounded-full after:opacity-100">Home</Link>
-                    <Link href="/listings" className="text-zinc-400 hover:text-white transition-colors">Listings</Link>
-                    <Link href="/dealers" className="text-zinc-400 hover:text-white transition-colors">Dealers</Link>
-                    <Link href="/about" className="text-zinc-400 hover:text-white transition-colors">About</Link>
+                    <Link href="/" className={navLinkClass('/')}>Home</Link>
+                    <Link href="/listings" className={navLinkClass('/listings')}>Listings</Link>
+                    <Link href="/dealers" className={navLinkClass('/dealers')}>Dealers</Link>
+                    <Link href="/about" className={navLinkClass('/about')}>About</Link>
                 </nav>
 
                 {/* Actions */}
@@ -112,10 +123,34 @@ export const Header = () => {
                             </div>
 
                             <nav className="flex flex-col gap-8 text-2xl font-black uppercase tracking-tighter italic">
-                                <Link href="/" onClick={() => setMobileMenuOpen(false)} className="text-[#FFB800]">Home</Link>
-                                <Link href="/listings" onClick={() => setMobileMenuOpen(false)} className="text-white/60">Listings</Link>
-                                <Link href="/dealers" onClick={() => setMobileMenuOpen(false)} className="text-white/60">Dealers</Link>
-                                <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="text-white/60">About</Link>
+                                <Link
+                                    href="/"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className={cn(isActive('/') ? "text-[#FFB800]" : "text-white/60")}
+                                >
+                                    Home
+                                </Link>
+                                <Link
+                                    href="/listings"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className={cn(isActive('/listings') ? "text-[#FFB800]" : "text-white/60")}
+                                >
+                                    Listings
+                                </Link>
+                                <Link
+                                    href="/dealers"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className={cn(isActive('/dealers') ? "text-[#FFB800]" : "text-white/60")}
+                                >
+                                    Dealers
+                                </Link>
+                                <Link
+                                    href="/about"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className={cn(isActive('/about') ? "text-[#FFB800]" : "text-white/60")}
+                                >
+                                    About
+                                </Link>
                             </nav>
 
                             <div className="mt-auto flex flex-col gap-4">

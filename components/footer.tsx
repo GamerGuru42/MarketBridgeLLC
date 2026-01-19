@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { Facebook, Twitter, Instagram } from 'lucide-react';
 import { Logo } from '@/components/logo';
 
 export const Footer = () => {
@@ -37,9 +37,13 @@ export const Footer = () => {
                     <div>
                         <h3 className="text-white font-black uppercase text-[10px] tracking-[0.2em] mb-8">Connect</h3>
                         <div className="flex space-x-6">
-                            {[Facebook, Twitter, Instagram, Linkedin].map((Icon, i) => (
-                                <Link key={i} href="#" className="h-10 w-10 glass-card rounded-xl flex items-center justify-center text-zinc-500 hover:text-[#FFB800] hover:border-[#FFB800]/50 transition-all">
-                                    <Icon className="h-4 w-4" />
+                            {[
+                                { Icon: Instagram, href: "https://instagram.com/marketbridgeng" },
+                                { Icon: Twitter, href: "https://x.com/marketbridgeng" },
+                                { Icon: Facebook, href: "https://facebook.com/marketbridgeng" }
+                            ].map((social, i) => (
+                                <Link key={i} href={social.href} target="_blank" rel="noopener noreferrer" className="h-10 w-10 glass-card rounded-xl flex items-center justify-center text-zinc-500 hover:text-[#FFB800] hover:border-[#FFB800]/50 transition-all">
+                                    <social.Icon className="h-4 w-4" />
                                 </Link>
                             ))}
                         </div>

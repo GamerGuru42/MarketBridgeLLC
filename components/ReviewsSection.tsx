@@ -31,7 +31,7 @@ export function ReviewsSection({ listingId, dealerId }: ReviewsSectionProps) {
     const [reviews, setReviews] = useState<Review[]>([]);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
-    const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
+    const [newReview, setNewReview] = useState<{ rating: number; comment: string }>({ rating: 5, comment: '' });
     const [averageRating, setAverageRating] = useState(0);
 
     useEffect(() => {
@@ -58,7 +58,8 @@ export function ReviewsSection({ listingId, dealerId }: ReviewsSectionProps) {
             setReviews(data || []);
 
             if (data && data.length > 0) {
-                const avg = data.reduce((acc, curr) => acc + curr.rating, 0) / data.length;
+                const reviewsData = data as Review[];
+                const avg = reviewsData.reduce((acc: number, curr: Review) => acc + curr.rating, 0) / reviewsData.length;
                 setAverageRating(avg);
             }
         } catch (error) {
@@ -110,8 +111,8 @@ export function ReviewsSection({ listingId, dealerId }: ReviewsSectionProps) {
                     >
                         <Star
                             className={`h-4 w-4 ${star <= rating
-                                    ? 'fill-yellow-400 text-yellow-400'
-                                    : 'fill-muted text-muted-foreground'
+                                ? 'fill-yellow-400 text-yellow-400'
+                                : 'fill-muted text-muted-foreground'
                                 }`}
                         />
                     </button>
@@ -149,7 +150,7 @@ export function ReviewsSection({ listingId, dealerId }: ReviewsSectionProps) {
                                 <Textarea
                                     placeholder="Share your experience..."
                                     value={newReview.comment}
-                                    onChange={(e) => setNewReview(prev => ({ ...prev, comment: e.target.value }))}
+                                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNewReview(prev => ({ ...prev, comment: e.target.value }))}
                                     className="min-h-[80px]"
                                 />
                                 <Button type="submit" disabled={submitting || !newReview.comment.trim()} className="h-auto">

@@ -1,3 +1,4 @@
+import React from 'react';
 import {
     Smartphone, Shirt, Home, Car, Sparkles,
     Dumbbell, Building2, Briefcase, Baby, ShoppingBasket
@@ -33,8 +34,8 @@ export const CATEGORIES: Category[] = [
         icon: Smartphone,
         color: 'text-blue-500',
         bg: 'bg-blue-500/10',
-        isActive: true,
-        locked: false,
+        isActive: false,
+        locked: true,
         slug: 'electronics',
         description: 'Gadgets, phones, and computers.'
     },
@@ -99,8 +100,8 @@ export const CATEGORIES: Category[] = [
         icon: Briefcase,
         color: 'text-slate-500',
         bg: 'bg-slate-500/10',
-        isActive: true,
-        locked: false,
+        isActive: false,
+        locked: true,
         slug: 'services',
         description: 'Professional services and freelancers.'
     },

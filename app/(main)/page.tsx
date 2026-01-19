@@ -60,6 +60,21 @@ export default function HomePage() {
                     }
                 ]);
 
+
+            if (error) throw error;
+
+            // Trigger Email Notification
+            await fetch('/api/waitlist/notify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: waitlistEmail,
+                    phone: waitlistPhone,
+                    category: comingSoonCategory?.name
+                })
+            });
+
+
             if (error) throw error;
             setWaitlistSubmitted(true);
             setWaitlistEmail('');
@@ -105,8 +120,8 @@ export default function HomePage() {
 
                             <div className="flex flex-col sm:flex-row gap-4 pt-4">
                                 <Button size="lg" asChild className="bg-[#FFB800] text-black font-black uppercase tracking-widest px-8 h-14 rounded-none skew-x-[-10deg] hover:skew-x-0 transition-all duration-300 hover:bg-[#FFD700] hover:scale-105">
-                                    <Link href="/signup">
-                                        <span className="skew-x-[10deg] inline-block">Start Trading</span>
+                                    <Link href="/signup?role=dealer">
+                                        <span className="skew-x-[10deg] inline-block">Become a Dealer</span>
                                     </Link>
                                 </Button>
                                 <Button size="lg" variant="outline" asChild className="bg-transparent border border-white/20 text-white font-bold uppercase tracking-widest px-8 h-14 rounded-none skew-x-[-10deg] hover:skew-x-0 hover:bg-white hover:text-black transition-all duration-300">
@@ -175,7 +190,7 @@ export default function HomePage() {
             {/* Protocol/Verification Strip */}
             <section className="bg-[#0A0A0A] border-y border-white/5 overflow-hidden py-6">
                 <div className="flex gap-12 animate-scroll-text whitespace-nowrap min-w-full justify-center">
-                    {[...Array(20)].map((_, i) => (
+                    {[...Array(20)].map((_, i: number) => (
                         <React.Fragment key={i}>
                             <div className="flex items-center gap-4 opacity-50 grayscale hover:grayscale-0 transition-all duration-500 cursor-default">
                                 <ShieldCheck className="h-6 w-6 text-[#FFB800]" />
@@ -211,21 +226,21 @@ export default function HomePage() {
                             { step: "02", title: "Deposit", desc: "Pay into the secure escrow vault. Funds are locked and visible to the dealer, but not accessible.", icon: Lock },
                             { step: "03", title: "Verify", desc: "Inspect the vehicle physically. Verify documents and condition. You have total control.", icon: Search },
                             { step: "04", title: "Release", desc: "Approve the transaction. Funds are instantly released to the dealer. Deal closed.", icon: RefreshCw }
-                        ].map((item, idx) => (
-                            <div key={idx} className="group relative">
-                                <div className="absolute top-0 left-0 w-full h-[1px] bg-white/10 group-hover:bg-[#FFB800] transition-colors duration-500" />
-                                <div className="pt-8">
-                                    <div className="flex justify-between items-start mb-6">
-                                        <span className="text-4xl font-black text-white/10 group-hover:text-[#FFB800]/20 transition-colors">{item.step}</span>
-                                        <div className="h-10 w-10 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-[#FFB800] group-hover:text-black group-hover:border-[#FFB800] transition-all">
-                                            <item.icon className="h-5 w-5" />
-                                        </div>
+                        ].map((item, idx: number) => (
+                            <div key={idx} className="group relative p-6 border border-white/5 rounded-2xl bg-white/5 hover:bg-white/10 transition-all duration-300">
+                                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent group-hover:via-[#FFB800] transition-all duration-500" />
+
+                                <div className="flex justify-between items-start mb-6">
+                                    <span className="text-5xl font-black text-white/20 group-hover:text-[#FFB800] transition-colors duration-300">{item.step}</span>
+                                    <div className="h-12 w-12 rounded-xl bg-black border border-white/10 flex items-center justify-center group-hover:border-[#FFB800] group-hover:shadow-[0_0_15px_rgba(255,184,0,0.3)] transition-all">
+                                        <item.icon className="h-6 w-6 text-zinc-400 group-hover:text-[#FFB800] transition-colors" />
                                     </div>
-                                    <h4 className="text-xl font-bold text-white uppercase mb-3">{item.title}</h4>
-                                    <p className="text-zinc-500 text-sm leading-relaxed group-hover:text-zinc-400 transition-colors">
-                                        {item.desc}
-                                    </p>
                                 </div>
+
+                                <h4 className="text-xl font-black text-white uppercase tracking-wide mb-3">{item.title}</h4>
+                                <p className="text-zinc-400 text-sm font-medium leading-relaxed group-hover:text-zinc-200 transition-colors">
+                                    {item.desc}
+                                </p>
                             </div>
                         ))}
                     </div>
@@ -255,7 +270,7 @@ export default function HomePage() {
                             { title: "2025 BYD HAN EV", price: "207.3M", dealer: "Motowns Abuja", image: "/images/featured/byd_front.png" },
                             { title: "2024 PORSCHE 911 GT3 RS", price: "347.3M", dealer: "Lekki Rides", image: "/images/featured/olive_porsche.png" },
                             { title: "2023 RANGE ROVER AUTOBIOGRAPHY", price: "450.0M", dealer: "Abuja Connect", image: "/images/featured/byd_side.png" },
-                        ].map((item, idx) => (
+                        ].map((item, idx: number) => (
                             <Card key={idx} className="group bg-black/40 border-white/5 hover:border-[#FFB800]/50 overflow-hidden transition-all duration-500 hover:shadow-[0_0_30px_rgba(255,184,0,0.1)] rounded-none">
                                 <div className="aspect-[16/10] relative overflow-hidden bg-zinc-900">
                                     <Image
@@ -289,7 +304,7 @@ export default function HomePage() {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 px-4">
-                    {CATEGORIES.map((cat, idx) => {
+                    {CATEGORIES.map((cat: Category, idx: number) => {
                         const Icon = cat.icon;
                         return (
                             <button
@@ -337,10 +352,14 @@ export default function HomePage() {
 
                         <div className="flex flex-col sm:flex-row gap-6 justify-center">
                             <Button size="lg" className="bg-[#FFB800] text-black font-black uppercase tracking-widest px-12 h-16 rounded-full hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,184,0,0.3)]">
-                                Become a Dealer
+                                <Link href="/signup?role=dealer">
+                                    Become a Dealer
+                                </Link>
                             </Button>
-                            <Button size="lg" variant="ghost" className="text-white border border-white/10 font-bold uppercase tracking-widest px-12 h-16 rounded-full hover:bg-white/10">
-                                Contact Sales
+                            <Button size="lg" variant="ghost" asChild className="text-white border border-white/10 font-bold uppercase tracking-widest px-12 h-16 rounded-full hover:bg-white/10">
+                                <Link href="mailto:emailseconder@gmail.com">
+                                    Contact Sales
+                                </Link>
                             </Button>
                         </div>
                     </div>
@@ -383,7 +402,7 @@ export default function HomePage() {
                                     type="email"
                                     required
                                     value={waitlistEmail}
-                                    onChange={(e) => setWaitlistEmail(e.target.value)}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setWaitlistEmail(e.target.value)}
                                     placeholder="ENTER EMAIL ADDRESS"
                                     className="w-full px-6 py-4 bg-zinc-900 border border-white/10 text-white focus:outline-none focus:border-[#FFB800] focus:ring-1 focus:ring-[#FFB800] font-mono text-sm placeholder:text-zinc-700"
                                 />
