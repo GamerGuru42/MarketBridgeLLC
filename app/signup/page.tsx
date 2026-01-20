@@ -1,48 +1,49 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 const supabase = createClient();
-import { Loader2, Check, ArrowLeft, Mail, Globe, Eye, EyeOff, ShieldCheck, User as UserIcon, Briefcase, Zap, Crown, Lock } from 'lucide-react';
+import { normalizeIdentifier } from '@/lib/auth/utils';
+import { Loader2, Check, ArrowLeft, Mail, Globe, Eye, EyeOff, ShieldCheck, User as UserIcon, Briefcase, Zap, Crown, Lock, Sparkles } from 'lucide-react';
 import { SubscriptionPlan } from '@/types/user';
 import { useAuth } from '@/contexts/AuthContext';
 import { Logo } from '@/components/logo';
 import { useFlutterwave, getFlutterwaveConfig } from '@/lib/flutterwave';
 import { initiateOPayCheckout } from '@/lib/opay';
 import { NIGERIAN_STATES } from '@/lib/constants';
-import { normalizeIdentifier } from '@/lib/auth/utils';
+import { ImageUpload } from '@/components/ImageUpload';
 
 const PRICING_PLANS = [
     {
         id: 'starter' as SubscriptionPlan,
         name: 'Starter',
-        price: 'Freemium',
-        sub: '14-Day Free Trial Period',
-        features: ['Up to 5 active listings', 'basic analytics', '5% transaction fee'],
-        btn: 'Start 14-Day Trial'
+        price: 'Free',
+        sub: '3-Week Free Trial',
+        features: ['Up to 5 active listings', 'basic analytics', '2% transaction fee'],
+        btn: 'Start 3-Week Trial'
     },
     {
         id: 'professional' as SubscriptionPlan,
         name: 'Pro Hustler',
-        price: '₦ 5,000',
+        price: '₦ 3,000',
         period: '/monthly',
         sub: 'Verified Business Growth',
         popular: true,
-        features: ['Up to 50 active listings', 'Verified Seller Badge', 'Priority Support', '2.5% transaction fee'],
-        btn: 'Subscribe Now'
+        features: ['Up to 50 active listings', 'Verified Seller Badge', 'Priority Support', '1.5% transaction fee'],
+        btn: 'Start 3-Week Trial'
     },
     {
         id: 'enterprise' as SubscriptionPlan,
         name: 'Campus Mogul',
-        price: '₦ 20,000',
+        price: '₦ 12,000',
         period: '/monthly',
         sub: 'Maximum Scale & Control',
         features: ['Unlimited listings', 'Dedicated Account Manager', 'API ACCESS', '1% transaction fee'],
-        btn: 'Subscribe Now'
+        btn: 'Start 3-Week Trial'
     }
 ];
 
@@ -80,8 +81,18 @@ function SignupContent() {
         phoneNumber: '',
     });
     const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan>('starter');
-    const [paymentProvider, setPaymentProvider] = useState<'card' | 'transfer' | 'opay'>('card');
+    const [paymentProvider, setPaymentProvider] = useState<'trial' | 'transfer'>('trial');
+    const [paymentProofUrl, setPaymentProofUrl] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [transferReference, setTransferReference] = useState('');
+
+    useEffect(() => {
+        if (paymentProvider === 'transfer' && !transferReference) {
+            setTransferReference(`MB-SUB-${Date.now().toString().slice(-6)}`);
+        }
+    }, [paymentProvider, transferReference]);
+
+
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -111,6 +122,37 @@ function SignupContent() {
         router.push(`/admin/signup?dept=${dept}`);
     };
 
+    const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError('');
+
+        if (formData.password !== formData.confirmPassword) {
+            setError("Passwords mismatch.");
+            setIsLoading(false);
+            return;
+        }
+
+        if (!agreedToTerms) {
+            setError("You must agree to the Terms and Privacy Policy (NDPA Compliant).");
+            setIsLoading(false);
+            return;
+        }
+
+        if (paymentProvider === 'transfer' && !paymentProofUrl) {
+            setError("Please upload the transfer receipt to proceed.");
+            setIsLoading(false);
+            return;
+        }
+
+        // Logic Update: ALL plans (Starter, Pro, Enterprise) now start with a free trial/period.
+        // No immediate payment required. 
+        // "3 Weeks Free" -> User signs up, gets 21 days expiry.
+        await createAccount();
+    };
+
     const createAccount = async (paymentRef?: string) => {
         try {
             const emailToUse = normalizeIdentifier(formData.email);
@@ -131,24 +173,19 @@ function SignupContent() {
             if (signUpError) throw signUpError;
             if (!authData.user) throw new Error("Creation failed.");
 
-            // Determine Subscription Status
-            let subStatus = 'inactive';
-            let subPlan = 'starter';
-            let expiresAt = null;
+            // Determine Subscription Status based on User Choice
+            const subPlan = role === 'dealer' ? selectedPlan : 'starter';
+            let subStatus = 'trial';
+            let daysToAdd = 21; // Default 3 Weeks Trial
 
-            if (role === 'dealer') {
-                subPlan = selectedPlan;
-                if (selectedPlan === 'starter') {
-                    // Starter is the 14-day trial for freemium
-                    subStatus = 'trial';
-                    const date = new Date();
-                    date.setDate(date.getDate() + 14);
-                    expiresAt = date.toISOString();
-                } else {
-                    // Professional and Enterprise are active upon payment
-                    subStatus = paymentRef ? 'active' : 'inactive';
-                }
+            if (role === 'dealer' && paymentProvider === 'transfer') {
+                subStatus = 'active'; // Immediate access for paid users
+                daysToAdd = 34; // 30 Days + 4 Bonus Days
             }
+
+            const date = new Date();
+            date.setDate(date.getDate() + daysToAdd);
+            const expiresAt = date.toISOString();
 
             // 2. Profile Upsert
             const { error: profileError } = await supabase
@@ -165,8 +202,10 @@ function SignupContent() {
                     subscription_plan: subPlan,
                     subscription_status: subStatus,
                     subscription_expires_at: expiresAt,
-                    last_payment_ref: paymentRef || null,
-                    is_verified: false
+                    last_payment_ref: paymentProvider === 'transfer' ? transferReference : null,
+                    is_verified: false,
+                    // @ts-ignore - Allow specialized metadata
+                    payment_metadata: paymentProofUrl ? { proof_url: paymentProofUrl, payment_method: 'transfer', reference: transferReference } : null
                 });
 
             if (profileError) console.error("Profile creation error:", profileError);
@@ -181,44 +220,6 @@ function SignupContent() {
             setError(message);
             setIsLoading(false);
         }
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setError('');
-
-        if (formData.password !== formData.confirmPassword) {
-            setError("Passwords mismatch.");
-            setIsLoading(false);
-            return;
-        }
-
-        // Logic: ONLY 'starter' is free. Professional and Enterprise MUST pay.
-        const isPaidPlan = role === 'dealer' && selectedPlan !== 'starter';
-
-        if (isPaidPlan) {
-            const plan = PRICING_PLANS.find(p => p.id === selectedPlan);
-            const amount = parseInt(plan?.price.replace(/[^0-9]/g, '') || '0');
-            const txRef = `SUB-${Date.now()}`;
-
-            const onSuccess = (response: unknown) => {
-                const res = response as { tx_ref?: string; reference?: string };
-                createAccount(res.tx_ref || res.reference);
-            };
-            const onCancel = () => setIsLoading(false);
-
-            if (paymentProvider === 'opay') {
-                const res = await initiateOPayCheckout({ amount, email: formData.email, reference: txRef, description: `Subscription: ${plan?.name}` });
-                if (!res.success) { setError(res.message || 'OPay initialization failed'); setIsLoading(false); }
-            } else {
-                const config = getFlutterwaveConfig(txRef, amount, formData.email, formData.displayName, formData.phoneNumber || '000', onSuccess, onCancel, paymentProvider === 'card' ? 'card' : 'banktransfer');
-                initFlutterwave(config);
-            }
-            return;
-        }
-
-        await createAccount();
     };
 
     // UI Renders
@@ -262,6 +263,98 @@ function SignupContent() {
             </div>
         );
     }
+
+    // ... existing admin logic (omitted for brevity, assume unchanged if not in range) ...
+
+    if (step === 'plan') {
+        // Updated Pricing Plans Display
+        const UPDATED_PLANS = [
+            {
+                id: 'starter' as SubscriptionPlan,
+                name: 'Starter',
+                price: 'Free',
+                sub: '3-Week Free Trial',
+                features: ['Up to 5 active listings', 'basic analytics', '2% transaction fee'],
+                btn: 'Start 3-Week Trial'
+            },
+            {
+                id: 'professional' as SubscriptionPlan,
+                name: 'Pro Hustler',
+                price: '₦ 3,000', // Reduced from 5000
+                period: '/monthly',
+                sub: 'Verified Business Growth',
+                popular: true,
+                features: ['Up to 50 active listings', 'Verified Seller Badge', 'Priority Support', '1.5% transaction fee'],
+                btn: 'Start 3-Week Trial'
+            },
+            {
+                id: 'enterprise' as SubscriptionPlan,
+                name: 'Campus Mogul',
+                price: '₦ 12,000', // Reduced from 20000
+                period: '/monthly',
+                sub: 'Maximum Scale & Control',
+                features: ['Unlimited listings', 'Dedicated Account Manager', 'API ACCESS', '1% transaction fee'],
+                btn: 'Start 3-Week Trial'
+            }
+        ];
+
+        return (
+            <div className="min-h-screen bg-black py-20 px-4 relative flex flex-col items-center">
+                <div className="absolute bottom-[10%] right-[10%] w-[40%] h-[40%] bg-[#FFB800]/5 blur-[120px] rounded-full" />
+
+                <div className="w-full max-w-6xl relative z-10">
+                    <div className="text-center mb-16">
+                        <Button variant="ghost" onClick={() => setStep('role')} className="text-zinc-500 hover:text-white uppercase font-black text-[10px] tracking-[0.2em] mb-8">
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Reset Status Selection
+                        </Button>
+                        <h2 className="text-5xl font-black text-white uppercase tracking-tighter mb-4 italic">Student Seller Plan</h2>
+                        <p className="text-zinc-500 font-medium italic lowercase">choose your hustle tier - all plans include 3 weeks free</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {UPDATED_PLANS.map(plan => (
+                            <Card
+                                key={plan.id}
+                                className={`glass-card relative border-none rounded-[2.5rem] p-10 text-left overflow-hidden group hover:scale-[1.02] transition-all duration-500 cursor-pointer ${selectedPlan === plan.id ? 'ring-2 ring-[#FFB800]' : ''}`}
+                                onClick={() => { setSelectedPlan(plan.id); setStep('details'); }}
+                            >
+                                <div className="absolute top-[-20%] right-[-20%] w-48 h-48 bg-gold-gradient blur-[60px] opacity-10 group-hover:opacity-20 transition-opacity" />
+
+                                <div className="relative z-10">
+                                    <h3 className="text-2xl font-black text-white uppercase italic">{plan.name}</h3>
+                                    <p className="text-zinc-500 text-xs mb-8 font-medium italic">{plan.sub}</p>
+
+                                    <div className="mb-10">
+                                        <span className="text-3xl font-black text-[#FFB800] italic">{plan.price}</span>
+                                        {plan.period && <span className="text-zinc-600 text-xs font-bold uppercase ml-1">{plan.period}</span>}
+                                    </div>
+
+                                    <ul className="space-y-4 mb-4">
+                                        {plan.features.map(f => (
+                                            <li key={f} className="flex items-center gap-3 text-zinc-400 text-xs font-semibold uppercase tracking-tight">
+                                                <div className="h-5 w-5 glass-card rounded-md flex items-center justify-center text-[#FFB800]">
+                                                    <Check className="h-3 w-3" />
+                                                </div>
+                                                {f}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // ... rest of UI ...
+    // Need to insert the compliance checkbox in the form before submit button
+
+    // THIS REPLACEMENT COVERS THE LOGIC PART, I WILL USE ANOTHER CALL FOR THE CHECKBOX IN UI TO BE PRECISE
+    // Actually, I'll return the original code structure but with the new logic injected.
+
+
 
     if (step === 'admin-code') {
         return (
@@ -487,22 +580,132 @@ function SignupContent() {
                                         />
                                     </div>
                                 </div>
-                                <div className="glass-card p-8 rounded-[2rem] border-white/5 text-center">
-                                    <p className="text-[9px] uppercase font-black text-zinc-600 mb-6 tracking-[0.3em]">Subscription Payment Method</p>
-                                    <div className="flex justify-center gap-4">
-                                        {(['card', 'transfer', 'opay'] as const).map(p => (
-                                            <button key={p} type="button" onClick={() => setPaymentProvider(p)} className={`h-11 px-6 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${paymentProvider === p ? 'bg-gold-gradient text-black shadow-[0_0_20px_rgba(255,184,0,0.3)]' : 'border border-white/10 text-zinc-500 hover:text-white'}`}>
-                                                {p}
-                                            </button>
-                                        ))}
+                                <div className="glass-card p-6 rounded-[2rem] border-white/5 text-center bg-[#FFB800]/5">
+                                    <p className="text-[9px] uppercase font-black text-zinc-400 mb-4 tracking-[0.2em]">Select Entry Mode</p>
+
+                                    <div className="grid grid-cols-2 gap-4 mb-6">
+                                        <button
+                                            type="button"
+                                            onClick={() => setPaymentProvider('trial')}
+                                            className={`h-14 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 ${paymentProvider === 'trial' ? 'bg-white text-black' : 'bg-black/40 text-zinc-500 border border-white/10'}`}
+                                        >
+                                            <span>Start Free Trial</span>
+                                            <span className="text-[8px] opacity-60">21 Days Free</span>
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => setPaymentProvider('transfer')}
+                                            className={`h-14 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 ${paymentProvider === 'transfer' ? 'bg-[#FFB800] text-black shadow-[0_0_20px_rgba(255,184,0,0.3)]' : 'bg-black/40 text-zinc-500 border border-white/10'}`}
+                                        >
+                                            <span>Pay Instantly</span>
+                                            <span className="text-[8px] opacity-60">30 Days + 4 Bonus</span>
+                                        </button>
                                     </div>
+
+                                    {paymentProvider === 'transfer' && (
+                                        <div className="animate-in fade-in slide-in-from-top-2 duration-300 space-y-4">
+                                            <div className="bg-black/60 rounded-2xl p-5 border border-[#FFB800]/30 text-left relative overflow-hidden">
+                                                <div className="absolute top-0 right-0 p-3">
+                                                    <ShieldCheck className="h-4 w-4 text-[#FFB800]/20" />
+                                                </div>
+
+                                                <p className="text-[9px] text-zinc-500 uppercase font-black mb-4 tracking-widest">Subscriber Pipeline Details</p>
+
+                                                <div className="space-y-4">
+                                                    <div className="flex justify-between items-center group">
+                                                        <div>
+                                                            <p className="text-[8px] text-zinc-600 uppercase font-bold">Account Number</p>
+                                                            <p className="text-white font-mono text-lg tracking-[0.2em]">9022858358</p>
+                                                        </div>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            className="h-8 px-3 rounded-lg text-[9px] font-black uppercase tracking-tight bg-white/5 hover:bg-[#FFB800] hover:text-black"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                navigator.clipboard.writeText('9022858358');
+                                                                alert('Account number copied to terminal.');
+                                                            }}
+                                                        >
+                                                            Copy
+                                                        </Button>
+                                                    </div>
+
+                                                    <div>
+                                                        <p className="text-[8px] text-zinc-600 uppercase font-bold">Bank / Institution</p>
+                                                        <p className="text-[#FFB800] text-sm font-black uppercase italic">Kuda Microfinance Bank</p>
+                                                    </div>
+
+                                                    <div>
+                                                        <p className="text-[8px] text-zinc-600 uppercase font-bold">Verified Account Name</p>
+                                                        <p className="text-zinc-300 text-[10px] font-bold uppercase tracking-wide">IGBIEMUGH BENNY IDUOKU-BEN</p>
+                                                    </div>
+
+                                                    <div className="pt-3 border-t border-white/5">
+                                                        <p className="text-[8px] text-zinc-600 uppercase font-bold">Narration Reference (MANDATORY)</p>
+                                                        <p className="text-white font-mono text-sm tracking-wider">{transferReference}</p>
+                                                        <p className="text-[7px] text-zinc-500 mt-1">* Please use this reference as your transfer description.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <label className="text-[9px] uppercase font-black tracking-widest text-[#FFB800] block text-left ml-2">Upload Transfer Receipt (Proof)</label>
+                                                <div className="glass-card rounded-2xl border border-white/10 p-2">
+                                                    {paymentProofUrl ? (
+                                                        <div className="relative group">
+                                                            <img src={paymentProofUrl} alt="Receipt" className="h-32 w-full object-cover rounded-xl border border-white/10" />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setPaymentProofUrl('')}
+                                                                className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-500 text-white p-1.5 rounded-lg transition-colors"
+                                                            >
+                                                                <span className="sr-only">Remove</span>
+                                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <ImageUpload
+                                                            onImagesSelected={(urls: string[]) => {
+                                                                if (urls && urls.length > 0) setPaymentProofUrl(urls[0]);
+                                                            }}
+                                                            maxImages={1}
+                                                            bucketName="listings"
+                                                        />
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <p className="text-[9px] text-zinc-500 italic bg-zinc-900/50 p-3 rounded-xl border border-white/5">
+                                                Secure Protocol: Your enrollment includes <span className="text-white font-bold">4 BONUS DAYS</span>. Total access cycle: 34 days.
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
 
+                        <div className="flex items-start md:items-center gap-3 pt-6 border-t border-white/5">
+                            <input
+                                type="checkbox"
+                                id="terms"
+                                checked={agreedToTerms}
+                                onChange={(e) => setAgreedToTerms(e.target.checked)}
+                                className="mt-1 md:mt-0 h-4 w-4 rounded-md border-white/10 bg-zinc-900 checked:bg-[#FFB800] checked:text-black focus:ring-[#FFB800]/50"
+                            />
+                            <label htmlFor="terms" className="text-xs text-zinc-500 font-medium">
+                                I agree to the <Link href="/legal/terms" className="text-white underline decoration-[#FFB800] decoration-2 underline-offset-4">Terms of Service</Link> & <Link href="/legal/privacy" className="text-white underline decoration-[#FFB800] decoration-2 underline-offset-4">Privacy Policy</Link>, and acknowledge compliance with NDPA 2023 regulations.
+                            </label>
+                        </div>
+
                         <Button type="submit" className="w-full h-16 bg-gold-gradient text-black font-black uppercase tracking-widest rounded-2xl glow-on-hover border-none mt-4" disabled={isLoading}>
                             {isLoading ? <Loader2 className="animate-spin h-6 w-6" /> : (
-                                <span>{role === 'dealer' && selectedPlan !== 'starter' ? 'Initialize Pipe & Join' : 'Establish Identity'}</span>
+                                <span>
+                                    {role === 'dealer'
+                                        ? (paymentProvider === 'transfer' ? 'Confirm Payment & Join' : 'Start 3-Week Free Trial')
+                                        : 'Establish Identity'}
+                                </span>
                             )}
                         </Button>
                     </form>

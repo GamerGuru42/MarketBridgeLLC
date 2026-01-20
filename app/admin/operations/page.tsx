@@ -37,7 +37,8 @@ export default function OperationsAdminPage() {
         activeShipments: 0,
         escrowVolume: 0,
         disputeRate: 0,
-        recentActivity: [] as any[]
+        recentActivity: [] as any[],
+        manualPayments: [] as any[]
     });
 
     React.useEffect(() => {
@@ -48,6 +49,18 @@ export default function OperationsAdminPage() {
                 .select('*', { count: 'exact', head: true })
                 .eq('role', 'dealer')
                 .eq('is_verified', false);
+
+            // Fetch Manual Payments
+            const { data: manualPayers } = await supabase
+                .from('users')
+                .select('*')
+                .not('payment_metadata', 'is', null) // Check if payment_metadata is not null
+                // Note: Supabase JSON filtering on 'is not null' can vary, 
+                // simplifying to fetch recent users and filter JS side for now due to potential JSONB complexity limit on simple client
+                .limit(50);
+
+            const pendingPayments = manualPayers?.filter(u => u.payment_metadata && u.payment_metadata.proof_url) || [];
+
 
             // 2. Active Shipments (Confirmed Orders)
             const { count: shipmentCount } = await supabase
@@ -107,10 +120,10 @@ export default function OperationsAdminPage() {
                 activeShipments: shipmentCount || 0,
                 escrowVolume: volume,
                 disputeRate: parseFloat(realDisputeRate.toFixed(2)),
-                recentActivity: activities
+                recentActivity: activities,
+                manualPayments: pendingPayments
             });
         };
-
         fetchStats();
     }, []);
 
@@ -272,22 +285,47 @@ export default function OperationsAdminPage() {
                                 </Button>
                             </div>
                         </div>
+                    </CardContent>
+                </Card>
 
-                        <div className="space-y-4 pt-4 border-t">
-                            <h4 className="text-xs font-bold uppercase tracking-tight text-muted-foreground">Trust Performance</h4>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="p-3 border rounded-lg">
-                                    <p className="text-[10px] uppercase font-bold text-muted-foreground">Fraud Prevention</p>
-                                    <p className="text-lg font-bold">99.2%</p>
-                                    <Progress value={99.2} className="h-1 mt-2" />
-                                </div>
-                                <div className="p-3 border rounded-lg">
-                                    <p className="text-[10px] uppercase font-bold text-muted-foreground">KYB Approval Rate</p>
-                                    <p className="text-lg font-bold">64%</p>
-                                    <Progress value={64} className="h-1 mt-2" />
-                                </div>
+                {/* Incoming Subscription Payments - Manual Audit */}
+                <Card className="lg:col-span-2">
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle className="text-orange-500">Incoming Payments (Audit)</CardTitle>
+                                <CardDescription>Manual transfer receipts to verify</CardDescription>
                             </div>
+                            <Button variant="ghost" size="sm" asChild>
+                                <Link href="/admin/users">View All</Link>
+                            </Button>
                         </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {(!stats.manualPayments || stats.manualPayments.length === 0) ? (
+                            <div className="text-center py-8 text-muted-foreground text-xs italic">No new payments to audit.</div>
+                        ) : (
+                            stats.manualPayments.map((payment: any) => (
+                                <div key={payment.id} className="p-3 border rounded-lg bg-black/5 flex items-center justify-between group">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-10 w-10 relative overflow-hidden rounded-md border border-white/10">
+                                            {payment.metadata?.proof_url ? (
+                                                <img src={payment.metadata.proof_url} alt="Receipt" className="object-cover w-full h-full" />
+                                            ) : (
+                                                <div className="w-full h-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-xs">?</div>
+                                            )}
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold">{payment.display_name}</p>
+                                            <p className="text-[10px] text-muted-foreground uppercase">{new Date(payment.updated_at).toLocaleDateString()}</p>
+                                        </div>
+                                    </div>
+                                    <Button size="sm" variant="outline" className="h-7 text-[10px] border-orange-500/30 text-orange-600 hover:bg-orange-50" onClick={() => window.open(payment.metadata?.proof_url, '_blank')}>
+                                        VIEW RECEIPT
+                                    </Button>
+                                </div>
+                            ))
+                        )}
                     </CardContent>
                 </Card>
             </div>
@@ -322,6 +360,6 @@ export default function OperationsAdminPage() {
                     </div>
                 </CardContent>
             </Card>
-        </div>
+        </div >
     );
 }
