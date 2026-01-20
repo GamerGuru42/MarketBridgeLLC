@@ -28,10 +28,91 @@ interface ConversationContext {
     recentSearchResults?: SearchResult[]; // To remember what we just showed
 }
 
-// Extended Product Database
+// Extended Product Database - SYNCED WITH LISTING PAGE MOCK DATA
 const MOCK_DB: SearchResult[] = [
     {
         id: 'mock-1',
+        title: '2022 TOYOTA CAMRY XSE',
+        price: 28500000,
+        category: 'Automotive',
+        location: 'Lagos',
+        keywords: ['car', 'toyota', 'camry', 'vehicle', 'auto', 'sedan', '2022'],
+        description: 'Nigerian used, first body, super clean interior, panoramic roof.'
+    },
+    {
+        id: 'mock-2',
+        title: '2019 LEXUS RX 350',
+        price: 35000000,
+        category: 'Automotive',
+        location: 'Abuja',
+        keywords: ['lexus', 'rx350', 'suv', 'abuja', 'luxury', '2019'],
+        description: 'Foreign used, fully loaded, panoramic roof, thumb-start.'
+    },
+    {
+        id: 'mock-3',
+        title: '2021 BMW M4 COMPETITION',
+        price: 65000000,
+        category: 'Automotive',
+        location: 'Port Harcourt',
+        keywords: ['bmw', 'm4', 'competition', 'sports', 'car', 'coupe'],
+        description: 'Turbocharged, carbon fiber interior, low mileage.'
+    },
+    {
+        id: 'mock-4',
+        title: '2023 MERCEDES-BENZ S580',
+        price: 185000000,
+        category: 'Automotive',
+        location: 'Lagos',
+        keywords: ['mercedes', 'benz', 's580', 's-class', 'luxury', 'limo'],
+        description: 'Brand new, luxury redefined, massaging seats.'
+    },
+    {
+        id: 'mock-5',
+        title: '2020 HONDA ACCORD SPORT',
+        price: 18000000,
+        category: 'Automotive',
+        location: 'Enugu',
+        keywords: ['honda', 'accord', 'car', 'sedan', 'sport'],
+        description: 'Clean title, reverse camera, Apple CarPlay, lane watch.'
+    },
+    {
+        id: 'mock-6',
+        title: '2024 PORSCHE 911 GT3 RS',
+        price: 420000000,
+        category: 'Automotive',
+        location: 'Lagos',
+        keywords: ['porsche', '911', 'gt3', 'rs', 'sports', 'supercar'],
+        description: 'Ultimate track machine, carbon ceramic brakes, aero package.'
+    },
+    {
+        id: 'mock-7',
+        title: '2022 RANGE ROVER AUTOBIOGRAPHY',
+        price: 165000000,
+        category: 'Automotive',
+        location: 'Abuja',
+        keywords: ['range', 'rover', 'autobiography', 'land', 'suv', 'luxury'],
+        description: 'Long wheel base, rear entertainment, deployable side steps.'
+    },
+    {
+        id: 'mock-8',
+        title: '2021 TOYOTA HILUX ADVENTURE',
+        price: 45000000,
+        category: 'Automotive',
+        location: 'Kano',
+        keywords: ['toyota', 'hilux', 'truck', 'pickup', '4x4', 'offroad'],
+        description: '4x4, diesel engine, leather seats, reverse camera.'
+    },
+    {
+        id: 'mock-9',
+        title: '2024 TESLA MODEL S PLAID',
+        price: 135000000,
+        category: 'Automotive',
+        location: 'Lagos',
+        keywords: ['tesla', 'electric', 'ev', 'car', 'fast', 'plaid'],
+        description: 'Zero to sixty in 1.9s, tri-motor AWD, autopilot.'
+    },
+    {
+        id: 'mock-10',
         title: 'iPhone 15 Pro Max 256GB',
         price: 1850000,
         category: 'Electronics',
@@ -40,25 +121,7 @@ const MOCK_DB: SearchResult[] = [
         description: 'Brand new, sealed in box. 1 year Apple warranty. Titanium finish.'
     },
     {
-        id: 'mock-2',
-        title: 'Toyota Camry 2021 LE',
-        price: 15000000,
-        category: 'Automotive',
-        location: 'Victoria Island',
-        keywords: ['car', 'toyota', 'camry', 'vehicle', 'auto', 'sedan'],
-        description: 'Foreign used, accident free. Low mileage (12k miles). Clean title.'
-    },
-    {
-        id: 'mock-3',
-        title: '2018 Lexus RX 350 SUV',
-        price: 22000000,
-        category: 'Automotive',
-        location: 'Maitama, Abuja',
-        keywords: ['lexus', 'rx350', 'suv', 'abuja', 'luxury'],
-        description: 'Full option, panoramic roof, leather seats. Dealer maintained.'
-    },
-    {
-        id: 'mock-4',
+        id: 'mock-11',
         title: 'Sony PS5 Disc Edition',
         price: 650000,
         category: 'Electronics',
@@ -67,25 +130,7 @@ const MOCK_DB: SearchResult[] = [
         description: 'Includes 2 controllers and FIFA 24. Gently used.'
     },
     {
-        id: 'mock-5',
-        title: '2020 Honda Accord Sport',
-        price: 18200000,
-        category: 'Automotive',
-        location: 'Wuse II, Abuja',
-        keywords: ['honda', 'accord', 'car', 'sedan', 'abuja'],
-        description: 'Sport trim with 1.5T engine. Alloy wheels, apple carplay.'
-    },
-    {
-        id: 'mock-6',
-        title: 'Luxury Italian Leather Sofa',
-        price: 3500000,
-        category: 'Home',
-        location: 'Ikoyi, Lagos',
-        keywords: ['furniture', 'sofa', 'couch', 'home', 'leather', 'living'],
-        description: 'Imported Italian leather, 7-seater sectional. Cream color.'
-    },
-    {
-        id: 'mock-7',
+        id: 'mock-12',
         title: 'MacBook Pro M3 14"',
         price: 2500000,
         category: 'Electronics',
@@ -94,23 +139,14 @@ const MOCK_DB: SearchResult[] = [
         description: 'Space Black, M3 Pro Chip, 18GB RAM, 512GB SSD.'
     },
     {
-        id: 'mock-8',
-        title: 'Tesla Model S Plaid',
-        price: 45000000,
-        category: 'Automotive',
-        location: 'Eko Atlantic, Lagos',
-        keywords: ['tesla', 'electric', 'ev', 'car', 'fast'],
-        description: 'The quickest production car. Autopilot enabled. Red multi-coat.'
-    },
-    {
-        id: 'mock-9',
-        title: 'Mercedes-Benz G63 AMG',
-        price: 350000000,
-        category: 'Automotive',
-        location: 'Banana Island',
-        keywords: ['g-wagon', 'mercedes', 'benz', 'suv', 'luxury'],
-        description: '2024 Model. Zero mileage. Armored edition available upon request.'
-    },
+        id: 'mock-13',
+        title: 'Luxury Italian Leather Sofa',
+        price: 3500000,
+        category: 'Home',
+        location: 'Ikoyi, Lagos',
+        keywords: ['furniture', 'sofa', 'couch', 'home', 'leather', 'living'],
+        description: 'Imported Italian leather, 7-seater sectional. Cream color.'
+    }
 ];
 
 const GREETINGS = [

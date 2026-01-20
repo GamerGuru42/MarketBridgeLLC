@@ -299,6 +299,90 @@ export default function ListingDetailPage() {
                             phone_number: '08099999999',
                             subscription_plan: 'enterprise'
                         }
+                    },
+                    'mock-10': {
+                        id: 'mock-10',
+                        title: 'iPhone 15 Pro Max 256GB',
+                        description: 'Brand new, sealed in box. 1 year Apple warranty. Titanium finish. The ultimate iPhone experience with A17 Pro chip.',
+                        price: 1850000,
+                        category: 'Electronics',
+                        location: 'Ikeja, Lagos',
+                        dealer_id: 'mock_dealer_tech',
+                        created_at: new Date().toISOString(),
+                        images: ['https://images.unsplash.com/photo-1695048180490-096876fe83c5?auto=format&fit=crop&w=800&q=80'],
+                        is_verified_listing: true,
+                        condition: 'Brand New',
+                        dealer: {
+                            id: 'mock_dealer_tech',
+                            display_name: 'Tech Haven',
+                            is_verified: true,
+                            store_type: 'physical',
+                            phone_number: '08100000001',
+                            subscription_plan: 'professional'
+                        }
+                    },
+                    'mock-11': {
+                        id: 'mock-11',
+                        title: 'Sony PS5 Disc Edition',
+                        description: 'Includes 2 controllers and FIFA 24. Gently used, like new condition. Experience lightning fast loading with high-speed SSD.',
+                        price: 650000,
+                        category: 'Electronics',
+                        location: 'Lekki, Lagos',
+                        dealer_id: 'mock_dealer_tech',
+                        created_at: new Date().toISOString(),
+                        images: ['https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=800&q=80'],
+                        is_verified_listing: true,
+                        condition: 'Foreign Used',
+                        dealer: {
+                            id: 'mock_dealer_tech',
+                            display_name: 'GamerSpot',
+                            is_verified: true,
+                            store_type: 'online',
+                            phone_number: '08100000002',
+                            subscription_plan: 'starter'
+                        }
+                    },
+                    'mock-12': {
+                        id: 'mock-12',
+                        title: 'MacBook Pro M3 14"',
+                        description: 'Space Black, M3 Pro Chip, 18GB RAM, 512GB SSD. Power through your workflow with the most advanced chips built for a personal computer.',
+                        price: 2500000,
+                        category: 'Electronics',
+                        location: 'Yaba, Lagos',
+                        dealer_id: 'mock_dealer_tech',
+                        created_at: new Date().toISOString(),
+                        images: ['https://images.unsplash.com/photo-1517336714731-489689fd1ca4?auto=format&fit=crop&w=800&q=80'],
+                        is_verified_listing: true,
+                        condition: 'Brand New',
+                        dealer: {
+                            id: 'mock_dealer_tech',
+                            display_name: 'MacCenter',
+                            is_verified: true,
+                            store_type: 'physical',
+                            phone_number: '08100000003',
+                            subscription_plan: 'professional'
+                        }
+                    },
+                    'mock-13': {
+                        id: 'mock-13',
+                        title: 'Luxury Italian Leather Sofa',
+                        description: 'Imported Italian leather, 7-seater sectional. Cream color. Transform your living space with this masterpiece of comfort and design.',
+                        price: 3500000,
+                        category: 'Home & Garden',
+                        location: 'Ikoyi, Lagos',
+                        dealer_id: 'mock_dealer_home',
+                        created_at: new Date().toISOString(),
+                        images: ['https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80'],
+                        is_verified_listing: true,
+                        condition: 'Brand New',
+                        dealer: {
+                            id: 'mock_dealer_home',
+                            display_name: 'Luxe Interiors',
+                            is_verified: true,
+                            store_type: 'physical',
+                            phone_number: '08100000004',
+                            subscription_plan: 'enterprise'
+                        }
                     }
                 };
 
