@@ -1,18 +1,24 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
-const FLUTTERWAVE_SECRET_KEY = process.env.FLUTTERWAVE_SECRET_KEY!;
+const FLUTTERWAVE_SECRET_KEY = process.env.FLUTTERWAVE_SECRET_KEY;
 // Note: Validate that this key exists in your .env
-
-// Create a Supabase client with the SERVICE ROLE key to bypass RLS for administrative updates
-// We use this because the user might not have permission to 'approve' their own order status directly
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
 
 export async function POST(request: Request) {
     try {
+        // Create a Supabase client with the SERVICE ROLE key to bypass RLS for administrative updates
+        // We use this because the user might not have permission to 'approve' their own order status directly
+        // Initialized inside handler to prevent build-time errors
+        const supabaseAdmin = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.SUPABASE_SERVICE_ROLE_KEY!
+        );
+
+        if (!FLUTTERWAVE_SECRET_KEY) {
+            console.error("FLUTTERWAVE_SECRET_KEY is missing");
+            return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+        }
+
         const { transaction_id, tx_ref } = await request.json();
 
         if (!transaction_id || !tx_ref) {
