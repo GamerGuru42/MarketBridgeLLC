@@ -1,21 +1,23 @@
 
-// This simple "Brain" simulates a conversational AI without requiring external API keys.
-// It uses pattern matching, context tracking, and randomized responses to feel more "human" and "intelligent".
+// This "Brain" simulates a conversational AI with improved context retention and intent recognition.
 
 type MessageRole = 'user' | 'assistant' | 'system';
 
-interface SearchResult {
+export interface SearchResult {
     id: string;
     title: string;
     price: number;
     category: string;
     location: string;
     image?: string;
+    keywords: string[];
+    description?: string;
 }
 
-interface AiResponse {
+export interface AiResponse {
     content: string;
     searchResults?: SearchResult[];
+    productDetail?: SearchResult; // For showing a specific single item
     action?: 'escalate_tech' | 'escalate_ops' | 'search' | 'none';
 }
 
@@ -23,19 +25,92 @@ interface ConversationContext {
     userName?: string;
     lastTopic?: string;
     awaitingInputFor?: string; // e.g., 'name', 'search_query'
+    recentSearchResults?: SearchResult[]; // To remember what we just showed
 }
 
-// Extended Product Database for "Intelligence"
-const MOCK_DB = [
-    { id: '1', title: 'iPhone 15 Pro Max 256GB', price: 1850000, category: 'Electronics', location: 'Ikeja, Lagos', keywords: ['phone', 'mobile', 'apple', 'iphone', '15', 'pro', 'max', 'smartphone'] },
-    { id: '2', title: 'Toyota Camry 2021 LE', price: 15000000, category: 'Automotive', location: 'Victoria Island', keywords: ['car', 'toyota', 'camry', 'vehicle', 'auto', 'sedan'] },
-    { id: '3', title: '2018 Lexus RX 350 SUV', price: 22000000, category: 'Automotive', location: 'Maitama, Abuja', keywords: ['lexus', 'rx350', 'suv', 'abuja', 'luxury'] },
-    { id: '4', title: 'Sony PS5 Disc Edition', price: 650000, category: 'Electronics', location: 'Lekki, Lagos', keywords: ['gaming', 'playstation', 'ps5', 'console', 'sony'] },
-    { id: '5', title: '2020 Honda Accord Sport', price: 18200000, category: 'Automotive', location: 'Wuse II, Abuja', keywords: ['honda', 'accord', 'car', 'sedan', 'abuja'] },
-    { id: '6', title: 'Luxury Italian Leather Sofa', price: 3500000, category: 'Home', location: 'Ikoyi, Lagos', keywords: ['furniture', 'sofa', 'couch', 'home', 'leather', 'living'] },
-    { id: '7', title: 'MacBook Pro M3 14"', price: 2500000, category: 'Electronics', location: 'Yaba, Lagos', keywords: ['laptop', 'apple', 'macbook', 'computer', 'pc'] },
-    { id: 'mock-1', title: 'Tesla Model S Plaid', price: 45000000, category: 'Automotive', location: 'Eko Atlantic, Lagos', keywords: ['tesla', 'electric', 'ev', 'car', 'fast'] },
-    { id: 'mock-2', title: 'Mercedes-Benz G63 AMG', price: 350000000, category: 'Automotive', location: 'Banana Island', keywords: ['g-wagon', 'mercedes', 'benz', 'suv', 'luxury'] },
+// Extended Product Database
+const MOCK_DB: SearchResult[] = [
+    {
+        id: 'mock-1',
+        title: 'iPhone 15 Pro Max 256GB',
+        price: 1850000,
+        category: 'Electronics',
+        location: 'Ikeja, Lagos',
+        keywords: ['phone', 'mobile', 'apple', 'iphone', '15', 'pro', 'max', 'smartphone'],
+        description: 'Brand new, sealed in box. 1 year Apple warranty. Titanium finish.'
+    },
+    {
+        id: 'mock-2',
+        title: 'Toyota Camry 2021 LE',
+        price: 15000000,
+        category: 'Automotive',
+        location: 'Victoria Island',
+        keywords: ['car', 'toyota', 'camry', 'vehicle', 'auto', 'sedan'],
+        description: 'Foreign used, accident free. Low mileage (12k miles). Clean title.'
+    },
+    {
+        id: 'mock-3',
+        title: '2018 Lexus RX 350 SUV',
+        price: 22000000,
+        category: 'Automotive',
+        location: 'Maitama, Abuja',
+        keywords: ['lexus', 'rx350', 'suv', 'abuja', 'luxury'],
+        description: 'Full option, panoramic roof, leather seats. Dealer maintained.'
+    },
+    {
+        id: 'mock-4',
+        title: 'Sony PS5 Disc Edition',
+        price: 650000,
+        category: 'Electronics',
+        location: 'Lekki, Lagos',
+        keywords: ['gaming', 'playstation', 'ps5', 'console', 'sony'],
+        description: 'Includes 2 controllers and FIFA 24. Gently used.'
+    },
+    {
+        id: 'mock-5',
+        title: '2020 Honda Accord Sport',
+        price: 18200000,
+        category: 'Automotive',
+        location: 'Wuse II, Abuja',
+        keywords: ['honda', 'accord', 'car', 'sedan', 'abuja'],
+        description: 'Sport trim with 1.5T engine. Alloy wheels, apple carplay.'
+    },
+    {
+        id: 'mock-6',
+        title: 'Luxury Italian Leather Sofa',
+        price: 3500000,
+        category: 'Home',
+        location: 'Ikoyi, Lagos',
+        keywords: ['furniture', 'sofa', 'couch', 'home', 'leather', 'living'],
+        description: 'Imported Italian leather, 7-seater sectional. Cream color.'
+    },
+    {
+        id: 'mock-7',
+        title: 'MacBook Pro M3 14"',
+        price: 2500000,
+        category: 'Electronics',
+        location: 'Yaba, Lagos',
+        keywords: ['laptop', 'apple', 'macbook', 'computer', 'pc'],
+        description: 'Space Black, M3 Pro Chip, 18GB RAM, 512GB SSD.'
+    },
+    {
+        id: 'mock-8',
+        title: 'Tesla Model S Plaid',
+        price: 45000000,
+        category: 'Automotive',
+        location: 'Eko Atlantic, Lagos',
+        keywords: ['tesla', 'electric', 'ev', 'car', 'fast'],
+        description: 'The quickest production car. Autopilot enabled. Red multi-coat.'
+    },
+    {
+        id: 'mock-9',
+        title: 'Mercedes-Benz G63 AMG',
+        price: 350000000,
+        category: 'Automotive',
+        location: 'Banana Island',
+        keywords: ['g-wagon', 'mercedes', 'benz', 'suv', 'luxury'],
+        description: '2024 Model. Zero mileage. Armored edition available upon request.'
+    },
 ];
 
 const GREETINGS = [
@@ -47,12 +122,12 @@ const GREETINGS = [
 ];
 
 const SMALL_TALK = {
-    'how are you': [
+    'how_are_you': [
         "I'm functioning at 100% efficiency and feeling great! How are you doing?",
         "I'm doing fantastic, thanks for asking! I love helping users like you. How's your day going?",
         "Never been better! The digital world is quite cozy today. How can I help you?"
     ],
-    'who are you': [
+    'who_are_you': [
         "I'm Sage, the advanced AI assistant for MarketBridge. Think of me as your personal shopping concierge and technical guide.",
         "I am Sage. I exist to make your MarketBridge experience flawless and secure. I can find products, answer questions, and even crack a joke (if you ask nicely!)."
     ],
@@ -72,7 +147,7 @@ class AiBrain {
     private context: ConversationContext = {};
 
     constructor() {
-        // Load context from storage if available (simplified for this demo)
+        // Load context...
     }
 
     public processInput(input: string): AiResponse {
@@ -87,19 +162,23 @@ class AiBrain {
             };
         }
 
-        // 2. Direct Logic: Greetings (Robust)
-        if (this.matchAny(lowerInput, ['hi', 'hello', 'hey', 'good morning', 'good evening', 'greetings', 'yo'])) {
-            // Pick a random greeting
+        // 2. Direct Logic: Greetings (Robust - No 'yo' bug)
+        // Use regex for whole word matching to avoid 'toyota' triggering 'yo'
+        if (this.matchWholeWord(lowerInput, ['hi', 'hello', 'hey', 'greetings', 'yo'])) {
             const response = GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
             return { content: this.context.userName ? `Hi ${this.context.userName}! ${response.substring(6)}` : response };
         }
 
-        // 3. Small Talk (ChatGP-like emulation)
+        if (lowerInput.includes('good morning') || lowerInput.includes('good evening')) {
+            return { content: "Good day to you! How can I assist you with MarketBridge today?" };
+        }
+
+        // 3. Small Talk
         if (this.matchAny(lowerInput, ['how are you', 'how are u', 'how r u', 'how is it going', 'doing'])) {
-            return { content: this.getRandom(SMALL_TALK['how are you']) };
+            return { content: this.getRandom(SMALL_TALK['how_are_you']) };
         }
         if (this.matchAny(lowerInput, ['who are you', 'what is your name', 'what are you'])) {
-            return { content: this.getRandom(SMALL_TALK['who are you']) };
+            return { content: this.getRandom(SMALL_TALK['who_are_you']) };
         }
         if (this.matchAny(lowerInput, ['joke', 'funny', 'laugh'])) {
             return { content: this.getRandom(SMALL_TALK['joke']) };
@@ -110,35 +189,71 @@ class AiBrain {
 
         // 4. Intelligence: Name Persistence
         if (lowerInput.includes('my name is')) {
-            const name = input.split('is')[1]?.trim();
+            const name = input.split(/is/i)[1]?.trim();
             if (name) {
                 this.context.userName = name;
                 return { content: `Lovely to meet you, ${name}! I'll remember that. What can I do for you now?` };
             }
         }
 
-        // 5. Product Search (The Core Utility)
-        const searchKeywords = ['find', 'search', 'buy', 'looking for', 'price', 'cost', 'show me', 'where can i get'];
+        if (lowerInput === 'i am ben' || lowerInput === 'im ben' || lowerInput === "i'm ben") {
+            this.context.userName = 'Ben';
+            return { content: `Lovely to meet you, Ben! I'll remember that. What can I do for you now?` };
+        }
+
+        // 5. Product Context & Selection (The "Click" or "Select" Logic)
+        // If user typed something that matches a recent search result
+        if (this.context.recentSearchResults && this.context.recentSearchResults.length > 0) {
+            const matchedProduct = this.context.recentSearchResults.find(p =>
+                lowerInput.includes(p.title.toLowerCase()) ||
+                lowerInput === p.title.toLowerCase() ||
+                (lowerInput.includes(p.category.toLowerCase()) && lowerInput.includes('details'))
+            );
+
+            if (matchedProduct) {
+                return {
+                    content: `Here are the details for the ${matchedProduct.title}.`,
+                    productDetail: matchedProduct,
+                    action: 'search'
+                };
+            }
+        }
+
+        // Also check global DB for direct detail requests like "show me toyota camry"
+        const specificProduct = MOCK_DB.find(p => lowerInput.includes(p.title.toLowerCase()));
+        if (specificProduct && !lowerInput.includes('find') && !lowerInput.includes('search')) {
+            // If they just type the name, show details
+            this.context.recentSearchResults = [specificProduct]; // Update context
+            return {
+                content: `Found it! Here is the ${specificProduct.title}.`,
+                productDetail: specificProduct,
+                action: 'search'
+            };
+        }
+
+        // 6. Product Search (The Core Utility)
+        const searchKeywords = ['find', 'search', 'buy', 'looking for', 'price', 'cost', 'show me', 'where can i get', 'i want'];
         if (this.matchAny(lowerInput, searchKeywords) || this.looksLikeProductQuery(lowerInput)) {
             const results = this.searchProducts(lowerInput);
             if (results.length > 0) {
+                this.context.recentSearchResults = results; // Save to context
                 return {
                     content: `I've analyzed our marketplace. Here are the top matches for "${this.extractQuery(lowerInput)}":`,
                     searchResults: results,
                     action: 'search'
                 };
             }
-            // Fallback if search yields nothing but intent was clearly search
+            // Fallback
             if (this.matchAny(lowerInput, searchKeywords)) {
                 return { content: "I scanned our entire database but couldn't find an exact match for that right now. Try searching for broad categories like 'cars', 'phones', or 'laptops'." };
             }
         }
 
-        // 6. Support & Technical
+        // 7. Support & Technical
         if (this.matchAny(lowerInput, ['help', 'issue', 'problem', 'broken', 'error', 'bug', 'fail', 'not working'])) {
             return {
                 content: "I'm sorry you're facing an issue. I can connect you directly with our specialized support teams. Is this a **Technical** system error or an **Operations** (order/delivery) issue?",
-                action: 'none' // Logic flow could continue here
+                action: 'none'
             };
         }
         if (lowerInput.includes('technical') || lowerInput.includes('tech')) {
@@ -154,22 +269,22 @@ class AiBrain {
             };
         }
 
-        // 7. General Knowledge (Mocking specific domain knowledge)
+        // 8. General Knowledge
         if (lowerInput.includes('dealer') || lowerInput.includes('sell')) {
-            return { content: "Becoming a dealer is a great choice! You get access to the Dealer Dashboard, where you can manage unlimited listings, upload video walkthroughs (new!), and track sales. Would you like me to take you to the Sign Up page?" };
-        }
-        if (lowerInput.includes('trust') || lowerInput.includes('safe') || lowerInput.includes('scam')) {
-            return { content: "Security is our top priority. We use an escrow system, meaning your money is held safely until you confirm you've received the item. Plus, all our dealers are verified with documentation." };
-        }
-        if (lowerInput.includes('abuja')) {
-            return { content: "Abuja is our key launch territory! We have exclusive verified dealers in Maitama and Wuse II, specifically for high-end automobiles. Check out the 'Dealers' page to see them." };
+            return { content: "Becoming a dealer is a great choice! You get access to the Dealer Dashboard, where you can manage unlimited listings and sales. Would you like me to take you to the Sign Up page?" };
         }
 
-
-        // 8. Fallback (The "I'm listening" response instead of "I don't know")
+        // 9. Fallback 
         return {
             content: "That's interesting! Tell me more about that, or let me know if you'd like me to look up something specific in the marketplace for you."
         };
+    }
+
+    private matchWholeWord(input: string, words: string[]): boolean {
+        return words.some(word => {
+            const regex = new RegExp(`\\b${word}\\b`, 'i');
+            return regex.test(input);
+        });
     }
 
     private matchAny(input: string, phrases: string[]): boolean {
@@ -181,7 +296,7 @@ class AiBrain {
     }
 
     private searchProducts(query: string): SearchResult[] {
-        const terms = query.split(' ').filter(t => t.length > 2); // Filter out 'is', 'a', etc.
+        const terms = query.split(' ').filter(t => t.length > 2);
         return MOCK_DB.filter(p => {
             const searchText = `${p.title} ${p.category} ${p.keywords.join(' ')}`.toLowerCase();
             return terms.some(term => searchText.includes(term));
@@ -189,14 +304,12 @@ class AiBrain {
     }
 
     private looksLikeProductQuery(input: string): boolean {
-        // Heuristic: if input contains brand names or categories known to DB
         const keywords = ['iphone', 'samsung', 'toyota', 'lexus', 'benz', 'honda', 'laptop', 'macbook', 'ps5', 'console', 'car', 'suv'];
         return keywords.some(k => input.includes(k));
     }
 
     private extractQuery(input: string): string {
-        // Strip common prefixes
-        return input.replace(/find|search|show|looking for|buy|get|me/g, '').trim();
+        return input.replace(/find|search|show|looking for|buy|get|me|i want to|i want/g, '').trim();
     }
 }
 
