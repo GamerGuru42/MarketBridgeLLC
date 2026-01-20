@@ -27,17 +27,17 @@ const PRICING_PLANS = [
     },
     {
         id: 'professional' as SubscriptionPlan,
-        name: 'Professional',
+        name: 'Pro Hustler',
         price: '₦ 5,000',
         period: '/monthly',
         sub: 'Verified Business Growth',
         popular: true,
-        features: ['Up to 50 active listings', 'Verified Dealer Badge', 'Priority Support', '2.5% transaction fee'],
+        features: ['Up to 50 active listings', 'Verified Seller Badge', 'Priority Support', '2.5% transaction fee'],
         btn: 'Subscribe Now'
     },
     {
         id: 'enterprise' as SubscriptionPlan,
-        name: 'Enterprise',
+        name: 'Campus Mogul',
         price: '₦ 20,000',
         period: '/monthly',
         sub: 'Maximum Scale & Control',
@@ -241,8 +241,8 @@ function SignupContent() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 max-w-4xl mx-auto">
                         {[
-                            { id: 'customer', title: 'Customer', icon: UserIcon, desc: 'Browse & Buy Assets', color: 'text-blue-400' },
-                            { id: 'dealer', title: 'Dealer', icon: Briefcase, desc: 'Sell High-Value inventory', color: 'text-[#FFB800]' },
+                            { id: 'customer', title: 'Student Buyer', icon: UserIcon, desc: 'Browse & Buy Assets', color: 'text-blue-400' },
+                            { id: 'dealer', title: 'Student Seller', icon: Briefcase, desc: 'Start your Campus Business', color: 'text-[#FFB800]' },
                             { id: 'admin', title: 'Admin', icon: ShieldCheck, desc: 'Operations Gateway', color: 'text-red-400' }
                         ].map(item => (
                             <Card
@@ -342,8 +342,8 @@ function SignupContent() {
                         <Button variant="ghost" onClick={() => setStep('role')} className="text-zinc-500 hover:text-white uppercase font-black text-[10px] tracking-[0.2em] mb-8">
                             <ArrowLeft className="mr-2 h-4 w-4" /> Reset Status Selection
                         </Button>
-                        <h2 className="text-5xl font-black text-white uppercase tracking-tighter mb-4 italic">Dealer Membership</h2>
-                        <p className="text-zinc-500 font-medium italic lowercase">select your operational tier</p>
+                        <h2 className="text-5xl font-black text-white uppercase tracking-tighter mb-4 italic">Student Seller Plan</h2>
+                        <p className="text-zinc-500 font-medium italic lowercase">choose your hustle tier</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -356,7 +356,7 @@ function SignupContent() {
                                 <div className="absolute top-[-20%] right-[-20%] w-48 h-48 bg-gold-gradient blur-[60px] opacity-10 group-hover:opacity-20 transition-opacity" />
 
                                 <div className="relative z-10">
-                                    <h3 className="text-2xl font-black text-white uppercase italic">{plan.name}</h3>
+                                    <h3 className="text-2xl font-black text-white uppercase italic">{plan.name === 'Professional' ? 'Pro Hustler' : plan.name === 'Enterprise' ? 'Campus Mogul' : plan.name}</h3>
                                     <p className="text-zinc-500 text-xs mb-8 font-medium italic">{plan.sub}</p>
 
                                     <div className="mb-10">
@@ -466,16 +466,29 @@ function SignupContent() {
                             <div className="space-y-6 pt-6 border-t border-white/5">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Business Designation</label>
-                                        <input name="businessName" value={formData.businessName} onChange={handleChange} required className="w-full h-14 px-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase" />
+                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Campus Brand Name</label>
+                                        <input
+                                            name="businessName"
+                                            value={formData.businessName}
+                                            onChange={handleChange}
+                                            required
+                                            placeholder="e.g. Campus Kicks"
+                                            className="w-full h-14 px-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase"
+                                        />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">CAC Identifier (Optional)</label>
-                                        <input name="cacNumber" value={formData.cacNumber} onChange={handleChange} className="w-full h-14 px-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase" />
+                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Matric Number / Student ID</label>
+                                        <input
+                                            name="cacNumber"
+                                            value={formData.cacNumber}
+                                            onChange={handleChange}
+                                            placeholder="e.g. 19/04/05/001"
+                                            className="w-full h-14 px-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase"
+                                        />
                                     </div>
                                 </div>
                                 <div className="glass-card p-8 rounded-[2rem] border-white/5 text-center">
-                                    <p className="text-[9px] uppercase font-black text-zinc-600 mb-6 tracking-[0.3em]">Payment Terminal</p>
+                                    <p className="text-[9px] uppercase font-black text-zinc-600 mb-6 tracking-[0.3em]">Subscription Payment Method</p>
                                     <div className="flex justify-center gap-4">
                                         {(['card', 'transfer', 'opay'] as const).map(p => (
                                             <button key={p} type="button" onClick={() => setPaymentProvider(p)} className={`h-11 px-6 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${paymentProvider === p ? 'bg-gold-gradient text-black shadow-[0_0_20px_rgba(255,184,0,0.3)]' : 'border border-white/10 text-zinc-500 hover:text-white'}`}>

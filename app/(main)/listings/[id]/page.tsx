@@ -15,6 +15,17 @@ import { ReviewsSection } from '@/components/ReviewsSection';
 import { useFlutterwave, getFlutterwaveConfig } from '@/lib/flutterwave';
 import { initiateOPayCheckout } from '@/lib/opay';
 import { cn } from '@/lib/utils';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Listing {
     id: string;
@@ -62,6 +73,9 @@ export default function ListingDetailPage() {
     const [actionLoading, setActionLoading] = useState(false);
     const [selectedImage, setSelectedImage] = useState(0);
     const [paymentProvider, setPaymentProvider] = useState<'card' | 'transfer' | 'opay'>('card');
+    const [isReportOpen, setIsReportOpen] = useState(false);
+    const [reportReason, setReportReason] = useState('');
+    const [reportDetails, setReportDetails] = useState('');
 
     useEffect(() => {
         if (params.id) {
@@ -80,308 +94,209 @@ export default function ListingDetailPage() {
                 const mockListings: Record<string, any> = {
                     'mock-1': {
                         id: 'mock-1',
-                        title: '2022 TOYOTA CAMRY XSE',
-                        description: 'Nigerian used, first body, super clean interior, panoramic roof, leather seats, 4-cylinder engine. A perfect blend of reliability and style, this Camry offers a smooth ride with impressive fuel economy.',
-                        price: 28500000,
-                        category: 'Automotive',
-                        location: 'Lagos',
-                        dealer_id: 'mock_dealer_1',
+                        title: 'iPhone 12 Pro (UK Used)',
+                        description: 'Clean UK used iPhone 12 Pro. 128GB, Pacific Blue. Battery health 89%. No FaceID issues. Comes with generic charger.',
+                        price: 320000,
+                        category: 'Gadgets',
+                        location: 'UniAbuja Main Campus',
+                        dealer_id: 'mock_student_1',
                         created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1621007947382-bb3c3968e3bb?auto=format&fit=crop&w=800&q=80'],
+                        images: ['https://images.unsplash.com/photo-1603539268574-e3fb65e4ff8a?auto=format&fit=crop&w=800&q=80'],
                         is_verified_listing: true,
-                        year: 2022,
-                        make: 'Toyota',
-                        model: 'Camry',
-                        condition: 'Nigerian Used',
+                        condition: 'Foreign Used',
+                        make: 'Apple',
+                        model: 'iPhone 12 Pro',
                         dealer: {
-                            id: 'mock_dealer_1',
-                            display_name: 'Elite Motors',
+                            id: 'mock_student_1',
+                            display_name: 'Campus Gadgets',
                             is_verified: true,
-                            store_type: 'physical',
-                            phone_number: '08011111111',
-                            subscription_plan: 'professional'
+                            store_type: 'online',
+                            phone_number: '08122222222',
+                            subscription_plan: 'starter'
                         }
                     },
                     'mock-2': {
                         id: 'mock-2',
-                        title: '2019 LEXUS RX 350',
-                        description: 'Foreign used, fully loaded, panoramic roof, thumb-start, reverse camera, duty fully paid. This luxury SUV combines comfort with performance, maintained in pristine condition.',
-                        price: 35000000,
-                        category: 'Automotive',
-                        location: 'Abuja',
-                        dealer_id: 'mock_dealer_1',
+                        title: 'Bone Straight Wig (24 inches)',
+                        description: 'Super double drawn bone straight wig. 300g fullness. Vietnam original. Can be styled and dyed. Payment on delivery within campus.',
+                        price: 150000,
+                        category: 'Beauty',
+                        location: 'Veritas University',
+                        dealer_id: 'mock_student_2',
                         created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1591533924719-79888126b0a1?auto=format&fit=crop&w=800&q=80'],
+                        images: ['https://images.unsplash.com/photo-1635396603077-4b711739fe88?auto=format&fit=crop&w=800&q=80'],
                         is_verified_listing: true,
-                        year: 2019,
-                        make: 'Lexus',
-                        model: 'RX 350',
-                        condition: 'Tokunbo',
+                        condition: 'Brand New',
+                        make: 'Vietnam Hair',
+                        model: 'Bone Straight',
                         dealer: {
-                            id: 'mock_dealer_1',
-                            display_name: 'Premium Autos Ltd',
+                            id: 'mock_student_2',
+                            display_name: 'Slay with Precious',
                             is_verified: true,
                             store_type: 'physical',
-                            phone_number: '08022222222',
-                            subscription_plan: 'enterprise'
+                            phone_number: '08133333333',
+                            subscription_plan: 'professional'
                         }
                     },
                     'mock-3': {
                         id: 'mock-3',
-                        title: '2021 BMW M4 COMPETITION',
-                        description: 'Turbocharged, carbon fiber interior, low mileage, competition package, full service history. This vehicle represents the pinnacle of German engineering with its aggressive styling and track-ready performance.',
-                        price: 65000000,
-                        category: 'Automotive',
-                        location: 'Port Harcourt',
-                        dealer_id: 'mock_dealer_1',
+                        title: 'Math 101 Textbook + Past Questions',
+                        description: 'Essential calculus textbook for freshers. Includes solved past questions from 2015-2023. Clean pages, no torn parts.',
+                        price: 5000,
+                        category: 'Education',
+                        location: 'UniAbuja Mini Campus',
+                        dealer_id: 'mock_student_3',
                         created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1617531653332-bd46c24f2068?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1555215696-99ac972988c4?auto=format&fit=crop&w=800&q=80'],
-                        is_verified_listing: true,
-                        year: 2021,
-                        make: 'BMW',
-                        model: 'M4',
-                        condition: 'Tokunbo',
-                        mileage: 12500,
-                        fuel_type: 'Petrol',
-                        transmission: 'Automatic',
-                        body_type: 'Coupe',
-                        engine_size: '3.0L Twin-Turbo',
-                        vin: 'WBS234...',
+                        images: ['https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80'],
+                        is_verified_listing: false,
+                        condition: 'Used',
+                        make: 'Educational',
+                        model: 'Textbook',
                         dealer: {
-                            id: 'mock_dealer_1',
-                            display_name: 'Speed Nation',
-                            is_verified: true,
+                            id: 'mock_student_3',
+                            display_name: 'Bookworm Hub',
+                            is_verified: false,
                             store_type: 'physical',
-                            phone_number: '08012345678',
-                            subscription_plan: 'professional'
+                            phone_number: '08144444444',
+                            subscription_plan: 'starter'
                         }
                     },
                     'mock-4': {
                         id: 'mock-4',
-                        title: '2023 MERCEDES-BENZ S580',
-                        description: 'Brand new, luxury redefined, massaging seats, 4matic, executive rear seat package. Experience the ultimate in automotive luxury and technology.',
-                        price: 185000000,
-                        category: 'Automotive',
-                        location: 'Lagos',
-                        dealer_id: 'mock_dealer_1',
+                        title: 'Nike Air Force 1 (White)',
+                        description: 'Classic white Air Force 1s. Size 42-45 available. Durable and clean. Good for everyday lecture wear.',
+                        price: 25000,
+                        category: 'Fashion',
+                        location: 'Baze University',
+                        dealer_id: 'mock_student_4',
                         created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=800&q=80'],
+                        images: ['https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=800&q=80'],
                         is_verified_listing: true,
-                        year: 2023,
-                        make: 'Mercedes-Benz',
-                        model: 'S580',
                         condition: 'Brand New',
+                        make: 'Nike',
+                        model: 'Air Force 1',
                         dealer: {
-                            id: 'mock_dealer_1',
-                            display_name: 'Luxe Terminal',
+                            id: 'mock_student_4',
+                            display_name: 'Kicks by Jide',
                             is_verified: true,
                             store_type: 'online',
-                            phone_number: '08044444444',
-                            subscription_plan: 'enterprise'
+                            phone_number: '08155555555',
+                            subscription_plan: 'professional'
                         }
                     },
                     'mock-5': {
                         id: 'mock-5',
-                        title: '2020 HONDA ACCORD SPORT',
-                        description: 'Clean title, reverse camera, Apple CarPlay, lane watch, alloy wheels. A sporty yet practical choice for the daily commuter.',
-                        price: 18000000,
-                        category: 'Automotive',
-                        location: 'Enugu',
-                        dealer_id: 'mock_dealer_1',
+                        title: 'Student Indomie Combo Pack',
+                        description: 'Carton of Indomie Super Pack (40 pieces). Best price on campus. Free delivery to hostels for orders above 2 cartons.',
+                        price: 8500,
+                        category: 'Food',
+                        location: 'Nile University',
+                        dealer_id: 'mock_student_5',
                         created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=800&q=80'],
+                        images: ['https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?auto=format&fit=crop&w=800&q=80'],
                         is_verified_listing: true,
-                        year: 2020,
-                        make: 'Honda',
-                        model: 'Accord',
-                        condition: 'Nigerian Used',
+                        condition: 'Brand New',
+                        make: 'Indomie',
+                        model: 'Super Pack',
                         dealer: {
-                            id: 'mock_dealer_1',
-                            display_name: 'Smart Wheels',
+                            id: 'mock_student_5',
+                            display_name: 'Nile Foodies',
                             is_verified: true,
                             store_type: 'physical',
-                            phone_number: '08055555555',
+                            phone_number: '08166666666',
                             subscription_plan: 'starter'
                         }
                     },
                     'mock-6': {
                         id: 'mock-6',
-                        title: '2024 PORSCHE 911 GT3 RS',
-                        description: 'Ultimate track machine, carbon ceramic brakes, aero package, magnesium wheels. For the serious driving enthusiast who demands precision and power.',
-                        price: 420000000,
-                        category: 'Automotive',
-                        location: 'Lagos',
-                        dealer_id: 'mock_dealer_1',
+                        title: 'HP EliteBook 840 G5',
+                        description: 'Core i5, 8th Gen, 16GB RAM, 512GB SSD. Perfect for assignments and coding. Backlit keyboard and fingerprint sensor.',
+                        price: 280000,
+                        category: 'Laptops',
+                        location: 'UniAbuja Main Campus',
+                        dealer_id: 'mock_student_1',
                         created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=800&q=80'],
+                        images: ['https://images.unsplash.com/photo-1544731612-de7f96afe55f?auto=format&fit=crop&w=800&q=80'],
                         is_verified_listing: true,
-                        year: 2024,
-                        make: 'Porsche',
-                        model: '911 GT3 RS',
-                        condition: 'Brand New',
+                        condition: 'Foreign Used',
+                        make: 'HP',
+                        model: 'EliteBook 840 G5',
                         dealer: {
-                            id: 'mock_dealer_1',
-                            display_name: 'Crown Jewels Autos',
+                            id: 'mock_student_1',
+                            display_name: 'Campus Gadgets',
                             is_verified: true,
-                            store_type: 'physical',
-                            phone_number: '08066666666',
-                            subscription_plan: 'enterprise'
+                            store_type: 'online',
+                            phone_number: '08122222222',
+                            subscription_plan: 'starter'
                         }
                     },
                     'mock-7': {
                         id: 'mock-7',
-                        title: '2022 RANGE ROVER AUTOBIOGRAPHY',
-                        description: 'Long wheel base, rear entertainment, deployable side steps, executive seating. The definitive luxury SUV.',
-                        price: 165000000,
-                        category: 'Automotive',
-                        location: 'Abuja',
-                        dealer_id: 'mock_dealer_1',
+                        title: 'Professional Makeup Session',
+                        description: 'Full face glam for matriculation, birthdays, and events. Home service available in hostels. Lashes included.',
+                        price: 15000,
+                        category: 'Services',
+                        location: 'Veritas University',
+                        dealer_id: 'mock_student_2',
                         created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&w=800&q=80'],
+                        images: ['https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=800&q=80'],
                         is_verified_listing: true,
-                        year: 2022,
-                        make: 'Land Rover',
-                        model: 'Range Rover',
-                        condition: 'Tokunbo',
+                        condition: 'New',
+                        make: 'Service',
+                        model: 'Glam',
                         dealer: {
-                            id: 'mock_dealer_1',
-                            display_name: 'Royal Rides',
+                            id: 'mock_student_2',
+                            display_name: 'Slay with Precious',
                             is_verified: true,
                             store_type: 'physical',
-                            phone_number: '08077777777',
+                            phone_number: '08133333333',
                             subscription_plan: 'professional'
                         }
                     },
                     'mock-8': {
                         id: 'mock-8',
-                        title: '2021 TOYOTA HILUX ADVENTURE',
-                        description: '4x4, diesel engine, leather seats, reverse camera, off-road package. Built tough for any terrain.',
-                        price: 45000000,
-                        category: 'Automotive',
-                        location: 'Kano',
-                        dealer_id: 'mock_dealer_1',
+                        title: 'Oraimo FreePods 4',
+                        description: 'Brand new Oraimo FreePods 4. Active Noise Cancellation. Long battery life. 1 year warranty from purchase.',
+                        price: 28000,
+                        category: 'Gadgets',
+                        location: 'Gwagwalada',
+                        dealer_id: 'mock_student_1',
                         created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=800&q=80'],
+                        images: ['https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=800&q=80'],
                         is_verified_listing: true,
-                        year: 2021,
-                        make: 'Toyota',
-                        model: 'Hilux',
-                        condition: 'Nigerian Used',
+                        condition: 'Brand New',
+                        make: 'Oraimo',
+                        model: 'FreePods 4',
                         dealer: {
-                            id: 'mock_dealer_1',
-                            display_name: 'Kano Motors',
+                            id: 'mock_student_1',
+                            display_name: 'Campus Gadgets',
                             is_verified: true,
-                            store_type: 'physical',
-                            phone_number: '08088888888',
+                            store_type: 'online',
+                            phone_number: '08122222222',
                             subscription_plan: 'starter'
                         }
                     },
                     'mock-9': {
                         id: 'mock-9',
-                        title: '2024 TESLA MODEL S PLAID',
-                        description: 'Zero to sixty in 1.9s, tri-motor AWD, autopilot, premium white interior. The future of electric performance is here.',
-                        price: 135000000,
-                        category: 'Automotive',
-                        location: 'Lagos',
-                        dealer_id: 'mock_dealer_1',
+                        title: 'Vintage Oversized Tees',
+                        description: 'High quality cotton vintage tees. Various designs available. Unisex. Size M, L, XL, XXL.',
+                        price: 8000,
+                        category: 'Fashion',
+                        location: 'UniAbuja Main Campus',
+                        dealer_id: 'mock_student_4',
                         created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=800&q=80'],
+                        images: ['https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?auto=format&fit=crop&w=800&q=80'],
                         is_verified_listing: true,
-                        year: 2024,
-                        make: 'Tesla',
-                        model: 'Model S',
                         condition: 'Brand New',
+                        make: 'Vintage',
+                        model: 'Oversized',
                         dealer: {
-                            id: 'mock_dealer_1',
-                            display_name: 'Future Drive',
+                            id: 'mock_student_4',
+                            display_name: 'Kicks by Jide',
                             is_verified: true,
                             store_type: 'online',
-                            phone_number: '08099999999',
-                            subscription_plan: 'enterprise'
-                        }
-                    },
-                    'mock-10': {
-                        id: 'mock-10',
-                        title: 'iPhone 15 Pro Max 256GB',
-                        description: 'Brand new, sealed in box. 1 year Apple warranty. Titanium finish. The ultimate iPhone experience with A17 Pro chip.',
-                        price: 1850000,
-                        category: 'Electronics',
-                        location: 'Ikeja, Lagos',
-                        dealer_id: 'mock_dealer_tech',
-                        created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1695048180490-096876fe83c5?auto=format&fit=crop&w=800&q=80'],
-                        is_verified_listing: true,
-                        condition: 'Brand New',
-                        dealer: {
-                            id: 'mock_dealer_tech',
-                            display_name: 'Tech Haven',
-                            is_verified: true,
-                            store_type: 'physical',
-                            phone_number: '08100000001',
+                            phone_number: '08155555555',
                             subscription_plan: 'professional'
-                        }
-                    },
-                    'mock-11': {
-                        id: 'mock-11',
-                        title: 'Sony PS5 Disc Edition',
-                        description: 'Includes 2 controllers and FIFA 24. Gently used, like new condition. Experience lightning fast loading with high-speed SSD.',
-                        price: 650000,
-                        category: 'Electronics',
-                        location: 'Lekki, Lagos',
-                        dealer_id: 'mock_dealer_tech',
-                        created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=800&q=80'],
-                        is_verified_listing: true,
-                        condition: 'Foreign Used',
-                        dealer: {
-                            id: 'mock_dealer_tech',
-                            display_name: 'GamerSpot',
-                            is_verified: true,
-                            store_type: 'online',
-                            phone_number: '08100000002',
-                            subscription_plan: 'starter'
-                        }
-                    },
-                    'mock-12': {
-                        id: 'mock-12',
-                        title: 'MacBook Pro M3 14"',
-                        description: 'Space Black, M3 Pro Chip, 18GB RAM, 512GB SSD. Power through your workflow with the most advanced chips built for a personal computer.',
-                        price: 2500000,
-                        category: 'Electronics',
-                        location: 'Yaba, Lagos',
-                        dealer_id: 'mock_dealer_tech',
-                        created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1517336714731-489689fd1ca4?auto=format&fit=crop&w=800&q=80'],
-                        is_verified_listing: true,
-                        condition: 'Brand New',
-                        dealer: {
-                            id: 'mock_dealer_tech',
-                            display_name: 'MacCenter',
-                            is_verified: true,
-                            store_type: 'physical',
-                            phone_number: '08100000003',
-                            subscription_plan: 'professional'
-                        }
-                    },
-                    'mock-13': {
-                        id: 'mock-13',
-                        title: 'Luxury Italian Leather Sofa',
-                        description: 'Imported Italian leather, 7-seater sectional. Cream color. Transform your living space with this masterpiece of comfort and design.',
-                        price: 3500000,
-                        category: 'Home & Garden',
-                        location: 'Ikoyi, Lagos',
-                        dealer_id: 'mock_dealer_home',
-                        created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80'],
-                        is_verified_listing: true,
-                        condition: 'Brand New',
-                        dealer: {
-                            id: 'mock_dealer_home',
-                            display_name: 'Luxe Interiors',
-                            is_verified: true,
-                            store_type: 'physical',
-                            phone_number: '08100000004',
-                            subscription_plan: 'enterprise'
                         }
                     }
                 };
@@ -537,29 +452,36 @@ export default function ListingDetailPage() {
 
         const txRef = `TX-${Date.now()}-${user.id.slice(0, 5)}`;
 
-        const onSuccess = async (response: unknown) => {
+        const onSuccess = async (response: any) => {
             if (isMock) {
                 alert('Mock Payment Successful! (No funds deducted)');
-                router.push('/listings'); // Redirect back to listings or orders
+                router.push('/listings');
                 return;
             }
 
             try {
-                const { error } = await supabase
-                    .from('orders')
-                    .update({
-                        status: 'paid',
-                        updated_at: new Date().toISOString(),
+                // Secure Verification: Call our API route
+                // verify-transaction route handles the Flutterwave check AND the database update
+                const verifyRes = await fetch('/api/verify-transaction', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        transaction_id: response.transaction_id,
+                        tx_ref: txRef
                     })
-                    .eq('transaction_ref', txRef);
+                });
 
-                if (error) throw error;
+                const verifyData = await verifyRes.json();
 
-                alert('Secure payment successful! Order placed.');
+                if (!verifyRes.ok) {
+                    throw new Error(verifyData.error || 'Payment verification failed');
+                }
+
+                alert('Secure payment successful! Order confirmed.');
                 router.push('/orders');
             } catch (err: unknown) {
-                console.error('Error updating order:', err);
-                const message = err instanceof Error ? err.message : 'Payment successful but failed to update order.';
+                console.error('Error verifying order:', err);
+                const message = err instanceof Error ? err.message : 'Payment successful but verification failed. Support has been notified.';
                 alert(message);
             } finally {
                 setActionLoading(false);
@@ -793,6 +715,15 @@ export default function ListingDetailPage() {
                                                 <Phone className="mr-2 h-3 w-3" /> Direct Uplink
                                             </Button>
                                         </div>
+
+                                        <div className="pt-4 text-center">
+                                            <button
+                                                onClick={() => setIsReportOpen(true)}
+                                                className="text-[9px] uppercase font-bold tracking-widest text-red-500/50 hover:text-red-500 transition-colors flex items-center justify-center w-full gap-2"
+                                            >
+                                                <AlertTriangle className="h-3 w-3" /> Report Suspicious Activity
+                                            </button>
+                                        </div>
                                     </div>
                                 ) : (
                                     <div className="bg-zinc-900/50 rounded-2xl p-4 border border-white/5 text-center">
@@ -805,12 +736,12 @@ export default function ListingDetailPage() {
                         {/* Specs Grid */}
                         <div className="grid grid-cols-2 gap-4">
                             {[
-                                { label: 'Location Node', value: listing.location, icon: MapPin },
-                                { label: 'Asset Make', value: listing.make, icon: Box },
-                                { label: 'Asset Model', value: listing.model, icon: Box },
+                                { label: 'Campus Node', value: listing.location, icon: MapPin },
+                                { label: 'Item Brand', value: listing.make, icon: Box },
+                                { label: 'Type / Model', value: listing.model, icon: Box },
                                 { label: 'Condition', value: listing.condition, icon: Activity },
-                                { label: 'Year', value: listing.year, icon: Activity },
-                                { label: 'Mileage', value: listing.mileage ? `${listing.mileage} KM` : 'N/A', icon: Activity },
+                                { label: 'Category', value: listing.category, icon: Activity },
+                                { label: 'Notes', value: listing.mileage ? `${listing.mileage} KM` : 'Verified Student Listing', icon: Activity },
                             ].map((spec, i) => (
                                 <div key={i} className="glass-card p-5 rounded-2xl border-white/5">
                                     <div className="flex items-center gap-2 mb-2 text-zinc-500">
@@ -835,6 +766,61 @@ export default function ListingDetailPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Report Dialog */}
+            <Dialog open={isReportOpen} onOpenChange={setIsReportOpen}>
+                <DialogContent className="bg-zinc-950 border-white/10 text-white sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="text-[#FFB800] uppercase font-black tracking-widest flex items-center gap-2">
+                            <AlertTriangle className="h-5 w-5" /> Report Issue
+                        </DialogTitle>
+                        <DialogDescription className="text-zinc-400 text-xs">
+                            Help us keep MarketBridge safe. Reports are anonymous and reviewed by Campus Admins.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label className="text-xs uppercase font-bold text-zinc-500">Reason</Label>
+                            <Select onValueChange={setReportReason}>
+                                <SelectTrigger className="bg-black/50 border-white/10 text-xs">
+                                    <SelectValue placeholder="Select a reason" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-zinc-900 border-white/10 text-white">
+                                    <SelectItem value="fraud">Fraud / Scam</SelectItem>
+                                    <SelectItem value="fake_item">Fake / Counterfeit Item</SelectItem>
+                                    <SelectItem value="harassment">Harassment / Abusive Dealer</SelectItem>
+                                    <SelectItem value="wrong_category">Wrong Category</SelectItem>
+                                    <SelectItem value="other">Other</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-xs uppercase font-bold text-zinc-500">Details</Label>
+                            <Textarea
+                                value={reportDetails}
+                                onChange={(e) => setReportDetails(e.target.value)}
+                                placeholder="Describe the issue..."
+                                className="bg-black/50 border-white/10 text-xs min-h-[100px]"
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="ghost" onClick={() => setIsReportOpen(false)} className="text-zinc-400 hover:text-white">Cancel</Button>
+                        <Button
+                            onClick={() => {
+                                const subject = `REPORT: ${listing.id} - ${reportReason.toUpperCase()}`;
+                                const body = `Reporting Listing: ${listing.title} (ID: ${listing.id})\nDealer: ${listing.dealer.display_name}\nReason: ${reportReason}\nDetails: ${reportDetails}\n\nSubmitted by User: ${user?.email || 'Anonymous'}`;
+                                window.location.href = `mailto:safety@marketbridge.ng?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                                setIsReportOpen(false);
+                                alert("Report Client Initialized. Please send the generated email.");
+                            }}
+                            className="bg-red-600 text-white hover:bg-red-700 font-bold uppercase tracking-widest text-xs"
+                        >
+                            Submit Report
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

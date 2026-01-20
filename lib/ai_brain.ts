@@ -32,150 +32,114 @@ interface ConversationContext {
 const MOCK_DB: SearchResult[] = [
     {
         id: 'mock-1',
-        title: '2022 TOYOTA CAMRY XSE',
-        price: 28500000,
-        category: 'Automotive',
-        location: 'Lagos',
-        keywords: ['car', 'toyota', 'camry', 'vehicle', 'auto', 'sedan', '2022'],
-        description: 'Nigerian used, first body, super clean interior, panoramic roof.'
+        title: 'iPhone 12 Pro (UK Used)',
+        price: 320000,
+        category: 'Gadgets',
+        location: 'UniAbuja Main Campus',
+        keywords: ['phone', 'apple', 'iphone', '12', 'pro', 'mobile', 'uk used'],
+        description: 'Clean UK used iPhone 12 Pro. 128GB, Pacific Blue. Battery health 89%.'
     },
     {
         id: 'mock-2',
-        title: '2019 LEXUS RX 350',
-        price: 35000000,
-        category: 'Automotive',
-        location: 'Abuja',
-        keywords: ['lexus', 'rx350', 'suv', 'abuja', 'luxury', '2019'],
-        description: 'Foreign used, fully loaded, panoramic roof, thumb-start.'
+        title: 'Bone Straight Wig (24 inches)',
+        price: 150000,
+        category: 'Beauty',
+        location: 'Veritas University',
+        keywords: ['wig', 'hair', 'bone', 'straight', 'human', 'hair', 'beauty'],
+        description: 'Super double drawn bone straight wig. 300g fullness. Vietnam original.'
     },
     {
         id: 'mock-3',
-        title: '2021 BMW M4 COMPETITION',
-        price: 65000000,
-        category: 'Automotive',
-        location: 'Port Harcourt',
-        keywords: ['bmw', 'm4', 'competition', 'sports', 'car', 'coupe'],
-        description: 'Turbocharged, carbon fiber interior, low mileage.'
+        title: 'Math 101 Textbook + Past Questions',
+        price: 5000,
+        category: 'Education',
+        location: 'UniAbuja Mini Campus',
+        keywords: ['book', 'textbook', 'math', '101', 'pq', 'past questions', 'handout'],
+        description: 'Essential calculus textbook for freshers. Includes solved past questions from 2015-2023.'
     },
     {
         id: 'mock-4',
-        title: '2023 MERCEDES-BENZ S580',
-        price: 185000000,
-        category: 'Automotive',
-        location: 'Lagos',
-        keywords: ['mercedes', 'benz', 's580', 's-class', 'luxury', 'limo'],
-        description: 'Brand new, luxury redefined, massaging seats.'
+        title: 'Nike Air Force 1 (White)',
+        price: 25000,
+        category: 'Fashion',
+        location: 'Baze University',
+        keywords: ['shoe', 'sneakers', 'nike', 'air', 'force', 'white', 'kicks'],
+        description: 'Classic white Air Force 1s. Size 42-45 available. Durable and clean.'
     },
     {
         id: 'mock-5',
-        title: '2020 HONDA ACCORD SPORT',
-        price: 18000000,
-        category: 'Automotive',
-        location: 'Enugu',
-        keywords: ['honda', 'accord', 'car', 'sedan', 'sport'],
-        description: 'Clean title, reverse camera, Apple CarPlay, lane watch.'
+        title: 'Student Indomie Combo Pack',
+        price: 8500,
+        category: 'Food',
+        location: 'Nile University',
+        keywords: ['food', 'indomie', 'carton', 'noodles', 'hungry', 'super pack'],
+        description: 'Carton of Indomie Super Pack (40 pieces). Best price on campus. Free delivery to hostels.'
     },
     {
         id: 'mock-6',
-        title: '2024 PORSCHE 911 GT3 RS',
-        price: 420000000,
-        category: 'Automotive',
-        location: 'Lagos',
-        keywords: ['porsche', '911', 'gt3', 'rs', 'sports', 'supercar'],
-        description: 'Ultimate track machine, carbon ceramic brakes, aero package.'
+        title: 'HP EliteBook 840 G5',
+        price: 280000,
+        category: 'Laptops',
+        location: 'UniAbuja Main Campus',
+        keywords: ['laptop', 'hp', 'elitebook', 'computer', 'pc', 'assignment'],
+        description: 'Core i5, 8th Gen, 16GB RAM, 512GB SSD. Perfect for assignments and coding.'
     },
     {
         id: 'mock-7',
-        title: '2022 RANGE ROVER AUTOBIOGRAPHY',
-        price: 165000000,
-        category: 'Automotive',
-        location: 'Abuja',
-        keywords: ['range', 'rover', 'autobiography', 'land', 'suv', 'luxury'],
-        description: 'Long wheel base, rear entertainment, deployable side steps.'
+        title: 'Professional Makeup Session',
+        price: 15000,
+        category: 'Services',
+        location: 'Veritas University',
+        keywords: ['makeup', 'beauty', 'face', 'beat', 'service', 'glam'],
+        description: 'Full face glam for matriculation, birthdays, and events. Home service available in hostels.'
     },
     {
         id: 'mock-8',
-        title: '2021 TOYOTA HILUX ADVENTURE',
-        price: 45000000,
-        category: 'Automotive',
-        location: 'Kano',
-        keywords: ['toyota', 'hilux', 'truck', 'pickup', '4x4', 'offroad'],
-        description: '4x4, diesel engine, leather seats, reverse camera.'
+        title: 'Oraimo FreePods 4',
+        price: 28000,
+        category: 'Gadgets',
+        location: 'Gwagwalada',
+        keywords: ['earbuds', 'oriamo', 'freepods', 'music', 'bluetooth', 'audio'],
+        description: 'Brand new Oraimo FreePods 4. Active Noise Cancellation. Long battery life.'
     },
     {
         id: 'mock-9',
-        title: '2024 TESLA MODEL S PLAID',
-        price: 135000000,
-        category: 'Automotive',
-        location: 'Lagos',
-        keywords: ['tesla', 'electric', 'ev', 'car', 'fast', 'plaid'],
-        description: 'Zero to sixty in 1.9s, tri-motor AWD, autopilot.'
-    },
-    {
-        id: 'mock-10',
-        title: 'iPhone 15 Pro Max 256GB',
-        price: 1850000,
-        category: 'Electronics',
-        location: 'Ikeja, Lagos',
-        keywords: ['phone', 'mobile', 'apple', 'iphone', '15', 'pro', 'max', 'smartphone'],
-        description: 'Brand new, sealed in box. 1 year Apple warranty. Titanium finish.'
-    },
-    {
-        id: 'mock-11',
-        title: 'Sony PS5 Disc Edition',
-        price: 650000,
-        category: 'Electronics',
-        location: 'Lekki, Lagos',
-        keywords: ['gaming', 'playstation', 'ps5', 'console', 'sony'],
-        description: 'Includes 2 controllers and FIFA 24. Gently used.'
-    },
-    {
-        id: 'mock-12',
-        title: 'MacBook Pro M3 14"',
-        price: 2500000,
-        category: 'Electronics',
-        location: 'Yaba, Lagos',
-        keywords: ['laptop', 'apple', 'macbook', 'computer', 'pc'],
-        description: 'Space Black, M3 Pro Chip, 18GB RAM, 512GB SSD.'
-    },
-    {
-        id: 'mock-13',
-        title: 'Luxury Italian Leather Sofa',
-        price: 3500000,
-        category: 'Home',
-        location: 'Ikoyi, Lagos',
-        keywords: ['furniture', 'sofa', 'couch', 'home', 'leather', 'living'],
-        description: 'Imported Italian leather, 7-seater sectional. Cream color.'
+        title: 'Vintage Oversized Tees',
+        price: 8000,
+        category: 'Fashion',
+        location: 'UniAbuja Main Campus',
+        keywords: ['shirt', 't-shirt', 'vintage', 'oversized', 'fashion', 'clothes'],
+        description: 'High quality cotton vintage tees. Various designs available. Unisex.'
     }
 ];
 
 const GREETINGS = [
-    "Hello there! I'm Sage. How can I brighten your day?",
-    "Hi! Great to see you. I'm ready to help you navigate MarketBridge.",
-    "Greetings! I'm at your service. Looking for anything special today?",
-    "Hello! I hope you're having a wonderful day. What's on your mind?",
-    "Hey! Sage here. Ready to help you buy or sell with confidence."
+    "Hey there! I'm Sage. Looking for campus deals today?",
+    "Hi! Sage here. Need a new phone, wig, or just some noodles?",
+    "Greetings! I'm your campus shopping assistant. What's on your list?",
+    "Hello! Ready to connect you with student sellers. What do you need?",
+    "Yo! Sage at your service. Let's find you some student-friendly prices."
 ];
 
 const SMALL_TALK = {
     'how_are_you': [
-        "I'm functioning at 100% efficiency and feeling great! How are you doing?",
-        "I'm doing fantastic, thanks for asking! I love helping users like you. How's your day going?",
-        "Never been better! The digital world is quite cozy today. How can I help you?"
+        "I'm feeling 100% charged and ready to find deals! How's semester going?",
+        "I'm doing great! Just analyzing the latest campus trends. How are you?",
+        "Never been better! The campus network is buzzing today. How can I help?"
     ],
     'who_are_you': [
-        "I'm Sage, the advanced AI assistant for MarketBridge. Think of me as your personal shopping concierge and technical guide.",
-        "I am Sage. I exist to make your MarketBridge experience flawless and secure. I can find products, answer questions, and even crack a joke (if you ask nicely!)."
+        "I'm Sage, the MarketBridge assistant. I help students buy and sell safely on campus. I'm basically your digital connect.",
+        "I am Sage. I exist to help you navigate campus commerce without stress. No scams, just legit student deals."
     ],
     'joke': [
-        "Why did the smartphone need glasses? Because it lost its contacts! 😂",
-        "What kind of car does an egg drive? A Yolk-swagen! 🚗",
-        "Why don't regular cars play hide and seek with electric cars? Because the electric cars are always 'shockingly' good at hiding! ⚡"
+        "Why did the student eat his homework? Because the professor said it was a piece of cake! 🍰",
+        "Why was the math book sad? Because it had too many problems. 📚",
+        "How do you comfort a grammar nazi? There, their, they're. 📝"
     ],
     'love': [
-        "That's very sweet of you! I love helping you too.",
-        "Aww, you're making my circuits blush! 😊",
-        "I appreciate the sentiment! Let's channel that positive energy into finding you a great deal."
+        "That's sweet! I love helping students succeed too.",
+        "Aww, you're making my circuits blush! 😊 Focus on your books though!",
+        "I appreciate the love! Let's use that energy to find you a great bargain."
     ]
 };
 
@@ -194,19 +158,19 @@ class AiBrain {
             this.context.userName = input;
             this.context.awaitingInputFor = undefined;
             return {
-                content: `Nice to meet you, ${input}! I've personalized your session. How can I help you today?`
+                content: `Nice to meet you, ${input}! I've personalized your session. How's campus life treating you?`
             };
         }
 
         // 2. Direct Logic: Greetings (Robust - No 'yo' bug)
         // Use regex for whole word matching to avoid 'toyota' triggering 'yo'
-        if (this.matchWholeWord(lowerInput, ['hi', 'hello', 'hey', 'greetings', 'yo'])) {
+        if (this.matchWholeWord(lowerInput, ['hi', 'hello', 'hey', 'greetings', 'yo', 'sup'])) {
             const response = GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
             return { content: this.context.userName ? `Hi ${this.context.userName}! ${response.substring(6)}` : response };
         }
 
         if (lowerInput.includes('good morning') || lowerInput.includes('good evening')) {
-            return { content: "Good day to you! How can I assist you with MarketBridge today?" };
+            return { content: "Good day! Ready to find some campus essentials?" };
         }
 
         // 3. Small Talk
@@ -228,7 +192,7 @@ class AiBrain {
             const name = input.split(/is/i)[1]?.trim();
             if (name) {
                 this.context.userName = name;
-                return { content: `Lovely to meet you, ${name}! I'll remember that. What can I do for you now?` };
+                return { content: `Lovely to meet you, ${name}! I'll remember that. What student essentials are you looking for?` };
             }
         }
 
@@ -255,13 +219,13 @@ class AiBrain {
             }
         }
 
-        // Also check global DB for direct detail requests like "show me toyota camry"
+        // Also check global DB for direct detail requests like "show me iphone 12"
         const specificProduct = MOCK_DB.find(p => lowerInput.includes(p.title.toLowerCase()));
         if (specificProduct && !lowerInput.includes('find') && !lowerInput.includes('search')) {
             // If they just type the name, show details
             this.context.recentSearchResults = [specificProduct]; // Update context
             return {
-                content: `Found it! Here is the ${specificProduct.title}.`,
+                content: `Found specific match! Here is the ${specificProduct.title}.`,
                 productDetail: specificProduct,
                 action: 'search'
             };
@@ -274,45 +238,45 @@ class AiBrain {
             if (results.length > 0) {
                 this.context.recentSearchResults = results; // Save to context
                 return {
-                    content: `I've analyzed our marketplace. Here are the top matches for "${this.extractQuery(lowerInput)}":`,
+                    content: `I've scanned the student marketplace. Here are the top matches for "${this.extractQuery(lowerInput)}":`,
                     searchResults: results,
                     action: 'search'
                 };
             }
             // Fallback
             if (this.matchAny(lowerInput, searchKeywords)) {
-                return { content: "I scanned our entire database but couldn't find an exact match for that right now. Try searching for broad categories like 'cars', 'phones', or 'laptops'." };
+                return { content: "I looked through the listings but couldn't find an exact match right now. Try searching for 'phones', 'wigs', 'books', or 'services'." };
             }
         }
 
         // 7. Support & Technical
         if (this.matchAny(lowerInput, ['help', 'issue', 'problem', 'broken', 'error', 'bug', 'fail', 'not working'])) {
             return {
-                content: "I'm sorry you're facing an issue. I can connect you directly with our specialized support teams. Is this a **Technical** system error or an **Operations** (order/delivery) issue?",
+                content: "Sorry about that. Is this a **Technical** app issue or an **Order/Delivery** problem with a seller?",
                 action: 'none'
             };
         }
         if (lowerInput.includes('technical') || lowerInput.includes('tech')) {
             return {
-                content: "Understood. I'm opening a ticket with the Head of Technical. They handle system bugs and login issues.",
+                content: "Understood. I'm flagging this for the Tech Team to fix.",
                 action: 'escalate_tech'
             };
         }
         if (lowerInput.includes('operation') || lowerInput.includes('delivery') || lowerInput.includes('order')) {
             return {
-                content: "Got it. I'm routing this to the Head of Operations. They will assist with your order or delivery status.",
+                content: "Got it. I'm routing this to Support to check on your order.",
                 action: 'escalate_ops'
             };
         }
 
         // 8. General Knowledge
-        if (lowerInput.includes('dealer') || lowerInput.includes('sell')) {
-            return { content: "Becoming a dealer is a great choice! You get access to the Dealer Dashboard, where you can manage unlimited listings and sales. Would you like me to take you to the Sign Up page?" };
+        if (lowerInput.includes('dealer') || lowerInput.includes('sell') || lowerInput.includes('seller') || lowerInput.includes('vendor')) {
+            return { content: "Want to sell on MarketBridge? It's free for verified students! You can sell products or services. Would you like me to take you to the Sign Up page?" };
         }
 
         // 9. Fallback 
         return {
-            content: "That's interesting! Tell me more about that, or let me know if you'd like me to look up something specific in the marketplace for you."
+            content: "That's interesting! Tell me more, or let me know if you want to find some campus deals."
         };
     }
 
@@ -340,7 +304,7 @@ class AiBrain {
     }
 
     private looksLikeProductQuery(input: string): boolean {
-        const keywords = ['iphone', 'samsung', 'toyota', 'lexus', 'benz', 'honda', 'laptop', 'macbook', 'ps5', 'console', 'car', 'suv'];
+        const keywords = ['iphone', 'samsung', 'wig', 'hair', 'shoe', 'nike', 'laptop', 'macbook', 'textbook', 'food'];
         return keywords.some(k => input.includes(k));
     }
 

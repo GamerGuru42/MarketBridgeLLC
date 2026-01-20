@@ -289,6 +289,20 @@ export function AiAssistant() {
                         </div>
                     </CardContent>
 
+                    <div className="px-4 py-2 border-t border-white/5 bg-zinc-950/50">
+                        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                            {['Find Textbooks', 'Cheap Laptops', 'Wigs for Sale', 'Food Delivery', 'Sell Item'].map((chip) => (
+                                <button
+                                    key={chip}
+                                    onClick={() => handleSendMessage(chip)}
+                                    className="whitespace-nowrap px-3 py-1.5 rounded-full bg-white/5 hover:bg-[#FFB800] hover:text-black border border-white/10 text-[10px] font-bold uppercase tracking-wide transition-all text-zinc-400"
+                                >
+                                    {chip}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
                     <CardFooter className="p-3 bg-muted/20 border-t border-primary/10 shrink-0">
                         <form
                             onSubmit={(e) => {
@@ -309,7 +323,7 @@ export function AiAssistant() {
                         </form>
                     </CardFooter>
                 </Card>
-            </div>
+            </div >
         </>
     );
 }

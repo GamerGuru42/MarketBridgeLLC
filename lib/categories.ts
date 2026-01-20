@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-    Smartphone, Shirt, Home, Car, Sparkles,
-    Dumbbell, Building2, Briefcase, Baby, ShoppingBasket
+    Smartphone, Shirt, BookOpen, Utensils, Sparkles,
+    Briefcase, Camera, Headphones, Coffee, Laptop
 } from 'lucide-react';
 
 export interface Category {
@@ -18,113 +18,80 @@ export interface Category {
 
 export const CATEGORIES: Category[] = [
     {
-        id: 'automotive',
-        name: 'Automotive',
-        icon: Car,
+        id: 'fashion',
+        name: 'Fashion & Wears',
+        icon: Shirt,
+        color: 'text-pink-500',
+        bg: 'bg-pink-500/10',
+        isActive: true,
+        locked: false,
+        slug: 'fashion',
+        description: 'Clothing, shoes, bags, and campus style.'
+    },
+    {
+        id: 'gadgets',
+        name: 'Student Gadgets',
+        icon: Smartphone,
+        color: 'text-blue-500',
+        bg: 'bg-blue-500/10',
+        isActive: true,
+        locked: false,
+        slug: 'gadgets',
+        description: 'Phones, chargers, power banks, and accessories.'
+    },
+    {
+        id: 'food',
+        name: 'Food & Snacks',
+        icon: Utensils,
         color: 'text-orange-500',
         bg: 'bg-orange-500/10',
         isActive: true,
         locked: false,
-        slug: 'automotive',
-        description: 'New and used cars from verified dealers. All sizes of businesses welcome.'
-    },
-    {
-        id: 'electronics',
-        name: 'Electronics',
-        icon: Smartphone,
-        color: 'text-blue-500',
-        bg: 'bg-blue-500/10',
-        isActive: false,
-        locked: true,
-        slug: 'electronics',
-        description: 'Gadgets, phones, and computers.'
-    },
-    {
-        id: 'fashion',
-        name: 'Fashion',
-        icon: Shirt,
-        color: 'text-pink-500',
-        bg: 'bg-pink-500/10',
-        isActive: false,
-        locked: true,
-        slug: 'fashion',
-        description: 'Clothing, shoes, and accessories.'
-    },
-    {
-        id: 'home-garden',
-        name: 'Home & Garden',
-        icon: Home,
-        color: 'text-green-500',
-        bg: 'bg-green-500/10',
-        isActive: false,
-        locked: true,
-        slug: 'home-garden',
-        description: 'Furniture, decor, and appliances.'
-    },
-    {
-        id: 'beauty',
-        name: 'Beauty',
-        icon: Sparkles,
-        color: 'text-purple-500',
-        bg: 'bg-purple-500/10',
-        isActive: false,
-        locked: true,
-        slug: 'beauty',
-        description: 'Cosmetics, skincare, and personal care.'
-    },
-    {
-        id: 'sports',
-        name: 'Sports',
-        icon: Dumbbell,
-        color: 'text-red-500',
-        bg: 'bg-red-500/10',
-        isActive: false,
-        locked: true,
-        slug: 'sports',
-        description: 'Gym equipment and sportswear.'
-    },
-    {
-        id: 'real-estate',
-        name: 'Real Estate',
-        icon: Building2,
-        color: 'text-cyan-500',
-        bg: 'bg-cyan-500/10',
-        isActive: false,
-        locked: true,
-        slug: 'real-estate',
-        description: 'Properties for rent and sale.'
+        slug: 'food',
+        description: 'Campus deliveries, homemade meals, and snacks.'
     },
     {
         id: 'services',
-        name: 'Services',
+        name: 'Campus Services',
         icon: Briefcase,
-        color: 'text-slate-500',
-        bg: 'bg-slate-500/10',
-        isActive: false,
-        locked: true,
+        color: 'text-purple-500',
+        bg: 'bg-purple-500/10',
+        isActive: true,
+        locked: false,
         slug: 'services',
-        description: 'Professional services and freelancers.'
+        description: 'Hair styling, makeup, photography, repairs, tutoring.'
     },
     {
-        id: 'kids-babies',
-        name: 'Kids & Babies',
-        icon: Baby,
-        color: 'text-yellow-500',
-        bg: 'bg-yellow-500/10',
-        isActive: false,
-        locked: true,
-        slug: 'kids-babies',
-        description: 'Toys, clothing, and essentials.'
+        id: 'beauty',
+        name: 'Beauty & Care',
+        icon: Sparkles,
+        color: 'text-rose-500',
+        bg: 'bg-rose-500/10',
+        isActive: true,
+        locked: false,
+        slug: 'beauty',
+        description: 'Skincare, wigs, cosmetics, and grooming.'
     },
     {
-        id: 'groceries',
-        name: 'Groceries',
-        icon: ShoppingBasket,
+        id: 'education',
+        name: 'Books & Materials',
+        icon: BookOpen,
         color: 'text-emerald-500',
         bg: 'bg-emerald-500/10',
-        isActive: false,
-        locked: true,
-        slug: 'groceries',
-        description: 'Fresh produce and daily essentials.'
+        isActive: true,
+        locked: false,
+        slug: 'education',
+        description: 'Textbooks, handouts, and stationery.'
     },
+    {
+        id: 'laptops',
+        name: 'Laptops & Tech',
+        icon: Laptop,
+        color: 'text-cyan-500',
+        bg: 'bg-cyan-500/10',
+        isActive: true,
+        locked: false,
+        slug: 'laptops',
+        description: 'Used/New laptops and computer accessories.'
+    }
 ];

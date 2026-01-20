@@ -115,18 +115,18 @@ export default function HomePage() {
                             </h1>
 
                             <p className="text-zinc-400 text-lg md:text-xl max-w-lg font-medium leading-relaxed border-l-2 border-[#FFB800] pl-6 ml-2">
-                                Nigeria's first fully trustless marketplace. We hold the funds until you hold the product. Zero risk. Zero scams.
+                                Abuja's #1 Student Marketplace. Buy, sell, and connect safely on campus. Zero stress. Zero scams.
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 pt-4">
                                 <Button size="lg" asChild className="bg-[#FFB800] text-black font-black uppercase tracking-widest px-8 h-14 rounded-none skew-x-[-10deg] hover:skew-x-0 transition-all duration-300 hover:bg-[#FFD700] hover:scale-105">
-                                    <Link href={user ? (user.role === 'dealer' ? '/dealer/dashboard' : '/onboarding') : '/signup?role=dealer'}>
-                                        <span className="skew-x-[10deg] inline-block">{user && user.role === 'dealer' ? 'Dealer Dashboard' : 'Become a Dealer'}</span>
+                                    <Link href={user ? (user.role === 'dealer' ? '/dealer/dashboard' : '/onboarding') : '/login?role=dealer'}>
+                                        <span className="skew-x-[10deg] inline-block">{user && user.role === 'dealer' ? 'Seller Dashboard' : 'Start Selling'}</span>
                                     </Link>
                                 </Button>
                                 <Button size="lg" variant="outline" asChild className="bg-transparent border border-white/20 text-white font-bold uppercase tracking-widest px-8 h-14 rounded-none skew-x-[-10deg] hover:skew-x-0 hover:bg-white hover:text-black transition-all duration-300">
                                     <Link href="/listings">
-                                        <span className="skew-x-[10deg] inline-block">View Market</span>
+                                        <span className="skew-x-[10deg] inline-block">Explore Deals</span>
                                     </Link>
                                 </Button>
                             </div>
@@ -135,15 +135,15 @@ export default function HomePage() {
                             <div className="pt-8 grid grid-cols-3 gap-8 border-t border-white/5 max-w-md">
                                 <div>
                                     <p className="text-2xl font-black text-white">100%</p>
-                                    <p className="text-[10px] uppercase text-zinc-500 font-bold tracking-widest">Secure Escrow</p>
+                                    <p className="text-[10px] uppercase text-zinc-500 font-bold tracking-widest">Verified Students</p>
                                 </div>
                                 <div>
                                     <p className="text-2xl font-black text-white">24/7</p>
-                                    <p className="text-[10px] uppercase text-zinc-500 font-bold tracking-widest">Fraud Monitoring</p>
+                                    <p className="text-[10px] uppercase text-zinc-500 font-bold tracking-widest">Safe Chat</p>
                                 </div>
                                 <div>
-                                    <p className="text-2xl font-black text-white">ID</p>
-                                    <p className="text-[10px] uppercase text-zinc-500 font-bold tracking-widest">Verified Dealers</p>
+                                    <p className="text-2xl font-black text-white">Active</p>
+                                    <p className="text-[10px] uppercase text-zinc-500 font-bold tracking-widest">Campus Hubs</p>
                                 </div>
                             </div>
                         </div>
@@ -153,10 +153,10 @@ export default function HomePage() {
                             <div className="absolute inset-0 bg-gradient-to-r from-black via-black/50 to-transparent z-20" />
                             <div className="absolute inset-0 bg-gold-gradient opacity-10 mix-blend-overlay z-10" />
 
-                            {/* Replace with your actual hero image */}
+                            {/* Student Lifestyle Image */}
                             <Image
-                                src="/images/featured/teal_aston.png"
-                                alt="Luxury Vehicle"
+                                src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80"
+                                alt="Student Lifestyle"
                                 fill
                                 className="object-cover object-center lg:object-left"
                                 style={{ transform: `translateY(${offset * 0.2}px)` }}
@@ -176,7 +176,7 @@ export default function HomePage() {
                             <Search className="h-6 w-6 text-zinc-500 ml-4" />
                             <input
                                 type="text"
-                                placeholder="Search by model, brand, or dealer location..."
+                                placeholder="Search for books, wigs, gadgets, or services..."
                                 className="bg-transparent border-none text-white placeholder:text-zinc-600 w-full h-12 focus:outline-none focus:ring-0 text-lg font-medium"
                             />
                             <Button className="bg-[#FFB800] text-black hover:bg-[#FFD700] rounded-xl h-12 px-8 font-bold uppercase tracking-widest">
@@ -194,15 +194,15 @@ export default function HomePage() {
                         <React.Fragment key={i}>
                             <div className="flex items-center gap-4 opacity-50 grayscale hover:grayscale-0 transition-all duration-500 cursor-default">
                                 <ShieldCheck className="h-6 w-6 text-[#FFB800]" />
-                                <span className="text-sm font-black uppercase tracking-[0.2em] text-zinc-400">KYC Verified Dealers</span>
+                                <span className="text-sm font-black uppercase tracking-[0.2em] text-zinc-400">Student Verified</span>
                             </div>
                             <div className="flex items-center gap-4 opacity-50 grayscale hover:grayscale-0 transition-all duration-500 cursor-default">
                                 <Lock className="h-6 w-6 text-[#FFB800]" />
-                                <span className="text-sm font-black uppercase tracking-[0.2em] text-zinc-400">Escrow Secured</span>
+                                <span className="text-sm font-black uppercase tracking-[0.2em] text-zinc-400">Safe Payments</span>
                             </div>
                             <div className="flex items-center gap-4 opacity-50 grayscale hover:grayscale-0 transition-all duration-500 cursor-default">
                                 <CheckCircle2 className="h-6 w-6 text-[#FFB800]" />
-                                <span className="text-sm font-black uppercase tracking-[0.2em] text-zinc-400">Quality Assured</span>
+                                <span className="text-sm font-black uppercase tracking-[0.2em] text-zinc-400">Quality Checked</span>
                             </div>
                         </React.Fragment>
                     ))}
@@ -213,19 +213,19 @@ export default function HomePage() {
             <section className="py-24 relative overflow-hidden">
                 <div className="container px-4 mx-auto">
                     <div className="mb-16">
-                        <h2 className="text-xs font-black text-[#FFB800] uppercase tracking-[0.3em] mb-4">The Protocol</h2>
+                        <h2 className="text-xs font-black text-[#FFB800] uppercase tracking-[0.3em] mb-4">The Campus Protocol</h2>
                         <h3 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter">
                             Trust is good. <br />
-                            <span className="text-zinc-500">Control is better.</span>
+                            <span className="text-zinc-500">Verification is better.</span>
                         </h3>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                         {[
-                            { step: "01", title: "Connect", desc: "Find your vehicle from verified dealers. Chat and negotiate directly within the secure terminal.", icon: Users },
-                            { step: "02", title: "Deposit", desc: "Pay into the secure escrow vault. Funds are locked and visible to the dealer, but not accessible.", icon: Lock },
-                            { step: "03", title: "Verify", desc: "Inspect the vehicle physically. Verify documents and condition. You have total control.", icon: Search },
-                            { step: "04", title: "Release", desc: "Approve the transaction. Funds are instantly released to the dealer. Deal closed.", icon: RefreshCw }
+                            { step: "01", title: "Join", desc: "Sign up with your student details. Get verified to unlock selling privileges.", icon: Users },
+                            { step: "02", title: "Discover", desc: "Browse thousands of student listings. From textbooks to tech, it's all here.", icon: Search },
+                            { step: "03", title: "Chat", desc: "Connect directly with sellers. Negotiate safely within our secure terminal.", icon: Lock },
+                            { step: "04", title: "Exchange", desc: "Meet on campus or arrange delivery. Close the deal with confidence.", icon: RefreshCw }
                         ].map((item, idx: number) => (
                             <div key={idx} className="group relative p-6 border border-white/5 rounded-2xl bg-white/5 hover:bg-white/10 transition-all duration-300">
                                 <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent group-hover:via-[#FFB800] transition-all duration-500" />
@@ -252,8 +252,8 @@ export default function HomePage() {
                 <div className="container px-4 mx-auto">
                     <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
                         <div>
-                            <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter">Market <span className="text-[#FFB800] italic">Live</span></h2>
-                            <p className="text-zinc-500 mt-2 text-lg font-medium">Real-time verified listings from across the network.</p>
+                            <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter">Campus <span className="text-[#FFB800] italic">Live</span></h2>
+                            <p className="text-zinc-500 mt-2 text-lg font-medium">Real-time listings from students near you.</p>
                         </div>
                         <Button variant="outline" asChild className="group border-white/10 hover:bg-[#FFB800] hover:border-[#FFB800] hover:text-black transition-all">
                             <Link href="/listings" className="flex items-center gap-2">
@@ -264,33 +264,35 @@ export default function HomePage() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {[
-                            { title: "2018 MERCEDES-BENZ GT63S", price: "267.3M", dealer: "Motowns Abuja", image: "/images/featured/olive_porsche.png" },
-                            { title: "2013 BMW M3 COMPETITION", price: "127.3M", dealer: "Lagos Auto", image: "/images/featured/white_bmw.png" },
-                            { title: "2022 ASTON MARTIN VANTAGE", price: "227.3M", dealer: "Kano Luxury", image: "/images/featured/teal_aston.png" },
-                            { title: "2025 BYD HAN EV", price: "207.3M", dealer: "Motowns Abuja", image: "/images/featured/byd_front.png" },
-                            { title: "2024 PORSCHE 911 GT3 RS", price: "347.3M", dealer: "Lekki Rides", image: "/images/featured/olive_porsche.png" },
-                            { title: "2023 RANGE ROVER AUTOBIOGRAPHY", price: "450.0M", dealer: "Abuja Connect", image: "/images/featured/byd_side.png" },
+                            { title: "iPhone 12 Pro (UK Used)", price: "320,000", dealer: "Campus Gadgets", image: "https://images.unsplash.com/photo-1603539268574-e3fb65e4ff8a?auto=format&fit=crop&w=800&q=80" },
+                            { title: "Bone Straight Wig (24in)", price: "150,000", dealer: "Slay with Precious", image: "https://images.unsplash.com/photo-1635396603077-4b711739fe88?auto=format&fit=crop&w=800&q=80" },
+                            { title: "Nike Air Force 1", price: "25,000", dealer: "Kicks by Jide", image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=800&q=80" },
+                            { title: "HP EliteBook 840 G5", price: "280,000", dealer: "Campus Gadgets", image: "https://images.unsplash.com/photo-1544731612-de7f96afe55f?auto=format&fit=crop&w=800&q=80" },
+                            { title: "Student Indomie Pack", price: "8,500", dealer: "Nile Foodies", image: "https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?auto=format&fit=crop&w=800&q=80" },
+                            { title: "Math 101 Textbook", price: "5,000", dealer: "Bookworm Hub", image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80" },
                         ].map((item, idx: number) => (
-                            <Card key={idx} className="group bg-black/40 border-white/5 hover:border-[#FFB800]/50 overflow-hidden transition-all duration-500 hover:shadow-[0_0_30px_rgba(255,184,0,0.1)] rounded-none">
-                                <div className="aspect-[16/10] relative overflow-hidden bg-zinc-900">
-                                    <Image
-                                        src={item.image}
-                                        alt={item.title}
-                                        fill
-                                        className="object-cover group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100"
-                                    />
-                                    <div className="absolute top-4 right-4 bg-black/80 backdrop-blur text-[#FFB800] text-xs font-black px-3 py-1 uppercase tracking-wider border border-[#FFB800]/20">
-                                        Verified
+                            <Link href={`/listings/${item.title.startsWith('iPhone') ? 'mock-1' : item.title.startsWith('Bone') ? 'mock-2' : item.title.startsWith('Nike') ? 'mock-4' : item.title.startsWith('HP') ? 'mock-6' : item.title.startsWith('Student') ? 'mock-5' : 'mock-3'}`} key={idx}>
+                                <Card className="group bg-black/40 border-white/5 hover:border-[#FFB800]/50 overflow-hidden transition-all duration-500 hover:shadow-[0_0_30px_rgba(255,184,0,0.1)] rounded-none h-full">
+                                    <div className="aspect-[16/10] relative overflow-hidden bg-zinc-900">
+                                        <Image
+                                            src={item.image}
+                                            alt={item.title}
+                                            fill
+                                            className="object-cover group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100"
+                                        />
+                                        <div className="absolute top-4 right-4 bg-black/80 backdrop-blur text-[#FFB800] text-xs font-black px-3 py-1 uppercase tracking-wider border border-[#FFB800]/20">
+                                            Verified
+                                        </div>
+                                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/80 to-transparent p-6 pt-12 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                                            <p className="text-[#FFB800] text-xl font-black italic mb-1">₦{item.price}</p>
+                                            <h3 className="text-white font-bold text-sm uppercase tracking-tight line-clamp-1">{item.title}</h3>
+                                            <p className="text-zinc-500 text-xs mt-2 flex items-center gap-1">
+                                                <MapPin className="h-3 w-3" /> {item.dealer}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/80 to-transparent p-6 pt-12 transform translate-y-2 group-hover:translate-y-0 transition-transform">
-                                        <p className="text-[#FFB800] text-xl font-black italic mb-1">₦{item.price}</p>
-                                        <h3 className="text-white font-bold text-sm uppercase tracking-tight line-clamp-1">{item.title}</h3>
-                                        <p className="text-zinc-500 text-xs mt-2 flex items-center gap-1">
-                                            <MapPin className="h-3 w-3" /> {item.dealer}
-                                        </p>
-                                    </div>
-                                </div>
-                            </Card>
+                                </Card>
+                            </Link>
                         ))}
                     </div>
                 </div>
@@ -299,8 +301,8 @@ export default function HomePage() {
             {/* Categories Marquee / Grid */}
             <section className="py-24">
                 <div className="container px-4 mx-auto text-center mb-16">
-                    <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-4">Supported Assets</h2>
-                    <p className="text-zinc-500">Currently specializing in automotive. Expanding soon.</p>
+                    <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-4">Support Channels</h2>
+                    <p className="text-zinc-500">From gadgets to fashion, find it on campus.</p>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 px-4">
@@ -343,11 +345,11 @@ export default function HomePage() {
 
                         <h2 className="text-4xl md:text-7xl font-black text-white uppercase tracking-tighter mb-8 leading-[0.9]">
                             Ready to <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFB800] to-[#FF9500] italic">Escalate?</span>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFB800] to-[#FF9500] italic">Hustle?</span>
                         </h2>
 
                         <p className="text-zinc-400 max-w-xl mx-auto mb-12 text-lg font-medium">
-                            Join the fastest growing network of verified automotive dealers in Nigeria. Secure your spot in the future of commerce.
+                            Join the fastest growing network of student entrepreneurs. Start your business journey today.
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-6 justify-center">
