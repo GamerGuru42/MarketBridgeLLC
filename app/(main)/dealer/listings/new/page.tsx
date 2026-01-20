@@ -55,6 +55,30 @@ export default function NewListingPage() {
                 return;
             }
 
+            // ENFORCE PLAN LIMITS
+            const { count: listingCount, error: countError } = await supabase
+                .from('listings')
+                .select('id', { count: 'exact', head: true })
+                .eq('dealer_id', user.id);
+
+            if (countError) throw countError;
+
+            if (countError) throw countError;
+
+            // user is our custom User type (mapped in AuthContext)
+            // If subscriptionPlan is undefined, default to 'starter'
+            const plan = (user as any).subscriptionPlan || (user as any).user_metadata?.subscription_plan || 'starter';
+
+            let limit = 5; // Starter limit
+            if (plan === 'professional') limit = 50;
+            if (plan === 'enterprise') limit = 999999; // Unlimited
+
+            if ((listingCount || 0) >= limit) {
+                alert(`You have reached the listing limit for your ${plan.toUpperCase()} plan (${limit} listings). Please upgrade to add more.`);
+                setLoading(false);
+                return;
+            }
+
             const { data, error } = await supabase
                 .from('listings')
                 .insert({

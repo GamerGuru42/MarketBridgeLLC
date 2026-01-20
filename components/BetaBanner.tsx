@@ -31,8 +31,8 @@ export const BetaBanner = () => {
                             <Sparkles className="h-4 w-4 animate-pulse text-black" />
                         </div>
                         <p className="text-xs md:text-sm font-bold uppercase tracking-wide font-heading">
-                            <span className="bg-black text-[#FFB800] px-2 py-0.5 rounded mr-2">PROTOCOL TESTNET</span>
-                            Listings are currently <span className="italic">samples</span> for demonstration. Real dealer inventory initiates at MVP Launch.
+                            <span className="bg-black text-[#FFB800] px-2 py-0.5 rounded mr-2">Market Notice</span>
+                            Listings are currently <span className="italic">samples</span>. Real inventory will arrive with business growth and dealer onboarding.
                         </p>
                     </div>
                     <Button

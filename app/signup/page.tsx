@@ -21,28 +21,28 @@ const PRICING_PLANS = [
         id: 'starter' as SubscriptionPlan,
         name: 'Starter',
         price: 'Freemium',
-        sub: 'for new dealers',
+        sub: '14-Day Free Trial Period',
         features: ['Up to 5 active listings', 'basic analytics', '5% transaction fee'],
-        btn: 'Start Selling'
+        btn: 'Start 14-Day Trial'
     },
     {
         id: 'professional' as SubscriptionPlan,
         name: 'Professional',
         price: '₦ 5,000',
         period: '/monthly',
-        sub: '14-Day Free Trial Included',
+        sub: 'Verified Business Growth',
         popular: true,
         features: ['Up to 50 active listings', 'Verified Dealer Badge', 'Priority Support', '2.5% transaction fee'],
-        btn: 'Start Free Trial'
+        btn: 'Subscribe Now'
     },
     {
         id: 'enterprise' as SubscriptionPlan,
         name: 'Enterprise',
         price: '₦ 20,000',
         period: '/monthly',
-        sub: 'for large dealership',
+        sub: 'Maximum Scale & Control',
         features: ['Unlimited listings', 'Dedicated Account Manager', 'API ACCESS', '1% transaction fee'],
-        btn: 'Contact Sales'
+        btn: 'Subscribe Now'
     }
 ];
 
@@ -139,20 +139,15 @@ function SignupContent() {
             if (role === 'dealer') {
                 subPlan = selectedPlan;
                 if (selectedPlan === 'starter') {
-                    subStatus = 'active'; // Starter is free forever? Or limited? Let's say active.
-                } else if (selectedPlan === 'professional') {
+                    // Starter is the 14-day trial for freemium
                     subStatus = 'trial';
-                    // 14 Days from now
                     const date = new Date();
                     date.setDate(date.getDate() + 14);
                     expiresAt = date.toISOString();
                 } else {
-                    subStatus = 'active'; // Enterprise/Paid immediately
+                    // Professional and Enterprise are active upon payment
+                    subStatus = paymentRef ? 'active' : 'inactive';
                 }
-                // If paymentRef exists, it means they paid, so maybe it should be active?
-                // But for Professional we are offering a free trial now.
-                // If they paid (e.g. for enterprise), it's active.
-                if (paymentRef) subStatus = 'active';
             }
 
             // 2. Profile Upsert
@@ -199,12 +194,8 @@ function SignupContent() {
             return;
         }
 
-        // MVP: Professional Plan = 14 Day Free Trial (No Payment)
-        // Enterprise = Contact Sales (or Payment if implemented) - For now let's treat Enterprise as Contact Sales or disable in UI. 
-        // But the previous code allowed payment.
-        // Let's only trigger payment if it's NOT Professional (Trial) and NOT Starter (Free).
-
-        const isPaidPlan = role === 'dealer' && selectedPlan !== 'starter' && selectedPlan !== 'professional';
+        // Logic: ONLY 'starter' is free. Professional and Enterprise MUST pay.
+        const isPaidPlan = role === 'dealer' && selectedPlan !== 'starter';
 
         if (isPaidPlan) {
             const plan = PRICING_PLANS.find(p => p.id === selectedPlan);
