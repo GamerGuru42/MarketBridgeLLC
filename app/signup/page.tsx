@@ -14,7 +14,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Logo } from '@/components/logo';
 import { useFlutterwave, getFlutterwaveConfig } from '@/lib/flutterwave';
 import { initiateOPayCheckout } from '@/lib/opay';
-import { NIGERIAN_STATES, NIGERIAN_UNIVERSITIES } from '@/lib/constants';
+import { NIGERIAN_STATES, NIGERIAN_UNIVERSITIES, UNIVERSITIES_BY_STATE } from '@/lib/constants';
 import { ImageUpload } from '@/components/ImageUpload';
 import { School, Search } from 'lucide-react';
 
@@ -558,8 +558,13 @@ function SignupContent() {
                                             onChange={(e) => setFormData(p => ({ ...p, university: e.target.value }))}
                                             className="w-full h-14 pl-6 pr-10 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase appearance-none transition-all"
                                         >
-                                            <option value="" className="bg-zinc-900 font-medium">Select your Institution...</option>
-                                            {NIGERIAN_UNIVERSITIES.map(uni => (
+                                            <option value="" className="bg-zinc-900 font-medium">
+                                                {formData.location ? `Select Institution in ${formData.location}...` : "Select your Institution (Select Region first to filter)..."}
+                                            </option>
+                                            {(formData.location && UNIVERSITIES_BY_STATE[formData.location]
+                                                ? UNIVERSITIES_BY_STATE[formData.location]
+                                                : NIGERIAN_UNIVERSITIES
+                                            ).map(uni => (
                                                 <option key={uni} value={uni} className="bg-zinc-900 font-medium">{uni}</option>
                                             ))}
                                         </select>
