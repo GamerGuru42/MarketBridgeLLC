@@ -14,8 +14,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Logo } from '@/components/logo';
 import { useFlutterwave, getFlutterwaveConfig } from '@/lib/flutterwave';
 import { initiateOPayCheckout } from '@/lib/opay';
-import { NIGERIAN_STATES } from '@/lib/constants';
+import { NIGERIAN_STATES, NIGERIAN_UNIVERSITIES } from '@/lib/constants';
 import { ImageUpload } from '@/components/ImageUpload';
+import { School, Search } from 'lucide-react';
 
 const PRICING_PLANS = [
     {
@@ -77,7 +78,9 @@ function SignupContent() {
         confirmPassword: '',
         location: '',
         businessName: '',
-        cacNumber: '',
+        cacNumber: '', // For business
+        matricNumber: '', // For student
+        university: '',   // For student
         phoneNumber: '',
     });
     const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan>('starter');
@@ -91,6 +94,39 @@ function SignupContent() {
             setTransferReference(`MB-SUB-${Date.now().toString().slice(-6)}`);
         }
     }, [paymentProvider, transferReference]);
+
+    const [isDetectingSchool, setIsDetectingSchool] = useState(false);
+
+    // AI-Simulated University Detection
+    const detectUniversity = async (matric: string) => {
+        if (!matric || matric.length < 3) return;
+
+        setIsDetectingSchool(true);
+        // Simulate API/AI delay
+        await new Promise(r => setTimeout(r, 1200));
+
+        const upper = matric.toUpperCase();
+        let detected = '';
+
+        if (upper.includes('LASU')) detected = 'Lagos State University (LASU)';
+        else if (upper.includes('UOL') || upper.includes('UNILAG')) detected = 'University of Lagos (UNILAG)';
+        else if (upper.includes('ABU')) detected = 'Ahmadu Bello University (ABU)';
+        else if (upper.includes('OAU')) detected = 'Obafemi Awolowo University (OAU)';
+        else if (upper.includes('UNIABUJA')) detected = 'University of Abuja (UNIABUJA)';
+        else if (upper.includes('BAZE')) detected = 'Baze University';
+        else if (upper.includes('NILE')) detected = 'Nile University';
+        else if (upper.includes('VERITAS')) detected = 'Veritas University';
+        // Generic patterns
+        else if (upper.startsWith('19/') || upper.startsWith('20/') || upper.startsWith('21/') || upper.startsWith('22/')) {
+            // Very weak heuristic for modern private unis in Abuja, acting as a "guess"
+            // Don't auto-fill if unsure to avoid annoyance
+        }
+
+        if (detected) {
+            setFormData(prev => ({ ...prev, university: detected }));
+        }
+        setIsDetectingSchool(false);
+    };
 
 
     const [isLoading, setIsLoading] = useState(false);
@@ -165,7 +201,9 @@ function SignupContent() {
                     data: {
                         display_name: formData.displayName,
                         role: role,
-                        location: formData.location
+                        location: formData.location,
+                        university: role === 'dealer' ? formData.university : null,
+                        matric_number: role === 'dealer' ? formData.matricNumber : null
                     },
                 },
             });
@@ -198,14 +236,21 @@ function SignupContent() {
                     location: formData.location,
                     phone_number: formData.phoneNumber,
                     business_name: role === 'dealer' ? formData.businessName : null,
-                    cac_number: role === 'dealer' ? formData.cacNumber : null,
+                    // Fallback to matric number if CAC isn't provided (for students)
+                    cac_number: role === 'dealer' ? (formData.cacNumber || formData.matricNumber) : null,
                     subscription_plan: subPlan,
                     subscription_status: subStatus,
                     subscription_expires_at: expiresAt,
                     last_payment_ref: paymentProvider === 'transfer' ? transferReference : null,
                     is_verified: false,
                     // @ts-ignore - Allow specialized metadata
-                    payment_metadata: paymentProofUrl ? { proof_url: paymentProofUrl, payment_method: 'transfer', reference: transferReference } : null
+                    payment_metadata: {
+                        proof_url: paymentProofUrl || null,
+                        payment_method: paymentProvider,
+                        reference: transferReference || null,
+                        university: formData.university,
+                        matric_number: formData.matricNumber
+                    }
                 });
 
             if (profileError) console.error("Profile creation error:", profileError);
@@ -556,162 +601,209 @@ function SignupContent() {
                         </div>
 
                         {role === 'dealer' && (
-                            <div className="space-y-6 pt-6 border-t border-white/5">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Campus Brand Name</label>
+                            <>
+                                <div className="space-y-2">
+                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Business / Brand Name</label>
+                                    <div className="relative group">
+                                        <Briefcase className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-600 group-focus-within:text-[#FFB800] transition-colors" />
                                         <input
                                             name="businessName"
                                             value={formData.businessName}
                                             onChange={handleChange}
-                                            required
-                                            placeholder="e.g. Campus Kicks"
-                                            className="w-full h-14 px-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase"
+                                            className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase transition-all"
+                                            placeholder="CAMPUS KICKS"
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Matric Number / Student ID</label>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Matriculation Number</label>
+                                    <div className="relative group">
+                                        <School className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-600 group-focus-within:text-[#FFB800] transition-colors" />
                                         <input
-                                            name="cacNumber"
-                                            value={formData.cacNumber}
+                                            name="matricNumber"
+                                            value={formData.matricNumber}
                                             onChange={handleChange}
-                                            placeholder="e.g. 19/04/05/001"
-                                            className="w-full h-14 px-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase"
+                                            onBlur={(e) => detectUniversity(e.target.value)}
+                                            className="w-full h-14 pl-14 pr-12 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase transition-all"
+                                            placeholder="U/2024/..."
                                         />
+                                        {isDetectingSchool && (
+                                            <Loader2 className="absolute right-6 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-[#FFB800]" />
+                                        )}
+                                        {!isDetectingSchool && formData.university && (
+                                            <Check className="absolute right-6 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" />
+                                        )}
                                     </div>
                                 </div>
-                                <div className="glass-card p-6 rounded-[2rem] border-white/5 text-center bg-[#FFB800]/5">
-                                    <p className="text-[9px] uppercase font-black text-zinc-400 mb-4 tracking-[0.2em]">Select Entry Mode</p>
 
-                                    <div className="grid grid-cols-2 gap-4 mb-6">
-                                        <button
-                                            type="button"
-                                            onClick={() => setPaymentProvider('trial')}
-                                            className={`h-14 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 ${paymentProvider === 'trial' ? 'bg-white text-black' : 'bg-black/40 text-zinc-500 border border-white/10'}`}
+                                <div className="space-y-2">
+                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">University / Campus</label>
+                                    <div className="relative group">
+                                        <select
+                                            name="university"
+                                            value={formData.university}
+                                            onChange={(e) => setFormData(p => ({ ...p, university: e.target.value }))}
+                                            className="w-full h-14 pl-6 pr-10 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase appearance-none transition-all"
                                         >
-                                            <span>Start Free Trial</span>
-                                            <span className="text-[8px] opacity-60">21 Days Free</span>
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            onClick={() => setPaymentProvider('transfer')}
-                                            className={`h-14 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 ${paymentProvider === 'transfer' ? 'bg-[#FFB800] text-black shadow-[0_0_20px_rgba(255,184,0,0.3)]' : 'bg-black/40 text-zinc-500 border border-white/10'}`}
-                                        >
-                                            <span>Pay Instantly</span>
-                                            <span className="text-[8px] opacity-60">30 Days + 4 Bonus</span>
-                                        </button>
+                                            <option value="" className="bg-zinc-900 font-medium">Select your Institution...</option>
+                                            {NIGERIAN_UNIVERSITIES.map(uni => (
+                                                <option key={uni} value={uni} className="bg-zinc-900 font-medium">{uni}</option>
+                                            ))}
+                                        </select>
+                                        <Search className="absolute right-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-600 pointer-events-none" />
                                     </div>
-
-                                    {paymentProvider === 'transfer' && (
-                                        <div className="animate-in fade-in slide-in-from-top-2 duration-300 space-y-4">
-                                            <div className="bg-black/60 rounded-2xl p-5 border border-[#FFB800]/30 text-left relative overflow-hidden">
-                                                <div className="absolute top-0 right-0 p-3">
-                                                    <ShieldCheck className="h-4 w-4 text-[#FFB800]/20" />
-                                                </div>
-
-                                                <p className="text-[9px] text-zinc-500 uppercase font-black mb-4 tracking-widest">Subscriber Pipeline Details</p>
-
-                                                <div className="space-y-4">
-                                                    <div className="flex justify-between items-center group">
-                                                        <div>
-                                                            <p className="text-[8px] text-zinc-600 uppercase font-bold">Account Number</p>
-                                                            <p className="text-white font-mono text-lg tracking-[0.2em]">9022858358</p>
-                                                        </div>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            className="h-8 px-3 rounded-lg text-[9px] font-black uppercase tracking-tight bg-white/5 hover:bg-[#FFB800] hover:text-black"
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                navigator.clipboard.writeText('9022858358');
-                                                                alert('Account number copied to terminal.');
-                                                            }}
-                                                        >
-                                                            Copy
-                                                        </Button>
-                                                    </div>
-
-                                                    <div>
-                                                        <p className="text-[8px] text-zinc-600 uppercase font-bold">Bank / Institution</p>
-                                                        <p className="text-[#FFB800] text-sm font-black uppercase italic">Kuda Microfinance Bank</p>
-                                                    </div>
-
-                                                    <div>
-                                                        <p className="text-[8px] text-zinc-600 uppercase font-bold">Verified Account Name</p>
-                                                        <p className="text-zinc-300 text-[10px] font-bold uppercase tracking-wide">IGBIEMUGH BENNY IDUOKU-BEN</p>
-                                                    </div>
-
-                                                    <div className="pt-3 border-t border-white/5">
-                                                        <p className="text-[8px] text-zinc-600 uppercase font-bold">Narration Reference (MANDATORY)</p>
-                                                        <p className="text-white font-mono text-sm tracking-wider">{transferReference}</p>
-                                                        <p className="text-[7px] text-zinc-500 mt-1">* Please use this reference as your transfer description.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="space-y-2">
-                                                <label className="text-[9px] uppercase font-black tracking-widest text-[#FFB800] block text-left ml-2">Upload Transfer Receipt (Proof)</label>
-                                                <div className="glass-card rounded-2xl border border-white/10 p-2">
-                                                    {paymentProofUrl ? (
-                                                        <div className="relative group">
-                                                            <img src={paymentProofUrl} alt="Receipt" className="h-32 w-full object-cover rounded-xl border border-white/10" />
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => setPaymentProofUrl('')}
-                                                                className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-500 text-white p-1.5 rounded-lg transition-colors"
-                                                            >
-                                                                <span className="sr-only">Remove</span>
-                                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                                                            </button>
-                                                        </div>
-                                                    ) : (
-                                                        <ImageUpload
-                                                            onImagesSelected={(urls: string[]) => {
-                                                                if (urls && urls.length > 0) setPaymentProofUrl(urls[0]);
-                                                            }}
-                                                            maxImages={1}
-                                                            bucketName="listings"
-                                                        />
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            <p className="text-[9px] text-zinc-500 italic bg-zinc-900/50 p-3 rounded-xl border border-white/5">
-                                                Secure Protocol: Your enrollment includes <span className="text-white font-bold">4 BONUS DAYS</span>. Total access cycle: 34 days.
-                                            </p>
-                                        </div>
-                                    )}
                                 </div>
-                            </div>
+                            </>
                         )}
 
-                        <div className="flex items-start md:items-center gap-3 pt-6 border-t border-white/5">
+                        <div className="space-y-2">
+                            <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Mobile Comms</label>
                             <input
-                                type="checkbox"
-                                id="terms"
-                                checked={agreedToTerms}
-                                onChange={(e) => setAgreedToTerms(e.target.checked)}
-                                className="mt-1 md:mt-0 h-4 w-4 rounded-md border-white/10 bg-zinc-900 checked:bg-[#FFB800] checked:text-black focus:ring-[#FFB800]/50"
+                                name="phoneNumber"
+                                type="tel"
+                                value={formData.phoneNumber}
+                                onChange={handleChange}
+                                placeholder="080..."
+                                className="w-full h-14 px-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase"
                             />
-                            <label htmlFor="terms" className="text-xs text-zinc-500 font-medium">
-                                I agree to the <Link href="/legal/terms" className="text-white underline decoration-[#FFB800] decoration-2 underline-offset-4">Terms of Service</Link> & <Link href="/legal/privacy" className="text-white underline decoration-[#FFB800] decoration-2 underline-offset-4">Privacy Policy</Link>, and acknowledge compliance with NDPA 2023 regulations.
-                            </label>
                         </div>
+                    </div>
 
-                        <Button type="submit" className="w-full h-16 bg-gold-gradient text-black font-black uppercase tracking-widest rounded-2xl glow-on-hover border-none mt-4" disabled={isLoading}>
-                            {isLoading ? <Loader2 className="animate-spin h-6 w-6" /> : (
-                                <span>
-                                    {role === 'dealer'
-                                        ? (paymentProvider === 'transfer' ? 'Confirm Payment & Join' : 'Start 3-Week Free Trial')
-                                        : 'Establish Identity'}
-                                </span>
-                            )}
-                        </Button>
-                    </form>
-                </CardContent>
-            </Card>
-        </div>
+                    {role === 'dealer' && (
+                        <div className="space-y-6 pt-6 border-t border-white/5">
+                            <div className="glass-card p-6 rounded-[2rem] border-white/5 text-center bg-[#FFB800]/5">
+                                <p className="text-[9px] uppercase font-black text-zinc-400 mb-4 tracking-[0.2em]">Select Entry Mode</p>
+
+                                <div className="grid grid-cols-2 gap-4 mb-6">
+                                    <button
+                                        type="button"
+                                        onClick={() => setPaymentProvider('trial')}
+                                        className={`h-14 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 ${paymentProvider === 'trial' ? 'bg-white text-black' : 'bg-black/40 text-zinc-500 border border-white/10'}`}
+                                    >
+                                        <span>Start Free Trial</span>
+                                        <span className="text-[8px] opacity-60">21 Days Free</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setPaymentProvider('transfer')}
+                                        className={`h-14 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 ${paymentProvider === 'transfer' ? 'bg-[#FFB800] text-black shadow-[0_0_20px_rgba(255,184,0,0.3)]' : 'bg-black/40 text-zinc-500 border border-white/10'}`}
+                                    >
+                                        <span>Pay Instantly</span>
+                                        <span className="text-[8px] opacity-60">30 Days + 4 Bonus</span>
+                                    </button>
+                                </div>
+
+                                {paymentProvider === 'transfer' && (
+                                    <div className="animate-in fade-in slide-in-from-top-2 duration-300 space-y-4">
+                                        <div className="bg-black/60 rounded-2xl p-5 border border-[#FFB800]/30 text-left relative overflow-hidden">
+                                            <div className="absolute top-0 right-0 p-3">
+                                                <ShieldCheck className="h-4 w-4 text-[#FFB800]/20" />
+                                            </div>
+
+                                            <p className="text-[9px] text-zinc-500 uppercase font-black mb-4 tracking-widest">Subscriber Pipeline Details</p>
+
+                                            <div className="space-y-4">
+                                                <div className="flex justify-between items-center group">
+                                                    <div>
+                                                        <p className="text-[8px] text-zinc-600 uppercase font-bold">Account Number</p>
+                                                        <p className="text-white font-mono text-lg tracking-[0.2em]">9022858358</p>
+                                                    </div>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-8 px-3 rounded-lg text-[9px] font-black uppercase tracking-tight bg-white/5 hover:bg-[#FFB800] hover:text-black"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            navigator.clipboard.writeText('9022858358');
+                                                            alert('Account number copied to terminal.');
+                                                        }}
+                                                    >
+                                                        Copy
+                                                    </Button>
+                                                </div>
+
+                                                <div>
+                                                    <p className="text-[8px] text-zinc-600 uppercase font-bold">Bank / Institution</p>
+                                                    <p className="text-[#FFB800] text-sm font-black uppercase italic">Kuda Microfinance Bank</p>
+                                                </div>
+
+                                                <div>
+                                                    <p className="text-[8px] text-zinc-600 uppercase font-bold">Verified Account Name</p>
+                                                    <p className="text-zinc-300 text-[10px] font-bold uppercase tracking-wide">IGBIEMUGH BENNY IDUOKU-BEN</p>
+                                                </div>
+
+                                                <div className="pt-3 border-t border-white/5">
+                                                    <p className="text-[8px] text-zinc-600 uppercase font-bold">Narration Reference (MANDATORY)</p>
+                                                    <p className="text-white font-mono text-sm tracking-wider">{transferReference}</p>
+                                                    <p className="text-[7px] text-zinc-500 mt-1">* Please use this reference as your transfer description.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-[9px] uppercase font-black tracking-widest text-[#FFB800] block text-left ml-2">Upload Transfer Receipt (Proof)</label>
+                                            <div className="glass-card rounded-2xl border border-white/10 p-2">
+                                                {paymentProofUrl ? (
+                                                    <div className="relative group">
+                                                        <img src={paymentProofUrl} alt="Receipt" className="h-32 w-full object-cover rounded-xl border border-white/10" />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setPaymentProofUrl('')}
+                                                            className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-500 text-white p-1.5 rounded-lg transition-colors"
+                                                        >
+                                                            <span className="sr-only">Remove</span>
+                                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <ImageUpload
+                                                        onImagesSelected={(urls: string[]) => {
+                                                            if (urls && urls.length > 0) setPaymentProofUrl(urls[0]);
+                                                        }}
+                                                        maxImages={1}
+                                                        bucketName="listings"
+                                                    />
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <p className="text-[9px] text-zinc-500 italic bg-zinc-900/50 p-3 rounded-xl border border-white/5">
+                                            Secure Protocol: Your enrollment includes <span className="text-white font-bold">4 BONUS DAYS</span>. Total access cycle: 34 days.
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="flex items-start md:items-center gap-3 pt-6 border-t border-white/5">
+                        <input
+                            type="checkbox"
+                            id="terms"
+                            checked={agreedToTerms}
+                            onChange={(e) => setAgreedToTerms(e.target.checked)}
+                            className="mt-1 md:mt-0 h-4 w-4 rounded-md border-white/10 bg-zinc-900 checked:bg-[#FFB800] checked:text-black focus:ring-[#FFB800]/50"
+                        />
+                        <label htmlFor="terms" className="text-xs text-zinc-500 font-medium">
+                            I agree to the <Link href="/legal/terms" className="text-white underline decoration-[#FFB800] decoration-2 underline-offset-4">Terms of Service</Link> & <Link href="/legal/privacy" className="text-white underline decoration-[#FFB800] decoration-2 underline-offset-4">Privacy Policy</Link>, and acknowledge compliance with NDPA 2023 regulations.
+                        </label>
+                    </div>
+
+                    <Button type="submit" className="w-full h-16 bg-gold-gradient text-black font-black uppercase tracking-widest rounded-2xl glow-on-hover border-none mt-4" disabled={isLoading}>
+                        {isLoading ? <Loader2 className="animate-spin h-6 w-6" /> : (
+                            <span>
+                                {role === 'dealer'
+                                    ? (paymentProvider === 'transfer' ? 'Confirm Payment & Join' : 'Start 3-Week Free Trial')
+                                    : 'Establish Identity'}
+                            </span>
+                        )}
+                    </Button>
+                </form>
+            </CardContent>
+        </Card>
+        </div >
     );
 }
 

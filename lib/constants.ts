@@ -37,3 +37,26 @@ export const NIGERIAN_STATES = [
     "Yobe",
     "Zamfara"
 ];
+
+export const NIGERIAN_UNIVERSITIES = [
+    "University of Lagos (UNILAG)",
+    "Obafemi Awolowo University (OAU)",
+    "University of Nigeria, Nsukka (UNN)",
+    "Ahmadu Bello University (ABU)",
+    "University of Benin (UNIBEN)",
+    "University of Ibadan (UI)",
+    "University of Ilorin (UNILORIN)",
+    "Federal University of Technology, Akure (FUTA)",
+    "Federal University of Technology, Minna (FUTMINNA)",
+    "Covenant University",
+    "Babcock University",
+    "Lagos State University (LASU)",
+    "Rivers State University",
+    "University of Abuja (UNIABUJA)",
+    "Baze University",
+    "Nile University",
+    "Veritas University",
+    "Bingham University",
+    "African University of Science and Technology",
+    "National Open University of Nigeria (NOUN)"
+];
