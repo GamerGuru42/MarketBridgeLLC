@@ -51,15 +51,15 @@ export function ImageUpload({
                 }
 
                 const { data: { user } } = await supabase.auth.getUser();
-                if (!user) throw new Error("Authentication required for upload.");
+                // if (!user) throw new Error("Authentication required for upload."); // Relaxed for signup flow
 
                 const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
                 // Remove special chars from filename to prevent path issues
                 const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
                 const fileName = `${Math.random().toString(36).substring(2, 10)}_${Date.now()}.${fileExt}`;
 
-                // Upload to user-specific folder for RLS compliance
-                const filePath = `${user.id}/${fileName}`;
+                // Upload to user-specific folder for RLS compliance, or 'public' if anon
+                const filePath = user ? `${user.id}/${fileName}` : `public/${fileName}`;
 
                 const { error: uploadError } = await supabase.storage
                     .from(bucketName)
