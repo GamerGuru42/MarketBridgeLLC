@@ -132,8 +132,9 @@ export default function AdminSignupPage() {
 
                 console.log(`Redirecting new admin to: ${targetPath}`);
 
-                // Force a hard navigation to ensure clean state
-                window.location.href = targetPath;
+                // Smooth transition using router
+                router.refresh(); // Sync server components
+                router.push(targetPath);
             }
         } catch (err: unknown) {
             console.error("Admin Signup Main Error:", err);

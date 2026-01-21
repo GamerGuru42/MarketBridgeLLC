@@ -109,7 +109,8 @@ export default function AdminLoginPage() {
             else if (role === 'ceo' || role === 'cofounder') targetPath = '/admin';
 
             console.log(`Redirecting to ${targetPath}`);
-            window.location.href = targetPath;
+            router.refresh();
+            router.push(targetPath);
 
         } catch (err: unknown) {
             console.error('Admin Login Error:', err);
@@ -120,6 +121,26 @@ export default function AdminLoginPage() {
             // Auto-reset view after 3 seconds? No, user wants a screen.
         }
     };
+
+    // Auto-redirect if already logged in
+    const { user, loading } = useAuth();
+    React.useEffect(() => {
+        if (!loading && user) {
+            const role = user.role;
+            const adminRoles = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'cto', 'coo', 'ceo', 'cofounder'];
+
+            if (adminRoles.includes(role || '')) {
+                let targetPath = '/admin';
+                if (role === 'technical_admin') targetPath = '/admin/technical';
+                else if (role === 'operations_admin') targetPath = '/admin/operations';
+                else if (role === 'marketing_admin') targetPath = '/admin/marketing';
+                else if (role === 'ceo' || role === 'cofounder') targetPath = '/admin';
+
+                console.log('Already authenticated as Admin. Redirecting...');
+                router.replace(targetPath);
+            }
+        }
+    }, [user, loading, router]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData(prev => ({
