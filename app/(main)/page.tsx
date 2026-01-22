@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -23,8 +24,18 @@ import {
 } from "@/components/ui/dialog";
 
 export default function HomePage() {
+    const router = useRouter();
     const { user } = useAuth();
     const [comingSoonCategory, setComingSoonCategory] = useState<Category | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const handleMainSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            router.push(`/listings?q=${encodeURIComponent(searchQuery.trim())}`);
+        }
+    };
+
     const [waitlistEmail, setWaitlistEmail] = useState('');
     const [waitlistPhone, setWaitlistPhone] = useState('');
     const [waitlistSubmitted, setWaitlistSubmitted] = useState(false);
@@ -172,17 +183,19 @@ export default function HomePage() {
                 {/* Search Bar - Floating */}
                 <div className="absolute bottom-10 left-0 right-0 z-30 px-4">
                     <div className="container mx-auto">
-                        <div className="bg-black/80 backdrop-blur-2xl border border-white/10 p-2 rounded-2xl max-w-3xl flex items-center gap-2 mx-auto shadow-[0_0_50px_rgba(0,0,0,0.8)] focus-within:ring-2 focus-within:ring-[#FFB800] transition-all">
+                        <form onSubmit={handleMainSearch} className="bg-black/80 backdrop-blur-2xl border border-white/10 p-2 rounded-2xl max-w-3xl flex items-center gap-2 mx-auto shadow-[0_0_50px_rgba(0,0,0,0.8)] focus-within:ring-2 focus-within:ring-[#FFB800] transition-all">
                             <Search className="h-6 w-6 text-zinc-500 ml-4" />
                             <input
                                 type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Search for books, wigs, gadgets, or services..."
                                 className="bg-transparent border-none text-white placeholder:text-zinc-600 w-full h-12 focus:outline-none focus:ring-0 text-lg font-medium"
                             />
-                            <Button className="bg-[#FFB800] text-black hover:bg-[#FFD700] rounded-xl h-12 px-8 font-bold uppercase tracking-widest">
+                            <Button type="submit" className="bg-[#FFB800] text-black hover:bg-[#FFD700] rounded-xl h-12 px-8 font-bold uppercase tracking-widest">
                                 Search
                             </Button>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </section>
