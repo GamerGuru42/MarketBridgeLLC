@@ -7,12 +7,13 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/client';
 import { normalizeIdentifier } from '@/lib/auth/utils';
 import { Loader2, Crown, Lock, Mail, ChevronRight, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function CEOLoginPage() {
+    const supabase = createClient();
     const router = useRouter();
     const { refreshUser } = useAuth();
 

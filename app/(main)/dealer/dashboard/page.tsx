@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -66,6 +66,7 @@ interface Stats {
 export default function DealerDashboardPage() {
     const { user, loading: authLoading } = useAuth();
     const router = useRouter();
+    const supabase = createClient();
     const [orders, setOrders] = useState<Order[]>([]);
     const [stats, setStats] = useState<Stats>({
         totalOrders: 0,
@@ -291,7 +292,13 @@ export default function DealerDashboardPage() {
         }
     };
 
-    if (authLoading || loading) {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (authLoading || loading || !mounted) {
         return (
             <div className="min-h-[80vh] flex items-center justify-center bg-black relative overflow-hidden text-white">
                 <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20 pointer-events-none" />

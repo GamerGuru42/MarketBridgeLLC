@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist_Mono, Outfit, Manrope } from "next/font/google";
+import { Outfit, Manrope } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -12,11 +12,6 @@ const manrope = Manrope({
   variable: "--font-manrope",
   subsets: ["latin"],
   display: "swap",
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
 });
 
 const outfit = Outfit({
@@ -83,7 +78,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${manrope.variable} ${geistMono.variable} ${outfit.variable} antialiased`}
+        className={`${manrope.variable} ${outfit.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"

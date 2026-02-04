@@ -38,7 +38,9 @@ interface Listing {
     };
 }
 
-export default function ListingsPage() {
+import { Suspense } from 'react';
+
+function ListingsContent() {
     const searchParams = useSearchParams();
     const initialLocation = searchParams?.get('location') || '';
 
@@ -367,5 +369,13 @@ export default function ListingsPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function ListingsPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center text-white"><Loader2 className="h-8 w-8 animate-spin text-[#FFB800]" /></div>}>
+            <ListingsContent />
+        </Suspense>
     );
 }

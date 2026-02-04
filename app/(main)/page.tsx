@@ -29,7 +29,7 @@ export default function HomePage() {
     const [comingSoonCategory, setComingSoonCategory] = useState<Category | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
 
-    const handleMainSearch = (e: React.FormEvent) => {
+    const handleMainSearch = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (searchQuery.trim()) {
             router.push(`/listings?q=${encodeURIComponent(searchQuery.trim())}`);
