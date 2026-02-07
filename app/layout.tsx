@@ -34,10 +34,9 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/icon.png', type: 'image/png' },
-      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
     ],
-    apple: '/icon.png',
+    apple: '/favicon.svg',
   },
   openGraph: {
     title: "MarketBridge - Nigeria's Most Trusted Business Marketplace",
