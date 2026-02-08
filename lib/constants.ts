@@ -131,7 +131,8 @@ export const UNIVERSITIES_BY_STATE: Record<string, string[]> = {
         "Federal University, Oye-Ekiti (Federal)",
         "Ekiti State University, Ado Ekiti (State)",
         "Afe Babalola University, Ado-Ekiti (Private)",
-        "Bamidele Olumilua University of Education, Science and Technology (State)"
+        "Bamidele Olumilua University of Education, Science and Technology (State)",
+        "Hillside University of Science and Technology, Okemesi (Private)"
     ],
     "Enugu": [
         "University of Nigeria, Nsukka (Federal)",
@@ -147,10 +148,11 @@ export const UNIVERSITIES_BY_STATE: Record<string, string[]> = {
         "National Open University of Nigeria (Federal)",
         "African University of Science and Technology (Private)",
         "Baze University (Private)",
+        "Cosmopolitan University, Abuja (Private)",
+        "European University of Nigeria, Duboyi (Private)",
         "Nile University of Nigeria (Private)",
         "Veritas University (Private)",
-        "Philomath University (Private)",
-        "Coscharis University (Private)"
+        "Philomath University (Private)"
     ],
     "Gombe": [
         "Federal University, Kashere (Federal)",
@@ -224,13 +226,15 @@ export const UNIVERSITIES_BY_STATE: Record<string, string[]> = {
         "Caleb University, Imota (Private)",
         "Lagos Business School / Pan-Atlantic University (Private)",
         "Eko University of Medicine and Health Sciences (Private)",
-        "Christopher University, Mowe/Lagos (Private)"
+        "James Hope University, Lekki (Private)",
+        "Trinity University, Yaba (Private)"
     ],
     "Nasarawa": [
         "Federal University, Lafia (Federal)",
         "Nasarawa State University, Keffi (State)",
         "Bingham University, Karu (Private)",
-        "Ave Maria University, Piyanko (Private)"
+        "Ave Maria University, Piyanko (Private)",
+        "Mewar International University, Masaka (Private)"
     ],
     "Niger": [
         "Federal University of Technology, Minna (Federal)",
@@ -245,13 +249,12 @@ export const UNIVERSITIES_BY_STATE: Record<string, string[]> = {
         "Babcock University, Ilishan-Remo (Private)",
         "Bells University of Technology, Ota (Private)",
         "Chrisland University, Abeokuta (Private)",
+        "Christopher University, Mowe (Private)",
         "Covenant University, Ota (Private)",
         "Crawford University, Igbesa (Private)",
         "McPherson University, Seriki Sotayo (Private)",
-        "Mountain Top University (Private)",
-        "Redeemer's University, Ede/Ogun (Private)",
-        "Southwestern University, Okun-Owa (Private)",
-        "Trinity University (Private)"
+        "Mountain Top University, Ibafo (Private)",
+        "Southwestern University, Okun-Owa (Private)"
     ],
     "Ondo": [
         "Federal University of Technology, Akure (Federal)",
@@ -271,6 +274,7 @@ export const UNIVERSITIES_BY_STATE: Record<string, string[]> = {
         "Joseph Ayo Babalola University, Ikeji-Arakeji (Private)",
         "Kings University, Ode-Omu (Private)",
         "Oduduwa University, Ipetumodu (Private)",
+        "Redeemer's University, Ede (Private)",
         "Westland University, Iwo (Private)"
     ],
     "Oyo": [
