@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: ['/private/', '/api/', '/dealer/dashboard/', '/admin/'],
         },
-        sitemap: 'https://market-bridge-llc-main.vercel.app/sitemap.xml',
+        sitemap: 'https://marketbridge.page.gd/sitemap.xml',
     };
 }

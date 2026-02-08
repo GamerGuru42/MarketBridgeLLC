@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 
-const baseUrl = process.env.NEXT_PUBLIC_CLIENT_URL || 'https://market-bridge-llc-main.vercel.app';
+const baseUrl = process.env.NEXT_PUBLIC_CLIENT_URL || 'https://marketbridge.page.gd';
 
 export default function sitemap(): MetadataRoute.Sitemap {
     return [
