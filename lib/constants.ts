@@ -39,278 +39,284 @@ export const NIGERIAN_STATES = [
 ];
 
 // Map of State -> Universities
+// Map of State -> Universities (Exhaustive list of Federal, State, and Private)
 export const UNIVERSITIES_BY_STATE: Record<string, string[]> = {
     "Abia": [
-        "Michael Okpara University of Agriculture, Umudike",
-        "Abia State University, Uturu",
-        "Gregory University, Uturu",
-        "Rhema University, Aba",
-        "Clifford University, Owerrinta"
+        "Michael Okpara University of Agriculture, Umudike (Federal)",
+        "Abia State University, Uturu (State)",
+        "Clifford University, Owerrinta (Private)",
+        "Gregory University, Uturu (Private)",
+        "Rhema University, Aba (Private)",
+        "Spiritan University, Nneochi (Private)",
+        "Lux Mundi University, Umuahia (Private)"
     ],
     "Adamawa": [
-        "Modibbo Adama University of Technology, Yola",
-        "Adamawa State University, Mubi",
-        "American University of Nigeria, Yola"
+        "Modibbo Adama University, Yola (Federal)",
+        "Adamawa State University, Mubi (State)",
+        "American University of Nigeria, Yola (Private)"
     ],
     "Akwa Ibom": [
-        "University of Uyo",
-        "Akwa Ibom State University, Ikot Akpaden",
-        "Obong University, Obong Ntak",
-        "Ritman University, Ikot Ekpene",
-        "Topfaith University, Mkpatak"
+        "University of Uyo (Federal)",
+        "Akwa Ibom State University, Ikot Akpaden (State)",
+        "Obong University, Obong Ntak (Private)",
+        "Ritman University, Ikot Ekpene (Private)",
+        "Topfaith University, Mkpatak (Private)"
     ],
     "Anambra": [
-        "Nnamdi Azikiwe University, Awka",
-        "Chukwuemeka Odumegwu Ojukwu University, Uli",
-        "Paul University, Awka",
-        "Madonna University, Okija",
-        "Legacy University, Okija",
-        "Tansian University, Umunya"
+        "Nnamdi Azikiwe University, Awka (Federal)",
+        "Chukwuemeka Odumegwu Ojukwu University, Uli (State)",
+        "Anambra State University of Science and Technology, Igbariam (State)",
+        "Legacy University, Okija (Private)",
+        "Madonna University, Okija (Private)",
+        "Paul University, Awka (Private)",
+        "Tansian University, Umunya (Private)",
+        "Eastern Palm University, Ogboko (Private)"
     ],
     "Bauchi": [
-        "Abubakar Tafawa Balewa University, Bauchi",
-        "Bauchi State University, Gadau",
-        "Al-Hikmah University (Bauchi Campus)"
+        "Abubakar Tafawa Balewa University, Bauchi (Federal)",
+        "Bauchi State University, Gadau (State)",
+        "Al-Muhibbah Open University (Private)"
     ],
     "Bayelsa": [
-        "Niger Delta University, Wilberforce Island",
-        "Federal University, Otuoke",
-        "University of Africa, Toru-Orua",
-        "Hensard University, Toru-Orua"
+        "Federal University, Otuoke (Federal)",
+        "Niger Delta University, Wilberforce Island (State)",
+        "University of Africa, Toru-Orua (State)",
+        "Bayelsa Medical University (State)",
+        "Hensard University, Toru-Orua (Private)"
     ],
     "Benue": [
-        "Benue State University, Makurdi",
-        "University of Agriculture, Makurdi",
-        "Eucharistic Heart of Jesus Model College"
+        "Federal University of Agriculture, Makurdi (Federal)",
+        "Benue State University, Makurdi (State)",
+        "University of Mkar, Mkar (Private)"
     ],
     "Borno": [
-        "University of Maiduguri",
-        "Borno State University, Maiduguri"
+        "University of Maiduguri (Federal)",
+        "Borno State University, Maiduguri (State)",
+        "Nigerian Army University, Biu (Federal)"
     ],
     "Cross River": [
-        "University of Calabar",
-        "Cross River University of Technology, Calabar",
-        "Arthur Jarvis University, Akpabuyo"
+        "University of Calabar (Federal)",
+        "University of Cross River State (UNICROSS) (State)",
+        "Arthur Jarvis University, Akpabuyo (Private)"
     ],
     "Delta": [
-        "Federal University of Petroleum Resources, Effurun",
-        "Delta State University, Abraka",
-        "University of Delta, Agbor",
-        "Delta State University of Science and Technology, Ozoro",
-        "Dennis Osadebay University, Asaba",
-        "Western Delta University, Oghara",
-        "Novena University, Ogume",
-        "Admiralty University of Nigeria, Ibusa",
-        "Edwin Clark University, Kiagbodo",
-        "Michael and Cecilia Ibru University"
+        "Federal University of Petroleum Resources, Effurun (Federal)",
+        "Delta State University, Abraka (State)",
+        "University of Delta, Agbor (State)",
+        "Delta State University of Science and Technology, Ozoro (State)",
+        "Dennis Osadebay University, Asaba (State)",
+        "Admiralty University of Nigeria, Ibusa (Federal/Private Partnership)",
+        "Edwin Clark University, Kiagbodo (Private)",
+        "Michael and Cecilia Ibru University (Private)",
+        "Novena University, Ogume (Private)",
+        "Western Delta University, Oghara (Private)"
     ],
     "Ebonyi": [
-        "Ebonyi State University, Abakaliki",
-        "Alex Ekwueme Federal University, Ndufu-Alike",
-        "David Umahi Federal University of Health Sciences, Uburu",
-        "Evangel University, Akaeze"
+        "Alex Ekwueme Federal University, Ndufu-Alike (Federal)",
+        "Ebonyi State University, Abakaliki (State)",
+        "David Umahi Federal University of Health Sciences, Uburu (Federal)",
+        "Evangel University, Akaeze (Private)"
     ],
     "Edo": [
-        "University of Benin (UNIBEN)",
-        "Ambrose Alli University, Ekpoma",
-        "Edo State University, Uzairue",
-        "Igbinedion University, Okada",
-        "Benson Idahosa University, Benin City",
-        "Wellspring University, Benin City",
-        "Mudiame University, Irrua"
+        "University of Benin (UNIBEN) (Federal)",
+        "Ambrose Alli University, Ekpoma (State)",
+        "Edo State University, Uzairue (State)",
+        "Benson Idahosa University, Benin City (Private)",
+        "Igbinedion University, Okada (Private)",
+        "Samuel Adegboyega University, Ogwa (Private)",
+        "Wellspring University, Benin City (Private)",
+        "Mudiame University, Irrua (Private)",
+        "West Midlands University, Benin City (Private)"
     ],
     "Ekiti": [
-        "Ekiti State University, Ado Ekiti",
-        "Federal University, Oye-Ekiti",
-        "Afe Babalola University, Ado-Ekiti",
-        "Bamidele Olumilua University of Education, Science and Technology, Ikere-Ekiti"
+        "Federal University, Oye-Ekiti (Federal)",
+        "Ekiti State University, Ado Ekiti (State)",
+        "Afe Babalola University, Ado-Ekiti (Private)",
+        "Bamidele Olumilua University of Education, Science and Technology (State)"
     ],
     "Enugu": [
-        "University of Nigeria, Nsukka (UNN)",
-        "Enugu State University of Science and Technology (ESUT)",
-        "Godfrey Okoye University, Ugwuomu-Nike",
-        "Caritas University, Amorji-Nike",
-        "Renaissance University, Ugbawka",
-        "Coal City University, Enugu",
-        "State University of Medical and Applied Sciences, Igbo-Eno"
+        "University of Nigeria, Nsukka (Federal)",
+        "Enugu State University of Science and Technology (State)",
+        "Caritas University, Amorji-Nike (Private)",
+        "Coal City University, Enugu (Private)",
+        "Godfrey Okoye University, Ugwuomu-Nike (Private)",
+        "Renaissance University, Ugbawka (Private)",
+        "Maduka University, Ekwulumili (Private)"
     ],
     "FCT - Abuja": [
-        "University of Abuja (UNIABUJA)",
-        "Baze University",
-        "Nile University of Nigeria",
-        "Veritas University",
-        "Bingham University (Karu - near FCT)",
-        "African University of Science and Technology",
-        "National Open University of Nigeria (NOUN)",
-        "Philomath University",
-        "Mewar International University"
+        "University of Abuja (Federal)",
+        "National Open University of Nigeria (Federal)",
+        "African University of Science and Technology (Private)",
+        "Baze University (Private)",
+        "Bingham University, Karu (Private)",
+        "Nile University of Nigeria (Private)",
+        "Veritas University (Private)",
+        "Philomath University (Private)",
+        "Coscharis University (Private)"
     ],
     "Gombe": [
-        "Gombe State University, Gombe",
-        "Federal University, Kashere",
-        "Pen Resource University"
+        "Federal University, Kashere (Federal)",
+        "Gombe State University, Gombe (State)",
+        "Pen Resource University, Gombe (Private)"
     ],
     "Imo": [
-        "Federal University of Technology, Owerri (FUTO)",
-        "Imo State University, Owerri (IMSU)",
-        "Kingsley Ozumba Mbadiwe University, Ogboko",
-        "University of Agriculture and Environmental Sciences, Umuagwo",
-        "Hezekiah University, Umudi",
-        "Maranatha University, Mgbidi",
-        "Claretian University of Nigeria, Nekede"
+        "Federal University of Technology, Owerri (Federal)",
+        "Imo State University, Owerri (State)",
+        "University of Agriculture and Environmental Sciences, Umuagwo (State)",
+        "Kingsley Ozumba Mbadiwe University, Ideato (State)",
+        "Claretian University of Nigeria, Nekede (Private)",
+        "Hezekiah University, Umudi (Private)",
+        "Maranatha University, Mgbidi (Private)"
     ],
     "Jigawa": [
-        "Federal University, Dutse",
-        "Sule Lamido University, Kafin Hausa",
-        "Khadija University, Majia"
+        "Federal University, Dutse (Federal)",
+        "Sule Lamido University, Kafin Hausa (State)",
+        "Khadija University, Majia (Private)"
     ],
     "Kaduna": [
-        "Ahmadu Bello University (ABU), Zaria",
-        "Kaduna State University, Kaduna",
-        "Nigerian Defence Academy (NDA), Kaduna",
-        "Air Force Institute of Technology, Kaduna",
-        "Greenfield University, Kaduna",
-        "Nok University, Kachia"
+        "Ahmadu Bello University, Zaria (Federal)",
+        "Kaduna State University, Kaduna (State)",
+        "Air Force Institute of Technology, Kaduna (Federal)",
+        "Nigerian Defence Academy, Kaduna (Federal)",
+        "Greenfield University, Kaduna (Private)",
+        "Nok University, Kachia (Private)"
     ],
     "Kano": [
-        "Bayero University Kano (BUK)",
-        "Kano University of Science and Technology, Wudil",
-        "Yusuf Maitama Sule University, Kano",
-        "Al-Istiqama University, Sumaila",
-        "Skyline University Nigeria, Kano",
-        "Maryam Abacha American University of Nigeria, Kano",
-        "Capital City University, Kano",
-        "Baba Ahmed University"
+        "Bayero University, Kano (Federal)",
+        "Kano University of Science and Technology, Wudil (State)",
+        "Yusuf Maitama Sule University, Kano (State)",
+        "Al-Istiqama University, Sumaila (Private)",
+        "Capital City University, Kano (Private)",
+        "Maryam Abacha American University of Nigeria, Kano (Private)",
+        "Skyline University Nigeria, Kano (Private)",
+        "Baba-Ahmed University, Kano (Private)"
     ],
     "Katsina": [
-        "Umaru Musa Yar'adua University, Katsina",
-        "Federal University, Dutsin-Ma",
-        "Al-Qalam University, Katsina",
-        "Cherish Enterprise Institute"
+        "Federal University, Dutsin-Ma (Federal)",
+        "Umaru Musa Yar'adua University, Katsina (State)",
+        "Al-Qalam University, Katsina (Private)"
     ],
     "Kebbi": [
-        "Federal University, Birnin Kebbi",
-        "Kebbi State University of Science and Technology, Aliero"
+        "Federal University, Birnin Kebbi (Federal)",
+        "Kebbi State University of Science and Technology, Aliero (State)",
+        "Rayhaan University, Birnin Kebbi (Private)"
     ],
     "Kogi": [
-        "Federal University, Lokoja",
-        "Prince Abubakar Audu University (Kogi State University), Anyigba",
-        "Confluence University of Science and Technology, Osara",
-        "Salem University, Lokoja"
+        "Federal University, Lokoja (Federal)",
+        "Kogi State University, Anyigba (State)",
+        "Confluence University of Science and Technology, Osara (State)",
+        "Salem University, Lokoja (Private)"
     ],
     "Kwara": [
-        "University of Ilorin (UNILORIN)",
-        "Kwara State University (KWASU), Malete",
-        "Al-Hikmah University, Ilorin",
-        "Landmark University, Omu-Aran",
-        "Summit University, Offa",
-        "Crown Hill University, Eiyenkorin",
-        "Thomas Adewumi University, Oko",
-        "Ahman Pategi University, Patigi"
+        "University of Ilorin (Federal)",
+        "Kwara State University, Malete (State)",
+        "Al-Hikmah University, Ilorin (Private)",
+        "Landmark University, Omu-Aran (Private)",
+        "Summit University, Offa (Private)",
+        "Thomas Adewumi University, Oko (Private)",
+        "Ahman Pategi University, Patigi (Private)"
     ],
     "Lagos": [
-        "University of Lagos (UNILAG)",
-        "Lagos State University (LASU), Ojo",
-        "Pan-Atlantic University, Lagos",
-        "Caleb University, Imota",
-        "Anchor University, Ayobo",
-        "Eko University of Medicine and Health Sciences, Ijanikin",
-        "Lagos State University of Science and Technology (LASUSTECH)",
-        "Lagos State University of Education (LASUED)",
-        "James Hope University",
-        "Augustine University, Ilara",
-        "Christopher University, Mowe"
+        "University of Lagos (Federal)",
+        "Lagos State University, Ojo (State)",
+        "Lagos State University of Education (State)",
+        "Lagos State University of Science and Technology (State)",
+        "Anchor University, Ayobo (Private)",
+        "Augustine University, Ilara (Private)",
+        "Caleb University, Imota (Private)",
+        "Lagos Business School / Pan-Atlantic University (Private)",
+        "Eko University of Medicine and Health Sciences (Private)",
+        "Christopher University, Mowe/Lagos (Private)"
     ],
     "Nasarawa": [
-        "Nasarawa State University, Keffi",
-        "Federal University of Lafia",
-        "Bingham University, Karu",
-        "Ave Maria University, Piyanko",
-        "Phoenix University, Agwada"
+        "Federal University, Lafia (Federal)",
+        "Nasarawa State University, Keffi (State)",
+        "Bingham University, Karu (Private)",
+        "Ave Maria University, Piyanko (Private)"
     ],
     "Niger": [
-        "Federal University of Technology, Minna (FUTMINNA)",
-        "Ibrahim Badamasi Babangida University, Lapai",
-        "Edusoko University, Bida",
-        "Newgate University, Minna"
+        "Federal University of Technology, Minna (Federal)",
+        "Ibrahim Badamasi Babangida University, Lapai (State)",
+        "Newgate University, Minna (Private)",
+        "Edusoko University, Bida (Private)"
     ],
     "Ogun": [
-        "Olabisi Onabanjo University, Ago-Iwoye",
-        "Federal University of Agriculture, Abeokuta (FUNAAB)",
-        "Tai Solarin University of Education, Ijebu-Ode",
-        "Covenant University, Ota",
-        "Babcock University, Ilishan-Remo",
-        "Bells University of Technology, Ota",
-        "Crawford University, Igbesa",
-        "Redeemer's University, Ede",
-        "Mountain Top University",
-        "Chrisland University, Abeokuta",
-        "Christopher University, Mowe",
-        "Hallmark University, Ijebu-Itele",
-        "McPherson University, Seriki Sotayo",
-        "Southwestern University, Okun-Owa",
-        "Trinity University"
+        "Federal University of Agriculture, Abeokuta (Federal)",
+        "Olabisi Onabanjo University, Ago-Iwoye (State)",
+        "Tai Solarin University of Education, Ijebu-Ode (State)",
+        "Babcock University, Ilishan-Remo (Private)",
+        "Bells University of Technology, Ota (Private)",
+        "Chrisland University, Abeokuta (Private)",
+        "Covenant University, Ota (Private)",
+        "Crawford University, Igbesa (Private)",
+        "McPherson University, Seriki Sotayo (Private)",
+        "Mountain Top University (Private)",
+        "Redeemer's University, Ede/Ogun (Private)",
+        "Southwestern University, Okun-Owa (Private)",
+        "Trinity University (Private)"
     ],
     "Ondo": [
-        "Federal University of Technology, Akure (FUTA)",
-        "Adekunle Ajasin University, Akungba-Akoko",
-        "Ondo State University of Science and Technology, Okitipupa",
-        "Achievers University, Owo",
-        "Elizade University, Ilara-Mokin",
-        "Wesley University, Ondo",
-        "University of Medical Sciences, Ondo"
+        "Federal University of Technology, Akure (Federal)",
+        "Adekunle Ajasin University, Akungba-Akoko (State)",
+        "Ondo State University of Science and Technology, Okitipupa (State)",
+        "University of Medical Sciences, Ondo (State)",
+        "Achievers University, Owo (Private)",
+        "Elizade University, Ilara-Mokin (Private)",
+        "Wesley University of Science and Technology, Ondo (Private)"
     ],
     "Osun": [
-        "Obafemi Awolowo University (OAU), Ile-Ife",
-        "Osun State University (UNIOSUN)",
-        "Bowen University, Iwo",
-        "Redeemer's University, Ede",
-        "Adeleke University, Ede",
-        "Fountain University, Osogbo",
-        "Joseph Ayo Babalola University, Ikeji-Arakeji",
-        "Kings University, Ode-Omu",
-        "Oduduwa University, Ipetumodu"
+        "Obafemi Awolowo University, Ile-Ife (Federal)",
+        "Osun State University, Osogbo (State)",
+        "Adeleke University, Ede (Private)",
+        "Bowen University, Iwo (Private)",
+        "Fountain University, Osogbo (Private)",
+        "Joseph Ayo Babalola University, Ikeji-Arakeji (Private)",
+        "Kings University, Ode-Omu (Private)",
+        "Oduduwa University, Ipetumodu (Private)",
+        "Westland University, Iwo (Private)"
     ],
     "Oyo": [
-        "University of Ibadan (UI)",
-        "Ladoke Akintola University of Technology (LAUTECH), Ogbomoso",
-        "Ajayi Crowther University, Oyo",
-        "Lead City University, Ibadan",
-        "Dominican University, Ibadan",
-        "Kola Daisi University, Ibadan",
-        "Precious Cornerstone University, Ibadan",
-        "Technical University, Ibadan",
-        "Atiba University, Oyo"
+        "University of Ibadan (Federal)",
+        "Ladoke Akintola University of Technology, Ogbomoso (State)",
+        "First Technical University, Ibadan (State)",
+        "Ajayi Crowther University, Oyo (Private)",
+        "Dominican University, Ibadan (Private)",
+        "Kola Daisi University, Ibadan (Private)",
+        "Lead City University, Ibadan (Private)",
+        "Precious Cornerstone University, Ibadan (Private)",
+        "Atiba University, Oyo (Private)"
     ],
     "Plateau": [
-        "University of Jos (UNIJOS)",
-        "Plateau State University, Bokkos",
-        "Karl Kumm University, Vom"
+        "University of Jos (Federal)",
+        "Plateau State University, Bokkos (State)",
+        "Karl Kumm University, Vom (Private)",
+        "ANAN University, Kwall (Private)"
     ],
     "Rivers": [
-        "University of Port Harcourt (UNIPORT)",
-        "Rivers State University (RSU)",
-        "Ignatius Ajuru University of Education, Rumuolumeni",
-        "Pamo University of Medical Sciences, Port Harcourt",
-        "Madonna University, Elele"
+        "University of Port Harcourt (Federal)",
+        "Rivers State University (State)",
+        "Ignatius Ajuru University of Education (State)",
+        "Pamo University of Medical Sciences, Port Harcourt (Private)",
+        "Madonna University, Elele (Private)",
+        "Wigwe University, Isiokpo (Private)"
     ],
     "Sokoto": [
-        "Usmanu Danfodiyo University, Sokoto",
-        "Sokoto State University, Sokoto",
-        "Northwest University, Sokoto"
+        "Usmanu Danfodiyo University, Sokoto (Federal)",
+        "Sokoto State University (State)",
+        "Northwest University, Sokoto (Private)"
     ],
     "Taraba": [
-        "Taraba State University, Jalingo",
-        "Federal University, Wukari",
-        "Kwararafa University, Wukari"
+        "Federal University, Wukari (Federal)",
+        "Taraba State University, Jalingo (State)",
+        "Kwararafa University, Wukari (Private)"
     ],
     "Yobe": [
-        "Yobe State University, Damaturu",
-        "Federal University, Gashua"
+        "Federal University, Gashua (Federal)",
+        "Yobe State University, Damaturu (State)"
     ],
     "Zamfara": [
-        "Federal University, Gusau",
-        "Zamfara State University, Talata Mafara"
+        "Federal University, Gusau (Federal)",
+        "Zamfara State University, Talata Mafara (State)"
     ]
 };
 

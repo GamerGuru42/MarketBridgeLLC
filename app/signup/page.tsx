@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 const supabase = createClient();
 import { normalizeIdentifier } from '@/lib/auth/utils';
-import { Loader2, Check, ArrowLeft, Mail, Globe, Eye, EyeOff, ShieldCheck, User as UserIcon, Briefcase, Zap, Crown, Lock, Sparkles } from 'lucide-react';
+import { Loader2, Check, ArrowLeft, ArrowRight, Mail, Globe, Eye, EyeOff, ShieldCheck, User as UserIcon, Briefcase, Zap, Crown, Lock, Sparkles } from 'lucide-react';
 import { SubscriptionPlan } from '@/types/user';
 import { useAuth } from '@/contexts/AuthContext';
 import { Logo } from '@/components/logo';
@@ -141,6 +141,39 @@ function SignupContent() {
         if (selectedRole === 'dealer') setStep('plan');
         else if (selectedRole === 'customer') setStep('auth-method');
         else if (selectedRole === 'admin') setStep('admin-code');
+    };
+
+    const [uniSearch, setUniSearch] = useState('');
+
+    const filteredUniversities = (formData.location && UNIVERSITIES_BY_STATE[formData.location]
+        ? UNIVERSITIES_BY_STATE[formData.location]
+        : NIGERIAN_UNIVERSITIES
+    ).filter(uni => uni.toLowerCase().includes(uniSearch.toLowerCase()));
+
+    const StepProgress = ({ currentStep, role }: { currentStep: string, role: string }) => {
+        const steps = role === 'dealer'
+            ? ['Protocol', 'Plan', 'Identity']
+            : (role === 'admin' ? ['Access', 'Sector', 'Identity'] : ['Entry', 'Identity']);
+
+        // Simplified mapping for the UI
+        let activeIdx = 0;
+        if (currentStep === 'role' || currentStep === 'admin-code' || currentStep === 'auth-method') activeIdx = 0;
+        else if (currentStep === 'plan' || currentStep === 'admin-dept') activeIdx = 1;
+        else activeIdx = steps.length - 1;
+
+        return (
+            <div className="flex items-center justify-center gap-4 mb-12">
+                {steps.map((s, i) => (
+                    <React.Fragment key={s}>
+                        <div className="flex flex-col items-center gap-2">
+                            <div className={`h-2 w-12 rounded-full transition-all duration-500 ${i <= activeIdx ? 'bg-[#FFB800] shadow-[0_0_10px_rgba(255,184,0,0.5)]' : 'bg-zinc-800'}`} />
+                            <span className={`text-[8px] font-black uppercase tracking-widest ${i <= activeIdx ? 'text-[#FFB800]' : 'text-zinc-600'}`}>{s}</span>
+                        </div>
+                        {i < steps.length - 1 && <div className="h-[1px] w-4 bg-zinc-900 mb-4" />}
+                    </React.Fragment>
+                ))}
+            </div>
+        );
     };
 
     const handleAdminCodeSubmit = (e: React.FormEvent) => {
@@ -436,21 +469,22 @@ function SignupContent() {
     if (step === 'auth-method') {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-black">
-                <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white">
+                <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-[-10%] right-[-10%] w-32 h-32 bg-[#FFB800]/5 blur-[40px] rounded-full" />
                     <CardHeader className="p-0 text-center mb-10">
                         <Button variant="ghost" onClick={() => setStep('role')} className="text-zinc-600 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
                         <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2">Verification Channel</CardTitle>
                         <CardDescription className="text-zinc-500 font-medium italic lowercase">choose your identity entry point</CardDescription>
                     </CardHeader>
                     <CardContent className="p-0 space-y-6 pb-8">
-                        <Button variant="outline" className="w-full h-16 rounded-[1.5rem] border-white/10 hover:bg-white/5 text-white font-bold uppercase tracking-widest" onClick={signInWithGoogle}>
-                            <Globe className="mr-3 h-5 w-5 text-blue-500" /> Google Identity Hub
+                        <Button variant="outline" className="w-full h-16 rounded-[1.5rem] border-white/10 hover:bg-white/5 text-white font-bold uppercase tracking-widest group transition-all" onClick={signInWithGoogle}>
+                            <Globe className="mr-3 h-5 w-5 text-blue-500 group-hover:scale-110 transition-transform" /> Google Identity Hub
                         </Button>
                         <div className="relative flex items-center justify-center py-4">
                             <div className="absolute inset-x-0 h-px bg-white/5"></div>
-                            <span className="relative bg-zinc-950 px-4 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-800">Protocol Selection</span>
+                            <span className="relative bg-black px-4 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-800">Protocol Selection</span>
                         </div>
-                        <Button className="w-full h-16 rounded-[1.5rem] bg-white border border-white/10 text-black font-black uppercase tracking-widest" onClick={() => setStep('details')}>
+                        <Button className="w-full h-16 rounded-[1.5rem] bg-white border border-white/10 text-black font-black uppercase tracking-widest hover:scale-[1.02] transition-all" onClick={() => setStep('details')}>
                             <Mail className="mr-3 h-5 w-5" /> Direct Email Path
                         </Button>
                     </CardContent>
@@ -463,230 +497,322 @@ function SignupContent() {
         <div className="min-h-screen flex items-center justify-center py-20 px-4 bg-black relative">
             <div className="absolute top-[10%] right-[10%] w-[30%] h-[30%] bg-[#FFB800]/5 blur-[120px] rounded-full" />
 
-            <Card className="w-full max-w-xl glass-card border-none rounded-[3rem] p-12 text-white relative z-10">
-                <CardHeader className="p-0 mb-10 text-left">
-                    <Button variant="ghost" onClick={() => setStep(role === 'dealer' ? 'plan' : 'auth-method')} className="text-zinc-600 hover:text-white p-0 h-auto mb-6 text-[10px] font-black uppercase tracking-widest"><ArrowLeft className="mr-2 h-3 w-3" /> Back</Button>
-                    <div className="mb-6">
-                        <Logo showText={false} />
+            <Card className="w-full max-w-xl glass-card border-none rounded-[3rem] p-12 text-white relative z-10 shadow-2xl">
+                <CardHeader className="p-0 mb-8 text-left">
+                    <div className="flex justify-between items-start mb-6">
+                        <Button variant="ghost" onClick={() => setStep(role === 'dealer' ? 'plan' : 'auth-method')} className="text-zinc-600 hover:text-white p-0 h-auto text-[10px] font-black uppercase tracking-widest"><ArrowLeft className="mr-2 h-3 w-3" /> Back</Button>
+                        <Logo showText={false} className="opacity-50" />
                     </div>
+
+                    <StepProgress currentStep={step} role={role} />
+
                     <CardTitle className="text-4xl font-black uppercase italic tracking-tighter mb-2">Establish Identity</CardTitle>
                     <CardDescription className="text-zinc-500 font-medium italic lowercase">
-                        {role === 'dealer' ? `Establishing node for ${selectedPlan} protocol` : "Please define your global attributes"}
+                        {role === 'dealer' ? `establishing node for ${selectedPlan} protocol` : "please define your global attributes"}
                     </CardDescription>
                 </CardHeader>
 
                 <CardContent className="p-0">
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {error && <div className="bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest p-4 rounded-2xl border border-red-500/20 text-center mb-6">{error}</div>}
+                        {error && <div className="bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest p-4 rounded-2xl border border-red-500/20 text-center mb-6 animate-pulse">{error}</div>}
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Full Name</label>
-                                <input name="displayName" value={formData.displayName} onChange={handleChange} required placeholder="SAMUEL ADE" className="w-full h-14 px-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase" />
+                                <div className="relative group">
+                                    <UserIcon className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
+                                    <input name="displayName" value={formData.displayName} onChange={handleChange} required placeholder="SAMUEL ADE" className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase transition-all" />
+                                </div>
                             </div>
                             <div className="space-y-2">
                                 <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Email Identity</label>
-                                <input name="email" type="email" value={formData.email} onChange={handleChange} required placeholder="FOUNDER@MARKET.IO" className="w-full h-14 px-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase" />
+                                <div className="relative group">
+                                    <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
+                                    <input name="email" type="email" value={formData.email} onChange={handleChange} required placeholder="FOUNDER@MARKET.IO" className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase transition-all" />
+                                </div>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Secure Key</label>
-                                <div className="relative">
-                                    <input name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleChange} required className="w-full h-14 pl-6 pr-14 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold" />
-                                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-600">{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
+                                <div className="relative group">
+                                    <Lock className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
+                                    <input name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleChange} required className="w-full h-14 pl-14 pr-14 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold" />
+                                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-800 hover:text-[#FFB800]">{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Confirm Key</label>
-                                <input name="confirmPassword" type={showPassword ? 'text' : 'password'} value={formData.confirmPassword} onChange={handleChange} required className="w-full h-14 px-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold" />
+                                <div className="relative group">
+                                    <ShieldCheck className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
+                                    <input name="confirmPassword" type={showPassword ? 'text' : 'password'} value={formData.confirmPassword} onChange={handleChange} required className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold" />
+                                </div>
                             </div>
                         </div>
 
                         <div className="space-y-2">
                             <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Operational Region</label>
-                            <select name="location" className="w-full h-14 px-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase" value={formData.location} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData({ ...formData, location: e.target.value })} required>
-                                <option value="" className="bg-zinc-900">Select Node State</option>
-                                {NIGERIAN_STATES.map(s => <option key={s} value={s} className="bg-zinc-900">{s}</option>)}
-                            </select>
+                            <div className="relative group">
+                                <Globe className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors z-10" />
+                                <select
+                                    name="location"
+                                    className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase relative"
+                                    value={formData.location}
+                                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                                        setFormData({ ...formData, location: e.target.value, university: '' });
+                                        setUniSearch('');
+                                    }}
+                                    required
+                                >
+                                    <option value="" className="bg-zinc-900">Select Node State</option>
+                                    {NIGERIAN_STATES.map(s => <option key={s} value={s} className="bg-zinc-900">{s}</option>)}
+                                </select>
+                            </div>
                         </div>
 
                         {role === 'dealer' && (
-                            <>
+                            <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
                                 <div className="space-y-2">
                                     <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Business / Brand Name</label>
                                     <div className="relative group">
-                                        <Briefcase className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-600 group-focus-within:text-[#FFB800] transition-colors" />
+                                        <Briefcase className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
                                         <input
                                             name="businessName"
                                             value={formData.businessName}
                                             onChange={handleChange}
-                                            className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase transition-all"
+                                            className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase transition-all"
                                             placeholder="CAMPUS KICKS"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Matriculation Number</label>
-                                    <div className="relative group">
-                                        <School className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-600 group-focus-within:text-[#FFB800] transition-colors" />
-                                        <input
-                                            name="matricNumber"
-                                            value={formData.matricNumber}
-                                            onChange={handleChange}
-                                            onBlur={(e) => detectUniversity(e.target.value)}
-                                            className="w-full h-14 pl-14 pr-12 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase transition-all"
-                                            placeholder="U/2024/..."
-                                        />
-                                        {isDetectingSchool && (
-                                            <Loader2 className="absolute right-6 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-[#FFB800]" />
-                                        )}
-                                        {!isDetectingSchool && formData.university && (
-                                            <Check className="absolute right-6 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" />
-                                        )}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Matriculation Number</label>
+                                        <div className="relative group">
+                                            <School className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
+                                            <input
+                                                name="matricNumber"
+                                                value={formData.matricNumber}
+                                                onChange={handleChange}
+                                                onBlur={(e) => detectUniversity(e.target.value)}
+                                                className="w-full h-14 pl-14 pr-12 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase transition-all"
+                                                placeholder="U/2024/..."
+                                            />
+                                            {isDetectingSchool && (
+                                                <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-[#FFB800]" />
+                                            )}
+                                            {!isDetectingSchool && formData.university && (
+                                                <div className="absolute right-4 top-1/2 -translate-y-1/2 bg-green-500/20 p-1 rounded-full">
+                                                    <Check className="h-3 w-3 text-green-500" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Mobile Comms</label>
+                                        <div className="relative group">
+                                            <Zap className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
+                                            <input
+                                                name="phoneNumber"
+                                                type="tel"
+                                                value={formData.phoneNumber}
+                                                onChange={handleChange}
+                                                placeholder="080..."
+                                                className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">University / Campus</label>
-                                    <div className="relative group">
-                                        <select
-                                            name="university"
-                                            value={formData.university}
-                                            onChange={(e) => setFormData(p => ({ ...p, university: e.target.value }))}
-                                            className="w-full h-14 pl-6 pr-10 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase appearance-none transition-all"
-                                        >
-                                            <option value="" className="bg-zinc-900 font-medium">
-                                                {formData.location ? `Select Institution in ${formData.location}...` : "Select your Institution (Select Region first to filter)..."}
-                                            </option>
-                                            {(formData.location && UNIVERSITIES_BY_STATE[formData.location]
-                                                ? UNIVERSITIES_BY_STATE[formData.location]
-                                                : NIGERIAN_UNIVERSITIES
-                                            ).map(uni => (
-                                                <option key={uni} value={uni} className="bg-zinc-900 font-medium">{uni}</option>
-                                            ))}
-                                        </select>
-                                        <Search className="absolute right-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-600 pointer-events-none" />
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center ml-2">
+                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600">University / Campus</label>
+                                        {formData.location && (
+                                            <span className="text-[8px] font-bold text-[#FFB800] uppercase tracking-tighter bg-[#FFB800]/10 px-2 py-0.5 rounded-full border border-[#FFB800]/20">
+                                                Filtering by {formData.location}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <div className="relative group">
+                                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
+                                            <input
+                                                type="text"
+                                                placeholder="SEARCH YOUR INSTITUTION..."
+                                                value={uniSearch}
+                                                onChange={(e) => setUniSearch(e.target.value)}
+                                                className="w-full h-14 pl-14 pr-10 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase text-xs"
+                                            />
+                                        </div>
+
+                                        <div className="relative group">
+                                            <select
+                                                name="university"
+                                                value={formData.university}
+                                                onChange={(e) => setFormData(p => ({ ...p, university: e.target.value }))}
+                                                className="w-full h-14 pl-6 pr-10 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase appearance-none transition-all"
+                                                required
+                                            >
+                                                <option value="" className="bg-zinc-900 font-medium">
+                                                    {formData.location ? `Select Official Node in ${formData.location}...` : "Select Region Above First..."}
+                                                </option>
+                                                {filteredUniversities.length > 0 ? (
+                                                    filteredUniversities.map(uni => (
+                                                        <option key={uni} value={uni} className="bg-zinc-900 font-medium">{uni}</option>
+                                                    ))
+                                                ) : (
+                                                    <option disabled className="bg-zinc-900 text-zinc-700 italic">No matching institutions found in this region</option>
+                                                )}
+                                            </select>
+                                            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-20">
+                                                <Crown className="h-4 w-4" />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </>
+                            </div>
                         )}
 
-                        <div className="space-y-2">
-                            <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Mobile Comms</label>
-                            <input
-                                name="phoneNumber"
-                                type="tel"
-                                value={formData.phoneNumber}
-                                onChange={handleChange}
-                                placeholder="080..."
-                                className="w-full h-14 px-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase"
-                            />
-                        </div>
+                        {role !== 'dealer' && (
+                            <div className="space-y-2 animate-in fade-in slide-in-from-top-4 duration-500">
+                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Mobile Comms</label>
+                                <div className="relative group">
+                                    <Zap className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
+                                    <input
+                                        name="phoneNumber"
+                                        type="tel"
+                                        value={formData.phoneNumber}
+                                        onChange={handleChange}
+                                        placeholder="080..."
+                                        className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase text-xs"
+                                    />
+                                </div>
+                            </div>
+                        )}
 
                         {role === 'dealer' && (
-                            <div className="space-y-6 pt-6 border-t border-white/5">
-                                <div className="glass-card p-6 rounded-[2rem] border-white/5 text-center bg-[#FFB800]/5">
-                                    <p className="text-[9px] uppercase font-black text-zinc-400 mb-4 tracking-[0.2em]">Select Entry Mode</p>
+                            <div className="space-y-6 pt-6 border-t border-white/5 animate-in fade-in duration-700 delay-100">
+                                <div className="glass-card p-6 rounded-[2.5rem] border border-white/5 text-center bg-gradient-to-b from-[#FFB800]/5 to-transparent relative overflow-hidden">
+                                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FFB800]/20 to-transparent" />
+
+                                    <p className="text-[9px] uppercase font-black text-zinc-500 mb-4 tracking-[0.2em] flex items-center justify-center gap-2">
+                                        <Sparkles className="h-3 w-3 text-[#FFB800]" /> Enrollment Protocol
+                                    </p>
 
                                     <div className="grid grid-cols-2 gap-4 mb-6">
                                         <button
                                             type="button"
                                             onClick={() => setPaymentProvider('trial')}
-                                            className={`h-14 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 ${paymentProvider === 'trial' ? 'bg-white text-black' : 'bg-black/40 text-zinc-500 border border-white/10'}`}
+                                            className={`h-16 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 group relative overflow-hidden ${paymentProvider === 'trial' ? 'bg-white text-black ring-4 ring-white/10' : 'bg-black/40 text-zinc-600 border border-white/5 hover:border-white/20'}`}
                                         >
-                                            <span>Start Free Trial</span>
-                                            <span className="text-[8px] opacity-60">21 Days Free</span>
+                                            <span>Universal Trial</span>
+                                            <span className="text-[8px] opacity-60">21 Access Days</span>
+                                            {paymentProvider === 'trial' && <div className="absolute top-0 right-0 p-1"><Check className="h-3 w-3" /></div>}
                                         </button>
 
                                         <button
                                             type="button"
                                             onClick={() => setPaymentProvider('transfer')}
-                                            className={`h-14 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 ${paymentProvider === 'transfer' ? 'bg-[#FFB800] text-black shadow-[0_0_20px_rgba(255,184,0,0.3)]' : 'bg-black/40 text-zinc-500 border border-white/10'}`}
+                                            className={`h-16 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 group relative overflow-hidden ${paymentProvider === 'transfer' ? 'bg-[#FFB800] text-black shadow-[0_0_30px_rgba(255,184,0,0.4)] ring-4 ring-[#FFB800]/20' : 'bg-black/40 text-zinc-600 border border-white/5 hover:border-[#FFB800]/20'}`}
                                         >
-                                            <span>Pay Instantly</span>
-                                            <span className="text-[8px] opacity-60">30 Days + 4 Bonus</span>
+                                            <span>Instant Mint</span>
+                                            <span className="text-[8px] opacity-60">Verified + Bonus</span>
+                                            {paymentProvider === 'transfer' && <div className="absolute top-0 right-0 p-1"><Check className="h-3 w-3" /></div>}
                                         </button>
                                     </div>
 
                                     {paymentProvider === 'transfer' && (
-                                        <div className="animate-in fade-in slide-in-from-top-2 duration-300 space-y-4">
-                                            <div className="bg-black/60 rounded-2xl p-5 border border-[#FFB800]/30 text-left relative overflow-hidden">
-                                                <div className="absolute top-0 right-0 p-3">
-                                                    <ShieldCheck className="h-4 w-4 text-[#FFB800]/20" />
-                                                </div>
+                                        <div className="animate-in zoom-in-95 fade-in duration-300 space-y-4">
+                                            <div className="bg-black/80 rounded-[2rem] p-6 border border-[#FFB800]/20 text-left relative overflow-hidden backdrop-blur-xl">
+                                                <div className="absolute top-[-20%] right-[-20%] w-32 h-32 bg-[#FFB800]/10 blur-[40px] rounded-full" />
 
-                                                <p className="text-[9px] text-zinc-500 uppercase font-black mb-4 tracking-widest">Subscriber Pipeline Details</p>
+                                                <p className="text-[9px] text-[#FFB800] uppercase font-black mb-6 tracking-widest flex items-center gap-2">
+                                                    <Crown className="h-3 w-3" /> Settlement Pipeline
+                                                </p>
 
-                                                <div className="space-y-4">
-                                                    <div className="flex justify-between items-center group">
+                                                <div className="space-y-5">
+                                                    <div className="flex justify-between items-end">
                                                         <div>
-                                                            <p className="text-[8px] text-zinc-600 uppercase font-bold">Account Number</p>
-                                                            <p className="text-white font-mono text-lg tracking-[0.2em]">9022858358</p>
+                                                            <p className="text-[8px] text-zinc-600 uppercase font-black mb-1">Account Interface</p>
+                                                            <p className="text-white font-mono text-xl tracking-[0.25em] leading-none">9022858358</p>
                                                         </div>
                                                         <Button
                                                             variant="ghost"
                                                             size="sm"
-                                                            className="h-8 px-3 rounded-lg text-[9px] font-black uppercase tracking-tight bg-white/5 hover:bg-[#FFB800] hover:text-black"
+                                                            className="h-9 px-4 rounded-xl text-[9px] font-black uppercase tracking-widest bg-white/5 hover:bg-[#FFB800] hover:text-black transition-all"
                                                             onClick={(e) => {
                                                                 e.preventDefault();
                                                                 navigator.clipboard.writeText('9022858358');
-                                                                alert('Account number copied to terminal.');
+                                                                alert('Account Identity Serial Copied.');
                                                             }}
                                                         >
                                                             Copy
                                                         </Button>
                                                     </div>
 
-                                                    <div>
-                                                        <p className="text-[8px] text-zinc-600 uppercase font-bold">Bank / Institution</p>
-                                                        <p className="text-[#FFB800] text-sm font-black uppercase italic">Kuda Microfinance Bank</p>
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <div>
+                                                            <p className="text-[8px] text-zinc-600 uppercase font-black">Institution</p>
+                                                            <p className="text-zinc-200 text-xs font-black uppercase tracking-tight">Kuda MFB</p>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-[8px] text-zinc-600 uppercase font-black">Verification</p>
+                                                            <p className="text-zinc-200 text-[10px] font-black uppercase tracking-tight">I.B. Benny</p>
+                                                        </div>
                                                     </div>
 
-                                                    <div>
-                                                        <p className="text-[8px] text-zinc-600 uppercase font-bold">Verified Account Name</p>
-                                                        <p className="text-zinc-300 text-[10px] font-bold uppercase tracking-wide">IGBIEMUGH BENNY IDUOKU-BEN</p>
-                                                    </div>
-
-                                                    <div className="pt-3 border-t border-white/5">
-                                                        <p className="text-[8px] text-zinc-600 uppercase font-bold">Narration Reference (MANDATORY)</p>
-                                                        <p className="text-white font-mono text-sm tracking-wider">{transferReference}</p>
-                                                        <p className="text-[7px] text-zinc-500 mt-1">* Please use this reference as your transfer description.</p>
+                                                    <div className="pt-4 border-t border-white/5 bg-[#FFB800]/5 -mx-6 px-6 pb-4">
+                                                        <p className="text-[8px] text-[#FFB800] uppercase font-black mb-1">Narration Signature (REQUIRED)</p>
+                                                        <div className="flex justify-between items-center">
+                                                            <p className="text-white font-mono text-sm tracking-wider uppercase">{transferReference}</p>
+                                                            <span className="text-[7px] text-[#FFB800]/50 font-black uppercase italic animate-pulse tracking-tighter">Crucial*</span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div className="space-y-2">
-                                                <label className="text-[9px] uppercase font-black tracking-widest text-[#FFB800] block text-left ml-2">Upload Transfer Receipt (Proof)</label>
-                                                <div className="glass-card rounded-2xl border border-white/10 p-2">
+                                            <div className="space-y-3">
+                                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-500 block text-left ml-4 flex items-center gap-2">
+                                                    <div className="h-1 w-1 rounded-full bg-[#FFB800]" /> Settlement Receipt
+                                                </label>
+                                                <div className="glass-card rounded-3xl border border-white/10 p-2 group hover:border-[#FFB800]/30 transition-colors">
                                                     {paymentProofUrl ? (
-                                                        <div className="relative group">
-                                                            <img src={paymentProofUrl} alt="Receipt" className="h-32 w-full object-cover rounded-xl border border-white/10" />
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => setPaymentProofUrl('')}
-                                                                className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-500 text-white p-1.5 rounded-lg transition-colors"
-                                                            >
-                                                                <span className="sr-only">Remove</span>
-                                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                                                            </button>
+                                                        <div className="relative group overflow-hidden rounded-2xl">
+                                                            <img src={paymentProofUrl} alt="Receipt" className="h-40 w-full object-cover rounded-2xl border border-white/10 group-hover:scale-105 transition-transform duration-700" />
+                                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => setPaymentProofUrl('')}
+                                                                    className="bg-red-500 text-white p-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl hover:scale-110 transition-all"
+                                                                >
+                                                                    Reset Upload
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     ) : (
-                                                        <ImageUpload
-                                                            onImagesSelected={(urls: string[]) => {
-                                                                if (urls && urls.length > 0) setPaymentProofUrl(urls[0]);
-                                                            }}
-                                                            maxImages={1}
-                                                            bucketName="listings"
-                                                        />
+                                                        <div className="h-32 relative">
+                                                            <ImageUpload
+                                                                onImagesSelected={(urls: string[]) => {
+                                                                    if (urls && urls.length > 0) setPaymentProofUrl(urls[0]);
+                                                                }}
+                                                                maxImages={1}
+                                                                bucketName="listings"
+                                                            />
+                                                            <div className="absolute inset-0 pointer-events-none flex items-center justify-center flex-col gap-2 opacity-10">
+                                                                <Briefcase className="h-8 w-8" />
+                                                                <span className="text-[8px] font-black uppercase tracking-[0.2em]">Drop Receipt</span>
+                                                            </div>
+                                                        </div>
                                                     )}
                                                 </div>
                                             </div>
 
-                                            <p className="text-[9px] text-zinc-500 italic bg-zinc-900/50 p-3 rounded-xl border border-white/5">
-                                                Secure Protocol: Your enrollment includes <span className="text-white font-bold">4 BONUS DAYS</span>. Total access cycle: 34 days.
+                                            <p className="text-[8px] text-zinc-600 italic bg-zinc-950/50 p-4 rounded-2xl border border-white/5 leading-relaxed text-left">
+                                                By selecting Instant Mint, your account enters the <span className="text-[#FFB800] font-black uppercase">Verified Acceleration</span> stream. You receive 34 days of premium listing cycles immediately upon manual oversight.
                                             </p>
                                         </div>
                                     )}
@@ -694,32 +820,33 @@ function SignupContent() {
                             </div>
                         )}
 
-                        <div className="flex items-start md:items-center gap-3 pt-6 border-t border-white/5">
+                        <div className="flex items-start md:items-center gap-4 pt-6 border-t border-white/5">
                             <input
                                 type="checkbox"
                                 id="terms"
                                 checked={agreedToTerms}
                                 onChange={(e) => setAgreedToTerms(e.target.checked)}
-                                className="mt-1 md:mt-0 h-4 w-4 rounded-md border-white/10 bg-zinc-900 checked:bg-[#FFB800] checked:text-black focus:ring-[#FFB800]/50"
+                                className="mt-1 md:mt-0 h-5 w-5 rounded-lg border-white/10 bg-zinc-950 checked:bg-[#FFB800] checked:text-black focus:ring-[#FFB800]/50 transition-all"
                             />
-                            <label htmlFor="terms" className="text-xs text-zinc-500 font-medium">
-                                I agree to the <Link href="/legal/terms" className="text-white underline decoration-[#FFB800] decoration-2 underline-offset-4">Terms of Service</Link> & <Link href="/legal/privacy" className="text-white underline decoration-[#FFB800] decoration-2 underline-offset-4">Privacy Policy</Link>, and acknowledge compliance with NDPA 2023 regulations.
+                            <label htmlFor="terms" className="text-[11px] text-zinc-600 font-bold leading-tight">
+                                I verify compliance with the <Link href="/legal/terms" className="text-zinc-400 hover:text-white underline decoration-[#FFB800]/40 decoration-1 underline-offset-4 transition-colors">Terms of Engagement</Link> & <Link href="/legal/privacy" className="text-zinc-400 hover:text-white underline decoration-[#FFB800]/40 decoration-1 underline-offset-4 transition-colors">Global Privacy Protocol</Link> (NDPA 2023 Compliant).
                             </label>
                         </div>
 
-                        <Button type="submit" className="w-full h-16 bg-gold-gradient text-black font-black uppercase tracking-widest rounded-2xl glow-on-hover border-none mt-4" disabled={isLoading}>
+                        <Button type="submit" className="w-full h-18 bg-gold-gradient text-black font-black uppercase tracking-widest rounded-[1.5rem] glow-on-hover border-none mt-4 text-xs group" disabled={isLoading}>
                             {isLoading ? <Loader2 className="animate-spin h-6 w-6" /> : (
-                                <span>
+                                <span className="flex items-center gap-3">
                                     {role === 'dealer'
-                                        ? (paymentProvider === 'transfer' ? 'Confirm Payment & Join' : 'Start 3-Week Free Trial')
-                                        : 'Establish Identity'}
+                                        ? (paymentProvider === 'transfer' ? 'Finalize Verification' : 'Initialize Trial Protocol')
+                                        : 'Establish Identity Node'}
+                                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </span>
                             )}
                         </Button>
                     </form>
                 </CardContent>
             </Card>
-        </div >
+        </div>
     );
 }
 
