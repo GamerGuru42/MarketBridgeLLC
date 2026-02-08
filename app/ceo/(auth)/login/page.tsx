@@ -173,7 +173,7 @@ export default function CEOLoginPage() {
 
                         <Button
                             type="submit"
-                            className="w-full bg-[#d4af37] hover:bg-[#e5c150] text-black font-black uppercase tracking-[0.2em] h-14 rounded-none transition-all relative overflow-hidden group shadow-[0_0_20px_rgba(212,175,55,0.1)]"
+                            className="w-full bg-[#d4af37] hover:bg-[#e5c150] text-black font-black uppercase tracking-[0.2em] h-14 transition-all relative overflow-hidden group shadow-[0_0_20px_rgba(212,175,55,0.1)]"
                             disabled={isLoading}
                         >
                             {isLoading ? (

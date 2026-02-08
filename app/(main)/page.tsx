@@ -130,14 +130,14 @@ export default function HomePage() {
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                                <Button size="lg" asChild className="bg-[#FFB800] text-black font-black uppercase tracking-widest px-8 h-14 rounded-none skew-x-[-10deg] hover:skew-x-0 transition-all duration-300 hover:bg-[#FFD700] hover:scale-105">
+                                <Button size="lg" asChild className="bg-[#FFB800] text-black font-black uppercase tracking-widest px-8 h-14 hover:bg-[#FFD700] hover:scale-105 transition-all duration-300">
                                     <Link href={user ? (user.role === 'dealer' ? '/dealer/dashboard' : '/onboarding') : '/login?role=dealer'}>
-                                        <span className="skew-x-[10deg] inline-block">{user && user.role === 'dealer' ? 'Seller Dashboard' : 'Start Selling'}</span>
+                                        <span className="inline-block">{user && user.role === 'dealer' ? 'Seller Dashboard' : 'Start Selling'}</span>
                                     </Link>
                                 </Button>
-                                <Button size="lg" variant="outline" asChild className="bg-transparent border border-white/20 text-white font-bold uppercase tracking-widest px-8 h-14 rounded-none skew-x-[-10deg] hover:skew-x-0 hover:bg-white hover:text-black transition-all duration-300">
+                                <Button size="lg" variant="outline" asChild className="bg-transparent border-2 border-white/20 text-white font-bold uppercase tracking-widest px-8 h-14 hover:bg-white hover:text-black transition-all duration-300">
                                     <Link href="/listings">
-                                        <span className="skew-x-[10deg] inline-block">Explore Deals</span>
+                                        <span className="inline-block">Explore Deals</span>
                                     </Link>
                                 </Button>
                             </div>
@@ -192,7 +192,7 @@ export default function HomePage() {
                                 placeholder="Search for books, wigs, gadgets, or services..."
                                 className="bg-transparent border-none text-white placeholder:text-zinc-600 w-full h-12 focus:outline-none focus:ring-0 text-lg font-medium"
                             />
-                            <Button type="submit" className="bg-[#FFB800] text-black hover:bg-[#FFD700] rounded-xl h-12 px-8 font-bold uppercase tracking-widest">
+                            <Button type="submit" className="bg-[#FFB800] text-black hover:bg-[#FFD700] h-12 px-8 font-bold uppercase tracking-widest shadow-none">
                                 Search
                             </Button>
                         </form>
@@ -422,13 +422,13 @@ export default function HomePage() {
                                     className="w-full px-6 py-4 bg-zinc-900 border border-white/10 text-white focus:outline-none focus:border-[#FFB800] focus:ring-1 focus:ring-[#FFB800] font-mono text-sm placeholder:text-zinc-700"
                                 />
                             </div>
-                            <Button type="submit" className="w-full h-14 bg-[#FFB800] text-black font-black uppercase tracking-widest hover:bg-[#FFD700] rounded-none transition-all mt-4 clip-corner">
+                            <Button type="submit" className="w-full h-14 bg-[#FFB800] text-black font-black uppercase tracking-widest hover:bg-[#FFD700] transition-all mt-4 border-none">
                                 Request Access
                             </Button>
                         </form>
                     ) : (
                         <div className="mt-8 pb-4">
-                            <Button onClick={() => setComingSoonCategory(null)} className="w-full h-14 bg-zinc-900 border border-white/10 text-white font-bold rounded-none hover:bg-white/5 uppercase tracking-widest">
+                            <Button onClick={() => setComingSoonCategory(null)} className="w-full h-14 bg-zinc-900 border-2 border-white/10 text-white font-bold hover:bg-white/5 uppercase tracking-widest">
                                 Acknowledge
                             </Button>
                         </div>
