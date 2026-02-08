@@ -3,7 +3,8 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { TrendingUp, Users, DollarSign, Activity, MapPin, Video, ShieldCheck, PieChart, Clock, ArrowRight, LayoutDashboard } from 'lucide-react';
+import { TrendingUp, Users, DollarSign, Activity, MapPin, Video, ShieldCheck, PieChart, Clock, ArrowRight, LayoutDashboard, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
@@ -29,7 +30,17 @@ const ceoTourSteps = [
 ];
 
 export default function CEOPage() {
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
+    const router = useRouter();
+
+    React.useEffect(() => {
+        if (!loading && (!user || user.role !== 'ceo')) {
+            router.push('/ceo/login'); // Enforce access control
+        }
+    }, [user, loading, router]);
+
+    if (loading) return <div className="min-h-screen flex items-center justify-center bg-black"><Loader2 className="h-8 w-8 animate-spin text-[#d4af37]" /></div>;
+    if (!user || user.role !== 'ceo') return null; // Prevent flash of content
 
     // Proposal State
     const [proposals, setProposals] = React.useState([

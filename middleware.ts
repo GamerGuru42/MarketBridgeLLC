@@ -62,9 +62,20 @@ export async function middleware(request: NextRequest) {
 
     // PROTECTION LOGIC
 
-    // CEO DECOMMISSIONED - Redirect to Admin
+    // CEO PROTECTION
     if (pathname.startsWith('/ceo')) {
-        return NextResponse.redirect(new URL('/admin/login', request.url))
+        // Allow public access to CEO auth pages
+        if (pathname.includes('/login') || pathname.includes('/signup')) {
+            if (user && role === 'ceo') {
+                return NextResponse.redirect(new URL('/ceo', request.url))
+            }
+            return supabaseResponse
+        }
+
+        // Protect CEO Dashboard
+        if (!user || role !== 'ceo') {
+            return NextResponse.redirect(new URL('/ceo/login', request.url))
+        }
     }
 
     // AUTH ENTROPY PREVENTION: Redirect logged-in users away from auth pages
