@@ -28,6 +28,7 @@ Add these in your Vercel project settings under **Settings → Environment Varia
 ```
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
 
 ### Application URLs
@@ -132,7 +133,7 @@ Ensure your Supabase database has the following tables:
 
 ### Build Fails
 - Check that all environment variables are set
-- Ensure `typescript.ignoreBuildErrors: true` is in `next.config.ts`
+- Ensure `typescript.ignoreBuildErrors: true` is in `next.config.js`
 - Review build logs in Vercel dashboard
 
 ### Webhooks Not Working
@@ -170,6 +171,6 @@ For issues specific to:
 
 ---
 
-**Last Updated**: December 24, 2024
+**Last Updated**: February 4, 2026
 **Build Status**: ✅ Production Ready
-**Next.js Version**: 16.0.10
+**Next.js Version**: 14.2.14
