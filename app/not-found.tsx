@@ -1,44 +1,61 @@
 import { Button } from '@/components/ui/button';
-import { Search, Home, ArrowLeft } from 'lucide-react';
+import { Search, Home, ArrowLeft, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 
 export default function NotFound() {
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-background font-sans">
-            <div className="max-w-md w-full text-center space-y-6">
-                <div className="relative mx-auto h-32 w-32 flex items-center justify-center">
-                    <div className="absolute inset-0 bg-primary/10 rounded-full animate-ping"></div>
-                    <div className="relative h-24 w-24 bg-primary/20 rounded-full flex items-center justify-center border-2 border-primary/30">
-                        <Search className="h-12 w-12 text-primary" />
+        <div className="min-h-screen flex items-center justify-center p-4 bg-black font-sans relative overflow-hidden">
+            {/* Ambient Background */}
+            <div className="fixed inset-0 pointer-events-none z-0">
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#FFB800]/10 rounded-full blur-[120px] opacity-20" />
+                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#FF5500]/10 rounded-full blur-[120px] opacity-20" />
+            </div>
+
+            <div className="max-w-md w-full text-center space-y-8 relative z-10">
+
+                {/* Glitch Effect 404 */}
+                <div className="relative mx-auto h-40 w-40 flex items-center justify-center group">
+                    <div className="absolute inset-0 bg-[#FFB800]/10 rounded-full animate-pulse group-hover:bg-[#FFB800]/20 transition-all duration-500"></div>
+                    <div className="absolute inset-0 border border-[#FFB800]/20 rounded-full scale-110 opacity-0 group-hover:scale-125 group-hover:opacity-100 transition-all duration-700"></div>
+
+                    <div className="relative h-28 w-28 bg-black border border-white/10 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(255,184,0,0.1)]">
+                        <Search className="h-12 w-12 text-[#FFB800]" />
                     </div>
                 </div>
 
-                <div className="space-y-2">
-                    <h1 className="text-6xl font-black tracking-tighter text-primary">404</h1>
-                    <h2 className="text-2xl font-bold uppercase tracking-tight">Endpoint Not Found</h2>
-                    <p className="text-muted-foreground text-sm max-w-[280px] mx-auto leading-relaxed">
-                        The requested node is not responding or has been decommissioned from our network.
+                <div className="space-y-4">
+                    <h1 className="text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white via-zinc-400 to-zinc-700 leading-none">
+                        404
+                    </h1>
+                    <h2 className="text-xl font-black uppercase tracking-[0.2em] text-[#FFB800]">
+                        Signal Lost
+                    </h2>
+                    <p className="text-zinc-500 text-sm max-w-[280px] mx-auto leading-relaxed border-l-2 border-[#FFB800]/50 pl-4 text-left">
+                        The requested node is offline or has been decommissioned from the MarketBridge network.
                     </p>
                 </div>
 
-                <div className="pt-6 grid grid-cols-2 gap-4">
-                    <Button variant="outline" asChild className="h-12 font-bold uppercase tracking-widest text-xs">
+                <div className="pt-8 grid grid-cols-2 gap-4">
+                    <Button variant="outline" asChild className="h-14 font-bold uppercase tracking-widest text-xs border-white/10 text-white hover:bg-white/5 hover:border-[#FFB800]/50">
                         <Link href="javascript:history.back()">
                             <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back
+                            Return
                         </Link>
                     </Button>
-                    <Button asChild className="h-12 font-bold uppercase tracking-widest text-xs bg-primary hover:bg-primary/90">
+                    <Button asChild className="h-14 font-bold uppercase tracking-widest text-xs bg-[#FFB800] text-black hover:bg-[#FFD700] hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,184,0,0.3)]">
                         <Link href="/">
                             <Home className="mr-2 h-4 w-4" />
-                            Home
+                            Dashboard
                         </Link>
                     </Button>
                 </div>
 
-                <p className="text-[10px] text-muted-foreground uppercase font-black tracking-[0.3em] pt-8">
-                    MarketBridge Indexer v1.0
-                </p>
+                <div className="pt-12 flex justify-center opacity-50">
+                    <p className="text-[10px] text-zinc-600 uppercase font-black tracking-[0.3em] flex items-center gap-2">
+                        <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
+                        System Diagnostics v2.0
+                    </p>
+                </div>
             </div>
         </div>
     );
