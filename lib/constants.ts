@@ -38,7 +38,6 @@ export const NIGERIAN_STATES = [
     "Zamfara"
 ];
 
-// Map of State -> Universities
 // Map of State -> Universities (Exhaustive list of Federal, State, and Private)
 export const UNIVERSITIES_BY_STATE: Record<string, string[]> = {
     "Abia": [
@@ -148,7 +147,6 @@ export const UNIVERSITIES_BY_STATE: Record<string, string[]> = {
         "National Open University of Nigeria (Federal)",
         "African University of Science and Technology (Private)",
         "Baze University (Private)",
-        "Bingham University, Karu (Private)",
         "Nile University of Nigeria (Private)",
         "Veritas University (Private)",
         "Philomath University (Private)",
