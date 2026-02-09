@@ -91,39 +91,55 @@ export const Header = () => {
                         <div className="flex items-center gap-3">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="h-11 w-11 rounded-full p-0 glass-border bg-white/5 hover:bg-white/10">
+                                    <Button variant="ghost" className="h-11 w-11 rounded-full p-0 glass-border bg-white/5 hover:bg-white/10 ring-offset-black">
                                         <User className="h-5 w-5 text-zinc-400" />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" sideOffset={12} className="w-56 glass-card border-white/10 p-2 text-white z-[150] shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-                                    <div className="px-3 py-2 mb-2">
-                                        <p className="text-xs font-black uppercase tracking-widest text-zinc-500 mb-1">Session active</p>
-                                        <p className="text-sm font-bold truncate">{user.displayName}</p>
+                                <DropdownMenuContent
+                                    align="end"
+                                    sideOffset={15}
+                                    className="w-64 bg-zinc-950 border border-white/10 p-2 text-white z-[999] shadow-[0_20px_50px_rgba(0,0,0,0.8)] rounded-2xl"
+                                >
+                                    <div className="px-3 py-3 mb-2 border-b border-white/5">
+                                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Authenticated Operative</p>
+                                        <p className="text-sm font-black truncate text-[#FFB800] italic font-heading tracking-tight">{user.displayName || 'AUTHENTICATED USER'}</p>
+                                        <p className="text-[10px] text-zinc-500 font-medium truncate italic">{user.email}</p>
                                     </div>
-                                    <DropdownMenuItem asChild className="focus:bg-white/10 rounded-xl cursor-pointer">
-                                        <Link href="/settings" className="flex items-center gap-3 py-2.5">
-                                            <User className="h-4 w-4 text-[#FFB800]" />
-                                            <span className="font-bold uppercase text-[10px] tracking-widest">Operational Profile</span>
+                                    <DropdownMenuItem asChild className="focus:bg-white/5 rounded-xl cursor-pointer py-3 group">
+                                        <Link href="/settings" className="flex items-center gap-3 w-full">
+                                            <div className="h-8 w-8 rounded-lg bg-zinc-900 border border-white/5 flex items-center justify-center group-hover:border-[#FFB800]/50 transition-colors">
+                                                <User className="h-4 w-4 text-zinc-500 group-hover:text-[#FFB800]" />
+                                            </div>
+                                            <span className="font-black uppercase text-[10px] tracking-widest text-zinc-400 group-hover:text-white transition-colors">Operational Profile</span>
                                         </Link>
                                     </DropdownMenuItem>
                                     {user.role === 'dealer' && (
-                                        <DropdownMenuItem asChild className="focus:bg-white/10 rounded-xl cursor-pointer text-[#FFB800]">
-                                            <Link href="/dealer/dashboard" className="flex items-center gap-3 py-2.5">
-                                                <LayoutDashboard className="h-4 w-4" />
-                                                <span className="font-bold uppercase text-[10px] tracking-widest">Dealer Command</span>
+                                        <DropdownMenuItem asChild className="focus:bg-white/5 rounded-xl cursor-pointer py-3 group">
+                                            <Link href="/dealer/dashboard" className="flex items-center gap-3 w-full">
+                                                <div className="h-8 w-8 rounded-lg bg-[#FFB800]/10 border border-[#FFB800]/20 flex items-center justify-center group-hover:bg-[#FFB800]/20 transition-all">
+                                                    <LayoutDashboard className="h-4 w-4 text-[#FFB800]" />
+                                                </div>
+                                                <span className="font-black uppercase text-[10px] tracking-widest text-[#FFB800]">Dealer Command</span>
                                             </Link>
                                         </DropdownMenuItem>
                                     )}
                                     {['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'].includes(user.role) && (
-                                        <DropdownMenuItem asChild className="focus:bg-white/10 rounded-xl cursor-pointer text-[#FFB800]">
-                                            <Link href="/admin" className="flex items-center gap-3 py-2.5 font-bold">
-                                                <Crown className="h-4 w-4" /> Vision Command
+                                        <DropdownMenuItem asChild className="focus:bg-white/5 rounded-xl cursor-pointer py-3 group">
+                                            <Link href="/admin" className="flex items-center gap-3 w-full">
+                                                <div className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                                                    <Crown className="h-4 w-4 text-emerald-500" />
+                                                </div>
+                                                <span className="font-black uppercase text-[10px] tracking-widest text-emerald-500">Vision Control</span>
                                             </Link>
                                         </DropdownMenuItem>
                                     )}
-                                    <DropdownMenuItem onClick={handleSignOut} className="focus:bg-red-500/10 text-red-500 rounded-xl cursor-pointer">
-                                        <span className="flex items-center gap-3 py-2.5">
-                                            <LogOut className="h-4 w-4" /> Terminate Session
+                                    <div className="my-2 border-t border-white/5" />
+                                    <DropdownMenuItem onClick={handleSignOut} className="focus:bg-red-500/10 text-red-500 rounded-xl cursor-pointer py-3 group">
+                                        <span className="flex items-center gap-3 w-full">
+                                            <div className="h-8 w-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center group-hover:bg-red-500/20">
+                                                <LogOut className="h-4 w-4 text-red-500" />
+                                            </div>
+                                            <span className="font-black uppercase text-[10px] tracking-widest">Terminate Session</span>
                                         </span>
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
