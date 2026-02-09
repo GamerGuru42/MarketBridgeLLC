@@ -463,7 +463,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                             <div>
                                 <CardTitle className="text-lg">{chat.other_user?.display_name}</CardTitle>
                                 <Badge variant="secondary" className="mt-1">
-                                    {chat.other_user?.role === 'dealer' ? 'Dealer' : 'Customer'}
+                                    {['dealer', 'student_seller'].includes(chat.other_user?.role as any) ? 'Merchant' : 'Buyer'}
                                 </Badge>
                             </div>
                         </div>

@@ -22,7 +22,7 @@ function SignupContent() {
     const { refreshUser, signInWithGoogle } = useAuth();
 
     const searchParams = useSearchParams();
-    const initialRole = searchParams.get('role') as 'customer' | 'dealer' | 'admin' | null;
+    const initialRole = searchParams.get('role') as 'customer' | 'dealer' | 'admin' | 'student_buyer' | 'student_seller' | null;
 
     // Steps
     const [step, setStep] = useState<'role' | 'details' | 'auth-method' | 'admin-code' | 'admin-dept'>(() => {
@@ -31,7 +31,11 @@ function SignupContent() {
         return 'role';
     });
 
-    const [role, setRole] = useState<'customer' | 'dealer' | 'admin'>(initialRole === 'dealer' ? 'dealer' : (initialRole === 'admin' ? 'admin' : (initialRole === 'customer' ? 'customer' : 'customer')));
+    const [role, setRole] = useState<'student_buyer' | 'student_seller' | 'admin' | 'customer' | 'dealer'>(() => {
+        if (initialRole === 'dealer' || initialRole === 'student_seller') return 'student_seller';
+        if (initialRole === 'admin') return 'admin';
+        return 'student_buyer';
+    });
 
     // Admin Flow
     const [adminCode, setAdminCode] = useState('');
@@ -96,9 +100,9 @@ function SignupContent() {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
-    const handleRoleSelect = (selectedRole: 'customer' | 'dealer' | 'admin') => {
+    const handleRoleSelect = (selectedRole: 'student_buyer' | 'student_seller' | 'admin') => {
         setRole(selectedRole);
-        if (selectedRole === 'dealer' || selectedRole === 'customer') setStep('auth-method');
+        if (['student_seller', 'dealer', 'student_buyer', 'customer'].includes(selectedRole)) setStep('auth-method');
         else if (selectedRole === 'admin') setStep('admin-code');
     };
 
@@ -110,7 +114,7 @@ function SignupContent() {
     ).filter(uni => uni.toLowerCase().includes(uniSearch.toLowerCase()));
 
     const StepProgress = ({ currentStep, role }: { currentStep: string, role: string }) => {
-        const steps = role === 'dealer'
+        const steps = ['student_seller', 'dealer'].includes(role)
             ? ['Access', 'Identity', 'Verification']
             : (role === 'admin' ? ['Access', 'Sector', 'Identity'] : ['Access', 'Identity']);
 
@@ -169,19 +173,21 @@ function SignupContent() {
             return;
         }
 
-        if (role === 'dealer' && (!formData.university && !missingUniName)) {
+        const isMerchant = ['student_seller', 'dealer'].includes(role);
+
+        if (isMerchant && (!formData.university && !missingUniName)) {
             setError("Please specify your university.");
             setIsLoading(false);
             return;
         }
 
-        if (role === 'dealer' && !formData.matricNumber) {
+        if (isMerchant && !formData.matricNumber) {
             setError("Matriculation number is required for student verification.");
             setIsLoading(false);
             return;
         }
 
-        if (role === 'dealer' && !formData.studentIdUrl) {
+        if (isMerchant && !formData.studentIdUrl) {
             setError("Please upload your student ID card for verification.");
             setIsLoading(false);
             return;
@@ -213,6 +219,7 @@ function SignupContent() {
             if (signUpError) throw signUpError;
             if (!authData.user) throw new Error("Account creation protocol failed.");
 
+            const isMerchant = ['student_seller', 'dealer'].includes(role);
             // 2. Profile Upsert
             const { error: profileError } = await supabase
                 .from('users')
@@ -223,10 +230,10 @@ function SignupContent() {
                     role: role,
                     location: formData.location,
                     phone_number: formData.phoneNumber,
-                    business_name: role === 'dealer' ? formData.businessName : null,
+                    business_name: isMerchant ? formData.businessName : null,
                     university: finalUniversity,
-                    matric_number: role === 'dealer' ? formData.matricNumber : null,
-                    subscription_status: role === 'dealer' ? 'pending_verification' : 'active',
+                    matric_number: isMerchant ? formData.matricNumber : null,
+                    subscription_status: isMerchant ? 'pending_verification' : 'active',
                     is_verified: false,
                     // Store extra student data in metadata for safety if columns don't exist
                     metadata: {
@@ -240,7 +247,7 @@ function SignupContent() {
 
             await refreshUser(authData.user.id);
 
-            if (role === 'dealer') {
+            if (['student_seller', 'dealer'].includes(role)) {
                 // Future-proof: Redirect to a "verification pending" screen if needed
                 router.push('/dealer/dashboard');
             } else {
@@ -274,14 +281,14 @@ function SignupContent() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 max-w-4xl mx-auto">
                         {[
-                            { id: 'customer', title: 'Student Buyer', icon: UserIcon, desc: 'Browse & Buy Assets', color: 'text-blue-400' },
-                            { id: 'dealer', title: 'Student Seller', icon: Briefcase, desc: 'Start your Campus Business', color: 'text-[#FFB800]' },
+                            { id: 'student_buyer', title: 'Student Buyer', icon: UserIcon, desc: 'Browse & Buy Assets', color: 'text-blue-400' },
+                            { id: 'student_seller', title: 'Student Merchant', icon: Briefcase, desc: 'Start your Campus Business', color: 'text-[#FFB800]' },
                             { id: 'admin', title: 'Admin', icon: ShieldCheck, desc: 'Operations Gateway', color: 'text-red-400' }
                         ].map(item => (
                             <Card
                                 key={item.id}
                                 className="glass-card border-white/5 rounded-[2rem] p-8 text-center group cursor-pointer hover:bg-white/[0.08] hover:translate-y-[-8px] transition-all duration-500"
-                                onClick={() => handleRoleSelect(item.id as 'customer' | 'dealer' | 'admin')}
+                                onClick={() => handleRoleSelect(item.id as any)}
                             >
                                 <div className="h-16 w-16 glass-card rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                                     <item.icon className={`h-8 w-8 ${item.color}`} />

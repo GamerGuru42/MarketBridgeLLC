@@ -56,7 +56,7 @@ export default function SettingsPage() {
             };
 
             // Only add business fields for dealers to avoid DB constraint issues
-            if (user.role === 'dealer') {
+            if (['dealer', 'student_seller'].includes(user.role)) {
                 updateData.business_name = formData.businessName;
                 updateData.store_type = formData.storeType;
             }
@@ -130,7 +130,7 @@ export default function SettingsPage() {
                             <User className="h-3.5 w-3.5" />
                             Identity
                         </TabsTrigger>
-                        {user.role === 'dealer' && (
+                        {['dealer', 'student_seller'].includes(user.role) && (
                             <TabsTrigger value="business" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FFB800] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
                                 <Building className="h-3.5 w-3.5" />
                                 Business
@@ -228,7 +228,7 @@ export default function SettingsPage() {
                     </TabsContent>
 
                     {/* Business Tab */}
-                    {user.role === 'dealer' && (
+                    {['dealer', 'student_seller'].includes(user.role) && (
                         <TabsContent value="business" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
                                 <CardHeader className="p-8 pb-4">

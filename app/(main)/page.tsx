@@ -137,7 +137,7 @@ export default function HomePage() {
 
                             <div className="flex flex-col sm:flex-row gap-4 pt-4">
                                 <Button size="lg" asChild className="bg-[#FFB800] text-black font-black uppercase tracking-widest px-10 h-16 hover:bg-[#FFD700] hover:scale-105 transition-all duration-300 shadow-[0_0_50px_rgba(255,184,0,0.2)]">
-                                    <Link href={user ? (['dealer', 'student_seller'].includes(user.role) ? '/dealer/dashboard' : '/onboarding') : '/signup?role=dealer'}>
+                                    <Link href={user ? (['dealer', 'student_seller'].includes(user.role) ? '/dealer/dashboard' : '/onboarding?role=student_seller') : '/signup?role=dealer'}>
                                         <span className="inline-block">{user && ['dealer', 'student_seller'].includes(user.role) ? 'MERCHANT TERMINAL' : 'START SELLING'}</span>
                                     </Link>
                                 </Button>
@@ -306,9 +306,9 @@ export default function HomePage() {
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                            <Button size="lg" className="bg-[#FFB800] text-black font-black uppercase tracking-widest px-12 h-16 rounded-full hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,184,0,0.3)]">
-                                <Link href={user ? (user.role === 'dealer' ? '/dealer/dashboard' : '/onboarding') : '/signup?role=dealer'}>
-                                    {user && user.role === 'dealer' ? 'Go to Dashboard' : 'Become a Dealer'}
+                            <Button size="lg" asChild className="bg-[#FFB800] text-black font-black uppercase tracking-widest px-12 h-16 rounded-full hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,184,0,0.3)]">
+                                <Link href={user ? (['dealer', 'student_seller'].includes(user.role) ? '/dealer/dashboard' : '/onboarding?role=student_seller') : '/signup?role=dealer'}>
+                                    {user && ['dealer', 'student_seller'].includes(user.role) ? 'MERCHANT TERMINAL' : 'BECOME A DEALER'}
                                 </Link>
                             </Button>
                             <Button size="lg" variant="ghost" asChild className="text-white border border-white/10 font-bold uppercase tracking-widest px-12 h-16 rounded-full hover:bg-white/10">

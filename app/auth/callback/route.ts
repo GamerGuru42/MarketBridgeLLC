@@ -28,7 +28,7 @@ export async function GET(request: Request) {
             // Determine redirect path
             let redirectPath = next // Default to 'next' param if available
             if (next === '/') { // Only override if default '/'
-                if (role === 'dealer') redirectPath = '/dealer/dashboard'
+                if (['dealer', 'student_seller'].includes(role)) redirectPath = '/dealer/dashboard'
                 else if (['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo'].includes(role)) redirectPath = '/admin'
                 else redirectPath = '/listings' // Customers go to marketplace
             }

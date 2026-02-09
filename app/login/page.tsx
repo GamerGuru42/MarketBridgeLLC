@@ -18,7 +18,7 @@ export default function LoginPage() {
 
     // State
     const [step, setStep] = useState<'role' | 'login' | 'admin-code'>('role');
-    const [role, setRole] = useState<'customer' | 'dealer' | 'admin'>('customer');
+    const [role, setRole] = useState<'student_buyer' | 'student_seller' | 'admin' | 'customer' | 'dealer'>('student_buyer');
     const [accessCode, setAccessCode] = useState('');
 
     const [formData, setFormData] = useState({
@@ -29,7 +29,7 @@ export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const handleRoleSelect = (selectedRole: 'customer' | 'dealer' | 'admin') => {
+    const handleRoleSelect = (selectedRole: 'student_buyer' | 'student_seller' | 'admin') => {
         setRole(selectedRole);
         setError('');
         if (selectedRole === 'admin') {
@@ -75,7 +75,7 @@ export default function LoginPage() {
 
                 const role = profile?.role || data.user.user_metadata?.role;
 
-                if (role === 'dealer') {
+                if (['dealer', 'student_seller'].includes(role)) {
                     router.push('/dealer/dashboard');
                 } else if (role === 'technical_admin') {
                     router.push('/admin/technical');
@@ -133,14 +133,14 @@ export default function LoginPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 max-w-4xl mx-auto">
                         {[
-                            { id: 'customer', title: 'Customer', icon: User, desc: 'Personal Account', color: 'text-blue-400' },
-                            { id: 'dealer', title: 'Dealer', icon: Briefcase, desc: 'Business Terminal', color: 'text-[#FFB800]' },
+                            { id: 'student_buyer', title: 'Student Buyer', icon: User, desc: 'Personal Account', color: 'text-blue-400' },
+                            { id: 'student_seller', title: 'Student Seller', icon: Briefcase, desc: 'Business Terminal', color: 'text-[#FFB800]' },
                             { id: 'admin', title: 'Admin', icon: ShieldCheck, desc: 'Secure Gateway', color: 'text-red-400' }
                         ].map(item => (
                             <Card
                                 key={item.id}
                                 className="glass-card border-white/5 rounded-[2rem] p-8 text-center group cursor-pointer hover:bg-white/[0.08] hover:translate-y-[-8px] transition-all duration-500"
-                                onClick={() => handleRoleSelect(item.id as 'customer' | 'dealer' | 'admin')}
+                                onClick={() => handleRoleSelect(item.id as any)}
                             >
                                 <div className="h-16 w-16 glass-card rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                                     <item.icon className={`h-8 w-8 ${item.color}`} />

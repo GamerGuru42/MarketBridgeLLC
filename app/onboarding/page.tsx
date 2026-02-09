@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,8 +15,10 @@ import { Loader2, CheckCircle } from 'lucide-react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { cn } from '@/lib/utils';
 
-export default function OnboardingPage() {
+function OnboardingContent() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const forcedRole = searchParams.get('role');
     const { user, loading: authLoading, refreshUser } = useAuth();
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState(1);
@@ -22,7 +26,7 @@ export default function OnboardingPage() {
         displayName: '',
         location: '',
         photoURL: '',
-        role: 'student_buyer',
+        role: forcedRole || 'student_buyer',
         businessName: '',
         university: '',
         matricNumber: '',
@@ -44,7 +48,7 @@ export default function OnboardingPage() {
                 displayName: user.displayName || user.email?.split('@')[0] || '',
                 location: user.location || (detectedNode !== 'global' ? detectedNode : '') || '',
                 photoURL: user.photoURL || '',
-                role: (user.role as any) || 'student_buyer',
+                role: forcedRole || (user.role as any) || 'student_buyer',
                 businessName: user.businessName || '',
                 university: (user as any).university || '',
                 matricNumber: (user as any).matricNumber || '',
@@ -281,5 +285,13 @@ export default function OnboardingPage() {
                 </Card>
             </div>
         </div>
+    );
+}
+
+export default function OnboardingPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-black"><Loader2 className="h-8 w-8 animate-spin text-[#FFB800]" /></div>}>
+            <OnboardingContent />
+        </Suspense>
     );
 }

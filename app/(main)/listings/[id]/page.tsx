@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
-import { Loader2, MapPin, MessageCircle, ShoppingCart, ArrowLeft, ShieldCheck, Phone, CreditCard, Zap, AlertTriangle, Box, Activity } from 'lucide-react';
+import { Loader2, MapPin, MessageCircle, ShoppingCart, ArrowLeft, ShieldCheck, Phone, CreditCard, Zap, AlertTriangle, Box, Activity, Store, Star } from 'lucide-react';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { ReviewsSection } from '@/components/ReviewsSection';
@@ -50,7 +50,7 @@ interface Listing {
     make?: string;
     model?: string;
     year?: number;
-    condition?: 'Tokunbo' | 'Nigerian Used' | 'Brand New';
+    condition?: string;
     transmission?: 'Automatic' | 'Manual';
     mileage?: number;
     fuel_type?: string;
@@ -751,6 +751,41 @@ export default function ListingDetailPage() {
                                     <p className="text-sm font-bold text-white uppercase truncate">{spec.value || 'N/A'}</p>
                                 </div>
                             ))}
+                        </div>
+
+                        {/* Merchant Intelligence */}
+                        <div className="glass-card p-8 rounded-[2.5rem] border-white/10 bg-white/[0.03] backdrop-blur-xl relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-10 transition-opacity">
+                                <ShieldCheck className="h-24 w-24 text-[#FFB800]" />
+                            </div>
+                            <h3 className="text-white font-black uppercase text-xs tracking-[0.2em] font-heading mb-6 flex items-center gap-3 relative z-10">
+                                <span className="h-1.5 w-1.5 rounded-full bg-[#FFB800]" />
+                                Merchant Intelligence
+                            </h3>
+                            <div className="flex items-center gap-6 relative z-10">
+                                <div className="h-20 w-20 rounded-[1.5rem] bg-black border border-white/10 flex items-center justify-center overflow-hidden relative">
+                                    {listing.dealer.photo_url ? (
+                                        <Image src={listing.dealer.photo_url} alt={listing.dealer.display_name} fill className="object-cover" />
+                                    ) : (
+                                        <Store className="h-8 w-8 text-zinc-700" />
+                                    )}
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <h4 className="text-xl font-black uppercase tracking-tighter italic">{listing.dealer.display_name}</h4>
+                                        {listing.dealer.is_verified && <ShieldCheck className="h-4 w-4 text-[#FFB800]" />}
+                                    </div>
+                                    <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mb-4">Verified Institutional Node</p>
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex items-center gap-1.5">
+                                            <Star className="h-3 w-3 fill-[#FFB800] text-[#FFB800]" />
+                                            <span className="text-[10px] font-black italic">4.9 RATING</span>
+                                        </div>
+                                        <span className="w-1 h-1 rounded-full bg-zinc-800" />
+                                        <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">{listing.dealer.store_type || 'DIGITAL'} HUB</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         {/* Description */}
