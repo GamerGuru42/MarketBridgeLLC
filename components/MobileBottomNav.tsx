@@ -36,13 +36,13 @@ export const MobileBottomNav = () => {
             href: '/cart',
             label: 'Cart',
             icon: ShoppingCart,
-            show: user?.role === 'customer' || !user,
+            show: ['customer', 'student_buyer'].includes(user?.role as any) || !user,
             badge: itemCount,
         },
         {
             href: (user?.role === 'ceo' || user?.role === 'cofounder')
                 ? '/admin'
-                : (user?.role === 'dealer' ? '/dealer/dashboard' : (user ? '/orders' : '/login')),
+                : (['dealer', 'student_seller'].includes(user?.role as any) ? '/dealer/dashboard' : (user ? '/orders' : '/login')),
             label: (user?.role === 'ceo' || user?.role === 'cofounder') ? 'Command' : (user ? 'Account' : 'Login'),
             icon: (user?.role === 'ceo' || user?.role === 'cofounder') ? Crown : User,
             show: true,

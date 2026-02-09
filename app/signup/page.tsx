@@ -384,9 +384,13 @@ function SignupContent() {
                 <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden">
                     <div className="absolute top-[-10%] right-[-10%] w-32 h-32 bg-[#FFB800]/5 blur-[40px] rounded-full" />
                     <CardHeader className="p-0 text-center mb-10">
-                        <Button variant="ghost" onClick={() => setStep('role')} className="text-zinc-600 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
-                        <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2">Verification Channel</CardTitle>
-                        <CardDescription className="text-zinc-500 font-medium italic lowercase">choose your identity entry point</CardDescription>
+                        <Button variant="ghost" onClick={() => initialRole ? router.push('/') : setStep('role')} className="text-zinc-600 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> {initialRole ? 'Cancel' : 'Back'}</Button>
+                        <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2">
+                            {['student_seller', 'dealer'].includes(role) ? 'Merchant Verification' : 'Verification Channel'}
+                        </CardTitle>
+                        <CardDescription className="text-zinc-500 font-medium italic lowercase">
+                            {['student_seller', 'dealer'].includes(role) ? 'establish your secure business path' : 'choose your identity entry point'}
+                        </CardDescription>
                     </CardHeader>
                     <CardContent className="p-0 space-y-6 pb-8">
                         <Button variant="outline" className="w-full h-16 rounded-[1.5rem] border-white/10 hover:bg-white/5 text-white font-bold uppercase tracking-widest group transition-all" onClick={signInWithGoogle}>
@@ -412,7 +416,7 @@ function SignupContent() {
             <Card className="w-full max-w-xl glass-card border-none rounded-[3rem] p-12 text-white relative z-10 shadow-2xl">
                 <CardHeader className="p-0 mb-8 text-left">
                     <div className="flex justify-between items-start mb-6">
-                        <Button variant="ghost" onClick={() => setStep('auth-method')} className="text-zinc-600 hover:text-white p-0 h-auto text-[10px] font-black uppercase tracking-widest"><ArrowLeft className="mr-2 h-3 w-3" /> Back</Button>
+                        <Button variant="ghost" onClick={() => setStep('auth-method')} className="text-zinc-600 hover:text-white p-0 h-auto text-[10px] font-black uppercase tracking-widest"><ArrowLeft className="mr-2 h-3 w-3" /> Secure Gate</Button>
                         <Logo showText={false} className="opacity-50" />
                     </div>
 
@@ -420,7 +424,7 @@ function SignupContent() {
 
                     <CardTitle className="text-4xl font-black uppercase italic tracking-tighter mb-2">Establish Identity</CardTitle>
                     <CardDescription className="text-zinc-500 font-medium italic lowercase">
-                        {role === 'dealer' ? `Establishing verified student node` : "Please define your global attributes"}
+                        {['student_seller', 'dealer'].includes(role) ? `Establishing verified merchant node` : "Please define your global attributes"}
                     </CardDescription>
                 </CardHeader>
 
@@ -483,7 +487,7 @@ function SignupContent() {
                             </div>
                         </div>
 
-                        {role === 'dealer' && (
+                        {['student_seller', 'dealer'].includes(role) && (
                             <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
                                 <div className="space-y-2">
                                     <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Business / Brand Name</label>
@@ -618,7 +622,7 @@ function SignupContent() {
                             </div>
                         )}
 
-                        {role !== 'dealer' && (
+                        {!['student_seller', 'dealer'].includes(role) && (
                             <div className="space-y-2 animate-in fade-in slide-in-from-top-4 duration-500">
                                 <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Mobile Comms</label>
                                 <div className="relative group">
@@ -635,7 +639,7 @@ function SignupContent() {
                             </div>
                         )}
 
-                        {role === 'dealer' && (
+                        {['student_seller', 'dealer'].includes(role) && (
                             <div className="space-y-6 pt-6 border-t border-white/5 animate-in fade-in duration-700 delay-100">
                                 <div className="glass-card p-8 rounded-[2rem] border border-white/5 text-center bg-gradient-to-b from-[#FFB800]/5 to-transparent relative overflow-hidden">
                                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FFB800]/20 to-transparent" />
@@ -665,7 +669,7 @@ function SignupContent() {
                         <Button type="submit" className="w-full h-18 bg-gold-gradient text-black font-black uppercase tracking-widest rounded-[1.5rem] glow-on-hover border-none mt-4 text-xs group" disabled={isLoading}>
                             {isLoading ? <Loader2 className="animate-spin h-6 w-6" /> : (
                                 <span className="flex items-center gap-3">
-                                    {role === 'dealer' ? 'Initialize Verification' : 'Establish Identity Node'}
+                                    {['student_seller', 'dealer'].includes(role) ? 'Initialize Verification' : 'Establish Identity Node'}
                                     <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </span>
                             )}

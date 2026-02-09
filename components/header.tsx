@@ -113,7 +113,7 @@ export const Header = () => {
                                             <span className="font-black uppercase text-[10px] tracking-widest text-zinc-400 group-hover:text-white transition-colors">Operational Profile</span>
                                         </Link>
                                     </DropdownMenuItem>
-                                    {user.role === 'dealer' && (
+                                    {['dealer', 'student_seller'].includes(user.role) && (
                                         <DropdownMenuItem asChild className="focus:bg-white/5 rounded-xl cursor-pointer py-3 group">
                                             <Link href="/dealer/dashboard" className="flex items-center gap-3 w-full">
                                                 <div className="h-8 w-8 rounded-lg bg-[#FFB800]/10 border border-[#FFB800]/20 flex items-center justify-center group-hover:bg-[#FFB800]/20 transition-all">
