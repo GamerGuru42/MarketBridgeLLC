@@ -20,9 +20,9 @@ export const Logo: React.FC<LogoProps> = ({ className = '', size = 'md', hideTex
     return (
         <Link href="/" className={`group flex items-center transition-transform active:scale-95 ${className}`}>
             {!hideText && (
-                <div className="flex items-center gap-1">
-                    <span className={`${sizeClasses[size]} font-black text-white tracking-tighter`}>Market</span>
-                    <span className={`${sizeClasses[size]} font-black text-[#FFB800] tracking-tighter`}>Bridge</span>
+                <div className="flex items-center">
+                    <span className={`${sizeClasses[size]} font-black text-white tracking-[-0.05em]`}>Market</span>
+                    <span className={`${sizeClasses[size]} font-black text-[#FFB800] tracking-[-0.05em]`}>Bridge</span>
                 </div>
             )}
             {hideText && (

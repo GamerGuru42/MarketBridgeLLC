@@ -343,7 +343,7 @@ function ListingsContent() {
                                                     <div className="space-y-1">
                                                         <p className="text-zinc-400 text-[9px] font-black uppercase tracking-widest font-heading mb-1 italic">Authorized Value</p>
                                                         <p className="text-white text-3xl font-black italic font-heading tracking-tighter">
-                                                            ₦{(listing.price / 1000000).toFixed(1)}<span className="text-[#FFB800] text-sm ml-1 uppercase">M</span>
+                                                            ₦{listing.price.toLocaleString()}
                                                         </p>
                                                     </div>
                                                 </div>

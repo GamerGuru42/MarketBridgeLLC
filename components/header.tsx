@@ -54,7 +54,7 @@ export const Header = () => {
     );
 
     return (
-        <header className="fixed top-0 z-[100] w-full bg-black/50 backdrop-blur-xl border-b border-white/5 h-20 flex items-center">
+        <header className="sticky top-0 z-[100] w-full bg-black/50 backdrop-blur-xl border-b border-white/5 h-20 flex items-center">
             <div className="container mx-auto px-4 flex items-center justify-between">
                 {/* Logo & Node */}
                 <div className="flex items-center gap-4">
@@ -79,10 +79,10 @@ export const Header = () => {
                     {!user && !loading && (
                         <div className="hidden lg:flex items-center gap-6">
                             <Link href="/login" className="text-white font-black text-[11px] uppercase tracking-widest hover:opacity-80 transition-opacity">
-                                Sign in
+                                SIGN IN
                             </Link>
                             <Button asChild className="bg-gold-gradient text-black font-black uppercase tracking-widest px-8 rounded-full h-11 glow-on-hover border-none">
-                                <Link href="/signup">Sign up</Link>
+                                <Link href="/signup">SIGN UP</Link>
                             </Button>
                         </div>
                     )}
@@ -95,7 +95,7 @@ export const Header = () => {
                                         <User className="h-5 w-5 text-zinc-400" />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-56 glass-card border-white/10 p-2 mt-4 text-white">
+                                <DropdownMenuContent align="end" sideOffset={12} className="w-56 glass-card border-white/10 p-2 text-white z-[150] shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
                                     <div className="px-3 py-2 mb-2">
                                         <p className="text-xs font-black uppercase tracking-widest text-zinc-500 mb-1">Session active</p>
                                         <p className="text-sm font-bold truncate">{user.displayName}</p>
@@ -114,7 +114,7 @@ export const Header = () => {
                                             </Link>
                                         </DropdownMenuItem>
                                     )}
-                                    {['ceo', 'cofounder'].includes(user.role) && (
+                                    {['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'].includes(user.role) && (
                                         <DropdownMenuItem asChild className="focus:bg-white/10 rounded-xl cursor-pointer text-[#FFB800]">
                                             <Link href="/admin" className="flex items-center gap-3 py-2.5 font-bold">
                                                 <Crown className="h-4 w-4" /> Vision Command

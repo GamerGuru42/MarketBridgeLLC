@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Loader2, CheckCircle } from 'lucide-react';
 import { ImageUpload } from '@/components/ImageUpload';
+import { cn } from '@/lib/utils';
 
 export default function OnboardingPage() {
     const router = useRouter();
@@ -101,23 +102,32 @@ export default function OnboardingPage() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="max-w-2xl mx-auto">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-2xl">Complete Your Profile</CardTitle>
-                        <p className="text-muted-foreground">
-                            Let's set up your account to get started
-                        </p>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            {/* Step 1: Basic Info */}
-                            {step === 1 && (
-                                <div className="space-y-4">
-                                    <div className="flex justify-center mb-6">
-                                        <div className="w-32">
-                                            <Label className="mb-2 block text-center">Profile Photo</Label>
+        <div className="min-h-screen bg-black text-white relative py-20 px-6 selection:bg-[#FFB800] selection:text-black">
+            <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
+
+            <div className="max-w-2xl mx-auto relative z-10 space-y-12">
+                <div className="text-center space-y-4">
+                    <div className="flex items-center justify-center gap-3">
+                        <span className="h-2 w-2 rounded-full bg-[#FFB800] animate-pulse" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading">Protocol Identification</span>
+                    </div>
+                    <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
+                        Establish <span className="text-[#FFB800]">Profile</span>
+                    </h1>
+                    <p className="text-zinc-500 font-medium italic">
+                        Initialize your operational parameters for the Abuja Pilot Phase.
+                    </p>
+                </div>
+
+                <Card className="glass-card border-none rounded-[3rem] p-10 overflow-hidden relative">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gold-gradient" />
+                    <CardContent className="p-0">
+                        <form onSubmit={handleSubmit} className="space-y-10">
+                            <div className="space-y-8">
+                                <div className="flex justify-center mb-10">
+                                    <div className="w-40 space-y-4">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-center block font-heading">Digital Identity Avatar</Label>
+                                        <div className="glass-card rounded-[2rem] p-2 hover:border-[#FFB800]/30 transition-all">
                                             <ImageUpload
                                                 onImagesSelected={(urls) => setFormData({ ...formData, photoURL: urls[0] || '' })}
                                                 defaultImages={formData.photoURL ? [formData.photoURL] : []}
@@ -126,108 +136,113 @@ export default function OnboardingPage() {
                                             />
                                         </div>
                                     </div>
+                                </div>
 
-                                    <div>
-                                        <Label htmlFor="displayName">Display Name *</Label>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-3">
+                                        <Label htmlFor="displayName" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2 font-heading">Display Alias *</Label>
                                         <Input
                                             id="displayName"
                                             value={formData.displayName}
                                             onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
-                                            placeholder="Your name"
+                                            placeholder="OPERATIVE NAME"
                                             required
+                                            className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FFB800]/50 transition-all font-heading uppercase tracking-widest text-xs"
                                         />
                                     </div>
 
-                                    <div>
-                                        <Label htmlFor="location">Location</Label>
+                                    <div className="space-y-3">
+                                        <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2 font-heading">Operational Sector</Label>
                                         <Input
                                             id="location"
                                             value={formData.location}
                                             onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                            placeholder="e.g., Lagos, Nigeria"
+                                            placeholder="e.g. FCT - ABUJA"
+                                            className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FFB800]/50 transition-all font-heading uppercase tracking-widest text-xs"
                                         />
                                     </div>
+                                </div>
 
-                                    <div>
-                                        <Label>I want to *</Label>
-                                        <RadioGroup
-                                            value={formData.role}
-                                            onValueChange={(value) => setFormData({ ...formData, role: value })}
-                                            className="mt-2"
-                                        >
-                                            <div className="flex items-center space-x-2 border rounded-lg p-4 cursor-pointer hover:bg-muted">
-                                                <RadioGroupItem value="customer" id="customer" />
-                                                <Label htmlFor="customer" className="cursor-pointer flex-1">
-                                                    <div className="font-medium">Buy Products</div>
-                                                    <div className="text-sm text-muted-foreground">
-                                                        Browse and purchase from verified dealers
+                                <div className="space-y-4 pt-4">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2 font-heading">Deployment Protocol *</Label>
+                                    <RadioGroup
+                                        value={formData.role}
+                                        onValueChange={(value) => setFormData({ ...formData, role: value })}
+                                        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                                    >
+                                        <div className={cn(
+                                            "flex items-center space-x-4 border rounded-[2rem] p-6 cursor-pointer transition-all duration-500",
+                                            formData.role === 'customer' ? "bg-[#FFB800] border-[#FFB800] text-black" : "bg-white/5 border-white/10 text-white hover:border-white/20"
+                                        )} onClick={() => setFormData({ ...formData, role: 'customer' })}>
+                                            <RadioGroupItem value="customer" id="customer" className="hidden" />
+                                            <Label htmlFor="customer" className="cursor-pointer flex-1 space-y-1">
+                                                <div className="font-black uppercase tracking-widest italic font-heading">Asset Buyer</div>
+                                                <div className={cn("text-[10px] italic font-medium", formData.role === 'customer' ? "text-black/60" : "text-zinc-500")}>
+                                                    Acquire verified campus assets
+                                                </div>
+                                            </Label>
+                                        </div>
+                                        <div className={cn(
+                                            "flex items-center space-x-4 border rounded-[2rem] p-6 cursor-pointer transition-all duration-500",
+                                            formData.role === 'dealer' ? "bg-[#FFB800] border-[#FFB800] text-black" : "bg-white/5 border-white/10 text-white hover:border-white/20"
+                                        )} onClick={() => setFormData({ ...formData, role: 'dealer' })}>
+                                            <RadioGroupItem value="dealer" id="dealer" className="hidden" />
+                                            <Label htmlFor="dealer" className="cursor-pointer flex-1 space-y-1">
+                                                <div className="font-black uppercase tracking-widest italic font-heading">Student Merchant</div>
+                                                <div className={cn("text-[10px] italic font-medium", formData.role === 'dealer' ? "text-black/60" : "text-zinc-500")}>
+                                                    Command a campus business terminal
+                                                </div>
+                                            </Label>
+                                        </div>
+                                    </RadioGroup>
+                                </div>
+
+                                {formData.role === 'dealer' && (
+                                    <div className="space-y-6 pt-6 border-t border-white/5 animate-in fade-in slide-in-from-top-4 duration-500">
+                                        <div className="space-y-3">
+                                            <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2 font-heading">Merchant Identity *</Label>
+                                            <Input
+                                                id="businessName"
+                                                value={formData.businessName}
+                                                onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                                                placeholder="e.g. UNIVERSITY GADGETS"
+                                                required={formData.role === 'dealer'}
+                                                className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FFB800]/50 transition-all font-heading uppercase tracking-widest text-xs"
+                                            />
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2 font-heading">Store Architecture *</Label>
+                                            <RadioGroup
+                                                value={formData.storeType}
+                                                onValueChange={(value: 'physical' | 'online' | 'both') => setFormData({ ...formData, storeType: value })}
+                                                className="flex flex-wrap gap-6"
+                                            >
+                                                {['physical', 'online', 'both'].map((type) => (
+                                                    <div key={type} className="flex items-center space-x-2">
+                                                        <RadioGroupItem value={type} id={type} className="border-zinc-700 text-[#FFB800]" />
+                                                        <Label htmlFor={type} className="text-[10px] font-black uppercase tracking-widest cursor-pointer font-heading">{type}</Label>
                                                     </div>
-                                                </Label>
-                                            </div>
-                                            <div className="flex items-center space-x-2 border rounded-lg p-4 cursor-pointer hover:bg-muted">
-                                                <RadioGroupItem value="dealer" id="dealer" />
-                                                <Label htmlFor="dealer" className="cursor-pointer flex-1">
-                                                    <div className="font-medium">Sell Products</div>
-                                                    <div className="text-sm text-muted-foreground">
-                                                        Create listings and manage your business
-                                                    </div>
-                                                </Label>
-                                            </div>
-                                        </RadioGroup>
+                                                ))}
+                                            </RadioGroup>
+                                        </div>
                                     </div>
+                                )}
 
-                                    {formData.role === 'dealer' && (
+                                <Button type="submit" disabled={loading} className="w-full h-16 bg-gold-gradient text-black hover:bg-[#FFD700] rounded-2xl font-black uppercase tracking-widest transition-all font-heading shadow-[0_10px_40px_rgba(255,184,0,0.2)] border-none mt-8">
+                                    {loading ? (
                                         <>
-                                            <div>
-                                                <Label htmlFor="businessName">Business Name *</Label>
-                                                <Input
-                                                    id="businessName"
-                                                    value={formData.businessName}
-                                                    onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                                                    placeholder="Your business name"
-                                                    required={formData.role === 'dealer'}
-                                                />
-                                            </div>
-
-                                            <div>
-                                                <Label>Store Type *</Label>
-                                                <RadioGroup
-                                                    value={formData.storeType}
-                                                    onValueChange={(value: 'physical' | 'online' | 'both') => setFormData({ ...formData, storeType: value })}
-                                                    className="mt-2"
-                                                >
-                                                    <div className="flex items-center space-x-2">
-                                                        <RadioGroupItem value="physical" id="physical" />
-                                                        <Label htmlFor="physical">Physical Store</Label>
-                                                    </div>
-                                                    <div className="flex items-center space-x-2">
-                                                        <RadioGroupItem value="online" id="online" />
-                                                        <Label htmlFor="online">Online Shop</Label>
-                                                    </div>
-                                                    <div className="flex items-center space-x-2">
-                                                        <RadioGroupItem value="both" id="both" />
-                                                        <Label htmlFor="both">Both</Label>
-                                                    </div>
-                                                </RadioGroup>
-                                            </div>
+                                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                            SYNCING PROFILE...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <CheckCircle className="mr-2 h-5 w-5" />
+                                            COMPLETE AUTHORIZATION
                                         </>
                                     )}
-
-                                    <Button type="submit" disabled={loading} className="w-full">
-                                        {loading ? (
-                                            <>
-                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                Saving...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <CheckCircle className="mr-2 h-4 w-4" />
-                                                Complete Setup
-                                            </>
-                                        )}
-                                    </Button>
-                                </div>
-                            )}
+                                </Button>
+                            </div>
                         </form>
                     </CardContent>
                 </Card>
