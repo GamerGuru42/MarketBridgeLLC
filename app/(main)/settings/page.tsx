@@ -97,256 +97,253 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8 max-w-5xl">
-            <div className="mb-8 flex justify-between items-end">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Account Settings</h1>
-                    <p className="text-muted-foreground mt-1">
-                        Manage your profile, business details, and account preferences.
-                    </p>
-                </div>
-                {successMessage && (
-                    <div className="bg-green-500/10 text-green-500 px-4 py-2 rounded-lg flex items-center gap-2 animate-in fade-in slide-in-from-top-4">
-                        <CheckCircle className="h-4 w-4" />
-                        <span className="text-sm font-medium">{successMessage}</span>
+        <div className="min-h-screen bg-black text-white pb-20">
+            {/* Background Grid Accent */}
+            <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none" />
+            <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-[#FFB800]/5 blur-[120px] rounded-full pointer-events-none" />
+
+            <div className="container mx-auto px-4 py-12 max-w-5xl relative z-10">
+                <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                    <div>
+                        <div className="flex items-center gap-2 text-[#FFB800] mb-2">
+                            <Shield className="h-4 w-4" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Secure Terminal</span>
+                        </div>
+                        <h1 className="text-4xl font-black uppercase tracking-tighter italic">
+                            Profile <span className="text-[#FFB800]">Command</span>
+                        </h1>
+                        <p className="text-zinc-500 mt-2 font-medium">
+                            Operational status: {user.isVerified ? 'Verified Hub' : 'Pending Sync'}
+                        </p>
                     </div>
-                )}
-            </div>
-
-            <Tabs defaultValue="profile" className="space-y-6">
-                <TabsList className="bg-muted/50 p-1 lg:w-auto w-full flex overflow-x-auto no-scrollbar">
-                    <TabsTrigger value="profile" className="gap-2">
-                        <User className="h-4 w-4" />
-                        Profile
-                    </TabsTrigger>
-                    {user.role === 'dealer' && (
-                        <TabsTrigger value="business" className="gap-2">
-                            <Building className="h-4 w-4" />
-                            Business
-                        </TabsTrigger>
+                    {successMessage && (
+                        <div className="bg-[#00FF85]/10 border border-[#00FF85]/20 text-[#00FF85] px-6 py-3 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 backdrop-blur-md">
+                            <CheckCircle className="h-4 w-4" />
+                            <span className="text-xs font-black uppercase tracking-widest">{successMessage}</span>
+                        </div>
                     )}
-                    <TabsTrigger value="security" className="gap-2">
-                        <Shield className="h-4 w-4" />
-                        Account & Security
-                    </TabsTrigger>
-                    <TabsTrigger value="notifications" className="gap-2">
-                        <Bell className="h-4 w-4" />
-                        Notifications
-                    </TabsTrigger>
-                </TabsList>
+                </div>
 
-                {/* Profile Tab */}
-                <TabsContent value="profile">
-                    <Card className="border-border/50 shadow-sm">
-                        <CardHeader>
-                            <CardTitle>Personal Information</CardTitle>
-                            <CardDescription>
-                                Update your public profile information.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="flex flex-col md:flex-row gap-8 items-start">
-                                <div className="space-y-4">
-                                    <Label>Profile Picture</Label>
-                                    <div className="w-32 h-32 relative">
-                                        <ImageUpload
-                                            onImagesSelected={(urls) => setFormData({ ...formData, photoURL: urls[0] || '' })}
-                                            defaultImages={formData.photoURL ? [formData.photoURL] : []}
-                                            maxImages={1}
-                                            bucketName="avatars"
-                                        />
-                                    </div>
-                                </div>
+                <Tabs defaultValue="profile" className="space-y-8">
+                    <TabsList className="bg-white/5 border border-white/10 p-1 lg:w-auto w-full flex overflow-x-auto no-scrollbar rounded-2xl h-14">
+                        <TabsTrigger value="profile" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FFB800] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
+                            <User className="h-3.5 w-3.5" />
+                            Identity
+                        </TabsTrigger>
+                        {user.role === 'dealer' && (
+                            <TabsTrigger value="business" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FFB800] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
+                                <Building className="h-3.5 w-3.5" />
+                                Business
+                            </TabsTrigger>
+                        )}
+                        <TabsTrigger value="security" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FFB800] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
+                            <Shield className="h-3.5 w-3.5" />
+                            Security
+                        </TabsTrigger>
+                        <TabsTrigger value="notifications" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FFB800] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
+                            <Bell className="h-3.5 w-3.5" />
+                            Comms
+                        </TabsTrigger>
+                    </TabsList>
 
-                                <div className="flex-1 grid gap-4 w-full">
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="displayName">Display Name</Label>
-                                        <div className="relative">
-                                            <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                            <Input
-                                                id="displayName"
-                                                className="pl-10"
-                                                value={formData.displayName}
-                                                onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="email">Email Address</Label>
-                                        <div className="relative">
-                                            <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                            <Input
-                                                id="email"
-                                                className="pl-10 bg-muted/50"
-                                                value={user.email}
-                                                disabled
-                                            />
-                                        </div>
-                                        <p className="text-[10px] text-muted-foreground">Email cannot be changed directly.</p>
-                                    </div>
-
-                                    <div className="grid md:grid-cols-2 gap-4">
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="phone">Phone Number</Label>
-                                            <div className="relative">
-                                                <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                                <Input
-                                                    id="phone"
-                                                    className="pl-10"
-                                                    value={formData.phone_number}
-                                                    onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
+                    {/* Identity Tab */}
+                    <TabsContent value="profile" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
+                            <CardHeader className="p-8 pb-4">
+                                <CardTitle className="text-xl font-black uppercase tracking-tight">Identity Parameters</CardTitle>
+                                <CardDescription className="text-zinc-500 uppercase text-[9px] font-bold tracking-widest">Update your public network signature</CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-8 space-y-8">
+                                <div className="flex flex-col md:flex-row gap-12 items-start">
+                                    <div className="space-y-4">
+                                        <Label className="text-[10px] uppercase font-black tracking-widest text-zinc-600">Avatar Port</Label>
+                                        <div className="w-40 h-40 relative group">
+                                            <div className="absolute inset-0 bg-gold-gradient rounded-3xl blur opacity-20 group-hover:opacity-40 transition-opacity" />
+                                            <div className="relative h-full w-full rounded-3xl overflow-hidden border border-white/10 bg-black">
+                                                <ImageUpload
+                                                    onImagesSelected={(urls) => setFormData({ ...formData, photoURL: urls[0] || '' })}
+                                                    defaultImages={formData.photoURL ? [formData.photoURL] : []}
+                                                    maxImages={1}
+                                                    bucketName="avatars"
                                                 />
                                             </div>
                                         </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="location">Location (State)</Label>
-                                            <div className="relative">
-                                                <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
-                                                <select
-                                                    id="location"
-                                                    className="flex h-10 w-full rounded-md border border-input bg-background pl-10 pr-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none"
-                                                    value={formData.location}
-                                                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                                >
-                                                    <option value="">Select State</option>
-                                                    {NIGERIAN_STATES.map((state: string) => (
-                                                        <option key={state} value={state}>{state}</option>
-                                                    ))}
-                                                </select>
+                                    </div>
+
+                                    <div className="flex-1 grid gap-8 w-full">
+                                        <div className="grid gap-3">
+                                            <Label htmlFor="displayName" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Alias / Name</Label>
+                                            <div className="relative group">
+                                                <User className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FFB800] transition-colors" />
+                                                <Input
+                                                    id="displayName"
+                                                    className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus:ring-[#FFB800] focus:border-[#FFB800] font-bold text-white"
+                                                    value={formData.displayName}
+                                                    onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="grid md:grid-cols-2 gap-8">
+                                            <div className="grid gap-3">
+                                                <Label htmlFor="phone" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Comm Line</Label>
+                                                <div className="relative group">
+                                                    <Phone className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FFB800] transition-colors" />
+                                                    <Input
+                                                        id="phone"
+                                                        className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus:ring-[#FFB800] focus:border-[#FFB800] font-bold text-white"
+                                                        value={formData.phone_number}
+                                                        onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="grid gap-3">
+                                                <Label htmlFor="location" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Operational Node</Label>
+                                                <div className="relative group">
+                                                    <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FFB800] transition-colors z-10" />
+                                                    <select
+                                                        id="location"
+                                                        className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase appearance-none"
+                                                        value={formData.location}
+                                                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                                                    >
+                                                        <option value="" className="bg-zinc-900">SELECT NODE</option>
+                                                        {NIGERIAN_STATES.map((state: string) => (
+                                                            <option key={state} value={state} className="bg-zinc-900">{state === 'FCT - Abuja' ? 'FCT (ABUJA) HUB' : state.toUpperCase()}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </CardContent>
-                        <CardFooter className="bg-muted/30 border-t items-center justify-end py-4">
-                            <Button onClick={handleUpdateProfile} disabled={updating}>
-                                {updating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-4 w-4" />}
-                                Save Profile Changes
-                            </Button>
-                        </CardFooter>
-                    </Card>
-                </TabsContent>
-
-                {/* Business Tab */}
-                {user.role === 'dealer' && (
-                    <TabsContent value="business">
-                        <Card className="border-border/50 shadow-sm">
-                            <CardHeader>
-                                <CardTitle>Business Details</CardTitle>
-                                <CardDescription>
-                                    Manage your dealership's public information.
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="businessName">Business Name</Label>
-                                    <Input
-                                        id="businessName"
-                                        value={formData.businessName}
-                                        onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                                    />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="storeType">Store Type</Label>
-                                    <select
-                                        id="storeType"
-                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                        value={formData.storeType}
-                                        onChange={(e) => setFormData({ ...formData, storeType: e.target.value })}
-                                    >
-                                        <option value="online">Online Only</option>
-                                        <option value="physical">Physical Store</option>
-                                        <option value="both">Both</option>
-                                    </select>
-                                </div>
                             </CardContent>
-                            <CardFooter className="bg-muted/30 border-t items-center justify-end py-4">
-                                <Button onClick={handleUpdateProfile} disabled={updating}>
-                                    {updating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-4 w-4" />}
-                                    Save Business Details
+                            <CardFooter className="bg-white/5 border-t border-white/10 p-8 flex justify-end">
+                                <Button onClick={handleUpdateProfile} disabled={updating} className="h-14 px-10 bg-[#FFB800] hover:bg-[#FFD700] text-black font-black uppercase tracking-widest rounded-2xl border-none">
+                                    {updating ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <CheckCircle className="mr-3 h-5 w-5" />}
+                                    Sync Parameters
                                 </Button>
                             </CardFooter>
                         </Card>
                     </TabsContent>
-                )}
 
-                {/* Security Tab */}
-                <TabsContent value="security">
-                    <div className="grid gap-6">
-                        <Card className="border-border/50 shadow-sm">
-                            <CardHeader>
-                                <CardTitle>Account Status</CardTitle>
-                                <CardDescription>
-                                    Current role and verification level.
-                                </CardDescription>
+                    {/* Business Tab */}
+                    {user.role === 'dealer' && (
+                        <TabsContent value="business" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
+                                <CardHeader className="p-8 pb-4">
+                                    <CardTitle className="text-xl font-black uppercase tracking-tight">Business Protocols</CardTitle>
+                                    <CardDescription className="text-zinc-500 uppercase text-[9px] font-bold tracking-widest">Configure your commercial sector presence</CardDescription>
+                                </CardHeader>
+                                <CardContent className="p-8 space-y-8">
+                                    <div className="grid md:grid-cols-2 gap-8">
+                                        <div className="grid gap-3">
+                                            <Label htmlFor="businessName" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Vessel / Brand Name</Label>
+                                            <div className="relative group">
+                                                <Building className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FFB800] transition-colors" />
+                                                <Input
+                                                    id="businessName"
+                                                    className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus:ring-[#FFB800] focus:border-[#FFB800] font-bold text-white"
+                                                    value={formData.businessName}
+                                                    onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="grid gap-3">
+                                            <Label htmlFor="storeType" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Terminal Class</Label>
+                                            <select
+                                                id="storeType"
+                                                className="w-full h-14 px-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase appearance-none"
+                                                value={formData.storeType}
+                                                onChange={(e) => setFormData({ ...formData, storeType: e.target.value })}
+                                            >
+                                                <option value="online" className="bg-zinc-900">Digital Node</option>
+                                                <option value="physical" className="bg-zinc-900">Physical Hub</option>
+                                                <option value="both" className="bg-zinc-900">Hybrid Grid</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                                <CardFooter className="bg-white/5 border-t border-white/10 p-8 flex justify-end">
+                                    <Button onClick={handleUpdateProfile} disabled={updating} className="h-14 px-10 bg-[#FFB800] hover:bg-[#FFD700] text-black font-black uppercase tracking-widest rounded-2xl border-none">
+                                        {updating ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <CheckCircle className="mr-3 h-5 w-5" />}
+                                        Sync Assets
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        </TabsContent>
+                    )}
+
+                    {/* Security Tab */}
+                    <TabsContent value="security" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="grid gap-8">
+                            <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
+                                <CardHeader className="p-8">
+                                    <CardTitle className="text-xl font-black uppercase tracking-tight">Security Clearances</CardTitle>
+                                    <CardDescription className="text-zinc-500 uppercase text-[9px] font-bold tracking-widest">Operational role and verification status</CardDescription>
+                                </CardHeader>
+                                <CardContent className="px-8 pb-8 space-y-6">
+                                    <div className="flex items-center justify-between p-6 bg-black border border-white/5 rounded-2xl">
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] uppercase font-black text-zinc-600 tracking-[0.2em]">Assigned Role</p>
+                                            <p className="font-bold text-white uppercase tracking-wider">{user.role}</p>
+                                        </div>
+                                        <Shield className="h-6 w-6 text-[#FFB800] opacity-50" />
+                                    </div>
+                                    <div className="flex items-center justify-between p-6 bg-black border border-white/5 rounded-2xl">
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] uppercase font-black text-zinc-600 tracking-[0.2em]">Sync Status</p>
+                                            <p className={`font-black uppercase tracking-wider ${user.isVerified ? 'text-[#00FF85]' : 'text-zinc-500'}`}>
+                                                {user.isVerified ? 'Verified Hub' : 'Pending Verification'}
+                                            </p>
+                                        </div>
+                                        <CheckCircle className={`h-6 w-6 ${user.isVerified ? 'text-[#00FF85]' : 'text-zinc-700'}`} />
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="border border-red-500/20 rounded-[2rem] overflow-hidden bg-red-500/5">
+                                <CardHeader className="p-8 pb-4">
+                                    <CardTitle className="text-xl font-black uppercase tracking-tight text-red-500">Self-Destruct</CardTitle>
+                                    <CardDescription className="text-red-500/40 uppercase text-[9px] font-bold tracking-widest">Permanent account termination protocol</CardDescription>
+                                </CardHeader>
+                                <CardContent className="p-8">
+                                    <Button variant="outline" className="border-red-500/50 text-red-500 hover:bg-red-500 hover:text-black font-bold uppercase tracking-widest rounded-xl transition-all h-12">
+                                        Terminate Account Session
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </TabsContent>
+
+                    {/* Notifications Tab */}
+                    <TabsContent value="notifications" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
+                            <CardHeader className="p-8">
+                                <CardTitle className="text-xl font-black uppercase tracking-tight">Comms Frequency</CardTitle>
+                                <CardDescription className="text-zinc-500 uppercase text-[9px] font-bold tracking-widest">Transmission alert protocols</CardDescription>
                             </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="flex items-center justify-between py-2 border-b">
-                                    <span className="text-sm font-medium">Account Type</span>
-                                    <span className="capitalize px-2 py-1 bg-primary/10 text-primary rounded text-xs font-bold">
-                                        {user.role.replace('_', ' ')}
-                                    </span>
+                            <CardContent className="px-8 pb-8 space-y-4">
+                                <div className="flex items-center justify-between p-6 bg-black border border-white/5 rounded-2xl">
+                                    <div className="space-y-1">
+                                        <p className="font-bold text-white uppercase tracking-wider">Operational Intel</p>
+                                        <p className="text-xs text-zinc-500 font-medium">Order status and hub updates</p>
+                                    </div>
+                                    <div className="px-3 py-1 bg-[#00FF85]/10 text-[#00FF85] text-[9px] font-black uppercase rounded-full border border-[#00FF85]/20 tracking-tighter">Essential</div>
                                 </div>
-                                <div className="flex items-center justify-between py-2 border-b">
-                                    <span className="text-sm font-medium">Verification Status</span>
-                                    <span className={`px-2 py-1 rounded text-xs font-bold ${user.isVerified ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                                        {user.isVerified ? 'Verified' : 'Pending Verification'}
-                                    </span>
+                                <div className="border-t border-zinc-800 my-2" />
+                                <div className="flex items-center justify-between p-6 bg-white/5 border border-white/5 rounded-2xl opacity-40">
+                                    <div className="space-y-1">
+                                        <p className="font-bold text-zinc-500 uppercase tracking-wider">Sector Broadcasts</p>
+                                        <p className="text-xs text-zinc-700 font-medium">Promotions and network news</p>
+                                    </div>
+                                    <div className="px-3 py-1 bg-zinc-800 text-zinc-600 text-[9px] font-black uppercase rounded-full border border-white/5 tracking-tighter">Inactive</div>
                                 </div>
                             </CardContent>
                         </Card>
-
-                        <Card className="border-border/50 shadow-sm border-destructive/20">
-                            <CardHeader>
-                                <CardTitle className="text-destructive">Danger Zone</CardTitle>
-                                <CardDescription>
-                                    Permanent actions for your account.
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <Button variant="outline" className="border-destructive text-destructive hover:bg-destructive hover:text-white">
-                                    Deactivate Account
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    </div>
-                </TabsContent>
-
-                {/* Notifications Tab */}
-                <TabsContent value="notifications">
-                    <Card className="border-border/50 shadow-sm">
-                        <CardHeader>
-                            <CardTitle>Notifications Preferences</CardTitle>
-                            <CardDescription>
-                                Control how we contact you.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <div className="space-y-0.5">
-                                    <Label>Order Updates</Label>
-                                    <p className="text-sm text-muted-foreground">Receive emails about your order status.</p>
-                                </div>
-                                <div className="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded">ALWAYS ON</div>
-                            </div>
-                            <Separator />
-                            <div className="flex items-center justify-between opacity-50">
-                                <div className="space-y-0.5">
-                                    <Label>Marketing Emails</Label>
-                                    <p className="text-sm text-muted-foreground">Weekly newsletters and offers.</p>
-                                </div>
-                                <div className="px-2 py-1 bg-muted text-muted-foreground text-[10px] font-bold rounded">DISABLED</div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-            </Tabs>
+                    </TabsContent>
+                </Tabs>
+            </div>
         </div>
     );
-}
-
-function Separator() {
-    return <div className="h-px w-full bg-border/50" />;
 }

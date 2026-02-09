@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     Smartphone, Shirt, BookOpen, Utensils, Sparkles,
-    Briefcase, Camera, Headphones, Coffee, Laptop
+    Briefcase, Camera, Headphones, Coffee, Laptop, Globe
 } from 'lucide-react';
 
 export interface Category {
@@ -19,79 +19,62 @@ export interface Category {
 export const CATEGORIES: Category[] = [
     {
         id: 'fashion',
-        name: 'Fashion & Wears',
+        name: 'Fashion',
         icon: Shirt,
         color: 'text-pink-500',
         bg: 'bg-pink-500/10',
         isActive: true,
-        locked: false,
         slug: 'fashion',
-        description: 'Clothing, shoes, bags, and campus style.'
+        description: 'Clothing, shoes, bags, and student styles.'
     },
     {
         id: 'gadgets',
-        name: 'Student Gadgets',
+        name: 'Gadgets',
         icon: Smartphone,
         color: 'text-blue-500',
         bg: 'bg-blue-500/10',
         isActive: true,
-        locked: false,
         slug: 'gadgets',
-        description: 'Phones, chargers, power banks, and accessories.'
+        description: 'Phones, laptops, chargers, and tech essentials.'
     },
     {
         id: 'food',
-        name: 'Food & Snacks',
+        name: 'Food',
         icon: Utensils,
         color: 'text-orange-500',
         bg: 'bg-orange-500/10',
         isActive: true,
-        locked: false,
         slug: 'food',
-        description: 'Campus deliveries, homemade meals, and snacks.'
+        description: 'Campus meals, snacks, and treats.'
     },
     {
         id: 'services',
-        name: 'Campus Services',
+        name: 'Services',
         icon: Briefcase,
         color: 'text-purple-500',
         bg: 'bg-purple-500/10',
         isActive: true,
-        locked: false,
         slug: 'services',
-        description: 'Hair styling, makeup, photography, repairs, tutoring.'
+        description: 'Hair styling, makeup, photography, and tutoring.'
     },
     {
-        id: 'beauty',
-        name: 'Beauty & Care',
+        id: 'accessories',
+        name: 'Accessories',
         icon: Sparkles,
         color: 'text-rose-500',
         bg: 'bg-rose-500/10',
         isActive: true,
-        locked: false,
-        slug: 'beauty',
-        description: 'Skincare, wigs, cosmetics, and grooming.'
+        slug: 'accessories',
+        description: 'Jewelry, watches, and campus vanity.'
     },
     {
-        id: 'education',
-        name: 'Books & Materials',
-        icon: BookOpen,
-        color: 'text-emerald-500',
-        bg: 'bg-emerald-500/10',
+        id: 'others',
+        name: 'Others',
+        icon: Globe,
+        color: 'text-zinc-500',
+        bg: 'bg-zinc-500/10',
         isActive: true,
-        locked: false,
-        slug: 'education',
-        description: 'Textbooks, handouts, and stationery.'
-    },
-    {
-        id: 'laptops',
-        name: 'Laptops & Tech',
-        icon: Laptop,
-        color: 'text-cyan-500',
-        bg: 'bg-cyan-500/10',
-        isActive: true,
-        locked: false,
-        slug: 'laptops',
-        description: 'Used/New laptops and computer accessories.'
+        slug: 'others',
+        description: 'Miscellaneous items for student life.'
     }
 ];

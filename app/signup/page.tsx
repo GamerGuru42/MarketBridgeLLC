@@ -8,59 +8,26 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 const supabase = createClient();
 import { normalizeIdentifier } from '@/lib/auth/utils';
-import { Loader2, Check, ArrowLeft, ArrowRight, Mail, Globe, Eye, EyeOff, ShieldCheck, User as UserIcon, Briefcase, Zap, Crown, Lock, Sparkles } from 'lucide-react';
-import { SubscriptionPlan } from '@/types/user';
+import { Loader2, Check, ArrowLeft, ArrowRight, Mail, Globe, Eye, EyeOff, ShieldCheck, User as UserIcon, Briefcase, Zap, Lock, Sparkles } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Logo } from '@/components/logo';
-import { useFlutterwave, getFlutterwaveConfig } from '@/lib/flutterwave';
-import { initiateOPayCheckout } from '@/lib/opay';
 import { NIGERIAN_STATES, NIGERIAN_UNIVERSITIES, UNIVERSITIES_BY_STATE } from '@/lib/constants';
 import { ImageUpload } from '@/components/ImageUpload';
 import { School, Search } from 'lucide-react';
 
-const PRICING_PLANS = [
-    {
-        id: 'starter' as SubscriptionPlan,
-        name: 'Starter',
-        price: 'Free',
-        sub: '3-Week Free Trial',
-        features: ['Up to 5 active listings', 'basic analytics', '2% transaction fee'],
-        btn: 'Start 3-Week Trial'
-    },
-    {
-        id: 'professional' as SubscriptionPlan,
-        name: 'Pro Hustler',
-        price: '₦ 3,000',
-        period: '/monthly',
-        sub: 'Verified Business Growth',
-        popular: true,
-        features: ['Up to 50 active listings', 'Verified Seller Badge', 'Priority Support', '1.5% transaction fee'],
-        btn: 'Start 3-Week Trial'
-    },
-    {
-        id: 'enterprise' as SubscriptionPlan,
-        name: 'Campus Mogul',
-        price: '₦ 12,000',
-        period: '/monthly',
-        sub: 'Maximum Scale & Control',
-        features: ['Unlimited listings', 'Dedicated Account Manager', 'API ACCESS', '1% transaction fee'],
-        btn: 'Start 3-Week Trial'
-    }
-];
+
 
 function SignupContent() {
     const router = useRouter();
-    const { initializePayment: initFlutterwave } = useFlutterwave();
     const { refreshUser, signInWithGoogle } = useAuth();
 
     const searchParams = useSearchParams();
     const initialRole = searchParams.get('role') as 'customer' | 'dealer' | 'admin' | null;
 
     // Steps
-    const [step, setStep] = useState<'role' | 'plan' | 'details' | 'auth-method' | 'admin-code' | 'admin-dept'>(() => {
-        if (initialRole === 'dealer') return 'plan';
+    const [step, setStep] = useState<'role' | 'details' | 'auth-method' | 'admin-code' | 'admin-dept'>(() => {
+        if (initialRole === 'dealer' || initialRole === 'customer') return 'auth-method';
         if (initialRole === 'admin') return 'admin-code';
-        if (initialRole === 'customer') return 'auth-method'; // Skip role select for customer
         return 'role';
     });
 
@@ -76,26 +43,19 @@ function SignupContent() {
         email: '',
         password: '',
         confirmPassword: '',
-        location: '',
+        location: 'FCT - Abuja',
         businessName: '',
-        cacNumber: '', // For business
-        matricNumber: '', // For student
-        university: '',   // For student
+        matricNumber: '',
+        department: '',
+        university: '',
         phoneNumber: '',
+        studentIdUrl: '',
     });
-    const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan>('starter');
-    const [paymentProvider, setPaymentProvider] = useState<'trial' | 'transfer'>('trial');
-    const [paymentProofUrl, setPaymentProofUrl] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const [transferReference, setTransferReference] = useState('');
-
-    useEffect(() => {
-        if (paymentProvider === 'transfer' && !transferReference) {
-            setTransferReference(`MB-SUB-${Date.now().toString().slice(-6)}`);
-        }
-    }, [paymentProvider, transferReference]);
 
     const [isDetectingSchool, setIsDetectingSchool] = useState(false);
+    const [missingUni, setMissingUni] = useState(false);
+    const [missingUniName, setMissingUniName] = useState('');
 
     // AI-Simulated University Detection
     const detectUniversity = async (matric: string) => {
@@ -138,8 +98,7 @@ function SignupContent() {
 
     const handleRoleSelect = (selectedRole: 'customer' | 'dealer' | 'admin') => {
         setRole(selectedRole);
-        if (selectedRole === 'dealer') setStep('plan');
-        else if (selectedRole === 'customer') setStep('auth-method');
+        if (selectedRole === 'dealer' || selectedRole === 'customer') setStep('auth-method');
         else if (selectedRole === 'admin') setStep('admin-code');
     };
 
@@ -152,13 +111,13 @@ function SignupContent() {
 
     const StepProgress = ({ currentStep, role }: { currentStep: string, role: string }) => {
         const steps = role === 'dealer'
-            ? ['Protocol', 'Plan', 'Identity']
-            : (role === 'admin' ? ['Access', 'Sector', 'Identity'] : ['Entry', 'Identity']);
+            ? ['Access', 'Identity', 'Verification']
+            : (role === 'admin' ? ['Access', 'Sector', 'Identity'] : ['Access', 'Identity']);
 
         // Simplified mapping for the UI
         let activeIdx = 0;
         if (currentStep === 'role' || currentStep === 'admin-code' || currentStep === 'auth-method') activeIdx = 0;
-        else if (currentStep === 'plan' || currentStep === 'admin-dept') activeIdx = 1;
+        else if (currentStep === 'details') activeIdx = 1;
         else activeIdx = steps.length - 1;
 
         return (
@@ -210,21 +169,31 @@ function SignupContent() {
             return;
         }
 
-        if (paymentProvider === 'transfer' && !paymentProofUrl) {
-            setError("Please upload the transfer receipt to proceed.");
+        if (role === 'dealer' && (!formData.university && !missingUniName)) {
+            setError("Please specify your university.");
             setIsLoading(false);
             return;
         }
 
-        // Logic Update: ALL plans (Starter, Pro, Enterprise) now start with a free trial/period.
-        // No immediate payment required. 
-        // "3 Weeks Free" -> User signs up, gets 21 days expiry.
+        if (role === 'dealer' && !formData.matricNumber) {
+            setError("Matriculation number is required for student verification.");
+            setIsLoading(false);
+            return;
+        }
+
+        if (role === 'dealer' && !formData.studentIdUrl) {
+            setError("Please upload your student ID card for verification.");
+            setIsLoading(false);
+            return;
+        }
+
         await createAccount();
     };
 
-    const createAccount = async (paymentRef?: string) => {
+    const createAccount = async () => {
         try {
             const emailToUse = normalizeIdentifier(formData.email);
+            const finalUniversity = missingUni ? missingUniName : formData.university;
 
             // 1. Auth Sign Up
             const { data: authData, error: signUpError } = await supabase.auth.signUp({
@@ -235,28 +204,14 @@ function SignupContent() {
                         display_name: formData.displayName,
                         role: role,
                         location: formData.location,
-                        university: role === 'dealer' ? formData.university : null,
-                        matric_number: role === 'dealer' ? formData.matricNumber : null
+                        university: finalUniversity,
+                        matric_number: formData.matricNumber
                     },
                 },
             });
 
             if (signUpError) throw signUpError;
-            if (!authData.user) throw new Error("Creation failed.");
-
-            // Determine Subscription Status based on User Choice
-            const subPlan = role === 'dealer' ? selectedPlan : 'starter';
-            let subStatus = 'trial';
-            let daysToAdd = 21; // Default 3 Weeks Trial
-
-            if (role === 'dealer' && paymentProvider === 'transfer') {
-                subStatus = 'active'; // Immediate access for paid users
-                daysToAdd = 34; // 30 Days + 4 Bonus Days
-            }
-
-            const date = new Date();
-            date.setDate(date.getDate() + daysToAdd);
-            const expiresAt = date.toISOString();
+            if (!authData.user) throw new Error("Account creation protocol failed.");
 
             // 2. Profile Upsert
             const { error: profileError } = await supabase
@@ -269,32 +224,31 @@ function SignupContent() {
                     location: formData.location,
                     phone_number: formData.phoneNumber,
                     business_name: role === 'dealer' ? formData.businessName : null,
-                    // Fallback to matric number if CAC isn't provided (for students)
-                    cac_number: role === 'dealer' ? (formData.cacNumber || formData.matricNumber) : null,
-                    subscription_plan: subPlan,
-                    subscription_status: subStatus,
-                    subscription_expires_at: expiresAt,
-                    last_payment_ref: paymentProvider === 'transfer' ? transferReference : null,
+                    university: finalUniversity,
+                    matric_number: role === 'dealer' ? formData.matricNumber : null,
+                    subscription_status: role === 'dealer' ? 'pending_verification' : 'active',
                     is_verified: false,
-                    // @ts-ignore - Allow specialized metadata
-                    payment_metadata: {
-                        proof_url: paymentProofUrl || null,
-                        payment_method: paymentProvider,
-                        reference: transferReference || null,
-                        university: formData.university,
-                        matric_number: formData.matricNumber
+                    // Store extra student data in metadata for safety if columns don't exist
+                    metadata: {
+                        department: formData.department,
+                        student_id_url: formData.studentIdUrl,
+                        is_manual_override: missingUni
                     }
                 });
 
-            if (profileError) console.error("Profile creation error:", profileError);
+            if (profileError) console.error("Profile establishing error:", profileError);
 
             await refreshUser(authData.user.id);
 
-            if (role === 'dealer') router.push('/dealer/dashboard');
-            else router.push('/listings');
+            if (role === 'dealer') {
+                // Future-proof: Redirect to a "verification pending" screen if needed
+                router.push('/dealer/dashboard');
+            } else {
+                router.push('/listings');
+            }
 
         } catch (err: unknown) {
-            const message = err instanceof Error ? err.message : "Failed to create account.";
+            const message = err instanceof Error ? err.message : "Protocol establishing failed.";
             setError(message);
             setIsLoading(false);
         }
@@ -415,56 +369,7 @@ function SignupContent() {
         );
     }
 
-    if (step === 'plan') {
-        return (
-            <div className="min-h-screen bg-black py-20 px-4 relative flex flex-col items-center">
-                <div className="absolute bottom-[10%] right-[10%] w-[40%] h-[40%] bg-[#FFB800]/5 blur-[120px] rounded-full" />
 
-                <div className="w-full max-w-6xl relative z-10">
-                    <div className="text-center mb-16">
-                        <Button variant="ghost" onClick={() => setStep('role')} className="text-zinc-500 hover:text-white uppercase font-black text-[10px] tracking-[0.2em] mb-8">
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Reset Status Selection
-                        </Button>
-                        <h2 className="text-5xl font-black text-white uppercase tracking-tighter mb-4 italic">Student Seller Plan</h2>
-                        <p className="text-zinc-500 font-medium italic lowercase">choose your hustle tier</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {PRICING_PLANS.map(plan => (
-                            <Card
-                                key={plan.id}
-                                className={`glass-card relative border-none rounded-[2.5rem] p-10 text-left overflow-hidden group hover:scale-[1.02] transition-all duration-500 cursor-pointer ${selectedPlan === plan.id ? 'ring-2 ring-[#FFB800]' : ''}`}
-                                onClick={() => { setSelectedPlan(plan.id); setStep('details'); }}
-                            >
-                                <div className="absolute top-[-20%] right-[-20%] w-48 h-48 bg-gold-gradient blur-[60px] opacity-10 group-hover:opacity-20 transition-opacity" />
-
-                                <div className="relative z-10">
-                                    <h3 className="text-2xl font-black text-white uppercase italic">{plan.name === 'Professional' ? 'Pro Hustler' : plan.name === 'Enterprise' ? 'Campus Mogul' : plan.name}</h3>
-                                    <p className="text-zinc-500 text-xs mb-8 font-medium italic">{plan.sub}</p>
-
-                                    <div className="mb-10">
-                                        <span className="text-3xl font-black text-[#FFB800] italic">{plan.price}</span>
-                                        {plan.period && <span className="text-zinc-600 text-xs font-bold uppercase ml-1">{plan.period}</span>}
-                                    </div>
-
-                                    <ul className="space-y-4 mb-4">
-                                        {plan.features.map(f => (
-                                            <li key={f} className="flex items-center gap-3 text-zinc-400 text-xs font-semibold uppercase tracking-tight">
-                                                <div className="h-5 w-5 glass-card rounded-md flex items-center justify-center text-[#FFB800]">
-                                                    <Check className="h-3 w-3" />
-                                                </div>
-                                                {f}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        );
-    }
 
     if (step === 'auth-method') {
         return (
@@ -500,7 +405,7 @@ function SignupContent() {
             <Card className="w-full max-w-xl glass-card border-none rounded-[3rem] p-12 text-white relative z-10 shadow-2xl">
                 <CardHeader className="p-0 mb-8 text-left">
                     <div className="flex justify-between items-start mb-6">
-                        <Button variant="ghost" onClick={() => setStep(role === 'dealer' ? 'plan' : 'auth-method')} className="text-zinc-600 hover:text-white p-0 h-auto text-[10px] font-black uppercase tracking-widest"><ArrowLeft className="mr-2 h-3 w-3" /> Back</Button>
+                        <Button variant="ghost" onClick={() => setStep('auth-method')} className="text-zinc-600 hover:text-white p-0 h-auto text-[10px] font-black uppercase tracking-widest"><ArrowLeft className="mr-2 h-3 w-3" /> Back</Button>
                         <Logo showText={false} className="opacity-50" />
                     </div>
 
@@ -508,7 +413,7 @@ function SignupContent() {
 
                     <CardTitle className="text-4xl font-black uppercase italic tracking-tighter mb-2">Establish Identity</CardTitle>
                     <CardDescription className="text-zinc-500 font-medium italic lowercase">
-                        {role === 'dealer' ? `establishing node for ${selectedPlan} protocol` : "please define your global attributes"}
+                        {role === 'dealer' ? `Establishing verified student node` : "Please define your global attributes"}
                     </CardDescription>
                 </CardHeader>
 
@@ -589,13 +494,14 @@ function SignupContent() {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Matriculation Number</label>
+                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Matriculation Number (Required)</label>
                                         <div className="relative group">
                                             <School className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
                                             <input
                                                 name="matricNumber"
                                                 value={formData.matricNumber}
                                                 onChange={handleChange}
+                                                required
                                                 onBlur={(e) => detectUniversity(e.target.value)}
                                                 className="w-full h-14 pl-14 pr-12 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase transition-all"
                                                 placeholder="U/2024/..."
@@ -603,24 +509,18 @@ function SignupContent() {
                                             {isDetectingSchool && (
                                                 <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-[#FFB800]" />
                                             )}
-                                            {!isDetectingSchool && formData.university && (
-                                                <div className="absolute right-4 top-1/2 -translate-y-1/2 bg-green-500/20 p-1 rounded-full">
-                                                    <Check className="h-3 w-3 text-green-500" />
-                                                </div>
-                                            )}
                                         </div>
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Mobile Comms</label>
+                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Department (Optional)</label>
                                         <div className="relative group">
-                                            <Zap className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
+                                            <Sparkles className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
                                             <input
-                                                name="phoneNumber"
-                                                type="tel"
-                                                value={formData.phoneNumber}
+                                                name="department"
+                                                value={formData.department}
                                                 onChange={handleChange}
-                                                placeholder="080..."
+                                                placeholder="COMPUTER SCIENCE"
                                                 className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase"
                                             />
                                         </div>
@@ -629,48 +529,82 @@ function SignupContent() {
 
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center ml-2">
-                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600">University / Campus</label>
-                                        {formData.location && (
-                                            <span className="text-[8px] font-bold text-[#FFB800] uppercase tracking-tighter bg-[#FFB800]/10 px-2 py-0.5 rounded-full border border-[#FFB800]/20">
-                                                Filtering by {formData.location}
-                                            </span>
-                                        )}
+                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600">University / Campus Node</label>
+                                        <button
+                                            type="button"
+                                            onClick={() => setMissingUni(!missingUni)}
+                                            className="text-[8px] font-black text-[#FFB800] uppercase tracking-widest hover:underline"
+                                        >
+                                            {missingUni ? "Back to List" : "Uni not listed?"}
+                                        </button>
                                     </div>
 
-                                    <div className="space-y-2">
-                                        <div className="relative group">
-                                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
-                                            <input
-                                                type="text"
-                                                placeholder="SEARCH YOUR INSTITUTION..."
-                                                value={uniSearch}
-                                                onChange={(e) => setUniSearch(e.target.value)}
-                                                className="w-full h-14 pl-14 pr-10 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase text-xs"
-                                            />
-                                        </div>
-
-                                        <div className="relative group">
-                                            <select
-                                                name="university"
-                                                value={formData.university}
-                                                onChange={(e) => setFormData(p => ({ ...p, university: e.target.value }))}
-                                                className="w-full h-14 pl-6 pr-10 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase appearance-none transition-all"
-                                                required
-                                            >
-                                                <option value="" className="bg-zinc-900 font-medium">
-                                                    {formData.location ? `Select Official Node in ${formData.location}...` : "Select Region Above First..."}
-                                                </option>
-                                                {filteredUniversities.length > 0 ? (
-                                                    filteredUniversities.map(uni => (
-                                                        <option key={uni} value={uni} className="bg-zinc-900 font-medium">{uni}</option>
-                                                    ))
-                                                ) : (
-                                                    <option disabled className="bg-zinc-900 text-zinc-700 italic">No matching institutions found in this region</option>
-                                                )}
-                                            </select>
-                                            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-20">
-                                                <Crown className="h-4 w-4" />
+                                    {!missingUni ? (
+                                        <div className="space-y-2">
+                                            <div className="relative group">
+                                                <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
+                                                <input
+                                                    type="text"
+                                                    placeholder="SEARCH YOUR INSTITUTION..."
+                                                    value={uniSearch}
+                                                    onChange={(e) => setUniSearch(e.target.value)}
+                                                    className="w-full h-14 pl-14 pr-10 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase text-xs"
+                                                />
                                             </div>
+
+                                            <div className="relative group">
+                                                <select
+                                                    name="university"
+                                                    value={formData.university}
+                                                    onChange={(e) => setFormData(p => ({ ...p, university: e.target.value }))}
+                                                    className="w-full h-14 pl-6 pr-10 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase appearance-none transition-all"
+                                                    required
+                                                >
+                                                    <option value="" className="bg-zinc-900 font-medium">
+                                                        {formData.location ? `Select Official Node in ${formData.location}...` : "Select Region Above First..."}
+                                                    </option>
+                                                    {filteredUniversities.length > 0 ? (
+                                                        filteredUniversities.map(uni => (
+                                                            <option key={uni} value={uni} className="bg-zinc-900 font-medium">{uni}</option>
+                                                        ))
+                                                    ) : (
+                                                        <option disabled className="bg-zinc-900 text-zinc-700 italic">No matching institutions found in this region</option>
+                                                    )}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-2 p-6 bg-white/5 border border-white/5 rounded-3xl animate-in zoom-in-95 duration-300">
+                                            <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mb-4">Request New Institution Node</p>
+                                            <input
+                                                value={missingUniName}
+                                                onChange={(e) => setMissingUniName(e.target.value)}
+                                                placeholder="ENTER FULL UNIVERSITY NAME"
+                                                className="w-full h-14 bg-black border border-white/10 rounded-2xl px-6 text-white font-bold uppercase outline-none focus:border-[#FFB800]"
+                                            />
+                                            <p className="text-[8px] text-zinc-600 italic">Admin will review and enable this node within 24 hours.</p>
+                                        </div>
+                                    )}
+
+                                    <div className="space-y-3 pt-4">
+                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2 block">Upload Student ID Card</label>
+                                        <div className="glass-card rounded-3xl border border-white/10 p-2 group hover:border-[#FFB800]/30 transition-colors">
+                                            {formData.studentIdUrl ? (
+                                                <div className="relative group overflow-hidden rounded-2xl">
+                                                    <img src={formData.studentIdUrl} alt="ID Card" className="h-40 w-full object-cover rounded-2xl" />
+                                                    <button type="button" onClick={() => setFormData({ ...formData, studentIdUrl: '' })} className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity font-black uppercase text-[10px]">Remove</button>
+                                                </div>
+                                            ) : (
+                                                <div className="h-32">
+                                                    <ImageUpload
+                                                        onImagesSelected={(urls: string[]) => {
+                                                            if (urls && urls.length > 0) setFormData({ ...formData, studentIdUrl: urls[0] });
+                                                        }}
+                                                        maxImages={1}
+                                                        bucketName="identity"
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -696,126 +630,14 @@ function SignupContent() {
 
                         {role === 'dealer' && (
                             <div className="space-y-6 pt-6 border-t border-white/5 animate-in fade-in duration-700 delay-100">
-                                <div className="glass-card p-6 rounded-[2.5rem] border border-white/5 text-center bg-gradient-to-b from-[#FFB800]/5 to-transparent relative overflow-hidden">
+                                <div className="glass-card p-8 rounded-[2rem] border border-white/5 text-center bg-gradient-to-b from-[#FFB800]/5 to-transparent relative overflow-hidden">
                                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FFB800]/20 to-transparent" />
-
-                                    <p className="text-[9px] uppercase font-black text-zinc-500 mb-4 tracking-[0.2em] flex items-center justify-center gap-2">
-                                        <Sparkles className="h-3 w-3 text-[#FFB800]" /> Enrollment Protocol
+                                    <Sparkles className="h-6 w-6 text-[#FFB800] mx-auto mb-4" />
+                                    <p className="text-[10px] uppercase font-black text-[#FFB800] mb-2 tracking-[0.2em]">Verification Protocol</p>
+                                    <p className="text-zinc-500 text-[9px] font-bold uppercase leading-relaxed">
+                                        Your account will enter a <span className="text-white">PENDING</span> status for admin security oversight.
+                                        Once your Student ID is verified, your dealership node will be activated.
                                     </p>
-
-                                    <div className="grid grid-cols-2 gap-4 mb-6">
-                                        <button
-                                            type="button"
-                                            onClick={() => setPaymentProvider('trial')}
-                                            className={`h-16 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 group relative overflow-hidden ${paymentProvider === 'trial' ? 'bg-white text-black ring-4 ring-white/10' : 'bg-black/40 text-zinc-600 border border-white/5 hover:border-white/20'}`}
-                                        >
-                                            <span>Universal Trial</span>
-                                            <span className="text-[8px] opacity-60">21 Access Days</span>
-                                            {paymentProvider === 'trial' && <div className="absolute top-0 right-0 p-1"><Check className="h-3 w-3" /></div>}
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            onClick={() => setPaymentProvider('transfer')}
-                                            className={`h-16 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 group relative overflow-hidden ${paymentProvider === 'transfer' ? 'bg-[#FFB800] text-black shadow-[0_0_30px_rgba(255,184,0,0.4)] ring-4 ring-[#FFB800]/20' : 'bg-black/40 text-zinc-600 border border-white/5 hover:border-[#FFB800]/20'}`}
-                                        >
-                                            <span>Instant Mint</span>
-                                            <span className="text-[8px] opacity-60">Verified + Bonus</span>
-                                            {paymentProvider === 'transfer' && <div className="absolute top-0 right-0 p-1"><Check className="h-3 w-3" /></div>}
-                                        </button>
-                                    </div>
-
-                                    {paymentProvider === 'transfer' && (
-                                        <div className="animate-in zoom-in-95 fade-in duration-300 space-y-4">
-                                            <div className="bg-black/80 rounded-[2rem] p-6 border border-[#FFB800]/20 text-left relative overflow-hidden backdrop-blur-xl">
-                                                <div className="absolute top-[-20%] right-[-20%] w-32 h-32 bg-[#FFB800]/10 blur-[40px] rounded-full" />
-
-                                                <p className="text-[9px] text-[#FFB800] uppercase font-black mb-6 tracking-widest flex items-center gap-2">
-                                                    <Crown className="h-3 w-3" /> Settlement Pipeline
-                                                </p>
-
-                                                <div className="space-y-5">
-                                                    <div className="flex justify-between items-end">
-                                                        <div>
-                                                            <p className="text-[8px] text-zinc-600 uppercase font-black mb-1">Account Interface</p>
-                                                            <p className="text-white font-mono text-xl tracking-[0.25em] leading-none">9022858358</p>
-                                                        </div>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            className="h-9 px-4 rounded-xl text-[9px] font-black uppercase tracking-widest bg-white/5 hover:bg-[#FFB800] hover:text-black transition-all"
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                navigator.clipboard.writeText('9022858358');
-                                                                alert('Account Identity Serial Copied.');
-                                                            }}
-                                                        >
-                                                            Copy
-                                                        </Button>
-                                                    </div>
-
-                                                    <div className="grid grid-cols-2 gap-4">
-                                                        <div>
-                                                            <p className="text-[8px] text-zinc-600 uppercase font-black">Institution</p>
-                                                            <p className="text-zinc-200 text-xs font-black uppercase tracking-tight">Kuda MFB</p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-[8px] text-zinc-600 uppercase font-black">Verification</p>
-                                                            <p className="text-zinc-200 text-[10px] font-black uppercase tracking-tight">I.B. Benny</p>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="pt-4 border-t border-white/5 bg-[#FFB800]/5 -mx-6 px-6 pb-4">
-                                                        <p className="text-[8px] text-[#FFB800] uppercase font-black mb-1">Narration Signature (REQUIRED)</p>
-                                                        <div className="flex justify-between items-center">
-                                                            <p className="text-white font-mono text-sm tracking-wider uppercase">{transferReference}</p>
-                                                            <span className="text-[7px] text-[#FFB800]/50 font-black uppercase italic animate-pulse tracking-tighter">Crucial*</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="space-y-3">
-                                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-500 block text-left ml-4 flex items-center gap-2">
-                                                    <div className="h-1 w-1 rounded-full bg-[#FFB800]" /> Settlement Receipt
-                                                </label>
-                                                <div className="glass-card rounded-3xl border border-white/10 p-2 group hover:border-[#FFB800]/30 transition-colors">
-                                                    {paymentProofUrl ? (
-                                                        <div className="relative group overflow-hidden rounded-2xl">
-                                                            <img src={paymentProofUrl} alt="Receipt" className="h-40 w-full object-cover rounded-2xl border border-white/10 group-hover:scale-105 transition-transform duration-700" />
-                                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => setPaymentProofUrl('')}
-                                                                    className="bg-red-500 text-white p-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl hover:scale-110 transition-all"
-                                                                >
-                                                                    Reset Upload
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    ) : (
-                                                        <div className="h-32 relative">
-                                                            <ImageUpload
-                                                                onImagesSelected={(urls: string[]) => {
-                                                                    if (urls && urls.length > 0) setPaymentProofUrl(urls[0]);
-                                                                }}
-                                                                maxImages={1}
-                                                                bucketName="listings"
-                                                            />
-                                                            <div className="absolute inset-0 pointer-events-none flex items-center justify-center flex-col gap-2 opacity-10">
-                                                                <Briefcase className="h-8 w-8" />
-                                                                <span className="text-[8px] font-black uppercase tracking-[0.2em]">Drop Receipt</span>
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            <p className="text-[8px] text-zinc-600 italic bg-zinc-950/50 p-4 rounded-2xl border border-white/5 leading-relaxed text-left">
-                                                By selecting Instant Mint, your account enters the <span className="text-[#FFB800] font-black uppercase">Verified Acceleration</span> stream. You receive 34 days of premium listing cycles immediately upon manual oversight.
-                                            </p>
-                                        </div>
-                                    )}
                                 </div>
                             </div>
                         )}
@@ -836,9 +658,7 @@ function SignupContent() {
                         <Button type="submit" className="w-full h-18 bg-gold-gradient text-black font-black uppercase tracking-widest rounded-[1.5rem] glow-on-hover border-none mt-4 text-xs group" disabled={isLoading}>
                             {isLoading ? <Loader2 className="animate-spin h-6 w-6" /> : (
                                 <span className="flex items-center gap-3">
-                                    {role === 'dealer'
-                                        ? (paymentProvider === 'transfer' ? 'Finalize Verification' : 'Initialize Trial Protocol')
-                                        : 'Establish Identity Node'}
+                                    {role === 'dealer' ? 'Initialize Verification' : 'Establish Identity Node'}
                                     <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </span>
                             )}

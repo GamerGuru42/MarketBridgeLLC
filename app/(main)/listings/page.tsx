@@ -117,37 +117,60 @@ function ListingsContent() {
             if (!data || data.length === 0) {
                 const mockListings: Listing[] = [
                     {
-                        id: 'mock-2', title: '2019 LEXUS RX 350 (ABUJA NODE)', description: 'Foreign used, fully loaded, panoramic roof, thumb-start, reverse camera, duty fully paid.', price: 35000000, category: 'Automotive', location: 'Abuja', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1591533924719-79888126b0a1?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2019, make: 'Lexus', model: 'RX 350', condition: 'Tokunbo', dealer: { id: 'mock', display_name: 'Premium Autos Ltd', is_verified: true }
+                        id: 'mock-1',
+                        title: 'iPhone 13 - 128GB (Clean)',
+                        description: 'Battery health 89%. Face ID working perfect. UK Used but very clean. Available at UniAbuja.',
+                        price: 450000,
+                        category: 'gadgets',
+                        location: 'FCT - Abuja',
+                        status: 'active',
+                        dealer_id: 'mock',
+                        created_at: new Date().toISOString(),
+                        images: ['https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&q=80'],
+                        is_verified_listing: true,
+                        dealer: { id: 'mock', display_name: 'Boluwatife (Verified Student)', is_verified: true }
                     },
                     {
-                        id: 'mock-7', title: '2022 RANGE ROVER AUTOBIOGRAPHY LWB', description: 'Long wheel base, rear entertainment, deployable side steps, executive seating. Abuja Registered.', price: 165000000, category: 'Automotive', location: 'Abuja', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2022, make: 'Land Rover', model: 'Range Rover', condition: 'Tokunbo', dealer: { id: 'mock', display_name: 'Royal Rides Abuja', is_verified: true }
+                        id: 'mock-2',
+                        title: 'Nike Dunk Low - Retro Black/White',
+                        description: 'Brand new. Size 42-45 available. Pick up at Baze Gate 2.',
+                        price: 45000,
+                        category: 'fashion',
+                        location: 'FCT - Abuja',
+                        status: 'active',
+                        dealer_id: 'mock',
+                        created_at: new Date().toISOString(),
+                        images: ['https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&q=80'],
+                        is_verified_listing: true,
+                        dealer: { id: 'mock', display_name: 'Chidi (Verified Student)', is_verified: true }
                     },
                     {
-                        id: 'mock-10', title: 'COSMOPOLITAN STUDENT COMBO (PHONES + PODS)', description: 'Perfect for students in Abuja. iPhone 13 Pro + Airpods Pro Gen 2.', price: 650000, category: 'Electronics', location: 'Abuja', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2023, condition: 'Brand New', dealer: { id: 'mock', display_name: 'Baze Gadgets hub', is_verified: true }
+                        id: 'mock-3',
+                        title: 'Egusi Soup + Semovita (Hot)',
+                        description: 'Freshly made Egusi soup with 2 pieces of meat. Ready for delivery within Nile Campus.',
+                        price: 3500,
+                        category: 'food',
+                        location: 'FCT - Abuja',
+                        status: 'active',
+                        dealer_id: 'mock',
+                        created_at: new Date().toISOString(),
+                        images: ['https://images.unsplash.com/photo-1512058560366-9bb391f79f75?auto=format&fit=crop&q=80'],
+                        is_verified_listing: true,
+                        dealer: { id: 'mock', display_name: 'CookWithAmina', is_verified: true }
                     },
                     {
-                        id: 'mock-1', title: '2022 TOYOTA CAMRY XSE', description: 'Nigerian used, first body, super clean interior, panoramic roof, leather seats, 4-cylinder engine.', price: 28500000, category: 'Automotive', location: 'Lagos', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1621007947382-bb3c3968e3bb?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2022, make: 'Toyota', model: 'Camry', condition: 'Nigerian Used', dealer: { id: 'mock', display_name: 'Elite Motors', is_verified: true }
-                    },
-                    {
-                        id: 'mock-3', title: '2021 BMW M4 COMPETITION', description: 'Turbocharged, carbon fiber interior, low mileage, competition package, full service history.', price: 65000000, category: 'Automotive', location: 'Port Harcourt', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2021, make: 'BMW', model: 'M4', condition: 'Tokunbo', dealer: { id: 'mock', display_name: 'Speed Nation', is_verified: true }
-                    },
-                    {
-                        id: 'mock-4', title: '2023 MERCEDES-BENZ S580', description: 'Brand new, luxury redefined, massaging seats, 4matic, executive rear seat package.', price: 185000000, category: 'Automotive', location: 'Lagos', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2023, make: 'Mercedes-Benz', model: 'S580', condition: 'Brand New', dealer: { id: 'mock', display_name: 'Luxe Terminal', is_verified: true }
-                    },
-                    {
-                        id: 'mock-5', title: '2020 HONDA ACCORD SPORT', description: 'Clean title, reverse camera, Apple CarPlay, lane watch, alloy wheels.', price: 18000000, category: 'Automotive', location: 'Enugu', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2020, make: 'Honda', model: 'Accord', condition: 'Nigerian Used', dealer: { id: 'mock', display_name: 'Smart Wheels', is_verified: true }
-                    },
-                    {
-                        id: 'mock-6', title: '2024 PORSCHE 911 GT3 RS', description: 'Ultimate track machine, carbon ceramic brakes, aero package, magnesium wheels.', price: 420000000, category: 'Automotive', location: 'Lagos', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2024, make: 'Porsche', model: '911 GT3 RS', condition: 'Brand New', dealer: { id: 'mock', display_name: 'Crown Jewels Autos', is_verified: true }
-                    },
-                    {
-                        id: 'mock-7', title: '2022 RANGE ROVER AUTOBIOGRAPHY', description: 'Long wheel base, rear entertainment, deployable side steps, executive seating.', price: 165000000, category: 'Automotive', location: 'Abuja', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2022, make: 'Land Rover', model: 'Range Rover', condition: 'Tokunbo', dealer: { id: 'mock', display_name: 'Royal Rides', is_verified: true }
-                    },
-                    {
-                        id: 'mock-8', title: '2021 TOYOTA HILUX ADVENTURE', description: '4x4, diesel engine, leather seats, reverse camera, off-road package.', price: 45000000, category: 'Automotive', location: 'Kano', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2021, make: 'Toyota', model: 'Hilux', condition: 'Nigerian Used', dealer: { id: 'mock', display_name: 'Kano Motors', is_verified: true }
-                    },
-                    {
-                        id: 'mock-9', title: '2024 TESLA MODEL S PLAID', description: 'Zero to sixty in 1.9s, tri-motor AWD, autopilot, premium white interior.', price: 135000000, category: 'Automotive', location: 'Lagos', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2024, make: 'Tesla', model: 'Model S', condition: 'Brand New', dealer: { id: 'mock', display_name: 'Future Drive', is_verified: true }
+                        id: 'mock-4',
+                        title: 'HP EliteBook 840 G5 - Core i5',
+                        description: '8GB RAM, 256GB SSD. Backlit keyboard. Perfect for engineering students at Veritas.',
+                        price: 280000,
+                        category: 'gadgets',
+                        location: 'FCT - Abuja',
+                        status: 'active',
+                        dealer_id: 'mock',
+                        created_at: new Date().toISOString(),
+                        images: ['https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80'],
+                        is_verified_listing: true,
+                        dealer: { id: 'mock', display_name: 'TechPrince (Student)', is_verified: true }
                     }
                 ];
                 setListings(mockListings);

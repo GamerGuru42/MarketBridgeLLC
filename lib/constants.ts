@@ -144,15 +144,23 @@ export const UNIVERSITIES_BY_STATE: Record<string, string[]> = {
         "Maduka University, Ekwulumili (Private)"
     ],
     "FCT - Abuja": [
-        "University of Abuja (Federal)",
-        "National Open University of Nigeria (Federal)",
-        "African University of Science and Technology (Private)",
-        "Baze University (Private)",
-        "Cosmopolitan University, Abuja (Private)",
-        "European University of Nigeria, Duboyi (Private)",
-        "Nile University of Nigeria (Private)",
-        "Veritas University (Private)",
-        "Philomath University (Private)"
+        "African Aviation and Aerospace University (AAAU)",
+        "Al-Muhibbah Open University",
+        "Amaj University",
+        "Baze University",
+        "Bingham University",
+        "Canadian University of Nigeria",
+        "Cosmopolitan University",
+        "Eranova University",
+        "European University of Nigeria",
+        "Miva Open University",
+        "National Open University of Nigeria (NOUN)",
+        "National University of Science and Technology (NAUST)",
+        "Nile University of Nigeria",
+        "Philomath University",
+        "Prime University",
+        "University of Abuja (Yakubu Gowon University)",
+        "Veritas University"
     ],
     "Gombe": [
         "Federal University, Kashere (Federal)",

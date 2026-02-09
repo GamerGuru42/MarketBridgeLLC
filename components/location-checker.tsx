@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { MapPin, Globe, ArrowRight } from 'lucide-react';
+import { MapPin, Globe, ArrowRight, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -13,14 +13,14 @@ import {
 
 // Expanded list of supported hubs with "Physical" alignment
 const SUPPORTED_LOCATIONS = [
-    { name: 'Abuja', state: 'Federal Capital Territory', health: 'Peak', hub: true },
+    { name: 'FCT - Abuja', state: 'Federal Capital Territory', health: 'Peak', hub: true },
     { name: 'Lagos', state: 'Lagos', health: 'High', hub: false },
-    { name: 'Port Harcourt', state: 'Rivers', health: 'Mid', hub: false },
+    { name: 'Rivers', state: 'Rivers', health: 'Mid', hub: false },
     { name: 'Kano', state: 'Kano', health: 'Mid', hub: false },
-    { name: 'Ibadan', state: 'Oyo', health: 'Active', hub: false },
+    { name: 'Oyo', state: 'Oyo', health: 'Active', hub: false },
     { name: 'Enugu', state: 'Enugu', health: 'Active', hub: false },
-    { name: 'Benin City', health: 'Stable', hub: false },
-    { name: 'Kaduna', health: 'Stable', hub: false }
+    { name: 'Edo', state: 'Edo', health: 'Stable', hub: false },
+    { name: 'Kaduna', state: 'Kaduna', health: 'Stable', hub: false }
 ];
 
 interface LocationCheckerProps {
@@ -111,39 +111,41 @@ export function LocationChecker({ children }: LocationCheckerProps) {
         }
     };
 
+    const [notifyForm, setNotifyForm] = useState({ email: '', state: '' });
+    const [notified, setNotified] = useState(false);
+
     const processLocationIntelligence = (info: any) => {
         const { city, locality, state, country } = info;
-
-        // Comprehensive string for matching
         const fullString = `${city || ''} ${locality || ''} ${state || ''}`.toLowerCase();
 
-        // Smart matching logic: check for Hub name OR Hub state
-        const matchedHub = SUPPORTED_LOCATIONS.find(loc =>
-            fullString.includes(loc.name.toLowerCase()) ||
-            (loc.state && fullString.includes(loc.state.toLowerCase()))
-        );
-
+        // Strict Abuja Pilot Logic
+        const isAbuja = fullString.includes('abuja') || fullString.includes('federal capital territory');
         const displayName = city || locality || state || 'Unknown Node';
         setUserLocation(displayName);
         sessionStorage.setItem('mb-location-checked', 'true');
 
-        if (matchedHub) {
+        if (isAbuja) {
             setIsLocationSupported(true);
-            localStorage.setItem('mb-preferred-node', matchedHub.name);
+            localStorage.setItem('mb-preferred-node', 'FCT - Abuja');
             setShowDialog(false);
         } else {
-            // Check if they are in Nigeria at least
-            const isNigeria = country === 'Nigeria' || fullString.includes('nigeria');
-
             setIsLocationSupported(false);
-            // If they are in Nigeria but a non-supported city (like Ede), show dialog
-            // If they are already in a preferred node, don't nag them
             const currentPref = localStorage.getItem('mb-preferred-node');
-            if (!currentPref || currentPref === 'global') {
-                setShowDialog(true);
+            if (!currentPref) {
+                localStorage.setItem('mb-preferred-node', 'global');
             }
+            // For the pilot, we show a non-blocking dialog/banner if they aren't in Abuja
+            setShowDialog(true);
         }
         setLoading(false);
+    };
+
+    const handleNotifyMe = async (e: React.FormEvent) => {
+        e.preventDefault();
+        // Send to admin (simulated for MVP)
+        console.log("Notify Me Request:", notifyForm);
+        setNotified(true);
+        setTimeout(() => setShowDialog(false), 2000);
     };
 
     const handleBrowseAnyway = (node = 'global') => {
@@ -188,49 +190,71 @@ export function LocationChecker({ children }: LocationCheckerProps) {
                             <div className="absolute inset-0 rounded-full border border-[#FFB800] animate-ping opacity-20" />
                         </div>
                         <DialogTitle className="text-center text-3xl font-black uppercase italic tracking-tighter leading-none">
-                            Location Signal <span className="text-[#FFB800]">Weak</span>
+                            Bridge <span className="text-[#FFB800]">Pilot</span> Active
                         </DialogTitle>
                         <DialogDescription className="text-center text-zinc-500 pt-4 font-medium leading-relaxed">
-                            MarketBridge detected your signal in <span className="text-white font-bold">{userLocation || 'Unknown Sector'}</span>.
-                            Our high-frequency trading infrastructure is not yet fully optimized for your current node.
+                            MarketBridge is currently live in <span className="text-white font-bold">Abuja (FCT)</span>.
+                            We detected your signal in <span className="text-white font-bold uppercase">{userLocation || 'Unknown Sector'}</span>.
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className="flex flex-col gap-4 py-8">
-                        <div className="flex items-center gap-2 mb-2">
-                            <div className="h-px flex-1 bg-white/5" />
-                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600">Active High-Growth Hubs</span>
-                            <div className="h-px flex-1 bg-white/5" />
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                            {SUPPORTED_LOCATIONS.slice(0, 4).map(loc => (
-                                <div key={loc.name} className="flex justify-between items-center px-4 py-3 bg-white/5 border border-white/5 rounded-xl group hover:border-[#FFB800]/30 transition-all">
-                                    <span className="text-[11px] font-black uppercase tracking-wider text-zinc-300">{loc.name}</span>
-                                    <div className="flex items-center gap-2">
-                                        <div className={`h-1.5 w-1.5 rounded-full ${loc.health === 'Peak' ? 'bg-[#00FF85]' : 'bg-[#FFB800]'} animate-pulse`} />
-                                        <span className="text-[8px] font-bold text-zinc-600 uppercase italic">{loc.health}</span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                    {!notified ? (
+                        <div className="flex flex-col gap-6 py-6">
+                            <div className="p-6 bg-white/5 border border-white/5 rounded-2xl space-y-4">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-[#FFB800] text-center">Get notified on launch</p>
+                                <form onSubmit={handleNotifyMe} className="space-y-3">
+                                    <input
+                                        type="email"
+                                        placeholder="STUDENT EMAIL"
+                                        required
+                                        className="w-full h-12 bg-black border border-white/10 rounded-xl px-4 text-[10px] font-bold uppercase focus:border-[#FFB800] outline-none transition-colors"
+                                        value={notifyForm.email}
+                                        onChange={(e) => setNotifyForm({ ...notifyForm, email: e.target.value })}
+                                    />
+                                    <select
+                                        required
+                                        className="w-full h-12 bg-black border border-white/10 rounded-xl px-4 text-[10px] font-bold uppercase focus:border-[#FFB800] outline-none transition-colors appearance-none"
+                                        value={notifyForm.state}
+                                        onChange={(e) => setNotifyForm({ ...notifyForm, state: e.target.value })}
+                                    >
+                                        <option value="">SELECT YOUR STATE</option>
+                                        <option value="Lagos">LAGOS HUB</option>
+                                        <option value="Rivers">RIVERS HUB</option>
+                                        <option value="Oyo">OYO HUB</option>
+                                        <option value="Enugu">ENUGU HUB</option>
+                                        <option value="Kano">KANO HUB</option>
+                                    </select>
+                                    <Button type="submit" className="w-full h-12 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-black uppercase text-[10px] tracking-widest rounded-xl">
+                                        Monitor Sector
+                                    </Button>
+                                </form>
+                            </div>
 
-                    <div className="flex flex-col gap-3">
-                        <Button
-                            onClick={() => handleTeleportToHub('Abuja')}
-                            className="w-full h-16 bg-[#FFB800] text-black hover:bg-[#FFD700] font-black uppercase tracking-[0.1em] rounded-2xl shadow-[0_10px_30px_rgba(255,184,0,0.2)] group"
-                        >
-                            Teleport to Main Hub (Abuja)
-                            <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                        </Button>
-                        <Button
-                            onClick={() => handleBrowseAnyway()}
-                            variant="outline"
-                            className="w-full h-14 border-white/5 text-zinc-500 hover:text-white hover:bg-white/5 font-bold uppercase tracking-widest text-[10px] rounded-2xl"
-                        >
-                            Explore Global Grid Anyway
-                        </Button>
-                    </div>
+                            <div className="flex flex-col gap-3">
+                                <Button
+                                    onClick={() => handleTeleportToHub('FCT - Abuja')}
+                                    className="w-full h-16 bg-[#FFB800] text-black hover:bg-[#FFD700] font-black uppercase tracking-[0.1em] rounded-2xl shadow-[0_10px_30px_rgba(255,184,0,0.2)] group"
+                                >
+                                    Teleport to Abuja
+                                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                </Button>
+                                <Button
+                                    onClick={() => handleBrowseAnyway()}
+                                    variant="outline"
+                                    className="w-full h-14 border-white/5 text-zinc-500 hover:text-white hover:bg-white/5 font-bold uppercase tracking-widest text-[10px] rounded-2xl"
+                                >
+                                    I'm just browsing
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="py-12 flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-500">
+                            <div className="h-16 w-16 rounded-full bg-[#00FF85]/10 flex items-center justify-center border border-[#00FF85]/20">
+                                <CheckCircle className="h-8 w-8 text-[#00FF85]" />
+                            </div>
+                            <p className="text-center font-black uppercase tracking-widest text-[10px]">Signal Locked. We will contact you.</p>
+                        </div>
+                    )}
                 </DialogContent>
             </Dialog>
 

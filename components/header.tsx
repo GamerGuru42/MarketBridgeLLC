@@ -68,10 +68,10 @@ export const Header = () => {
 
                 {/* Desktop Nav */}
                 <nav className="hidden lg:flex items-center gap-10 text-[11px] font-bold uppercase tracking-[0.2em]">
-                    <Link href="/" className={navLinkClass('/')}>Home</Link>
-                    <Link href="/listings" className={navLinkClass('/listings')}>Listings</Link>
-                    <Link href="/dealers" className={navLinkClass('/dealers')}>Dealers</Link>
-                    <Link href="/about" className={navLinkClass('/about')}>About</Link>
+                    <Link href="/" className={navLinkClass('/')}>HOME</Link>
+                    <Link href="/listings" className={navLinkClass('/listings')}>LISTINGS</Link>
+                    <Link href="/dealers" className={navLinkClass('/dealers')}>DEALERS</Link>
+                    <Link href="/about" className={navLinkClass('/about')}>ABOUT</Link>
                 </nav>
 
                 {/* Actions */}
@@ -102,13 +102,15 @@ export const Header = () => {
                                     </div>
                                     <DropdownMenuItem asChild className="focus:bg-white/10 rounded-xl cursor-pointer">
                                         <Link href="/settings" className="flex items-center gap-3 py-2.5">
-                                            <User className="h-4 w-4" /> Profile Status
+                                            <User className="h-4 w-4 text-[#FFB800]" />
+                                            <span className="font-bold uppercase text-[10px] tracking-widest">Operational Profile</span>
                                         </Link>
                                     </DropdownMenuItem>
                                     {user.role === 'dealer' && (
                                         <DropdownMenuItem asChild className="focus:bg-white/10 rounded-xl cursor-pointer text-[#FFB800]">
                                             <Link href="/dealer/dashboard" className="flex items-center gap-3 py-2.5">
-                                                <LayoutDashboard className="h-4 w-4" /> Dealer Command
+                                                <LayoutDashboard className="h-4 w-4" />
+                                                <span className="font-bold uppercase text-[10px] tracking-widest">Dealer Command</span>
                                             </Link>
                                         </DropdownMenuItem>
                                     )}

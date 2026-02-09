@@ -136,107 +136,77 @@ export default function HomePage() {
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                                <Button size="lg" asChild className="bg-[#FFB800] text-black font-black uppercase tracking-widest px-8 h-14 hover:bg-[#FFD700] hover:scale-105 transition-all duration-300">
-                                    <Link href={user ? (user.role === 'dealer' ? '/dealer/dashboard' : '/onboarding') : '/login?role=dealer'}>
-                                        <span className="inline-block">{user && user.role === 'dealer' ? 'Seller Dashboard' : 'Start Selling'}</span>
+                                <Button size="lg" asChild className="bg-[#FFB800] text-black font-black uppercase tracking-widest px-10 h-16 hover:bg-[#FFD700] hover:scale-105 transition-all duration-300 shadow-[0_0_50px_rgba(255,184,0,0.2)]">
+                                    <Link href={user ? (user.role === 'dealer' ? '/dealer/dashboard' : '/onboarding') : '/signup?role=dealer'}>
+                                        <span className="inline-block">{user && user.role === 'dealer' ? 'SELLER DASHBOARD' : 'START SELLING'}</span>
                                     </Link>
                                 </Button>
-                                <Button size="lg" variant="outline" asChild className="bg-transparent border-2 border-white/20 text-white font-bold uppercase tracking-widest px-8 h-14 hover:bg-white hover:text-black transition-all duration-300">
+                                <Button size="lg" variant="outline" asChild className="bg-transparent border-2 border-white/20 text-white font-bold uppercase tracking-widest px-10 h-16 hover:bg-white hover:text-black transition-all duration-300">
                                     <Link href="/listings">
-                                        <span className="inline-block">Explore Deals</span>
+                                        <span className="inline-block">EXPLORE DEALS</span>
                                     </Link>
                                 </Button>
                             </div>
 
-                            {/* Sector Intelligence */}
-                            <div className="flex bg-white/5 border border-white/10 rounded-2xl p-4 gap-4 backdrop-blur-md mb-8 max-w-sm">
-                                <div className="h-10 w-10 shrink-0 rounded-xl bg-[#FFB800]/10 flex items-center justify-center border border-[#FFB800]/20">
-                                    <Zap className="h-4 w-4 text-[#FFB800]" />
-                                </div>
-                                <div className="flex flex-col justify-center">
-                                    <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-left">Sector Intelligence</span>
-                                    <span className="text-[10px] font-bold text-white uppercase italic tracking-wider text-left">
-                                        {currentNode === 'Abuja'
-                                            ? "Syncing: Suncity Estate to Garki Core..."
-                                            : currentNode === 'Lagos'
-                                                ? "Mapping: Ikeja to Victoria Island..."
-                                                : "Global Grid Connected: Sector Unknown"}
-                                    </span>
-                                </div>
-                            </div>
-
-                            {/* Node Activity Monitor */}
-                            <div className="pt-12">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <TrendingUp className="h-4 w-4 text-[#FFB800]" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Live Node Activity: {currentNode}</span>
-                                </div>
-                                <div className="grid grid-cols-3 gap-8 p-6 bg-white/5 border border-white/5 backdrop-blur-sm rounded-2xl max-w-md">
-                                    <div>
-                                        <p className="text-2xl font-black text-white">{currentNode === 'Abuja' ? 'High' : 'Active'}</p>
-                                        <p className="text-[8px] uppercase text-zinc-600 font-bold tracking-widest">Trade Volume</p>
+                            {/* Sector Intelligence - Relative to hero but docked low */}
+                            <div className="absolute bottom-12 left-4 md:left-0 z-30">
+                                <div className="flex bg-black/60 border border-white/10 rounded-2xl p-5 gap-4 backdrop-blur-xl shadow-2xl max-w-[320px]">
+                                    <div className="h-12 w-12 shrink-0 rounded-xl bg-[#FFB800]/10 flex items-center justify-center border border-[#FFB800]/20">
+                                        <Zap className="h-5 w-5 text-[#FFB800]" />
                                     </div>
-                                    <div>
-                                        <p className="text-2xl font-black text-white">{currentNode === 'Abuja' ? 'Peak' : 'Mid'}</p>
-                                        <p className="text-[8px] uppercase text-zinc-600 font-bold tracking-widest">Growth Index</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-2xl font-black text-white">{currentNode === 'Abuja' ? '12ms' : '24ms'}</p>
-                                        <p className="text-[8px] uppercase text-zinc-600 font-bold tracking-widest">Latency hub</p>
+                                    <div className="flex flex-col justify-center">
+                                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1.5 text-left">Sector Intelligence</span>
+                                        <span className="text-[11px] font-bold text-white uppercase italic tracking-wider text-left leading-tight">
+                                            {currentNode === 'Abuja'
+                                                ? "SYNCING: SUNCITY ESTATE TO GARKI CORE..."
+                                                : currentNode === 'Lagos'
+                                                    ? "MAPPING: IKEJA TO VICTORIA ISLAND..."
+                                                    : "GLOBAL GRID CONNECTED: SECTOR UNKNOWN"}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Interactive Hero Visual */}
-                        <div className="relative z-10 w-full aspect-square md:aspect-video lg:h-screen lg:absolute lg:right-0 lg:top-0 lg:w-1/2 overflow-hidden pointer-events-none">
-                            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/50 to-transparent z-20" />
-                            <div className="absolute inset-0 bg-gold-gradient opacity-10 mix-blend-overlay z-10" />
+                        <div className="relative z-10 w-full lg:h-screen lg:absolute lg:right-0 lg:top-0 lg:w-1/2 overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/40 to-transparent z-20" />
 
-                            {/* Student Lifestyle Image */}
+                            {/* Student Lifestyle Image - Higher Quality Multi-Student Shot */}
                             <Image
-                                src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80"
-                                alt="Student Lifestyle"
+                                src="https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=1200&q=80"
+                                alt="Student Lifestyle Hub"
                                 fill
-                                className="object-cover object-center lg:object-left"
-                                style={{ transform: `translateY(${offset * 0.2}px)` }}
+                                className="object-cover object-center scale-105"
+                                style={{ transform: `translateY(${offset * 0.15}px)` }}
                                 priority
                             />
 
                             {/* Node Location Overlay */}
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col items-center">
-                                <div className="p-4 bg-black/60 backdrop-blur-xl border border-[#FFB800]/30 rounded-full flex items-center gap-3">
-                                    <MapPin className="h-6 w-6 text-[#FFB800] animate-bounce" />
+                            <div className="absolute bottom-[30%] left-[20%] z-30 flex flex-col items-center">
+                                <div className="p-5 bg-black/40 backdrop-blur-2xl border border-white/10 rounded-[2rem] flex items-center gap-4 shadow-2xl">
+                                    <div className="h-10 w-10 rounded-full bg-[#FFB800]/20 flex items-center justify-center">
+                                        <MapPin className="h-5 w-5 text-[#FFB800] animate-pulse" />
+                                    </div>
                                     <span className="text-2xl font-black text-white uppercase italic tracking-tighter">{currentNode} HUB</span>
                                 </div>
-                                <div className="h-12 w-px bg-gradient-to-b from-[#FFB800] to-transparent mt-2" />
+                                <div className="h-16 w-[1px] bg-gradient-to-b from-white/20 to-transparent mt-2 mr-[110px]" />
                             </div>
 
                             {/* Overlay Grid */}
-                            <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20 z-20 mix-blend-overlay" />
+                            <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 z-10 mix-blend-overlay" />
                         </div>
                     </div>
                 </div>
-
-                {/* Search Bar - Floating */}
-                <div className="absolute bottom-10 left-0 right-0 z-30 px-4">
-                    <div className="container mx-auto">
-                        <form onSubmit={handleMainSearch} className="bg-black/80 backdrop-blur-2xl border border-white/10 p-2 rounded-2xl max-w-3xl flex items-center gap-2 mx-auto shadow-[0_0_50px_rgba(0,0,0,0.8)] focus-within:ring-2 focus-within:ring-[#FFB800] transition-all">
-                            <Search className="h-6 w-6 text-zinc-500 ml-4" />
-                            <input
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder={`Search ${currentNode} Node for assets...`}
-                                className="bg-transparent border-none text-white placeholder:text-zinc-600 w-full h-12 focus:outline-none focus:ring-0 text-lg font-medium"
-                            />
-                            <Button type="submit" className="bg-[#FFB800] text-black hover:bg-[#FFD700] h-12 px-8 font-bold uppercase tracking-widest shadow-none">
-                                Search
-                            </Button>
-                        </form>
-                    </div>
-                </div>
             </section>
+
+            {/* Floating Chat Asset */}
+            <div className="fixed bottom-8 right-8 z-[100] group">
+                <button className="h-16 w-16 bg-[#FFB800] rounded-full shadow-[0_0_40px_rgba(255,184,0,0.4)] flex items-center justify-center hover:scale-110 transition-transform duration-500 relative">
+                    <div className="absolute inset-0 rounded-full bg-[#FFB800] animate-ping opacity-20 group-hover:opacity-40" />
+                    <Sparkles className="h-7 w-7 text-black" />
+                </button>
+            </div>
 
             {/* Protocol/Verification Strip */}
             <section className="bg-[#0A0A0A] border-y border-white/5 overflow-hidden py-6">
@@ -298,56 +268,6 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* Featured Listings - Masonry/Grid */}
-            <section className="py-24 bg-zinc-900/20 border-y border-white/5">
-                <div className="container px-4 mx-auto">
-                    <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-                        <div>
-                            <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter">Campus <span className="text-[#FFB800] italic">Live</span></h2>
-                            <p className="text-zinc-500 mt-2 text-lg font-medium">Real-time listings from students near you.</p>
-                        </div>
-                        <Button variant="outline" asChild className="group border-white/10 hover:bg-[#FFB800] hover:border-[#FFB800] hover:text-black transition-all">
-                            <Link href="/listings" className="flex items-center gap-2">
-                                View All Assets <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                            </Link>
-                        </Button>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {[
-                            { title: "iPhone 12 Pro (UK Used)", price: "320,000", dealer: "Campus Gadgets", image: "https://images.unsplash.com/photo-1603539268574-e3fb65e4ff8a?auto=format&fit=crop&w=800&q=80" },
-                            { title: "Bone Straight Wig (24in)", price: "150,000", dealer: "Slay with Precious", image: "https://images.unsplash.com/photo-1635396603077-4b711739fe88?auto=format&fit=crop&w=800&q=80" },
-                            { title: "Nike Air Force 1", price: "25,000", dealer: "Kicks by Jide", image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=800&q=80" },
-                            { title: "HP EliteBook 840 G5", price: "280,000", dealer: "Campus Gadgets", image: "https://images.unsplash.com/photo-1544731612-de7f96afe55f?auto=format&fit=crop&w=800&q=80" },
-                            { title: "Student Indomie Pack", price: "8,500", dealer: "Nile Foodies", image: "https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?auto=format&fit=crop&w=800&q=80" },
-                            { title: "Math 101 Textbook", price: "5,000", dealer: "Bookworm Hub", image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80" },
-                        ].map((item, idx: number) => (
-                            <Link href={`/listings/${item.title.startsWith('iPhone') ? 'mock-1' : item.title.startsWith('Bone') ? 'mock-2' : item.title.startsWith('Nike') ? 'mock-4' : item.title.startsWith('HP') ? 'mock-6' : item.title.startsWith('Student') ? 'mock-5' : 'mock-3'}`} key={idx}>
-                                <Card className="group bg-black/40 border-white/5 hover:border-[#FFB800]/50 overflow-hidden transition-all duration-500 hover:shadow-[0_0_30px_rgba(255,184,0,0.1)] rounded-none h-full">
-                                    <div className="aspect-[16/10] relative overflow-hidden bg-zinc-900">
-                                        <Image
-                                            src={item.image}
-                                            alt={item.title}
-                                            fill
-                                            className="object-cover group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100"
-                                        />
-                                        <div className="absolute top-4 right-4 bg-black/80 backdrop-blur text-[#FFB800] text-xs font-black px-3 py-1 uppercase tracking-wider border border-[#FFB800]/20">
-                                            Verified
-                                        </div>
-                                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/80 to-transparent p-6 pt-12 transform translate-y-2 group-hover:translate-y-0 transition-transform">
-                                            <p className="text-[#FFB800] text-xl font-black italic mb-1">₦{item.price}</p>
-                                            <h3 className="text-white font-bold text-sm uppercase tracking-tight line-clamp-1">{item.title}</h3>
-                                            <p className="text-zinc-500 text-xs mt-2 flex items-center gap-1">
-                                                <MapPin className="h-3 w-3" /> {item.dealer}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </Card>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-            </section>
 
             {/* Categories Marquee / Grid */}
             <section className="py-24">
