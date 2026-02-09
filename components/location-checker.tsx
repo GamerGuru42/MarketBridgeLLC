@@ -11,14 +11,14 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 
-// Expanded list of supported cities/locations with "Health" status
+// Expanded list of supported hubs with "Physical" alignment
 const SUPPORTED_LOCATIONS = [
-    { name: 'Abuja', health: 'Peak', hub: true },
-    { name: 'Lagos', health: 'High', hub: false },
-    { name: 'Port Harcourt', health: 'Mid', hub: false },
-    { name: 'Kano', health: 'Mid', hub: false },
-    { name: 'Ibadan', health: 'Active', hub: false },
-    { name: 'Enugu', health: 'Active', hub: false },
+    { name: 'Abuja', state: 'Federal Capital Territory', health: 'Peak', hub: true },
+    { name: 'Lagos', state: 'Lagos', health: 'High', hub: false },
+    { name: 'Port Harcourt', state: 'Rivers', health: 'Mid', hub: false },
+    { name: 'Kano', state: 'Kano', health: 'Mid', hub: false },
+    { name: 'Ibadan', state: 'Oyo', health: 'Active', hub: false },
+    { name: 'Enugu', state: 'Enugu', health: 'Active', hub: false },
     { name: 'Benin City', health: 'Stable', hub: false },
     { name: 'Kaduna', health: 'Stable', hub: false }
 ];
@@ -34,9 +34,11 @@ export function LocationChecker({ children }: LocationCheckerProps) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Check if user has already acknowledged or selected a hub
+        // Force re-check if user explicitly requests it or if it's the first time
         const savedLocation = localStorage.getItem('mb-preferred-node');
-        if (savedLocation) {
+        const sessionChecked = sessionStorage.getItem('mb-location-checked');
+
+        if (savedLocation && sessionChecked) {
             setLoading(false);
             return;
         }
@@ -48,29 +50,45 @@ export function LocationChecker({ children }: LocationCheckerProps) {
         try {
             setLoading(true);
 
-            // Strategy 1: Browser Geolocation (Actual Device)
+            // Strategy 1: Browser Geolocation (Highly Precise)
             if ("geolocation" in navigator) {
+                const options = {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                };
+
                 navigator.geolocation.getCurrentPosition(
                     async (position) => {
                         const { latitude, longitude } = position.coords;
                         try {
-                            // Reverse Geocode using a free service (bigdatacloud is usually free for client-side)
                             const geoResponse = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
                             const geoData = await geoResponse.json();
-                            const city = geoData.city || geoData.locality || geoData.principalSubdivision;
-                            processLocationResult(city);
+
+                            // Extract intelligence from multiple layers
+                            const locationInfo = {
+                                city: geoData.city,
+                                locality: geoData.locality,
+                                state: geoData.principalSubdivision,
+                                country: geoData.countryName
+                            };
+
+                            processLocationIntelligence(locationInfo);
                         } catch (e) {
                             fallbackToIp();
                         }
                     },
-                    () => fallbackToIp(), // Permission denied or error
-                    { timeout: 5000 }
+                    (error) => {
+                        console.warn("Geolocation denied/failed, falling back to IP", error.message);
+                        fallbackToIp();
+                    },
+                    options
                 );
             } else {
                 fallbackToIp();
             }
         } catch (error) {
-            console.error("Location check failed", error);
+            console.error("Critical Location Exception", error);
             setIsLocationSupported(true);
             setLoading(false);
         }
@@ -80,53 +98,79 @@ export function LocationChecker({ children }: LocationCheckerProps) {
         try {
             const response = await fetch('https://ipapi.co/json/');
             const data = await response.json();
-            processLocationResult(data.city);
+
+            processLocationIntelligence({
+                city: data.city,
+                state: data.region,
+                country: data.country_name
+            });
         } catch (error) {
+            console.error("IP Fallback failed", error);
             setIsLocationSupported(true);
             setLoading(false);
         }
     };
 
-    const processLocationResult = (city: string) => {
-        if (!city) {
-            setIsLocationSupported(true);
-            setLoading(false);
-            return;
-        }
+    const processLocationIntelligence = (info: any) => {
+        const { city, locality, state, country } = info;
 
-        setUserLocation(city);
-        const supported = SUPPORTED_LOCATIONS.some(loc =>
-            city.toLowerCase().includes(loc.name.toLowerCase()) ||
-            loc.name.toLowerCase().includes(city.toLowerCase())
+        // Comprehensive string for matching
+        const fullString = `${city || ''} ${locality || ''} ${state || ''}`.toLowerCase();
+
+        // Smart matching logic: check for Hub name OR Hub state
+        const matchedHub = SUPPORTED_LOCATIONS.find(loc =>
+            fullString.includes(loc.name.toLowerCase()) ||
+            (loc.state && fullString.includes(loc.state.toLowerCase()))
         );
 
-        setIsLocationSupported(supported);
-        if (!supported) {
-            setShowDialog(true);
+        const displayName = city || locality || state || 'Unknown Node';
+        setUserLocation(displayName);
+        sessionStorage.setItem('mb-location-checked', 'true');
+
+        if (matchedHub) {
+            setIsLocationSupported(true);
+            localStorage.setItem('mb-preferred-node', matchedHub.name);
+            setShowDialog(false);
+        } else {
+            // Check if they are in Nigeria at least
+            const isNigeria = country === 'Nigeria' || fullString.includes('nigeria');
+
+            setIsLocationSupported(false);
+            // If they are in Nigeria but a non-supported city (like Ede), show dialog
+            // If they are already in a preferred node, don't nag them
+            const currentPref = localStorage.getItem('mb-preferred-node');
+            if (!currentPref || currentPref === 'global') {
+                setShowDialog(true);
+            }
         }
         setLoading(false);
     };
 
-    const handleBrowseAnyway = () => {
-        localStorage.setItem('mb-preferred-node', 'global');
+    const handleBrowseAnyway = (node = 'global') => {
+        localStorage.setItem('mb-preferred-node', node);
         setShowDialog(false);
     };
 
     const handleTeleportToHub = (targetHub = 'Abuja') => {
         localStorage.setItem('mb-preferred-node', targetHub);
         setShowDialog(false);
-        // In a real app, this might trigger a redirect or a state update in a LocationContext
-        // window.location.href = `/listings?location=${targetHub}`;
+        window.location.reload(); // Refresh to update node context globally
     };
 
     if (loading) {
         return (
             <div className="fixed inset-0 bg-black z-[9999] flex items-center justify-center">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="h-1 w-32 bg-zinc-900 rounded-full overflow-hidden">
-                        <div className="h-full bg-[#FFB800] animate-progress-loading" />
+                <div className="flex flex-col items-center gap-6">
+                    <div className="relative">
+                        <div className="h-16 w-16 rounded-full border-t-2 border-[#FFB800] animate-spin" />
+                        <MapPin className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-6 w-6 text-[#FFB800]" />
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 animate-pulse">Syncing Local Node...</span>
+                    <div className="flex flex-col items-center gap-2">
+                        <div className="h-1 w-32 bg-zinc-900 rounded-full overflow-hidden">
+                            <div className="h-full bg-[#FFB800] animate-pulse" />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">Syncing Node...</span>
+                    </div>
                 </div>
             </div>
         );
@@ -135,8 +179,8 @@ export function LocationChecker({ children }: LocationCheckerProps) {
     return (
         <>
             <Dialog open={showDialog} onOpenChange={setShowDialog}>
-                <DialogContent className="sm:max-w-md bg-black border-white/5 text-white rounded-[2rem] p-8 overflow-hidden shadow-[0_0_100px_rgba(255,184,0,0.1)]">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#FFB800]/50 to-transparent" />
+                <DialogContent className="sm:max-w-md bg-black border border-white/5 text-white rounded-[2.5rem] p-10 overflow-hidden shadow-[0_0_150px_rgba(255,184,0,0.15)]">
+                    <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#FFB800] to-transparent" />
 
                     <DialogHeader>
                         <div className="mx-auto h-20 w-20 rounded-full bg-[#FFB800]/10 flex items-center justify-center mb-6 border border-[#FFB800]/20 relative">
@@ -180,7 +224,7 @@ export function LocationChecker({ children }: LocationCheckerProps) {
                             <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                         </Button>
                         <Button
-                            onClick={handleBrowseAnyway}
+                            onClick={() => handleBrowseAnyway()}
                             variant="outline"
                             className="w-full h-14 border-white/5 text-zinc-500 hover:text-white hover:bg-white/5 font-bold uppercase tracking-widest text-[10px] rounded-2xl"
                         >

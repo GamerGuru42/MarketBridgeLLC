@@ -33,10 +33,13 @@ export default function OnboardingPage() {
         }
 
         if (user) {
-            // Pre-fill with existing data
+            // Get detected location for pre-fill
+            const detectedNode = localStorage.getItem('mb-preferred-node');
+
+            // Pre-fill with existing data, using detected node as fallback for location
             setFormData({
                 displayName: user.displayName || user.email?.split('@')[0] || '',
-                location: user.location || '',
+                location: user.location || (detectedNode !== 'global' ? detectedNode : '') || '',
                 photoURL: user.photoURL || '',
                 role: user.role || 'customer',
                 businessName: user.businessName || '',

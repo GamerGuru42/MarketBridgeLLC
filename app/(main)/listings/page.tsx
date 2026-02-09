@@ -55,8 +55,18 @@ function ListingsContent() {
     const [condition, setCondition] = useState('all');
 
     useEffect(() => {
+        // Sync with active node if no explicit location parameter is provided
+        if (!initialLocation) {
+            const savedNode = localStorage.getItem('mb-preferred-node');
+            if (savedNode && savedNode !== 'global') {
+                setLocation(savedNode);
+            }
+        }
+    }, [initialLocation]);
+
+    useEffect(() => {
         fetchListings();
-    }, [category, condition, location]);
+    }, [category, condition, location, search]);
 
     const fetchListings = async () => {
         setLoading(true);
@@ -84,6 +94,10 @@ function ListingsContent() {
                 query = query.ilike('title', `%${search}%`);
             }
 
+            if (location) {
+                query = query.ilike('location', `%${location}%`);
+            }
+
             if (minPrice) {
                 query = query.gte('price', parseInt(minPrice));
             }
@@ -103,10 +117,16 @@ function ListingsContent() {
             if (!data || data.length === 0) {
                 const mockListings: Listing[] = [
                     {
-                        id: 'mock-1', title: '2022 TOYOTA CAMRY XSE', description: 'Nigerian used, first body, super clean interior, panoramic roof, leather seats, 4-cylinder engine.', price: 28500000, category: 'Automotive', location: 'Lagos', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1621007947382-bb3c3968e3bb?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2022, make: 'Toyota', model: 'Camry', condition: 'Nigerian Used', dealer: { id: 'mock', display_name: 'Elite Motors', is_verified: true }
+                        id: 'mock-2', title: '2019 LEXUS RX 350 (ABUJA NODE)', description: 'Foreign used, fully loaded, panoramic roof, thumb-start, reverse camera, duty fully paid.', price: 35000000, category: 'Automotive', location: 'Abuja', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1591533924719-79888126b0a1?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2019, make: 'Lexus', model: 'RX 350', condition: 'Tokunbo', dealer: { id: 'mock', display_name: 'Premium Autos Ltd', is_verified: true }
                     },
                     {
-                        id: 'mock-2', title: '2019 LEXUS RX 350', description: 'Foreign used, fully loaded, panoramic roof, thumb-start, reverse camera, duty fully paid.', price: 35000000, category: 'Automotive', location: 'Abuja', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1591533924719-79888126b0a1?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2019, make: 'Lexus', model: 'RX 350', condition: 'Tokunbo', dealer: { id: 'mock', display_name: 'Premium Autos Ltd', is_verified: true }
+                        id: 'mock-7', title: '2022 RANGE ROVER AUTOBIOGRAPHY LWB', description: 'Long wheel base, rear entertainment, deployable side steps, executive seating. Abuja Registered.', price: 165000000, category: 'Automotive', location: 'Abuja', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2022, make: 'Land Rover', model: 'Range Rover', condition: 'Tokunbo', dealer: { id: 'mock', display_name: 'Royal Rides Abuja', is_verified: true }
+                    },
+                    {
+                        id: 'mock-10', title: 'COSMOPOLITAN STUDENT COMBO (PHONES + PODS)', description: 'Perfect for students in Abuja. iPhone 13 Pro + Airpods Pro Gen 2.', price: 650000, category: 'Electronics', location: 'Abuja', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2023, condition: 'Brand New', dealer: { id: 'mock', display_name: 'Baze Gadgets hub', is_verified: true }
+                    },
+                    {
+                        id: 'mock-1', title: '2022 TOYOTA CAMRY XSE', description: 'Nigerian used, first body, super clean interior, panoramic roof, leather seats, 4-cylinder engine.', price: 28500000, category: 'Automotive', location: 'Lagos', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1621007947382-bb3c3968e3bb?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2022, make: 'Toyota', model: 'Camry', condition: 'Nigerian Used', dealer: { id: 'mock', display_name: 'Elite Motors', is_verified: true }
                     },
                     {
                         id: 'mock-3', title: '2021 BMW M4 COMPETITION', description: 'Turbocharged, carbon fiber interior, low mileage, competition package, full service history.', price: 65000000, category: 'Automotive', location: 'Port Harcourt', status: 'active', dealer_id: 'mock', created_at: new Date().toISOString(), images: ['https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=800&q=80'], is_verified_listing: true, year: 2021, make: 'BMW', model: 'M4', condition: 'Tokunbo', dealer: { id: 'mock', display_name: 'Speed Nation', is_verified: true }

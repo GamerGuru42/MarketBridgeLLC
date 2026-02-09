@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
     ArrowRight, ShieldCheck, Truck, Star, MapPin, Sparkles, Box, Search, ChevronRight,
-    Lock, CheckCircle2, TrendingUp, Users, RefreshCw
+    Lock, CheckCircle2, TrendingUp, Users, RefreshCw, Zap
 } from 'lucide-react';
 import Image from 'next/image';
 import { CATEGORIES, Category } from '@/lib/categories';
@@ -146,6 +146,23 @@ export default function HomePage() {
                                         <span className="inline-block">Explore Deals</span>
                                     </Link>
                                 </Button>
+                            </div>
+
+                            {/* Sector Intelligence */}
+                            <div className="flex bg-white/5 border border-white/10 rounded-2xl p-4 gap-4 backdrop-blur-md mb-8 max-w-sm">
+                                <div className="h-10 w-10 shrink-0 rounded-xl bg-[#FFB800]/10 flex items-center justify-center border border-[#FFB800]/20">
+                                    <Zap className="h-4 w-4 text-[#FFB800]" />
+                                </div>
+                                <div className="flex flex-col justify-center">
+                                    <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-left">Sector Intelligence</span>
+                                    <span className="text-[10px] font-bold text-white uppercase italic tracking-wider text-left">
+                                        {currentNode === 'Abuja'
+                                            ? "Syncing: Suncity Estate to Garki Core..."
+                                            : currentNode === 'Lagos'
+                                                ? "Mapping: Ikeja to Victoria Island..."
+                                                : "Global Grid Connected: Sector Unknown"}
+                                    </span>
+                                </div>
                             </div>
 
                             {/* Node Activity Monitor */}
