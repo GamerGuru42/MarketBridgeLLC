@@ -1,12 +1,12 @@
 export type SubscriptionPlan = 'starter' | 'professional' | 'enterprise';
-export type SubscriptionStatus = 'active' | 'inactive' | 'trial' | 'expired' | 'pending_payment';
+export type SubscriptionStatus = 'active' | 'inactive' | 'trial' | 'expired' | 'pending_payment' | 'pending_verification';
 
 export interface User {
     id: string; // Supabase UUID
     _id: string; // Legacy MongoDB ID (for backwards compatibility)
     email: string;
     displayName: string;
-    role: 'customer' | 'dealer' | 'admin' | 'ceo' | 'cofounder' | 'cto' | 'coo' | 'technical_admin' | 'operations_admin' | 'marketing_admin';
+    role: 'customer' | 'dealer' | 'admin' | 'ceo' | 'cofounder' | 'cto' | 'coo' | 'technical_admin' | 'operations_admin' | 'marketing_admin' | 'student_buyer' | 'student_seller';
     phone_number?: string;
     photoURL?: string;
     location?: string;
@@ -22,6 +22,8 @@ export interface User {
     subscription_expires_at?: string;
     trial_start_date?: string;
     listingLimit?: number;
+    university?: string;
+    matricNumber?: string;
 }
 
 export interface FirestoreUser {

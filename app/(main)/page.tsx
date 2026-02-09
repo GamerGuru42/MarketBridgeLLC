@@ -137,8 +137,8 @@ export default function HomePage() {
 
                             <div className="flex flex-col sm:flex-row gap-4 pt-4">
                                 <Button size="lg" asChild className="bg-[#FFB800] text-black font-black uppercase tracking-widest px-10 h-16 hover:bg-[#FFD700] hover:scale-105 transition-all duration-300 shadow-[0_0_50px_rgba(255,184,0,0.2)]">
-                                    <Link href={user ? (user.role === 'dealer' ? '/dealer/dashboard' : '/onboarding') : '/signup?role=dealer'}>
-                                        <span className="inline-block">{user && user.role === 'dealer' ? 'SELLER DASHBOARD' : 'START SELLING'}</span>
+                                    <Link href={user ? (['dealer', 'student_seller'].includes(user.role) ? '/dealer/dashboard' : '/onboarding') : '/signup?role=dealer'}>
+                                        <span className="inline-block">{user && ['dealer', 'student_seller'].includes(user.role) ? 'MERCHANT TERMINAL' : 'START SELLING'}</span>
                                     </Link>
                                 </Button>
                                 <Button size="lg" variant="outline" asChild className="bg-transparent border-2 border-white/20 text-white font-bold uppercase tracking-widest px-10 h-16 hover:bg-white hover:text-black transition-all duration-300">
@@ -148,24 +148,6 @@ export default function HomePage() {
                                 </Button>
                             </div>
 
-                            {/* Sector Intelligence - Relative to hero but docked low */}
-                            <div className="absolute bottom-12 left-4 md:left-0 z-30">
-                                <div className="flex bg-black/60 border border-white/10 rounded-2xl p-5 gap-4 backdrop-blur-xl shadow-2xl max-w-[320px]">
-                                    <div className="h-12 w-12 shrink-0 rounded-xl bg-[#FFB800]/10 flex items-center justify-center border border-[#FFB800]/20">
-                                        <Zap className="h-5 w-5 text-[#FFB800]" />
-                                    </div>
-                                    <div className="flex flex-col justify-center">
-                                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1.5 text-left">Sector Intelligence</span>
-                                        <span className="text-[11px] font-bold text-white uppercase italic tracking-wider text-left leading-tight">
-                                            {currentNode === 'Abuja'
-                                                ? "SYNCING: SUNCITY ESTATE TO GARKI CORE..."
-                                                : currentNode === 'Lagos'
-                                                    ? "MAPPING: IKEJA TO VICTORIA ISLAND..."
-                                                    : "GLOBAL GRID CONNECTED: SECTOR UNKNOWN"}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                         {/* Interactive Hero Visual */}

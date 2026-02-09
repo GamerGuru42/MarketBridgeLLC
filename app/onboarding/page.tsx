@@ -22,8 +22,10 @@ export default function OnboardingPage() {
         displayName: '',
         location: '',
         photoURL: '',
-        role: 'customer',
+        role: 'student_buyer',
         businessName: '',
+        university: '',
+        matricNumber: '',
         storeType: 'online' as 'physical' | 'online' | 'both',
     });
 
@@ -42,8 +44,10 @@ export default function OnboardingPage() {
                 displayName: user.displayName || user.email?.split('@')[0] || '',
                 location: user.location || (detectedNode !== 'global' ? detectedNode : '') || '',
                 photoURL: user.photoURL || '',
-                role: user.role || 'customer',
+                role: (user.role as any) || 'student_buyer',
                 businessName: user.businessName || '',
+                university: (user as any).university || '',
+                matricNumber: (user as any).matricNumber || '',
                 storeType: (user.storeType as 'physical' | 'online' | 'both') || 'online',
             });
         }
@@ -55,16 +59,19 @@ export default function OnboardingPage() {
 
         setLoading(true);
         try {
-            const updateData: Record<string, string | null> = {
+            const updateData: any = {
                 display_name: formData.displayName,
                 location: formData.location,
                 photo_url: formData.photoURL,
                 role: formData.role,
+                university: formData.university,
+                matric_number: formData.matricNumber,
             };
 
-            if (formData.role === 'dealer') {
+            if (formData.role === 'student_seller' || formData.role === 'dealer') {
                 updateData.business_name = formData.businessName;
                 updateData.store_type = formData.storeType;
+                updateData.subscription_status = 'pending_verification';
             }
 
             const { error } = await supabase
@@ -77,7 +84,7 @@ export default function OnboardingPage() {
             await refreshUser();
 
             // Redirect based on role
-            if (formData.role === 'dealer') {
+            if (formData.role === 'student_seller' || formData.role === 'dealer') {
                 router.push('/dealer/dashboard');
             } else {
                 router.push('/');
@@ -172,24 +179,24 @@ export default function OnboardingPage() {
                                     >
                                         <div className={cn(
                                             "flex items-center space-x-4 border rounded-[2rem] p-6 cursor-pointer transition-all duration-500",
-                                            formData.role === 'customer' ? "bg-[#FFB800] border-[#FFB800] text-black" : "bg-white/5 border-white/10 text-white hover:border-white/20"
-                                        )} onClick={() => setFormData({ ...formData, role: 'customer' })}>
-                                            <RadioGroupItem value="customer" id="customer" className="hidden" />
-                                            <Label htmlFor="customer" className="cursor-pointer flex-1 space-y-1">
-                                                <div className="font-black uppercase tracking-widest italic font-heading">Asset Buyer</div>
-                                                <div className={cn("text-[10px] italic font-medium", formData.role === 'customer' ? "text-black/60" : "text-zinc-500")}>
+                                            formData.role === 'student_buyer' || formData.role === 'customer' ? "bg-[#FFB800] border-[#FFB800] text-black" : "bg-white/5 border-white/10 text-white hover:border-white/20"
+                                        )} onClick={() => setFormData({ ...formData, role: 'student_buyer' })}>
+                                            <RadioGroupItem value="student_buyer" id="student_buyer" className="hidden" />
+                                            <Label htmlFor="student_buyer" className="cursor-pointer flex-1 space-y-1">
+                                                <div className="font-black uppercase tracking-widest italic font-heading">Student Buyer</div>
+                                                <div className={cn("text-[10px] italic font-medium", formData.role === 'student_buyer' || formData.role === 'customer' ? "text-black/60" : "text-zinc-500")}>
                                                     Acquire verified campus assets
                                                 </div>
                                             </Label>
                                         </div>
                                         <div className={cn(
                                             "flex items-center space-x-4 border rounded-[2rem] p-6 cursor-pointer transition-all duration-500",
-                                            formData.role === 'dealer' ? "bg-[#FFB800] border-[#FFB800] text-black" : "bg-white/5 border-white/10 text-white hover:border-white/20"
-                                        )} onClick={() => setFormData({ ...formData, role: 'dealer' })}>
-                                            <RadioGroupItem value="dealer" id="dealer" className="hidden" />
-                                            <Label htmlFor="dealer" className="cursor-pointer flex-1 space-y-1">
+                                            formData.role === 'student_seller' || formData.role === 'dealer' ? "bg-[#FFB800] border-[#FFB800] text-black" : "bg-white/5 border-white/10 text-white hover:border-white/20"
+                                        )} onClick={() => setFormData({ ...formData, role: 'student_seller' })}>
+                                            <RadioGroupItem value="student_seller" id="student_seller" className="hidden" />
+                                            <Label htmlFor="student_seller" className="cursor-pointer flex-1 space-y-1">
                                                 <div className="font-black uppercase tracking-widest italic font-heading">Student Merchant</div>
-                                                <div className={cn("text-[10px] italic font-medium", formData.role === 'dealer' ? "text-black/60" : "text-zinc-500")}>
+                                                <div className={cn("text-[10px] italic font-medium", formData.role === 'student_seller' || formData.role === 'dealer' ? "text-black/60" : "text-zinc-500")}>
                                                     Command a campus business terminal
                                                 </div>
                                             </Label>
@@ -197,16 +204,42 @@ export default function OnboardingPage() {
                                     </RadioGroup>
                                 </div>
 
-                                {formData.role === 'dealer' && (
+                                {['student_seller', 'dealer'].includes(formData.role) && (
                                     <div className="space-y-6 pt-6 border-t border-white/5 animate-in fade-in slide-in-from-top-4 duration-500">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="space-y-3">
+                                                <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2 font-heading">Merchant Identity *</Label>
+                                                <Input
+                                                    id="businessName"
+                                                    value={formData.businessName}
+                                                    onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                                                    placeholder="e.g. UNIVERSITY GADGETS"
+                                                    required={['student_seller', 'dealer'].includes(formData.role)}
+                                                    className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FFB800]/50 transition-all font-heading uppercase tracking-widest text-xs"
+                                                />
+                                            </div>
+
+                                            <div className="space-y-3">
+                                                <Label htmlFor="university" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2 font-heading">Campus Node *</Label>
+                                                <Input
+                                                    id="university"
+                                                    value={formData.university}
+                                                    onChange={(e) => setFormData({ ...formData, university: e.target.value })}
+                                                    placeholder="e.g. UNIVERSITY OF ABUJA"
+                                                    required={['student_seller', 'dealer'].includes(formData.role)}
+                                                    className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FFB800]/50 transition-all font-heading uppercase tracking-widest text-xs"
+                                                />
+                                            </div>
+                                        </div>
+
                                         <div className="space-y-3">
-                                            <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2 font-heading">Merchant Identity *</Label>
+                                            <Label htmlFor="matricNumber" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2 font-heading">Matriculation Entry *</Label>
                                             <Input
-                                                id="businessName"
-                                                value={formData.businessName}
-                                                onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                                                placeholder="e.g. UNIVERSITY GADGETS"
-                                                required={formData.role === 'dealer'}
+                                                id="matricNumber"
+                                                value={formData.matricNumber}
+                                                onChange={(e) => setFormData({ ...formData, matricNumber: e.target.value })}
+                                                placeholder="e.g. U/2024/CORE/001"
+                                                required={['student_seller', 'dealer'].includes(formData.role)}
                                                 className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FFB800]/50 transition-all font-heading uppercase tracking-widest text-xs"
                                             />
                                         </div>

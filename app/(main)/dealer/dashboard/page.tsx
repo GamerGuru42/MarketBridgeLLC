@@ -88,7 +88,7 @@ export default function DealerDashboardPage() {
             return;
         }
 
-        if (user && user.role !== 'dealer') {
+        if (user && !['dealer', 'student_seller'].includes(user.role)) {
             router.push('/');
             return;
         }

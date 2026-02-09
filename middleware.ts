@@ -80,7 +80,7 @@ export async function middleware(request: NextRequest) {
 
     // AUTH ENTROPY PREVENTION: Redirect logged-in users away from auth pages
     if (user && (pathname === '/login' || pathname === '/signup' || pathname === '/forgot-password')) {
-        if (role === 'dealer') {
+        if (['dealer', 'student_seller'].includes(role)) {
             return NextResponse.redirect(new URL('/dealer/dashboard', request.url))
         } else if (['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cto', 'coo', 'cofounder'].includes(role)) {
             return NextResponse.redirect(new URL('/admin', request.url))
@@ -127,7 +127,7 @@ export async function middleware(request: NextRequest) {
 
     // DEALER PROTECTION
     if (pathname.startsWith('/dealer')) {
-        if (!user || role !== 'dealer') {
+        if (!user || !['dealer', 'student_seller'].includes(role)) {
             return NextResponse.redirect(new URL('/login', request.url))
         }
     }

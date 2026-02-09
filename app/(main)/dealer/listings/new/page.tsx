@@ -35,9 +35,15 @@ export default function NewListingPage() {
             return;
         }
 
-        if (user && user.role !== 'dealer') {
+        if (user && !['dealer', 'student_seller'].includes(user.role)) {
             router.push('/');
             return;
+        }
+
+        const isPending = user?.subscriptionStatus === 'pending_verification';
+        if (isPending) {
+            // Optional: You could show a specialized toast or banner here
+            console.log("Dealer is pending verification");
         }
     }, [user, authLoading]);
 
