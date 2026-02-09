@@ -5,8 +5,9 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 import { useAuth } from '@/contexts/AuthContext';
-import { Menu, User, LogOut, LayoutDashboard, Crown } from 'lucide-react';
+import { Menu, User, LogOut, LayoutDashboard, Crown, MapPin } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
+import { useEffect } from 'react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -36,6 +37,17 @@ export const Header = () => {
         return pathname?.startsWith(path);
     };
 
+    const [currentNode, setCurrentNode] = useState<string>('Abuja');
+
+    useEffect(() => {
+        const saved = localStorage.getItem('mb-preferred-node');
+        if (saved && saved !== 'global') {
+            setCurrentNode(saved);
+        } else if (saved === 'global') {
+            setCurrentNode('Global');
+        }
+    }, []);
+
     const navLinkClass = (path: string) => cn(
         "transition-colors relative after:absolute after:bottom-[-4px] after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-[#FFB800] after:rounded-full transition-all duration-300",
         isActive(path) ? "text-white after:opacity-100 scale-110" : "text-zinc-500 hover:text-white after:opacity-0"
@@ -44,8 +56,15 @@ export const Header = () => {
     return (
         <header className="fixed top-0 z-[100] w-full bg-black/50 backdrop-blur-xl border-b border-white/5 h-20 flex items-center">
             <div className="container mx-auto px-4 flex items-center justify-between">
-                {/* Logo */}
-                <Logo />
+                {/* Logo & Node */}
+                <div className="flex items-center gap-4">
+                    <Logo />
+                    <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-[#FFB800]/10 border border-[#FFB800]/20 rounded-full cursor-pointer hover:bg-[#FFB800]/20 transition-all group" onClick={() => localStorage.removeItem('mb-preferred-node')}>
+                        <div className="h-1.5 w-1.5 rounded-full bg-[#00FF85] animate-pulse" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.1em] text-[#FFB800]">{currentNode} Node</span>
+                        <MapPin className="h-3 w-3 text-zinc-600 group-hover:text-[#FFB800] transition-colors" />
+                    </div>
+                </div>
 
                 {/* Desktop Nav */}
                 <nav className="hidden lg:flex items-center gap-10 text-[11px] font-bold uppercase tracking-[0.2em]">

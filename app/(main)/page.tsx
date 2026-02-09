@@ -96,9 +96,15 @@ export default function HomePage() {
         }
     };
 
+    const [currentNode, setCurrentNode] = useState<string>('Abuja');
+
+    useEffect(() => {
+        const saved = localStorage.getItem('mb-preferred-node');
+        if (saved) setCurrentNode(saved === 'global' ? 'Global' : saved);
+    }, []);
+
     return (
         <div className="flex flex-col min-h-screen bg-black overflow-x-hidden selection:bg-[#FFB800] selection:text-black">
-
             {/* Ambient Background */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#FFB800]/5 rounded-full blur-[150px] opacity-40 mix-blend-screen" />
@@ -116,7 +122,7 @@ export default function HomePage() {
                             {/* Beta Tag */}
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
                                 <span className="h-2 w-2 rounded-full bg-[#00FF85] animate-pulse shadow-[0_0_10px_#00FF85]" />
-                                <span className="text-[10px] uppercase font-black tracking-[0.2em] text-zinc-300">System Online v0.1</span>
+                                <span className="text-[10px] uppercase font-black tracking-[0.2em] text-zinc-300">{currentNode} Node v0.1</span>
                             </div>
 
                             <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white leading-[0.9]">
@@ -126,7 +132,7 @@ export default function HomePage() {
                             </h1>
 
                             <p className="text-zinc-400 text-lg md:text-xl max-w-lg font-medium leading-relaxed border-l-2 border-[#FFB800] pl-6 ml-2">
-                                Abuja's #1 Student Marketplace. Buy, sell, and connect safely on campus. Zero stress. Zero scams.
+                                {currentNode === 'Abuja' ? "Abuja's" : (currentNode === 'Global' ? "Nigeria's" : `${currentNode}'s`)} #1 Student Marketplace. Buy, sell, and connect safely on campus. Zero stress. Zero scams.
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -142,19 +148,25 @@ export default function HomePage() {
                                 </Button>
                             </div>
 
-                            {/* Trust Metrics */}
-                            <div className="pt-8 grid grid-cols-3 gap-8 border-t border-white/5 max-w-md">
-                                <div>
-                                    <p className="text-2xl font-black text-white">100%</p>
-                                    <p className="text-[10px] uppercase text-zinc-500 font-bold tracking-widest">Verified Students</p>
+                            {/* Node Activity Monitor */}
+                            <div className="pt-12">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <TrendingUp className="h-4 w-4 text-[#FFB800]" />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Live Node Activity: {currentNode}</span>
                                 </div>
-                                <div>
-                                    <p className="text-2xl font-black text-white">24/7</p>
-                                    <p className="text-[10px] uppercase text-zinc-500 font-bold tracking-widest">Safe Chat</p>
-                                </div>
-                                <div>
-                                    <p className="text-2xl font-black text-white">Active</p>
-                                    <p className="text-[10px] uppercase text-zinc-500 font-bold tracking-widest">Campus Hubs</p>
+                                <div className="grid grid-cols-3 gap-8 p-6 bg-white/5 border border-white/5 backdrop-blur-sm rounded-2xl max-w-md">
+                                    <div>
+                                        <p className="text-2xl font-black text-white">{currentNode === 'Abuja' ? 'High' : 'Active'}</p>
+                                        <p className="text-[8px] uppercase text-zinc-600 font-bold tracking-widest">Trade Volume</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-2xl font-black text-white">{currentNode === 'Abuja' ? 'Peak' : 'Mid'}</p>
+                                        <p className="text-[8px] uppercase text-zinc-600 font-bold tracking-widest">Growth Index</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-2xl font-black text-white">{currentNode === 'Abuja' ? '12ms' : '24ms'}</p>
+                                        <p className="text-[8px] uppercase text-zinc-600 font-bold tracking-widest">Latency hub</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -174,6 +186,15 @@ export default function HomePage() {
                                 priority
                             />
 
+                            {/* Node Location Overlay */}
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col items-center">
+                                <div className="p-4 bg-black/60 backdrop-blur-xl border border-[#FFB800]/30 rounded-full flex items-center gap-3">
+                                    <MapPin className="h-6 w-6 text-[#FFB800] animate-bounce" />
+                                    <span className="text-2xl font-black text-white uppercase italic tracking-tighter">{currentNode} HUB</span>
+                                </div>
+                                <div className="h-12 w-px bg-gradient-to-b from-[#FFB800] to-transparent mt-2" />
+                            </div>
+
                             {/* Overlay Grid */}
                             <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20 z-20 mix-blend-overlay" />
                         </div>
@@ -189,7 +210,7 @@ export default function HomePage() {
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search for books, wigs, gadgets, or services..."
+                                placeholder={`Search ${currentNode} Node for assets...`}
                                 className="bg-transparent border-none text-white placeholder:text-zinc-600 w-full h-12 focus:outline-none focus:ring-0 text-lg font-medium"
                             />
                             <Button type="submit" className="bg-[#FFB800] text-black hover:bg-[#FFD700] h-12 px-8 font-bold uppercase tracking-widest shadow-none">
