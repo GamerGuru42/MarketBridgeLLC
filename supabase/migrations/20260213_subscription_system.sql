@@ -19,11 +19,11 @@ CREATE TABLE IF NOT EXISTS subscriptions (
     trial_end TIMESTAMP,
     metadata JSONB DEFAULT '{}',
     created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW(),
-    
-    -- Ensure one active subscription per user
-    CONSTRAINT unique_active_subscription UNIQUE (user_id, status) WHERE status = 'active'
+    updated_at TIMESTAMP DEFAULT NOW()
 );
+
+-- Ensure one active subscription per user (partial unique index)
+CREATE UNIQUE INDEX unique_active_subscription ON subscriptions(user_id) WHERE status = 'active';
 
 -- Indexes for performance
 CREATE INDEX idx_subscriptions_user_id ON subscriptions(user_id);
@@ -115,11 +115,11 @@ CREATE TABLE IF NOT EXISTS payment_methods (
     is_active BOOLEAN DEFAULT TRUE,
     metadata JSONB DEFAULT '{}',
     created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW(),
-    
-    -- Ensure only one default payment method per user
-    CONSTRAINT unique_default_payment_method UNIQUE (user_id, is_default) WHERE is_default = TRUE
+    updated_at TIMESTAMP DEFAULT NOW()
 );
+
+-- Ensure only one default payment method per user (partial unique index)
+CREATE UNIQUE INDEX unique_default_payment_method ON payment_methods(user_id) WHERE is_default = TRUE;
 
 -- Indexes for performance
 CREATE INDEX idx_payment_methods_user_id ON payment_methods(user_id);
