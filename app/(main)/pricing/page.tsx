@@ -1,156 +1,344 @@
 'use client';
 
-import React from 'react';
-import { Button } from '@/components/ui/button';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Check, Zap, Shield, Rocket, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Check, Zap, Crown, Rocket, ArrowLeft, Sparkles, Shield, TrendingUp, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
-
-const PLANS = [
-    {
-        name: "Starter",
-        desc: "Individual specialized trading",
-        price: "Free",
-        period: "/month",
-        fee: "5% transaction fee",
-        features: [
-            "Up to 5 active listings",
-            "Basic analytics terminal",
-            "Standard verification node",
-            "Basic support channel"
-        ],
-        icon: Rocket,
-        buttonText: "Join Network",
-        highlight: false
-    },
-    {
-        name: "Professional",
-        desc: "Strategic dealer expansion",
-        price: "₦5,000",
-        period: "/month",
-        fee: "2.5% transaction fee",
-        features: [
-            "Up to 50 active listings",
-            "Advanced analytics stream",
-            "Priority verification node",
-            "Verified Dealer Badge",
-            "Dedicated support node"
-        ],
-        icon: Zap,
-        buttonText: "Start Protocol",
-        highlight: true,
-        tag: "MOST REDUNDANT"
-    },
-    {
-        name: "Enterprise",
-        desc: "Fleet-scale operations",
-        price: "₦20,000",
-        period: "/month",
-        fee: "1% transaction fee",
-        features: [
-            "Unlimited listing capacity",
-            "Custom intelligence reports",
-            "API deployment access",
-            "Dedicated account module",
-            "White-label verification"
-        ],
-        icon: Shield,
-        buttonText: "Contact Sales",
-        highlight: false
-    }
-];
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { createClient } from '@/lib/supabase/client';
+import type { SubscriptionPlan } from '@/types/subscription';
 
 export default function PricingPage() {
+    const router = useRouter();
+    const { user } = useAuth();
+    const supabase = createClient();
+    const [isAnnual, setIsAnnual] = useState(false);
+    const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
+    const [currentPlan, setCurrentPlan] = useState<string>('free');
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchPlans();
+        if (user) {
+            fetchCurrentSubscription();
+        }
+    }, [user]);
+
+    const fetchPlans = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('subscription_plans')
+                .select('*')
+                .eq('is_active', true)
+                .order('sort_order', { ascending: true });
+
+            if (error) throw error;
+            setPlans(data || []);
+        } catch (error) {
+            console.error('Error fetching plans:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchCurrentSubscription = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('subscriptions')
+                .select('plan_id')
+                .eq('user_id', user?.id)
+                .eq('status', 'active')
+                .single();
+
+            if (data) {
+                setCurrentPlan(data.plan_id);
+            }
+        } catch (error) {
+            console.error('Error fetching subscription:', error);
+        }
+    };
+
+    const handleSelectPlan = (planId: string) => {
+        if (!user) {
+            router.push(`/signup?plan=${planId}`);
+            return;
+        }
+
+        if (planId === 'enterprise') {
+            window.location.href = 'mailto:enterprise@marketbridge.ng?subject=Enterprise Plan Inquiry';
+            return;
+        }
+
+        router.push(`/checkout/subscription?plan=${planId}&cycle=${isAnnual ? 'annual' : 'monthly'}`);
+    };
+
+    const getPlanIcon = (planId: string) => {
+        switch (planId) {
+            case 'free':
+                return <Sparkles className="h-6 w-6" />;
+            case 'campus_starter':
+                return <Zap className="h-6 w-6" />;
+            case 'campus_pro':
+                return <Crown className="h-6 w-6" />;
+            case 'enterprise':
+                return <Rocket className="h-6 w-6" />;
+            default:
+                return <Shield className="h-6 w-6" />;
+        }
+    };
+
+    const getPlanPrice = (plan: SubscriptionPlan) => {
+        return isAnnual ? plan.price_annual : plan.price_monthly;
+    };
+
+    const getAnnualSavings = (plan: SubscriptionPlan) => {
+        const monthlyCost = plan.price_monthly * 12;
+        const annualCost = plan.price_annual;
+        return monthlyCost - annualCost;
+    };
+
     return (
-        <div className="min-h-screen bg-black text-white relative selection:bg-[#FFB800] selection:text-black pt-32 pb-24">
-            {/* Background Grid */}
+        <div className="min-h-screen bg-black text-white selection:bg-[#FFB800] selection:text-black pt-28 pb-20">
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
-            <div className="container px-6 mx-auto relative z-10 max-w-7xl space-y-20">
-                {/* Header Section */}
-                <div className="text-center space-y-6">
-                    <div className="flex items-center justify-center gap-3">
-                        <span className="h-2 w-2 rounded-full bg-[#FFB800] animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading">Financial Protocol v1.0</span>
-                    </div>
-                    <div className="space-y-4">
-                        <h1 className="text-5xl md:text-8xl font-black uppercase tracking-tighter italic font-heading">
-                            Plan <span className="text-[#FFB800]">Optimization</span>
-                        </h1>
-                        <p className="text-zinc-500 font-medium italic lowercase max-w-2xl mx-auto">
-                            Scale your marketplace operations with high-fidelity asset management tiers.
-                            No hidden cycles. Total transparency.
-                        </p>
-                    </div>
-                </div>
-
-                {/* Plans Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {PLANS.map((plan, i) => (
-                        <div key={plan.name} className={cn(
-                            "glass-card rounded-[3rem] p-10 flex flex-col relative group transition-all duration-500 hover:translate-y-[-10px]",
-                            plan.highlight ? "border-[#FFB800]/20 bg-[#FFB800]/5 shadow-[0_0_50px_rgba(255,184,0,0.05)]" : "border-white/5"
-                        )}>
-                            {plan.tag && (
-                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#FFB800] text-black text-[9px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-full font-heading italic shadow-xl shadow-[#FFB800]/20">
-                                    {plan.tag}
-                                </div>
-                            )}
-
-                            <div className="space-y-8 flex-1">
-                                <div className="flex justify-between items-start">
-                                    <div className={cn(
-                                        "h-16 w-16 rounded-[1.5rem] flex items-center justify-center border transition-all duration-500",
-                                        plan.highlight ? "bg-[#FFB800] text-black border-[#FFB800]" : "bg-white/5 text-white border-white/10"
-                                    )}>
-                                        <plan.icon className="h-8 w-8" />
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-3xl font-black italic font-heading tracking-tighter">{plan.price}</p>
-                                        <p className="text-[10px] text-zinc-600 font-black uppercase tracking-widest font-heading">{plan.period}</p>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <h3 className="text-2xl font-black uppercase tracking-tighter italic font-heading">{plan.name}</h3>
-                                    <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest font-heading">{plan.desc}</p>
-                                </div>
-
-                                <div className="pt-8 space-y-4">
-                                    <p className="text-[10px] font-black text-[#FFB800] uppercase tracking-[0.2em] font-heading mb-6">{plan.fee}</p>
-                                    {plan.features.map((feature) => (
-                                        <div key={feature} className="flex items-center gap-3 text-zinc-400">
-                                            <Check className={cn("h-4 w-4 shrink-0", plan.highlight ? "text-[#FFB800]" : "text-zinc-600")} />
-                                            <span className="text-xs font-medium lowercase italic">{feature}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <CardFooter className="pt-12 px-0">
-                                <Button asChild className={cn(
-                                    "w-full h-16 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] font-heading transition-all italic",
-                                    plan.highlight
-                                        ? "bg-[#FFB800] text-black hover:bg-[#FFD700] shadow-xl shadow-[#FFB800]/10"
-                                        : "bg-white/5 text-white border border-white/10 hover:bg-white/10 hover:border-[#FFB800]/30"
-                                )}>
-                                    <Link href="/signup">{plan.buttonText}</Link>
-                                </Button>
-                            </CardFooter>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Footer Insight */}
-                <div className="text-center pt-12 space-y-8">
-                    <p className="text-zinc-700 text-[10px] font-black uppercase tracking-[0.4em] font-heading max-w-lg mx-auto leading-relaxed">
-                        Security Notice: All transactions are processed through encrypted channels.
-                        Taxes and local agency fees may apply depending on jurisdiction.
-                    </p>
-                    <Link href="/" className="inline-flex items-center text-zinc-500 hover:text-[#FFB800] transition-colors text-[10px] font-black uppercase tracking-widest font-heading italic">
+            <div className="container px-4 mx-auto relative z-10 max-w-7xl">
+                {/* Header */}
+                <div className="text-center mb-20 space-y-8">
+                    <Link
+                        href="/"
+                        className="inline-flex items-center text-[#FFB800] hover:text-[#FFD700] text-[10px] font-black uppercase tracking-[0.2em] mb-4"
+                    >
                         <ArrowLeft className="mr-2 h-4 w-4" /> Return to Core
                     </Link>
+
+                    <div className="space-y-4">
+                        <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic leading-none">
+                            Power Your <span className="text-[#FFB800]">Campus Empire</span>
+                        </h1>
+                        <p className="text-zinc-400 text-lg md:text-xl font-medium leading-relaxed italic max-w-3xl mx-auto">
+                            Choose the plan that scales with your ambition. <span className="text-white">No hidden fees.</span> Cancel anytime.
+                        </p>
+                    </div>
+
+                    {/* Annual/Monthly Toggle */}
+                    <div className="flex items-center justify-center gap-4 glass-card p-4 rounded-3xl border-white/5 inline-flex">
+                        <span className={`text-sm font-black uppercase tracking-widest transition-colors ${!isAnnual ? 'text-white' : 'text-zinc-600'}`}>
+                            Monthly
+                        </span>
+                        <Switch
+                            checked={isAnnual}
+                            onCheckedChange={setIsAnnual}
+                            className="data-[state=checked]:bg-[#FFB800]"
+                        />
+                        <span className={`text-sm font-black uppercase tracking-widest transition-colors ${isAnnual ? 'text-white' : 'text-zinc-600'}`}>
+                            Annual
+                        </span>
+                        {isAnnual && (
+                            <Badge className="bg-[#00FF85]/10 text-[#00FF85] border-[#00FF85]/20 text-[8px] font-black uppercase tracking-widest">
+                                Save 10%
+                            </Badge>
+                        )}
+                    </div>
+                </div>
+
+                {/* Pricing Cards */}
+                {loading ? (
+                    <div className="text-center py-20">
+                        <Loader2 className="h-12 w-12 animate-spin text-[#FFB800] mx-auto mb-6" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Loading Plans...</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
+                        {plans.map((plan, index) => {
+                            const isCurrentPlan = currentPlan === plan.id;
+                            const isFree = plan.id === 'free';
+                            const isPro = plan.id === 'campus_pro';
+                            const price = getPlanPrice(plan);
+                            const savings = isAnnual ? getAnnualSavings(plan) : 0;
+
+                            return (
+                                <Card
+                                    key={plan.id}
+                                    className={`relative overflow-hidden transition-all duration-500 ${isPro
+                                            ? 'bg-gradient-to-b from-[#FFB800]/10 to-black border-[#FFB800]/30 scale-105 shadow-[0_0_50px_rgba(255,184,0,0.2)]'
+                                            : 'bg-zinc-900/40 border-white/5 hover:border-[#FFB800]/20'
+                                        } rounded-[2.5rem]`}
+                                >
+                                    {isPro && (
+                                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#FFB800] to-transparent" />
+                                    )}
+
+                                    <CardHeader className="p-8 pb-4">
+                                        {isPro && (
+                                            <Badge className="bg-[#FFB800] text-black border-none text-[8px] font-black uppercase tracking-widest mb-4 w-fit">
+                                                Most Popular
+                                            </Badge>
+                                        )}
+
+                                        <div className={`h-14 w-14 rounded-2xl flex items-center justify-center mb-6 ${isPro ? 'bg-[#FFB800]/20 border-[#FFB800]/50' : 'bg-white/5 border-white/10'
+                                            } border`}>
+                                            <div className={isPro ? 'text-[#FFB800]' : 'text-zinc-500'}>
+                                                {getPlanIcon(plan.id)}
+                                            </div>
+                                        </div>
+
+                                        <CardTitle className="text-2xl font-black uppercase tracking-tighter italic mb-2">
+                                            {plan.name}
+                                        </CardTitle>
+
+                                        <CardDescription className="text-zinc-500 text-sm font-medium italic">
+                                            {plan.description}
+                                        </CardDescription>
+
+                                        <div className="mt-6">
+                                            {plan.id === 'enterprise' ? (
+                                                <div className="text-4xl font-black uppercase tracking-tighter italic">
+                                                    Custom
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <div className="flex items-baseline gap-2">
+                                                        <span className="text-4xl font-black text-[#FFB800]">
+                                                            ₦{price.toLocaleString()}
+                                                        </span>
+                                                        <span className="text-zinc-600 text-sm font-black uppercase">
+                                                            /{isAnnual ? 'year' : 'month'}
+                                                        </span>
+                                                    </div>
+                                                    {isAnnual && savings > 0 && (
+                                                        <p className="text-[10px] text-[#00FF85] font-black uppercase tracking-widest mt-2">
+                                                            Save ₦{savings.toLocaleString()}/year
+                                                        </p>
+                                                    )}
+                                                </>
+                                            )}
+                                        </div>
+                                    </CardHeader>
+
+                                    <CardContent className="p-8 pt-6">
+                                        <ul className="space-y-4">
+                                            {plan.features.map((feature, idx) => (
+                                                <li key={idx} className="flex items-start gap-3">
+                                                    <Check className={`h-4 w-4 mt-0.5 flex-shrink-0 ${isPro ? 'text-[#FFB800]' : 'text-[#00FF85]'
+                                                        }`} />
+                                                    <span className="text-xs text-zinc-400 font-medium leading-relaxed">
+                                                        {feature}
+                                                    </span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </CardContent>
+
+                                    <CardFooter className="p-8 pt-0">
+                                        {isCurrentPlan ? (
+                                            <Button
+                                                disabled
+                                                className="w-full h-14 rounded-2xl bg-white/5 border border-white/10 text-zinc-600 font-black uppercase tracking-widest cursor-not-allowed"
+                                            >
+                                                Current Plan
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                onClick={() => handleSelectPlan(plan.id)}
+                                                className={`w-full h-14 rounded-2xl font-black uppercase tracking-widest transition-all ${isPro
+                                                        ? 'bg-[#FFB800] text-black hover:bg-[#FFD700]'
+                                                        : 'bg-white/5 border border-white/10 hover:bg-[#FFB800] hover:text-black hover:border-[#FFB800]'
+                                                    }`}
+                                            >
+                                                {isFree ? 'Get Started' : plan.id === 'enterprise' ? 'Contact Sales' : 'Upgrade Now'}
+                                            </Button>
+                                        )}
+                                    </CardFooter>
+                                </Card>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {/* Features Comparison */}
+                <div className="glass-card p-12 rounded-[3.5rem] border-white/5 mb-20">
+                    <h2 className="text-3xl font-black uppercase tracking-tighter italic mb-8 text-center">
+                        Why Upgrade? <span className="text-zinc-500">The Numbers</span>
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {[
+                            {
+                                icon: <TrendingUp className="h-6 w-6" />,
+                                stat: '3x',
+                                label: 'More Visibility',
+                                description: 'Pro merchants get 3x more views on average'
+                            },
+                            {
+                                icon: <Zap className="h-6 w-6" />,
+                                stat: '< 2hrs',
+                                label: 'Response Time',
+                                description: 'Priority support with dedicated assistance'
+                            },
+                            {
+                                icon: <Shield className="h-6 w-6" />,
+                                stat: '100%',
+                                label: 'Verified Badge',
+                                description: 'Build trust with instant verification'
+                            }
+                        ].map((item, idx) => (
+                            <div key={idx} className="text-center space-y-4">
+                                <div className="h-14 w-14 rounded-2xl bg-[#FFB800]/10 border border-[#FFB800]/20 flex items-center justify-center mx-auto">
+                                    <div className="text-[#FFB800]">{item.icon}</div>
+                                </div>
+                                <div className="text-4xl font-black text-[#FFB800] uppercase tracking-tighter italic">
+                                    {item.stat}
+                                </div>
+                                <div className="text-sm font-black uppercase tracking-widest text-white">
+                                    {item.label}
+                                </div>
+                                <p className="text-xs text-zinc-500 font-medium italic">
+                                    {item.description}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* FAQ Section */}
+                <div className="text-center space-y-8">
+                    <h2 className="text-3xl font-black uppercase tracking-tighter italic">
+                        Frequently Asked <span className="text-zinc-500">Questions</span>
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                        {[
+                            {
+                                q: 'Can I cancel anytime?',
+                                a: 'Yes! You can cancel your subscription at any time. You\'ll retain access until the end of your billing period.'
+                            },
+                            {
+                                q: 'What payment methods do you accept?',
+                                a: 'We accept all major Nigerian debit/credit cards, bank transfers, and USSD payments via Paystack.'
+                            },
+                            {
+                                q: 'Can I upgrade or downgrade my plan?',
+                                a: 'Absolutely! You can change your plan at any time. Upgrades are prorated, and downgrades take effect at the next billing cycle.'
+                            },
+                            {
+                                q: 'Is there a free trial?',
+                                a: 'The Free Tier is available indefinitely. Paid plans don\'t have a trial, but you can cancel within the first 7 days for a full refund.'
+                            }
+                        ].map((faq, idx) => (
+                            <div key={idx} className="glass-card p-6 rounded-2xl border-white/5">
+                                <h3 className="text-sm font-black uppercase tracking-widest text-white mb-3">
+                                    {faq.q}
+                                </h3>
+                                <p className="text-xs text-zinc-500 font-medium leading-relaxed">
+                                    {faq.a}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
