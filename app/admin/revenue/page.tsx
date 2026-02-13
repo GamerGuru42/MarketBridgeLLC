@@ -120,8 +120,7 @@ export default function RevenueManagementPage() {
         try {
             const { error } = await supabase.rpc('process_refund', {
                 p_transaction_id: recordId,
-                p_reason: reason,
-                p_admin_id: user?.id
+                p_reason: reason
             });
 
             if (error) throw error;
@@ -155,8 +154,8 @@ export default function RevenueManagementPage() {
         }
         return (
             <Badge className={`text-[10px] font-bold ${record.status === 'collected'
-                    ? 'bg-green-500/10 text-green-400 border-green-500/20'
-                    : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
+                ? 'bg-green-500/10 text-green-400 border-green-500/20'
+                : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
                 }`}>
                 {record.status}
             </Badge>
@@ -251,8 +250,8 @@ export default function RevenueManagementPage() {
                             key={type}
                             onClick={() => setFilter(type)}
                             className={`px-6 py-3 font-black text-xs uppercase tracking-widest transition-all border ${filter === type
-                                    ? 'bg-[#FFB800] text-black border-[#FFB800]'
-                                    : 'bg-zinc-900 text-zinc-500 border-white/10 hover:border-[#FFB800]'
+                                ? 'bg-[#FFB800] text-black border-[#FFB800]'
+                                : 'bg-zinc-900 text-zinc-500 border-white/10 hover:border-[#FFB800]'
                                 }`}
                         >
                             {type.replace('_', ' ')}

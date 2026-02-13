@@ -47,16 +47,19 @@ ALTER TABLE public.platform_revenue ENABLE ROW LEVEL SECURITY;
 -- RLS Policies for Search Analytics
 
 -- Admins can view all search analytics
+DROP POLICY IF EXISTS "Admins can view all search analytics" ON public.search_analytics;
 CREATE POLICY "Admins can view all search analytics" ON public.search_analytics
     FOR SELECT
     USING (check_is_admin());
 
 -- Users can view their own search history
+DROP POLICY IF EXISTS "Users can view own search history" ON public.search_analytics;
 CREATE POLICY "Users can view own search history" ON public.search_analytics
     FOR SELECT
     USING (auth.uid() = user_id);
 
 -- Anyone can insert search analytics (anonymous tracking)
+DROP POLICY IF EXISTS "Anyone can insert search analytics" ON public.search_analytics;
 CREATE POLICY "Anyone can insert search analytics" ON public.search_analytics
     FOR INSERT
     WITH CHECK (true);
@@ -64,23 +67,30 @@ CREATE POLICY "Anyone can insert search analytics" ON public.search_analytics
 -- RLS Policies for Platform Revenue
 
 -- Only admins can view platform revenue
+DROP POLICY IF EXISTS "Admins can view all revenue" ON public.platform_revenue;
 CREATE POLICY "Admins can view all revenue" ON public.platform_revenue
     FOR SELECT
     USING (check_is_admin());
 
 -- Only admins can insert revenue records
+DROP POLICY IF EXISTS "Admins can insert revenue" ON public.platform_revenue;
 CREATE POLICY "Admins can insert revenue" ON public.platform_revenue
     FOR INSERT
     WITH CHECK (check_is_admin());
 
 -- Only admins can update revenue
+DROP POLICY IF EXISTS "Admins can update revenue" ON public.platform_revenue;
 CREATE POLICY "Admins can update revenue" ON public.platform_revenue
     FOR UPDATE
     USING (check_is_admin());
 
 -- Create function to auto-calculate platform fees
-CREATE OR REPLACE FUNCTION calculate_platform_fee(order_amount DECIMAL)
-RETURNS TABLE(platform_fee DECIMAL, seller_receives DECIMAL) AS $$
+CREATE OR REPLACE FUNCTION calculate_platform_fee(
+    order_amount DECIMAL,
+    OUT platform_fee DECIMAL,
+    OUT seller_receives DECIMAL
+)
+RETURNS RECORD AS $$
 DECLARE
     fee_percentage DECIMAL := 5.0; -- 5% platform fee
     min_fee DECIMAL := 100; -- ₦100 minimum
@@ -100,10 +110,9 @@ BEGIN
         calculated_fee := max_fee;
     END IF;
     
-    -- Return results
-    RETURN QUERY SELECT 
-        ROUND(calculated_fee, 2)::DECIMAL AS platform_fee,
-        ROUND(order_amount - calculated_fee, 2)::DECIMAL AS seller_receives;
+    -- Assign output values
+    platform_fee := ROUND(calculated_fee, 2)::DECIMAL;
+    seller_receives := ROUND(order_amount - calculated_fee, 2)::DECIMAL;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -114,6 +123,7 @@ DECLARE
     fees RECORD;
 BEGIN
     -- Calculate fees
+    -- Need to call function correctly as it returns a RECORD now (or defined with OUT params)
     SELECT * INTO fees FROM calculate_platform_fee(NEW.amount);
     
     -- Set the fields
