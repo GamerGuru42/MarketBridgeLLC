@@ -8,7 +8,9 @@ import {
     ShoppingBag,
     MessageSquare,
     ShieldAlert,
-    BarChart3
+    BarChart3,
+    Banknote,
+    ClipboardCheck
 } from 'lucide-react';
 
 const adminItems = [
@@ -67,7 +69,10 @@ export default function AdminLayout({
                 { label: 'Operations Hub', href: '/admin/operations', icon: Activity },
                 { label: 'Dispute Center', href: '/admin/disputes', icon: ShieldAlert },
                 { label: 'Users Manager', href: '/admin/users', icon: Users },
+                { label: 'Users Manager', href: '/admin/users', icon: Users },
                 { label: 'Listings Manager', href: '/admin/listings', icon: ShoppingBag },
+                { label: 'Order Verification', href: '/admin/orders', icon: ClipboardCheck },
+                { label: 'Seller Payouts', href: '/admin/payouts', icon: Banknote },
                 ...basicItems
             ];
         }
@@ -89,6 +94,8 @@ export default function AdminLayout({
             { label: 'Users Manager', href: '/admin/users', icon: Users },
             { label: 'Listings Manager', href: '/admin/listings', icon: ShoppingBag },
             { label: 'Dispute Center', href: '/admin/disputes', icon: ShieldAlert },
+            { label: 'Order Verification', href: '/admin/orders', icon: ClipboardCheck },
+            { label: 'Seller Payouts', href: '/admin/payouts', icon: Banknote },
             ...basicItems
         ];
     };
