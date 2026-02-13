@@ -262,8 +262,28 @@ function ListingsContent() {
                     </div>
                 )}
 
+                {/* No Results State */}
+                {!loading && !error && listings.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+                        <div className="h-20 w-20 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center">
+                            <Search className="h-10 w-10 text-zinc-700" />
+                        </div>
+                        <h3 className="text-xl font-black uppercase text-white">No Listings Found</h3>
+                        <p className="text-zinc-500 max-w-md font-mono text-sm">
+                            We couldn't find any items matching your search. Try different keywords or browse all categories.
+                        </p>
+                        <Button
+                            onClick={() => { setSearch(''); window.location.href = '/listings'; }}
+                            variant="outline"
+                            className="mt-4 border-white/10 hover:bg-white/5 text-white font-mono uppercase text-xs tracking-widest"
+                        >
+                            Clear Search Filters
+                        </Button>
+                    </div>
+                )}
+
                 {/* Listings Grid */}
-                {!loading && !error && (
+                {!loading && !error && listings.length > 0 && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {listings.map((listing) => (
                             <Link key={listing.id} href={`/listings/${listing.id}`}>
