@@ -20,7 +20,7 @@ export async function POST(request: Request) {
         const { data: order, error: orderError } = await supabase
             .from('orders')
             .insert({
-                user_id: userId,
+                buyer_id: userId,
                 amount: totalAmount,
                 status: 'pending_verification', // New status for manual review
                 payment_proof_url: proofUrl,
