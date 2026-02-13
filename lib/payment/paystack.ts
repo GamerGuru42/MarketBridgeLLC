@@ -14,12 +14,12 @@ import type {
 // CONFIGURATION
 // ============================================
 
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY!;
-const PAYSTACK_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!;
+const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || '';
+const PAYSTACK_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '';
 const PAYSTACK_BASE_URL = 'https://api.paystack.co';
 
 if (!PAYSTACK_SECRET_KEY && process.env.NODE_ENV === 'production') {
-    throw new Error('PAYSTACK_SECRET_KEY is required in production');
+    console.warn('PAYSTACK_SECRET_KEY is missing. Paystack features will be disabled.');
 }
 
 // ============================================
