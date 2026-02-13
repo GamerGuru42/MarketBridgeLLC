@@ -158,8 +158,8 @@ export default function SubscriptionCheckoutPage() {
 
                                 <div className="space-y-1">
                                     <div className="text-xs text-zinc-400 uppercase tracking-widest">Account Number</div>
-                                    <div className="flex items-center gap-3">
-                                        <div className="text-3xl md:text-4xl font-black text-white tracking-widest font-mono">
+                                    <div className="flex flex-wrap items-center gap-3">
+                                        <div className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-widest font-mono">
                                             {BANK_DETAILS.accountNumber}
                                         </div>
                                         <Button

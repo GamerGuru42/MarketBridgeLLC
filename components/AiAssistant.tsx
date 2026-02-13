@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { MessageCircle, X, Send, Bot, User, Sparkles, Phone, Search, AlertCircle } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, ShoppingBag, Phone, Search, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { brain } from '@/lib/ai_brain';
@@ -44,7 +44,7 @@ export function AiAssistant() {
         {
             id: '1',
             role: 'assistant',
-            content: 'Hello! I\'m Sage, your MarketBridge AI assistant. I can help you find products, troubleshoot issues, or connect you connect with our support team. How can I help you shop without fear today?',
+            content: 'Hello! I\'m Sage, your MarketBridge AI assistant. I can help you find products, troubleshoot issues, or connect you with our support team. How can I help you shop without fear today?',
             timestamp: new Date()
         }
     ]);
@@ -117,7 +117,7 @@ export function AiAssistant() {
             <Button
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                    "fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50 transition-all duration-300 hover:scale-110",
+                    "fixed bottom-6 right-4 sm:right-6 h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-lg z-[100] transition-all duration-300 hover:scale-110",
                     isOpen ? "rotate-90 bg-destructive hover:bg-destructive/90" : "bg-primary hover:bg-primary/90"
                 )}
                 size="icon"
@@ -128,15 +128,15 @@ export function AiAssistant() {
             {/* Chat Window */}
             <div
                 className={cn(
-                    "fixed bottom-24 right-6 z-50 w-[350px] sm:w-[420px] transition-all duration-300 ease-in-out origin-bottom-right",
+                    "fixed bottom-24 right-4 sm:right-6 z-[100] w-[calc(100vw-2rem)] sm:w-[400px] transition-all duration-300 ease-in-out origin-bottom-right",
                     isOpen ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-10 pointer-events-none"
                 )}
             >
-                <Card className="border-primary/20 shadow-2xl overflow-hidden backdrop-blur-sm bg-background/95 h-[600px] flex flex-col">
+                <Card className="border-primary/20 shadow-2xl overflow-hidden backdrop-blur-sm bg-background/95 h-[500px] sm:h-[600px] flex flex-col">
                     <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5 p-4 flex flex-row items-center gap-3 border-b border-primary/10 shrink-0">
                         <div className="relative">
                             <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
-                                <Sparkles className="h-5 w-5 text-primary-foreground" />
+                                <Bot className="h-6 w-6 text-primary-foreground" />
                             </div>
                             <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-background"></span>
                         </div>
@@ -190,9 +190,9 @@ export function AiAssistant() {
                                             {msg.productDetail && (
                                                 <div className="rounded-xl border border-primary/20 bg-card overflow-hidden shadow-lg animate-in fade-in zoom-in-95 duration-300">
                                                     <div className="h-32 bg-muted relative">
-                                                        {/* Placeholder for image - in real app use Next Image */}
+                                                        {/* Placeholder for image */}
                                                         <div className="absolute inset-0 flex items-center justify-center bg-zinc-800 text-zinc-500">
-                                                            <Sparkles className="h-8 w-8 opacity-20" />
+                                                            <ShoppingBag className="h-8 w-8 opacity-20" />
                                                         </div>
                                                         <Badge className="absolute top-2 right-2 bg-[#FFB800] text-black">
                                                             {msg.productDetail.category}
@@ -224,7 +224,6 @@ export function AiAssistant() {
                                                     {msg.searchResults.map((result) => (
                                                         <div
                                                             key={result.id}
-                                                            // Instead of navigating, we chat about it
                                                             onClick={() => handleSendMessage(`Tell me more about ${result.title}`)}
                                                             className="block p-3 bg-card border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer group text-left"
                                                         >
@@ -323,7 +322,7 @@ export function AiAssistant() {
                         </form>
                     </CardFooter>
                 </Card>
-            </div >
+            </div>
         </>
     );
 }
