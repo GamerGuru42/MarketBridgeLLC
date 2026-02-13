@@ -14,11 +14,7 @@ import { normalizeIdentifier } from '@/lib/auth/utils';
 import { Loader2, ShieldCheck, Lock, Mail, User, Briefcase } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 
-const ALLOWED_ADMINS = {
-    marketing_admin: 'adael_marketing@marketbridge.com',
-    operations_admin: 'abdultareeq_ops@marketbridge.com',
-    technical_admin: 'terumah_technical@marketbridge.com',
-};
+const SECRET_KEY = process.env.NEXT_PUBLIC_ADMIN_SECRET || 'marketbridge2026';
 
 export default function AdminSignupPage() {
     const router = useRouter();
@@ -31,6 +27,7 @@ export default function AdminSignupPage() {
         email: '',
         password: '',
         confirmPassword: '',
+        secretKey: '',
     });
 
     // Auto-set role based on dept parameter
@@ -46,10 +43,9 @@ export default function AdminSignupPage() {
 
         const identifier = normalizeIdentifier(formData.email);
 
-        // Enforce Email Restriction
-        const expectedEmail = ALLOWED_ADMINS[role as keyof typeof ALLOWED_ADMINS];
-        if (expectedEmail && identifier !== normalizeIdentifier(expectedEmail)) {
-            setError(`UNAUTHORIZED IDENTITY. This post is restricted to ${expectedEmail}`);
+        // Enforce Secret Key Protection
+        if (formData.secretKey !== SECRET_KEY) {
+            setError('INVALID PROVISIONING KEY. Access Denied.');
             setIsLoading(false);
             return;
         }
@@ -207,6 +203,7 @@ export default function AdminSignupPage() {
                                         <SelectValue placeholder="Select Department" />
                                     </SelectTrigger>
                                     <SelectContent className="bg-zinc-950 border-white/10 text-white">
+                                        <SelectItem value="admin">Super Admin (Mission Control)</SelectItem>
                                         <SelectItem value="technical_admin">Head of Technical</SelectItem>
                                         <SelectItem value="operations_admin">Head of Operations</SelectItem>
                                         <SelectItem value="marketing_admin">Head of Marketing</SelectItem>
@@ -228,6 +225,23 @@ export default function AdminSignupPage() {
                                     onChange={handleChange}
                                     required
                                     placeholder="admin@marketbridge.io"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="secretKey" className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Provisioning Key <span className="text-red-500">*</span></Label>
+                            <div className="relative group/input">
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within/input:text-[#FFB800] transition-colors" />
+                                <input
+                                    id="secretKey"
+                                    name="secretKey"
+                                    type="password"
+                                    className="w-full h-12 pl-11 pr-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FFB800]/50 transition-all font-medium text-xs"
+                                    value={formData.secretKey}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="Enter Master Key"
                                 />
                             </div>
                         </div>
