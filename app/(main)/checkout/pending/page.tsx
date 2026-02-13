@@ -20,15 +20,14 @@ export default function PaymentPendingPage() {
                 </div>
 
                 <h1 className="text-3xl font-black uppercase tracking-tighter mb-4 italic font-heading">
-                    Payment <span className="text-[#00FF85]">Submitted</span>
+                    Instant Access <span className="text-[#00FF85]">Granted!</span>
                 </h1>
 
                 <p className="text-zinc-400 mb-8 leading-relaxed">
-                    Thank you! We have received your payment proof.
+                    We've unlocked your premium features <strong>provisionally</strong> so you can start selling immediately! 🚀
                     <br /><br />
-                    Your subscription is currently <strong>Pending Verification</strong>.
-                    Our team will verify the transfer within 15-30 minutes.
-                    Once confirmed, your premium features will unlock automatically.
+                    Our team will verify your payment in the background.
+                    As long as the transfer is confirmed within 24 hours, you're all set!
                 </p>
 
                 {ref && (

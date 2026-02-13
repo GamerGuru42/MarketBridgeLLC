@@ -54,7 +54,10 @@ export async function POST(req: Request) {
             periodEnd.setMonth(periodEnd.getMonth() + 1);
         }
 
-        // 2. Create/Update Subscription Record (Status: PENDING_VERIFICATION)
+        // 2. Create/Update Subscription Record (Status: ACTIVE - PROVISIONAL)
+        // We grant "active" status immediately so they can work while you verify.
+        // We add a "provisional" flag to metadata to track this.
+
         // Check for existing FIRST
         const { data: existingSub } = await supabase
             .from('subscriptions')
@@ -66,15 +69,15 @@ export async function POST(req: Request) {
 
         const subData = {
             plan_id: planId,
-            status: 'pending', // Important: Not active yet!
+            status: 'active', // <--- INSTANT ACCESS
             current_period_start: new Date().toISOString(),
             current_period_end: periodEnd.toISOString(),
             cancel_at_period_end: false,
-            // Keep trial_end if updating, or null? Let's check logic:
-            // If manual payment is confirmed later, trial ends then.
-            // For pending, we might want to keep access restricted until confirmed.
+            // Clear trial data
+            trial_end: null,
             metadata: {
-                payment_status: 'manual_verification_pending',
+                payment_status: 'provisional_pending_verification', // Track that money isn't confirmed yet
+                provisional: true, // Flag for Admin Dashboard
                 manual_payment_ref: reference,
                 sender_name: senderName,
                 submitted_at: new Date().toISOString()
@@ -106,6 +109,7 @@ export async function POST(req: Request) {
         }
 
         // 3. Record Payment (Status: PENDING)
+        // Payment itself stays pending until you see the money.
         const { error: paymentError } = await supabase
             .from('payments')
             .insert({
@@ -113,7 +117,7 @@ export async function POST(req: Request) {
                 subscription_id: subscriptionId,
                 amount: amount,
                 currency: 'NGN',
-                status: 'pending', // Pending Admin Approval
+                status: 'pending',
                 processor: 'manual',
                 processor_reference: reference,
                 payment_method: 'bank_transfer',
@@ -122,17 +126,19 @@ export async function POST(req: Request) {
                     payment_date: paymentDate,
                     bank_details: bankDetails,
                     plan_name: plan.name,
-                    billing_cycle: billingCycle
+                    billing_cycle: billingCycle,
+                    provisional_access: true
                 }
             });
 
         if (paymentError) console.error('Error recording payment:', paymentError);
 
-        // 4. Update User Profile Status
+        // 4. Update User Profile Status to ACTIVE
         await supabase
             .from('users')
             .update({
-                subscription_status: 'pending_verification'
+                subscription_status: 'active', // They are live!
+                subscription_plan_id: planId
             })
             .eq('id', user.id);
 
@@ -141,7 +147,7 @@ export async function POST(req: Request) {
         return NextResponse.json({
             success: true,
             reference,
-            message: 'Payment proof submitted successfully. Pending verification.'
+            message: 'Provisional access granted. Please wait for final verification.'
         });
 
     } catch (error: any) {

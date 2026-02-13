@@ -43,18 +43,28 @@ export default function AdminSubscriptionVerification() {
     const fetchPendingVerifications = async () => {
         setLoading(true);
         try {
-            // Fetch subscriptions that are pending manual verification
+            // Fetch subscriptions that are pending OR active (provisional)
+            // We fetch more and filter in JS for simplicity, or we could use .or()
             const { data, error } = await supabase
                 .from('subscriptions')
                 .select(`
                     *,
                     user:users(id, email, first_name, last_name, business_name)
                 `)
-                .eq('status', 'pending')
+                .or('status.eq.pending,status.eq.active')
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
-            setVerifications(data || []);
+
+            // Filter for items that need verification:
+            // 1. Status is 'pending'
+            // 2. Status is 'active' AND metadata.provisional is true
+            const pendingReviews = (data || []).filter(sub =>
+                sub.status === 'pending' ||
+                (sub.status === 'active' && sub.metadata?.provisional === true)
+            );
+
+            setVerifications(pendingReviews);
         } catch (err) {
             console.error('Error fetching verifications:', err);
             toast('Failed to load pending verifications', 'error');
@@ -67,40 +77,35 @@ export default function AdminSubscriptionVerification() {
         setActionLoading(subId);
         try {
             if (approve) {
-                // 1. Activate Subscription
+                // 1. Activate Subscription Details (Remove Provisional Flag)
                 const { error: subError } = await supabase
                     .from('subscriptions')
                     .update({
                         status: 'active',
-                        trial_end: null // Clear trial if any
+                        trial_end: null, // Clear trial if any
+                        // Remove provisional flag or update metadata
+                        // We can't delete keys easily in a partial update, so we set provisional: false
+                        metadata: {
+                            verified_at: new Date().toISOString(),
+                            provisional: false // Mark as fully verified
+                        }
                     })
                     .eq('id', subId);
 
                 if (subError) throw subError;
 
-                // 2. Update Payment Record (find the pending one linked to this sub)
-                // We'll update all pending payments for this sub to successful for simplicity
+                // 2. Update Payment Record to Successful
                 const { error: payError } = await supabase
                     .from('payments')
                     .update({ status: 'successful' })
                     .eq('subscription_id', subId)
-                    .eq('status', 'pending');
+                    .neq('status', 'successful'); // Update any pending/failed
 
                 if (payError) console.error('Payment update error', payError);
 
-                // 3. Update User Status
-                // Need to fetch user ID from the sub first
-                const sub = verifications.find(v => v.id === subId);
-                if (sub) {
-                    await supabase
-                        .from('users')
-                        .update({ subscription_status: 'active' })
-                        .eq('id', sub.user_id);
-                }
-
-                toast('Subscription activated successfully', 'success');
+                toast('Subscription verified & permanent access granted', 'success');
             } else {
-                // Reject logic
+                // Reject logic - Revoke Access
                 await supabase
                     .from('subscriptions')
                     .update({ status: 'cancelled' })
@@ -110,10 +115,9 @@ export default function AdminSubscriptionVerification() {
                 await supabase
                     .from('payments')
                     .update({ status: 'failed' })
-                    .eq('subscription_id', subId)
-                    .eq('status', 'pending');
+                    .eq('subscription_id', subId);
 
-                toast('Subscription request rejected', 'info');
+                toast('Access revoked and subscription rejected', 'info');
             }
 
             // Refresh list
