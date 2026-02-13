@@ -90,10 +90,10 @@ CREATE TABLE IF NOT EXISTS invoices (
 );
 
 -- Indexes for performance
-CREATE INDEX idx_invoices_user_id ON invoices(user_id);
-CREATE INDEX idx_invoices_invoice_number ON invoices(invoice_number);
-CREATE INDEX idx_invoices_status ON invoices(status);
-CREATE INDEX idx_invoices_due_date ON invoices(due_date);
+CREATE INDEX IF NOT EXISTS idx_invoices_user_id ON invoices(user_id);
+CREATE INDEX IF NOT EXISTS idx_invoices_invoice_number ON invoices(invoice_number);
+CREATE INDEX IF NOT EXISTS idx_invoices_status ON invoices(status);
+CREATE INDEX IF NOT EXISTS idx_invoices_due_date ON invoices(due_date);
 
 -- ============================================
 -- 4. PAYMENT METHODS TABLE
@@ -120,9 +120,8 @@ CREATE TABLE IF NOT EXISTS payment_methods (
 );
 
 -- Ensure only one default payment method per user (partial unique index)
--- Ensure only one default payment method per user (partial unique index)
 DROP INDEX IF EXISTS unique_default_payment_method;
-CREATE UNIQUE INDEX unique_default_payment_method ON payment_methods(user_id) WHERE is_default = TRUE;
+CREATE UNIQUE INDEX IF NOT EXISTS unique_default_payment_method ON payment_methods(user_id) WHERE is_default = TRUE;
 
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_payment_methods_user_id ON payment_methods(user_id);
@@ -215,8 +214,8 @@ CREATE TABLE IF NOT EXISTS subscription_usage (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_subscription_usage_subscription_id ON subscription_usage(subscription_id);
-CREATE INDEX idx_subscription_usage_period ON subscription_usage(period_start, period_end);
+CREATE INDEX IF NOT EXISTS idx_subscription_usage_subscription_id ON subscription_usage(subscription_id);
+CREATE INDEX IF NOT EXISTS idx_subscription_usage_period ON subscription_usage(period_start, period_end);
 
 -- ============================================
 -- 8. WEBHOOK EVENTS TABLE (For Audit Trail)
@@ -235,9 +234,9 @@ CREATE TABLE IF NOT EXISTS webhook_events (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_webhook_events_processor ON webhook_events(processor);
-CREATE INDEX idx_webhook_events_processed ON webhook_events(processed);
-CREATE INDEX idx_webhook_events_created_at ON webhook_events(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_webhook_events_processor ON webhook_events(processor);
+CREATE INDEX IF NOT EXISTS idx_webhook_events_processed ON webhook_events(processed);
+CREATE INDEX IF NOT EXISTS idx_webhook_events_created_at ON webhook_events(created_at DESC);
 
 -- ============================================
 -- 9. UPDATE USERS TABLE
@@ -249,7 +248,7 @@ ADD COLUMN IF NOT EXISTS subscription_status TEXT DEFAULT 'free' CHECK (subscrip
 ADD COLUMN IF NOT EXISTS subscription_plan_id TEXT REFERENCES subscription_plans(id),
 ADD COLUMN IF NOT EXISTS subscription_id UUID REFERENCES subscriptions(id);
 
-CREATE INDEX idx_users_subscription_status ON users(subscription_status);
+CREATE INDEX IF NOT EXISTS idx_users_subscription_status ON users(subscription_status);
 
 -- ============================================
 -- 10. FUNCTIONS & TRIGGERS
@@ -264,7 +263,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Apply trigger to all tables
 -- Apply trigger to all tables
 DROP TRIGGER IF EXISTS update_subscriptions_updated_at ON subscriptions;
 CREATE TRIGGER update_subscriptions_updated_at BEFORE UPDATE ON subscriptions FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -311,7 +309,6 @@ ALTER TABLE payment_methods ENABLE ROW LEVEL SECURITY;
 ALTER TABLE subscription_usage ENABLE ROW LEVEL SECURITY;
 
 -- Policies: Users can only see their own data
--- Policies: Users can only see their own data
 DROP POLICY IF EXISTS "subscriptions_user_policy" ON subscriptions;
 CREATE POLICY "subscriptions_user_policy" ON subscriptions FOR ALL USING (auth.uid() = user_id);
 
@@ -341,7 +338,8 @@ FOR ALL USING (
 );
 
 -- Policies: Everyone can read subscription plans
-CREATE POLICY subscription_plans_read_policy ON subscription_plans FOR SELECT USING (TRUE);
+DROP POLICY IF EXISTS "subscription_plans_read_policy" ON subscription_plans;
+CREATE POLICY "subscription_plans_read_policy" ON subscription_plans FOR SELECT USING (TRUE);
 
 -- ============================================
 -- 12. INITIAL DATA SETUP
