@@ -581,7 +581,7 @@ export default function ListingDetailPage() {
                         <Button
                             variant="ghost"
                             onClick={() => router.back()}
-                            className="text-[#FF6600] hover:text-[#FFD700] hover:bg-transparent p-0 h-auto text-[10px] font-black uppercase tracking-[0.2em] font-heading"
+                            className="text-[#FF6600] hover:text-[#FF6600] hover:bg-transparent p-0 h-auto text-[10px] font-black uppercase tracking-[0.2em] font-heading"
                         >
                             <ArrowLeft className="mr-2 h-3 w-3" /> Return to Signal
                         </Button>
@@ -674,7 +674,7 @@ export default function ListingDetailPage() {
                                             <Button
                                                 onClick={handlePlaceOrder}
                                                 disabled={actionLoading}
-                                                className="flex-3 h-16 bg-[#FF6600] text-black hover:bg-[#FFD700] rounded-2xl font-black uppercase tracking-widest text-xs font-heading italic flex-1"
+                                                className="flex-3 h-16 bg-[#FF6600] text-black hover:bg-[#FF6600] rounded-2xl font-black uppercase tracking-widest text-xs font-heading italic flex-1"
                                             >
                                                 {actionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
                                                 Secure Asset Now

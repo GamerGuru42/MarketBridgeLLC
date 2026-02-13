@@ -56,12 +56,12 @@ function ToastContainer() {
                     className={`
             pointer-events-auto min-w-[300px] max-w-sm p-4 rounded-xl shadow-2xl border backdrop-blur-xl animate-in slide-in-from-bottom-5 fade-in duration-300
             flex items-start gap-3
-            ${toast.type === 'success' ? 'bg-zinc-950/90 border-[#FFB800]/50 text-white' : ''}
+            ${toast.type === 'success' ? 'bg-zinc-950/90 border-[#FF6600]/50 text-white' : ''}
             ${toast.type === 'error' ? 'bg-red-950/90 border-red-500/50 text-white' : ''}
             ${toast.type === 'info' ? 'bg-zinc-900/90 border-white/20 text-white' : ''}
           `}
                 >
-                    <div className={`mt-0.5 ${toast.type === 'success' ? 'text-[#FFB800]' : toast.type === 'error' ? 'text-red-500' : 'text-zinc-400'}`}>
+                    <div className={`mt-0.5 ${toast.type === 'success' ? 'text-[#FF6600]' : toast.type === 'error' ? 'text-red-500' : 'text-zinc-400'}`}>
                         {toast.type === 'success' && <CheckCircle className="h-5 w-5" />}
                         {toast.type === 'error' && <AlertCircle className="h-5 w-5" />}
                         {toast.type === 'info' && <Info className="h-5 w-5" />}

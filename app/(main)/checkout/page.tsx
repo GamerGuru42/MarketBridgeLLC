@@ -288,7 +288,7 @@ export default function CheckoutPage() {
                                     <Button
                                         onClick={handleConfirmPayment}
                                         disabled={actionLoading || uploading || !proofUrl || !paymentRef || !agreed}
-                                        className="w-full h-20 bg-[#FF6600] text-black hover:bg-[#FFD700] rounded-2xl font-black uppercase tracking-[0.2em] transition-all font-heading shadow-[0_15px_45px_rgba(255,184,0,0.3)] border-none relative group scale-100 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="w-full h-20 bg-[#FF6600] text-black hover:bg-[#FF6600] rounded-2xl font-black uppercase tracking-[0.2em] transition-all font-heading shadow-[0_15px_45px_rgba(255,184,0,0.3)] border-none relative group scale-100 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {actionLoading ? (
                                             <Loader2 className="h-6 w-6 animate-spin" />

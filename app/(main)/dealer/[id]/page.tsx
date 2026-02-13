@@ -109,7 +109,7 @@ export default function DealerProfilePage() {
                 <div className="mb-12">
                     <Link
                         href="/dealers"
-                        className="inline-flex items-center text-[#FF6600] hover:text-[#FFD700] text-[10px] font-black uppercase tracking-[0.2em] mb-8 py-3"
+                        className="inline-flex items-center text-[#FF6600] hover:text-[#FF6600] text-[10px] font-black uppercase tracking-[0.2em] mb-8 py-3"
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" /> Return to Dealers
                     </Link>
@@ -165,7 +165,7 @@ export default function DealerProfilePage() {
                             </div>
 
                             <div className="pt-6 border-t border-white/5">
-                                <Button className="bg-[#FF6600] text-black font-black uppercase tracking-widest h-14 px-8 rounded-2xl hover:bg-[#FFD700]">
+                                <Button className="bg-[#FF6600] text-black font-black uppercase tracking-widest h-14 px-8 rounded-2xl hover:bg-[#FF6600]">
                                     <MessageCircle className="mr-2 h-4 w-4" />
                                     Initiate Secure Chat
                                 </Button>

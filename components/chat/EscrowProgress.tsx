@@ -39,7 +39,7 @@ export function EscrowProgress({ agreement, steps, onUpdate }: EscrowProgressPro
     // Status visual
     const statusColor = {
         pending: 'text-zinc-500 bg-zinc-500/10 border-zinc-500/20',
-        active: 'text-[#FFB800] bg-[#FFB800]/10 border-[#FFB800]/20',
+        active: 'text-[#FF6600] bg-[#FF6600]/10 border-[#FF6600]/20',
         completed: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20',
         disputed: 'text-red-500 bg-red-500/10 border-red-500/20',
         cancelled: 'text-zinc-500 bg-zinc-500/10 border-zinc-500/20',
@@ -50,9 +50,9 @@ export function EscrowProgress({ agreement, steps, onUpdate }: EscrowProgressPro
             <CardHeader className="py-3 px-4 flex flex-row items-center justify-between border-b border-white/5 bg-white/5">
                 <div className="flex items-center gap-2">
                     <div className={cn("h-2 w-2 rounded-full animate-pulse",
-                        agreement.status === 'active' ? "bg-[#FFB800]" : "bg-zinc-500"
+                        agreement.status === 'active' ? "bg-[#FF6600]" : "bg-zinc-500"
                     )} />
-                    <span className="font-mono text-[10px] uppercase tracking-widest text-[#FFB800]">
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-[#FF6600]">
                         SECURE TRANSACTION #{agreement.id.slice(0, 8)}
                     </span>
                 </div>
@@ -84,7 +84,7 @@ export function EscrowProgress({ agreement, steps, onUpdate }: EscrowProgressPro
                                 <div className={cn(
                                     "z-10 h-6 w-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors bg-black",
                                     isDone ? "border-emerald-500 text-emerald-500" :
-                                        isCurrent ? "border-[#FFB800] text-[#FFB800]" : "border-zinc-700 text-zinc-700"
+                                        isCurrent ? "border-[#FF6600] text-[#FF6600]" : "border-zinc-700 text-zinc-700"
                                 )}>
                                     {isDone ? <Check className="h-3 w-3" /> :
                                         isCurrent ? <Clock className="h-3 w-3 animate-pulse" /> :
@@ -99,7 +99,7 @@ export function EscrowProgress({ agreement, steps, onUpdate }: EscrowProgressPro
                                         {step.description}
                                     </p>
                                     {isCurrent && (
-                                        <p className="text-[10px] text-[#FFB800] mt-1 animate-pulse">
+                                        <p className="text-[10px] text-[#FF6600] mt-1 animate-pulse">
                                             Awaiting Action...
                                         </p>
                                     )}

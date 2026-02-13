@@ -164,12 +164,12 @@ export function LocationChecker({ children }: LocationCheckerProps) {
             <div className="fixed inset-0 bg-black z-[9999] flex items-center justify-center">
                 <div className="flex flex-col items-center gap-6">
                     <div className="relative">
-                        <div className="h-16 w-16 rounded-full border-t-2 border-[#FFB800] animate-spin" />
-                        <MapPin className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-6 w-6 text-[#FFB800]" />
+                        <div className="h-16 w-16 rounded-full border-t-2 border-[#FF6600] animate-spin" />
+                        <MapPin className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-6 w-6 text-[#FF6600]" />
                     </div>
                     <div className="flex flex-col items-center gap-2">
                         <div className="h-1 w-32 bg-zinc-900 rounded-full overflow-hidden">
-                            <div className="h-full bg-[#FFB800] animate-pulse" />
+                            <div className="h-full bg-[#FF6600] animate-pulse" />
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">Syncing Node...</span>
                     </div>
@@ -182,15 +182,15 @@ export function LocationChecker({ children }: LocationCheckerProps) {
         <>
             <Dialog open={showDialog} onOpenChange={setShowDialog}>
                 <DialogContent className="sm:max-w-md bg-black border border-white/5 text-white rounded-[2.5rem] p-10 overflow-hidden shadow-[0_0_150px_rgba(255,184,0,0.15)]">
-                    <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#FFB800] to-transparent" />
+                    <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#FF6600] to-transparent" />
 
                     <DialogHeader>
-                        <div className="mx-auto h-20 w-20 rounded-full bg-[#FFB800]/10 flex items-center justify-center mb-6 border border-[#FFB800]/20 relative">
-                            <MapPin className="h-8 w-8 text-[#FFB800]" />
-                            <div className="absolute inset-0 rounded-full border border-[#FFB800] animate-ping opacity-20" />
+                        <div className="mx-auto h-20 w-20 rounded-full bg-[#FF6600]/10 flex items-center justify-center mb-6 border border-[#FF6600]/20 relative">
+                            <MapPin className="h-8 w-8 text-[#FF6600]" />
+                            <div className="absolute inset-0 rounded-full border border-[#FF6600] animate-ping opacity-20" />
                         </div>
                         <DialogTitle className="text-center text-3xl font-black uppercase italic tracking-tighter leading-none">
-                            Bridge <span className="text-[#FFB800]">Pilot</span> Active
+                            Bridge <span className="text-[#FF6600]">Pilot</span> Active
                         </DialogTitle>
                         <DialogDescription className="text-center text-zinc-500 pt-4 font-medium leading-relaxed">
                             MarketBridge is currently live in <span className="text-white font-bold">Abuja (FCT)</span>.
@@ -201,19 +201,19 @@ export function LocationChecker({ children }: LocationCheckerProps) {
                     {!notified ? (
                         <div className="flex flex-col gap-6 py-6">
                             <div className="p-6 bg-white/5 border border-white/5 rounded-2xl space-y-4">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-[#FFB800] text-center">Get notified on launch</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-[#FF6600] text-center">Get notified on launch</p>
                                 <form onSubmit={handleNotifyMe} className="space-y-3">
                                     <input
                                         type="email"
                                         placeholder="STUDENT EMAIL"
                                         required
-                                        className="w-full h-12 bg-black border border-white/10 rounded-xl px-4 text-[10px] font-bold uppercase focus:border-[#FFB800] outline-none transition-colors"
+                                        className="w-full h-12 bg-black border border-white/10 rounded-xl px-4 text-[10px] font-bold uppercase focus:border-[#FF6600] outline-none transition-colors"
                                         value={notifyForm.email}
                                         onChange={(e) => setNotifyForm({ ...notifyForm, email: e.target.value })}
                                     />
                                     <select
                                         required
-                                        className="w-full h-12 bg-black border border-white/10 rounded-xl px-4 text-[10px] font-bold uppercase focus:border-[#FFB800] outline-none transition-colors appearance-none"
+                                        className="w-full h-12 bg-black border border-white/10 rounded-xl px-4 text-[10px] font-bold uppercase focus:border-[#FF6600] outline-none transition-colors appearance-none"
                                         value={notifyForm.state}
                                         onChange={(e) => setNotifyForm({ ...notifyForm, state: e.target.value })}
                                     >
@@ -233,7 +233,7 @@ export function LocationChecker({ children }: LocationCheckerProps) {
                             <div className="flex flex-col gap-3">
                                 <Button
                                     onClick={() => handleTeleportToHub('FCT - Abuja')}
-                                    className="w-full h-16 bg-[#FFB800] text-black hover:bg-[#FFD700] font-black uppercase tracking-[0.1em] rounded-2xl shadow-[0_10px_30px_rgba(255,184,0,0.2)] group"
+                                    className="w-full h-16 bg-[#FF6600] text-black hover:bg-[#FF6600] font-black uppercase tracking-[0.1em] rounded-2xl shadow-[0_10px_30px_rgba(255,184,0,0.2)] group"
                                 >
                                     Teleport to Abuja
                                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />

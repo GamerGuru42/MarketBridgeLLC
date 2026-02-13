@@ -167,7 +167,7 @@ export default function AdminPayoutsPage() {
                                                 <Button
                                                     onClick={() => handleMarkPaid(order.id)}
                                                     disabled={processingId === order.id || !hasBankDetails}
-                                                    className="bg-[#FF6600] text-black hover:bg-[#FFD700] border-none font-bold uppercase tracking-widest disabled:opacity-50"
+                                                    className="bg-[#FF6600] text-black hover:bg-[#FF6600] border-none font-bold uppercase tracking-widest disabled:opacity-50"
                                                 >
                                                     {processingId === order.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4 mr-2" />}
                                                     Mark Paid

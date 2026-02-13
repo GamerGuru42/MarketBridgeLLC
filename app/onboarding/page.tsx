@@ -266,7 +266,7 @@ function OnboardingContent() {
                                     </div>
                                 )}
 
-                                <Button type="submit" disabled={loading} className="w-full h-16 bg-gold-gradient text-black hover:bg-[#FFD700] rounded-2xl font-black uppercase tracking-widest transition-all font-heading shadow-[0_10px_40px_rgba(255,184,0,0.2)] border-none mt-8">
+                                <Button type="submit" disabled={loading} className="w-full h-16 bg-gold-gradient text-black hover:bg-[#FF6600] rounded-2xl font-black uppercase tracking-widest transition-all font-heading shadow-[0_10px_40px_rgba(255,184,0,0.2)] border-none mt-8">
                                     {loading ? (
                                         <>
                                             <Loader2 className="mr-2 h-5 w-5 animate-spin" />

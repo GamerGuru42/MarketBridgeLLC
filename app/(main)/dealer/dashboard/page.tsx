@@ -356,7 +356,7 @@ export default function DealerDashboardPage() {
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#00FF85]" /> Connected
                             </span>
                         </div>
-                        <Button onClick={fetchOrders} className="h-16 px-8 bg-[#FF6600] text-black hover:bg-[#FFD700] rounded-2xl font-black uppercase tracking-widest transition-all font-heading">
+                        <Button onClick={fetchOrders} className="h-16 px-8 bg-[#FF6600] text-black hover:bg-[#FF6600] rounded-2xl font-black uppercase tracking-widest transition-all font-heading">
                             Sync Data
                         </Button>
                     </div>
@@ -592,7 +592,7 @@ function OrderCard({
 
                 {order.status === 'pending' && (
                     <Select onValueChange={(value: string) => onUpdateStatus(order.id, value as 'pending' | 'confirmed' | 'completed' | 'cancelled')} disabled={isUpdating}>
-                        <SelectTrigger className="flex-1 md:w-40 h-12 rounded-xl bg-[#FF6600] border-none text-black font-black uppercase tracking-widest text-[10px] font-heading shadow-lg shadow-[#FF6600]/10 hover:bg-[#FFD700] transition-all">
+                        <SelectTrigger className="flex-1 md:w-40 h-12 rounded-xl bg-[#FF6600] border-none text-black font-black uppercase tracking-widest text-[10px] font-heading shadow-lg shadow-[#FF6600]/10 hover:bg-[#FF6600] transition-all">
                             <SelectValue placeholder="Dispatch" />
                         </SelectTrigger>
                         <SelectContent className="bg-zinc-900 border-white/10 text-white font-heading text-[10px] uppercase font-black tracking-widest">

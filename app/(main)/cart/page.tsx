@@ -32,7 +32,7 @@ export default function CartPage() {
                         </p>
                     </div>
 
-                    <Button asChild className="h-16 px-12 bg-[#FF6600] text-black hover:bg-[#FFD700] rounded-2xl font-black uppercase tracking-widest transition-all font-heading">
+                    <Button asChild className="h-16 px-12 bg-[#FF6600] text-black hover:bg-[#FF6600] rounded-2xl font-black uppercase tracking-widest transition-all font-heading">
                         <Link href="/listings">
                             Scan Marketplace <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
@@ -141,7 +141,7 @@ export default function CartPage() {
 
                             <div className="space-y-4 pt-6">
                                 <Button
-                                    className="w-full h-16 bg-[#FF6600] text-black hover:bg-[#FFD700] rounded-2xl font-black uppercase tracking-widest transition-all font-heading shadow-[0_10px_40px_rgba(255,184,0,0.2)]"
+                                    className="w-full h-16 bg-[#FF6600] text-black hover:bg-[#FF6600] rounded-2xl font-black uppercase tracking-widest transition-all font-heading shadow-[0_10px_40px_rgba(255,184,0,0.2)]"
                                     onClick={() => router.push('/checkout')}
                                     disabled={items.length === 0}
                                 >

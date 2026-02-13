@@ -49,16 +49,16 @@ export function Sidebar({ items, title, className }: SidebarProps) {
                                     className={cn(
                                         "flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 group relative",
                                         isActive
-                                            ? "bg-white/5 text-[#FFB800] shadow-[0_0_20px_rgba(255,184,0,0.05)]"
+                                            ? "bg-white/5 text-[#FF6600] shadow-[0_0_20px_rgba(255,184,0,0.05)]"
                                             : "text-zinc-500 hover:text-white hover:bg-white/5"
                                     )}
                                 >
                                     {isActive && (
-                                        <div className="absolute left-[-2px] top-1/2 -translate-y-1/2 w-1 h-6 bg-[#FFB800] rounded-full shadow-[0_0_10px_#FFB800]" />
+                                        <div className="absolute left-[-2px] top-1/2 -translate-y-1/2 w-1 h-6 bg-[#FF6600] rounded-full shadow-[0_0_10px_#FF6600]" />
                                     )}
                                     <item.icon className={cn(
                                         "h-5 w-5 transition-transform group-hover:scale-110",
-                                        isActive ? "text-[#FFB800]" : "text-zinc-700"
+                                        isActive ? "text-[#FF6600]" : "text-zinc-700"
                                     )} />
                                     <span className="text-[11px] font-black uppercase tracking-widest italic truncate">
                                         {item.label}

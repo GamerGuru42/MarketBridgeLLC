@@ -52,7 +52,7 @@ export function TrialBanner() {
             case 'medium':
                 return 'bg-orange-500/10 border-orange-500/30';
             default:
-                return 'bg-[#FFB800]/10 border-[#FFB800]/30';
+                return 'bg-[#FF6600]/10 border-[#FF6600]/30';
         }
     };
 
@@ -63,7 +63,7 @@ export function TrialBanner() {
             case 'medium':
                 return 'text-orange-400';
             default:
-                return 'text-[#FFB800]';
+                return 'text-[#FF6600]';
         }
     };
 
@@ -82,7 +82,7 @@ export function TrialBanner() {
                         <Button
                             asChild
                             size="sm"
-                            className="bg-[#FFB800] text-black hover:bg-[#FFD700] font-black uppercase tracking-widest text-[10px]"
+                            className="bg-[#FF6600] text-black hover:bg-[#FF6600] font-black uppercase tracking-widest text-[10px]"
                         >
                             <Link href="/pricing">
                                 <Zap className="h-4 w-4 mr-2" />

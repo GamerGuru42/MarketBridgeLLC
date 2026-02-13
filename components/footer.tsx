@@ -42,7 +42,7 @@ export const Footer = () => {
                                 { Icon: Twitter, href: "https://x.com/marketbridgeng" },
                                 { Icon: Facebook, href: "https://facebook.com/marketbridgeng" }
                             ].map((social, i) => (
-                                <Link key={i} href={social.href} target="_blank" rel="noopener noreferrer" className="h-10 w-10 glass-card rounded-xl flex items-center justify-center text-zinc-500 hover:text-[#FFB800] hover:border-[#FFB800]/50 transition-all">
+                                <Link key={i} href={social.href} target="_blank" rel="noopener noreferrer" className="h-10 w-10 glass-card rounded-xl flex items-center justify-center text-zinc-500 hover:text-[#FF6600] hover:border-[#FF6600]/50 transition-all">
                                     <social.Icon className="h-4 w-4" />
                                 </Link>
                             ))}

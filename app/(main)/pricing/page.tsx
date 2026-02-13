@@ -110,7 +110,7 @@ export default function PricingPage() {
                 <div className="text-center mb-20 space-y-8">
                     <Link
                         href="/"
-                        className="inline-flex items-center text-[#FF6600] hover:text-[#FFD700] text-[10px] font-black uppercase tracking-[0.2em] mb-4"
+                        className="inline-flex items-center text-[#FF6600] hover:text-[#FF6600] text-[10px] font-black uppercase tracking-[0.2em] mb-4"
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" /> Return to Core
                     </Link>
@@ -245,7 +245,7 @@ export default function PricingPage() {
                                             <Button
                                                 onClick={() => handleSelectPlan(plan.id)}
                                                 className={`w-full h-14 rounded-2xl font-black uppercase tracking-widest transition-all ${isPro
-                                                        ? 'bg-[#FF6600] text-black hover:bg-[#FFD700]'
+                                                        ? 'bg-[#FF6600] text-black hover:bg-[#FF6600]'
                                                         : 'bg-white/5 border border-white/10 hover:bg-[#FF6600] hover:text-black hover:border-[#FF6600]'
                                                     }`}
                                             >

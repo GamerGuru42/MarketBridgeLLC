@@ -93,7 +93,7 @@ export default function FindDealersPage() {
                     <div className="space-y-4">
                         <Link
                             href="/"
-                            className="inline-flex items-center text-[#FF6600] hover:text-[#FFD700] p-0 h-auto text-[10px] font-black uppercase tracking-[0.2em] font-heading mb-4 py-3"
+                            className="inline-flex items-center text-[#FF6600] hover:text-[#FF6600] p-0 h-auto text-[10px] font-black uppercase tracking-[0.2em] font-heading mb-4 py-3"
                         >
                             <ArrowLeft className="mr-2 h-4 w-4" /> Return to Core
                         </Link>

@@ -29,13 +29,13 @@ export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
                         <Sidebar items={sidebarItems} title={title} className="border-0 shadow-none" />
                     </SheetContent>
                 </Sheet>
-                <h1 className="text-xl md:text-2xl font-black italic tracking-widest text-[#FFB800] uppercase">
+                <h1 className="text-xl md:text-2xl font-black italic tracking-widest text-[#FF6600] uppercase">
                     {title}
                 </h1>
             </div>
 
             <div className="flex items-center gap-4 md:gap-8">
-                <Button variant="ghost" size="icon" className="relative text-zinc-500 hover:text-[#FFB800] transition-colors">
+                <Button variant="ghost" size="icon" className="relative text-zinc-500 hover:text-[#FF6600] transition-colors">
                     <Bell className="h-5 w-5" />
                     <span className="absolute top-2.5 right-2.5 flex h-1.5 w-1.5 rounded-full bg-[#FF8A00] animate-pulse"></span>
                 </Button>
@@ -45,11 +45,11 @@ export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
                         <span className="text-[11px] font-black text-white uppercase italic tracking-wider">
                             {user?.displayName || 'Authorized User'}
                         </span>
-                        <span className="text-[9px] text-[#FFB800] font-black uppercase tracking-[0.2em] mt-1 italic">
+                        <span className="text-[9px] text-[#FF6600] font-black uppercase tracking-[0.2em] mt-1 italic">
                             {user?.role?.replace('_', ' ')} unit
                         </span>
                     </div>
-                    <div className="h-10 w-10 rounded-2xl glass-card border-none flex items-center justify-center text-[#FFB800] shadow-[0_0_15px_rgba(255,184,0,0.1)] group cursor-pointer hover:scale-105 transition-transform">
+                    <div className="h-10 w-10 rounded-2xl glass-card border-none flex items-center justify-center text-[#FF6600] shadow-[0_0_15px_rgba(255,184,0,0.1)] group cursor-pointer hover:scale-105 transition-transform">
                         <User className="h-5 w-5" />
                     </div>
                 </div>

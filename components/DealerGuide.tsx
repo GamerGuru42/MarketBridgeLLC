@@ -67,14 +67,14 @@ export function DealerGuide() {
             <DialogContent className="bg-black border border-white/10 sm:max-w-[500px] p-0 overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-1 bg-white/10">
                     <div
-                        className="h-full bg-[#FFB800] transition-all duration-300"
+                        className="h-full bg-[#FF6600] transition-all duration-300"
                         style={{ width: `${((step + 1) / GUIDE_STEPS.length) * 100}%` }}
                     />
                 </div>
 
                 <div className="p-8 pt-10 text-center">
-                    <div className="mx-auto w-16 h-16 rounded-full bg-[#FFB800]/10 flex items-center justify-center mb-6">
-                        <CurrentIcon className="h-8 w-8 text-[#FFB800]" />
+                    <div className="mx-auto w-16 h-16 rounded-full bg-[#FF6600]/10 flex items-center justify-center mb-6">
+                        <CurrentIcon className="h-8 w-8 text-[#FF6600]" />
                     </div>
 
                     <DialogTitle className="text-2xl font-black text-white uppercase tracking-tighter mb-2">
@@ -96,7 +96,7 @@ export function DealerGuide() {
                     </Button>
                     <Button
                         onClick={handleNext}
-                        className="bg-[#FFB800] text-black font-bold hover:bg-[#FFD700]"
+                        className="bg-[#FF6600] text-black font-bold hover:bg-[#FF6600]"
                     >
                         {step === GUIDE_STEPS.length - 1 ? "Initialize" : "Next Step"} <ChevronRight className="ml-2 h-4 w-4" />
                     </Button>

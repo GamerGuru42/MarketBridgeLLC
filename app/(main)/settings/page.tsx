@@ -276,7 +276,7 @@ export default function SettingsPage() {
                                 </div>
                             </CardContent>
                             <CardFooter className="bg-white/5 border-t border-white/10 p-8 flex justify-end">
-                                <Button onClick={handleUpdateProfile} disabled={updating} className="h-14 px-10 bg-[#FF6600] hover:bg-[#FFD700] text-black font-black uppercase tracking-widest rounded-2xl border-none">
+                                <Button onClick={handleUpdateProfile} disabled={updating} className="h-14 px-10 bg-[#FF6600] hover:bg-[#FF6600] text-black font-black uppercase tracking-widest rounded-2xl border-none">
                                     {updating ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <CheckCircle className="mr-3 h-5 w-5" />}
                                     Sync Parameters
                                 </Button>
@@ -322,7 +322,7 @@ export default function SettingsPage() {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="bg-white/5 border-t border-white/10 p-8 flex justify-end">
-                                    <Button onClick={handleUpdateProfile} disabled={updating} className="h-14 px-10 bg-[#FF6600] hover:bg-[#FFD700] text-black font-black uppercase tracking-widest rounded-2xl border-none">
+                                    <Button onClick={handleUpdateProfile} disabled={updating} className="h-14 px-10 bg-[#FF6600] hover:bg-[#FF6600] text-black font-black uppercase tracking-widest rounded-2xl border-none">
                                         {updating ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <CheckCircle className="mr-3 h-5 w-5" />}
                                         Sync Assets
                                     </Button>
@@ -383,7 +383,7 @@ export default function SettingsPage() {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="bg-white/5 border-t border-white/10 p-8 flex justify-end">
-                                    <Button onClick={handleUpdateBank} disabled={updating} className="h-14 px-10 bg-[#FF6600] hover:bg-[#FFD700] text-black font-black uppercase tracking-widest rounded-2xl border-none">
+                                    <Button onClick={handleUpdateBank} disabled={updating} className="h-14 px-10 bg-[#FF6600] hover:bg-[#FF6600] text-black font-black uppercase tracking-widest rounded-2xl border-none">
                                         {updating ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <CheckCircle className="mr-3 h-5 w-5" />}
                                         Save Credentials
                                     </Button>

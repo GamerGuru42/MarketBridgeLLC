@@ -22,11 +22,11 @@ export const Logo: React.FC<LogoProps> = ({ className = '', size = 'md', hideTex
             {!hideText && (
                 <div className="flex items-center">
                     <span className={`${sizeClasses[size]} font-black text-white tracking-[-0.05em]`}>Market</span>
-                    <span className={`${sizeClasses[size]} font-black text-[#FFB800] tracking-[-0.05em]`}>Bridge</span>
+                    <span className={`${sizeClasses[size]} font-black text-[#FF6600] tracking-[-0.05em]`}>Bridge</span>
                 </div>
             )}
             {hideText && (
-                <div className="h-12 w-12 rounded-full bg-[#FFB800] blur-3xl opacity-50" />
+                <div className="h-12 w-12 rounded-full bg-[#FF6600] blur-3xl opacity-50" />
             )}
         </Link>
     );

@@ -42,7 +42,7 @@ export default function NotFound() {
                             Return
                         </Link>
                     </Button>
-                    <Button asChild className="h-14 font-bold uppercase tracking-widest text-xs bg-[#FF6600] text-black hover:bg-[#FFD700] hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,184,0,0.3)]">
+                    <Button asChild className="h-14 font-bold uppercase tracking-widest text-xs bg-[#FF6600] text-black hover:bg-[#FF6600] hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,184,0,0.3)]">
                         <Link href="/">
                             <Home className="mr-2 h-4 w-4" />
                             Dashboard

@@ -143,14 +143,14 @@ export function ImageUpload({
                                 handleFileChange(syntheticEvent);
                             }
                         }}
-                        className="aspect-square rounded-lg border-2 border-dashed border-muted-foreground/25 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 hover:border-[#FFB800]/50 hover:text-[#FFB800] transition-all"
+                        className="aspect-square rounded-lg border-2 border-dashed border-muted-foreground/25 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 hover:border-[#FF6600]/50 hover:text-[#FF6600] transition-all"
                     >
                         {uploading ? (
                             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                         ) : (
                             <>
-                                <Upload className="h-8 w-8 text-muted-foreground mb-2 group-hover:text-[#FFB800] transition-colors" />
-                                <span className="text-xs text-muted-foreground font-medium group-hover:text-[#FFB800] transition-colors">
+                                <Upload className="h-8 w-8 text-muted-foreground mb-2 group-hover:text-[#FF6600] transition-colors" />
+                                <span className="text-xs text-muted-foreground font-medium group-hover:text-[#FF6600] transition-colors">
                                     Click or Drag Images
                                 </span>
                             </>

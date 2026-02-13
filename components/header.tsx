@@ -49,7 +49,7 @@ export const Header = () => {
     }, []);
 
     const navLinkClass = (path: string) => cn(
-        "transition-colors relative after:absolute after:bottom-[-4px] after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-[#FFB800] after:rounded-full transition-all duration-300",
+        "transition-colors relative after:absolute after:bottom-[-4px] after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-[#FF6600] after:rounded-full transition-all duration-300",
         isActive(path) ? "text-white after:opacity-100 scale-110" : "text-zinc-500 hover:text-white after:opacity-0"
     );
 
@@ -59,10 +59,10 @@ export const Header = () => {
                 {/* Logo & Node */}
                 <div className="flex items-center gap-4">
                     <Logo />
-                    <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-[#FFB800]/10 border border-[#FFB800]/20 rounded-full cursor-pointer hover:bg-[#FFB800]/20 transition-all group" onClick={() => localStorage.removeItem('mb-preferred-node')}>
+                    <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-[#FF6600]/10 border border-[#FF6600]/20 rounded-full cursor-pointer hover:bg-[#FF6600]/20 transition-all group" onClick={() => localStorage.removeItem('mb-preferred-node')}>
                         <div className="h-1.5 w-1.5 rounded-full bg-[#00FF85] animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.1em] text-[#FFB800]">{currentNode} Node</span>
-                        <MapPin className="h-3 w-3 text-zinc-600 group-hover:text-[#FFB800] transition-colors" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.1em] text-[#FF6600]">{currentNode} Node</span>
+                        <MapPin className="h-3 w-3 text-zinc-600 group-hover:text-[#FF6600] transition-colors" />
                     </div>
                 </div>
 
@@ -102,13 +102,13 @@ export const Header = () => {
                                 >
                                     <div className="px-3 py-3 mb-2 border-b border-white/5">
                                         <p className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Authenticated Operative</p>
-                                        <p className="text-sm font-black truncate text-[#FFB800] italic font-heading tracking-tight">{user.displayName || 'AUTHENTICATED USER'}</p>
+                                        <p className="text-sm font-black truncate text-[#FF6600] italic font-heading tracking-tight">{user.displayName || 'AUTHENTICATED USER'}</p>
                                         <p className="text-[10px] text-zinc-500 font-medium truncate italic">{user.email}</p>
                                     </div>
                                     <DropdownMenuItem asChild className="focus:bg-white/5 rounded-xl cursor-pointer py-3 group">
                                         <Link href="/settings" className="flex items-center gap-3 w-full">
-                                            <div className="h-8 w-8 rounded-lg bg-zinc-900 border border-white/5 flex items-center justify-center group-hover:border-[#FFB800]/50 transition-colors">
-                                                <User className="h-4 w-4 text-zinc-500 group-hover:text-[#FFB800]" />
+                                            <div className="h-8 w-8 rounded-lg bg-zinc-900 border border-white/5 flex items-center justify-center group-hover:border-[#FF6600]/50 transition-colors">
+                                                <User className="h-4 w-4 text-zinc-500 group-hover:text-[#FF6600]" />
                                             </div>
                                             <span className="font-black uppercase text-[10px] tracking-widest text-zinc-400 group-hover:text-white transition-colors">Operational Profile</span>
                                         </Link>
@@ -116,10 +116,10 @@ export const Header = () => {
                                     {['dealer', 'student_seller'].includes(user.role) && (
                                         <DropdownMenuItem asChild className="focus:bg-white/5 rounded-xl cursor-pointer py-3 group">
                                             <Link href="/dealer/dashboard" className="flex items-center gap-3 w-full">
-                                                <div className="h-8 w-8 rounded-lg bg-[#FFB800]/10 border border-[#FFB800]/20 flex items-center justify-center group-hover:bg-[#FFB800]/20 transition-all">
-                                                    <LayoutDashboard className="h-4 w-4 text-[#FFB800]" />
+                                                <div className="h-8 w-8 rounded-lg bg-[#FF6600]/10 border border-[#FF6600]/20 flex items-center justify-center group-hover:bg-[#FF6600]/20 transition-all">
+                                                    <LayoutDashboard className="h-4 w-4 text-[#FF6600]" />
                                                 </div>
-                                                <span className="font-black uppercase text-[10px] tracking-widest text-[#FFB800]">Dealer Command</span>
+                                                <span className="font-black uppercase text-[10px] tracking-widest text-[#FF6600]">Dealer Command</span>
                                             </Link>
                                         </DropdownMenuItem>
                                     )}
@@ -163,28 +163,28 @@ export const Header = () => {
                                 <Link
                                     href="/"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={cn(isActive('/') ? "text-[#FFB800]" : "text-white/60")}
+                                    className={cn(isActive('/') ? "text-[#FF6600]" : "text-white/60")}
                                 >
                                     Home
                                 </Link>
                                 <Link
                                     href="/listings"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={cn(isActive('/listings') ? "text-[#FFB800]" : "text-white/60")}
+                                    className={cn(isActive('/listings') ? "text-[#FF6600]" : "text-white/60")}
                                 >
                                     Listings
                                 </Link>
                                 <Link
                                     href="/dealers"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={cn(isActive('/dealers') ? "text-[#FFB800]" : "text-white/60")}
+                                    className={cn(isActive('/dealers') ? "text-[#FF6600]" : "text-white/60")}
                                 >
                                     Dealers
                                 </Link>
                                 <Link
                                     href="/about"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={cn(isActive('/about') ? "text-[#FFB800]" : "text-white/60")}
+                                    className={cn(isActive('/about') ? "text-[#FF6600]" : "text-white/60")}
                                 >
                                     About
                                 </Link>

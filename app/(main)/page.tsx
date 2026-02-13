@@ -136,7 +136,7 @@ export default function HomePage() {
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                                <Button size="lg" asChild className="bg-[#FF6600] text-black font-black uppercase tracking-widest px-10 h-16 hover:bg-[#FFD700] hover:scale-105 transition-all duration-300 shadow-[0_0_50px_rgba(255,184,0,0.2)]">
+                                <Button size="lg" asChild className="bg-[#FF6600] text-black font-black uppercase tracking-widest px-10 h-16 hover:bg-[#FF6600] hover:scale-105 transition-all duration-300 shadow-[0_0_50px_rgba(255,184,0,0.2)]">
                                     <Link href={user ? (['dealer', 'student_seller'].includes(user.role) ? '/dealer/dashboard' : '/onboarding?role=student_seller') : '/signup?role=dealer'}>
                                         <span className="inline-block">{user && ['dealer', 'student_seller'].includes(user.role) ? 'MERCHANT TERMINAL' : 'START SELLING'}</span>
                                     </Link>
@@ -356,7 +356,7 @@ export default function HomePage() {
                                     className="w-full px-6 py-4 bg-zinc-900 border border-white/10 text-white focus:outline-none focus:border-[#FF6600] focus:ring-1 focus:ring-[#FF6600] font-mono text-sm placeholder:text-zinc-700"
                                 />
                             </div>
-                            <Button type="submit" className="w-full h-14 bg-[#FF6600] text-black font-black uppercase tracking-widest hover:bg-[#FFD700] transition-all mt-4 border-none">
+                            <Button type="submit" className="w-full h-14 bg-[#FF6600] text-black font-black uppercase tracking-widest hover:bg-[#FF6600] transition-all mt-4 border-none">
                                 Request Access
                             </Button>
                         </form>

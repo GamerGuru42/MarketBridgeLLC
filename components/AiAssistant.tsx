@@ -194,7 +194,7 @@ export function AiAssistant() {
                                                         <div className="absolute inset-0 flex items-center justify-center bg-zinc-800 text-zinc-500">
                                                             <ShoppingBag className="h-8 w-8 opacity-20" />
                                                         </div>
-                                                        <Badge className="absolute top-2 right-2 bg-[#FFB800] text-black">
+                                                        <Badge className="absolute top-2 right-2 bg-[#FF6600] text-black">
                                                             {msg.productDetail.category}
                                                         </Badge>
                                                     </div>
@@ -209,7 +209,7 @@ export function AiAssistant() {
                                                                 <Search className="h-3 w-3 mr-1" /> {msg.productDetail.location}
                                                             </div>
                                                         </div>
-                                                        <Button className="w-full font-bold uppercase tracking-widest bg-[#FFB800] text-black hover:bg-[#FFD700]" asChild>
+                                                        <Button className="w-full font-bold uppercase tracking-widest bg-[#FF6600] text-black hover:bg-[#FF6600]" asChild>
                                                             <Link href={`/listings/${msg.productDetail.id}`}>
                                                                 View Full Listing
                                                             </Link>
@@ -232,7 +232,7 @@ export function AiAssistant() {
                                                                     <p className="font-medium text-sm line-clamp-1 group-hover:text-primary transition-colors">{result.title}</p>
                                                                     <p className="text-xs text-muted-foreground">{result.location}</p>
                                                                 </div>
-                                                                <Badge variant="secondary" className="text-xs shrink-0 group-hover:bg-[#FFB800] group-hover:text-black transition-colors">
+                                                                <Badge variant="secondary" className="text-xs shrink-0 group-hover:bg-[#FF6600] group-hover:text-black transition-colors">
                                                                     ₦{result.price.toLocaleString()}
                                                                 </Badge>
                                                             </div>
@@ -294,7 +294,7 @@ export function AiAssistant() {
                                 <button
                                     key={chip}
                                     onClick={() => handleSendMessage(chip)}
-                                    className="whitespace-nowrap px-3 py-1.5 rounded-full bg-white/5 hover:bg-[#FFB800] hover:text-black border border-white/10 text-[10px] font-bold uppercase tracking-wide transition-all text-zinc-400"
+                                    className="whitespace-nowrap px-3 py-1.5 rounded-full bg-white/5 hover:bg-[#FF6600] hover:text-black border border-white/10 text-[10px] font-bold uppercase tracking-wide transition-all text-zinc-400"
                                 >
                                     {chip}
                                 </button>

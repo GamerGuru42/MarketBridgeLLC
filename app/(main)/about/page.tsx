@@ -23,7 +23,7 @@ export default function AboutPage() {
                         <Button
                             variant="ghost"
                             onClick={() => router.back()}
-                            className="text-[#FF6600] hover:text-[#FFD700] hover:bg-transparent p-0 h-auto text-[10px] font-black uppercase tracking-[0.2em] font-heading"
+                            className="text-[#FF6600] hover:text-[#FF6600] hover:bg-transparent p-0 h-auto text-[10px] font-black uppercase tracking-[0.2em] font-heading"
                         >
                             <ArrowLeft className="mr-2 h-3 w-3" /> Return to Core
                         </Button>

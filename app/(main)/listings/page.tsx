@@ -243,7 +243,7 @@ function ListingsContent() {
                         <option value="Port Harcourt">Port Harcourt</option>
                     </select>
 
-                    <Button type="submit" className="bg-[#FF6600] text-black hover:bg-[#FFD700] font-black uppercase tracking-widest rounded-none">
+                    <Button type="submit" className="bg-[#FF6600] text-black hover:bg-[#FF6600] font-black uppercase tracking-widest rounded-none">
                         Search
                     </Button>
                 </form>

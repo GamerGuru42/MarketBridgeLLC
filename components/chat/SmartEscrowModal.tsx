@@ -65,8 +65,8 @@ export function SmartEscrowModal({
             <DialogContent className="sm:max-w-[425px] bg-zinc-950 border-white/10 text-white">
                 <DialogHeader>
                     <div className="flex items-center gap-2 mb-2">
-                        <ShieldCheck className="h-6 w-6 text-[#FFB800]" />
-                        <DialogTitle className="text-xl font-black uppercase tracking-widest text-[#FFB800]">Secure Escrow</DialogTitle>
+                        <ShieldCheck className="h-6 w-6 text-[#FF6600]" />
+                        <DialogTitle className="text-xl font-black uppercase tracking-widest text-[#FF6600]">Secure Escrow</DialogTitle>
                     </div>
                     <DialogDescription className="text-zinc-400">
                         Create a binding agreement protected by MarketBridge.
@@ -88,7 +88,7 @@ export function SmartEscrowModal({
                                     placeholder="0.00"
                                 />
                             </div>
-                            <div className="bg-[#FFB800]/5 border border-[#FFB800]/20 p-3 rounded-lg text-xs text-[#FFB800] flex gap-2">
+                            <div className="bg-[#FF6600]/5 border border-[#FF6600]/20 p-3 rounded-lg text-xs text-[#FF6600] flex gap-2">
                                 <Info className="h-4 w-4 shrink-0" />
                                 <p>Funds are held securely. Sellers are paid only after you confirm delivery.</p>
                             </div>
@@ -111,13 +111,13 @@ export function SmartEscrowModal({
                                     id="tos"
                                     checked={accepted}
                                     onCheckedChange={(c) => setAccepted(!!c)}
-                                    className="mt-1 border-white/20 data-[state=checked]:bg-[#FFB800] data-[state=checked]:text-black"
+                                    className="mt-1 border-white/20 data-[state=checked]:bg-[#FF6600] data-[state=checked]:text-black"
                                 />
                                 <label
                                     htmlFor="tos"
                                     className="text-xs text-zinc-400 leading-snug cursor-pointer select-none"
                                 >
-                                    I agree to the <span className="text-[#FFB800] underline">Terms of Service</span>. Funds will be held until conditions are met.
+                                    I agree to the <span className="text-[#FF6600] underline">Terms of Service</span>. Funds will be held until conditions are met.
                                 </label>
                             </div>
                         </div>
@@ -126,7 +126,7 @@ export function SmartEscrowModal({
 
                 <DialogFooter>
                     {step === 1 ? (
-                        <Button onClick={() => setStep(2)} disabled={!amount} className="bg-[#FFB800] text-black font-bold uppercase tracking-widest hover:bg-[#FFB800]/90">
+                        <Button onClick={() => setStep(2)} disabled={!amount} className="bg-[#FF6600] text-black font-bold uppercase tracking-widest hover:bg-[#FF6600]/90">
                             Configure Terms
                         </Button>
                     ) : (
@@ -134,7 +134,7 @@ export function SmartEscrowModal({
                             <Button variant="ghost" onClick={() => setStep(1)} className="text-zinc-500 hover:text-white">
                                 Back
                             </Button>
-                            <Button onClick={handleConfirm} disabled={!accepted} className="bg-[#FFB800] text-black font-bold uppercase tracking-widest hover:bg-[#FFB800]/90">
+                            <Button onClick={handleConfirm} disabled={!accepted} className="bg-[#FF6600] text-black font-bold uppercase tracking-widest hover:bg-[#FF6600]/90">
                                 Initiate Escrow
                             </Button>
                         </div>

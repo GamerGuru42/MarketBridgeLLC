@@ -271,7 +271,7 @@ export default function NewListingPage() {
 
                         {/* Actions */}
                         <div className="flex flex-col md:flex-row gap-6 pt-12">
-                            <Button type="submit" disabled={loading} className="flex-1 h-20 bg-[#FF6600] text-black hover:bg-[#FFD700] rounded-[1.5rem] font-black uppercase tracking-[0.3em] text-xs transition-all font-heading italic shadow-2xl shadow-[#FF6600]/10 group">
+                            <Button type="submit" disabled={loading} className="flex-1 h-20 bg-[#FF6600] text-black hover:bg-[#FF6600] rounded-[1.5rem] font-black uppercase tracking-[0.3em] text-xs transition-all font-heading italic shadow-2xl shadow-[#FF6600]/10 group">
                                 {loading ? (
                                     <>
                                         <Loader2 className="mr-3 h-5 w-5 animate-spin" />
