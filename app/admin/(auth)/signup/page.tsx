@@ -236,7 +236,7 @@ export default function AdminSignupPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="secretKey" className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Provisioning Key <span className="text-red-500">*</span></Label>
+                            <Label htmlFor="secretKey" className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Secret Admin Code <span className="text-red-500">*</span></Label>
                             <div className="relative group/input">
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within/input:text-[#FFB800] transition-colors" />
                                 <input
@@ -247,14 +247,14 @@ export default function AdminSignupPage() {
                                     value={formData.secretKey}
                                     onChange={handleChange}
                                     required
-                                    placeholder="Enter Master Key"
+                                    placeholder="Enter the team secret code"
                                 />
                             </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="password" title="Password" className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Passphrase</Label>
+                                <Label htmlFor="password" title="Password" className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Password</Label>
                                 <PasswordInput
                                     id="password"
                                     name="password"
@@ -262,12 +262,12 @@ export default function AdminSignupPage() {
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
-                                    placeholder="••••••••"
+                                    placeholder="Create a password"
                                     minLength={8}
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="confirmPassword" title="Confirm Password" className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Confirm</Label>
+                                <Label htmlFor="confirmPassword" title="Confirm Password" className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Confirm Password</Label>
                                 <PasswordInput
                                     id="confirmPassword"
                                     name="confirmPassword"
@@ -275,7 +275,7 @@ export default function AdminSignupPage() {
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
                                     required
-                                    placeholder="••••••••"
+                                    placeholder="Repeat password"
                                 />
                             </div>
                         </div>
