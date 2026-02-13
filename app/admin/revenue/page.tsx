@@ -3,12 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import {
     TrendingUp, DollarSign, ShoppingCart, Users,
-    Calendar, Download, Filter, Search, ArrowUpRight
+    Calendar, Download, Filter, Search, ArrowUpRight, RotateCcw
 } from 'lucide-react';
-import { calculateOrderFee, calculateTransactionBreakdown } from '@/lib/platform-fees';
 
 const supabase = createClient();
 
@@ -22,6 +23,8 @@ interface RevenueRecord {
     buyer_id: string | null;
     payment_reference: string | null;
     status: string;
+    refund_status?: string;
+    refund_reason?: string;
     created_at: string;
     seller?: { display_name: string };
     buyer?: { display_name: string };
@@ -37,6 +40,7 @@ interface RevenueStats {
 }
 
 export default function RevenueManagementPage() {
+    const { user } = useAuth();
     const [records, setRecords] = useState<RevenueRecord[]>([]);
     const [stats, setStats] = useState<RevenueStats>({
         totalRevenue: 0,
@@ -48,6 +52,7 @@ export default function RevenueManagementPage() {
     });
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
+    const [processingRefund, setProcessingRefund] = useState<string | null>(null);
 
     useEffect(() => {
         fetchRevenue();
@@ -107,6 +112,30 @@ export default function RevenueManagementPage() {
         }
     };
 
+    const handleRefund = async (recordId: string) => {
+        const reason = window.prompt("Please enter a reason for this refund:");
+        if (!reason) return;
+
+        setProcessingRefund(recordId);
+        try {
+            const { error } = await supabase.rpc('process_refund', {
+                p_transaction_id: recordId,
+                p_reason: reason,
+                p_admin_id: user?.id
+            });
+
+            if (error) throw error;
+
+            alert("Refund processed successfully.");
+            fetchRevenue(); // Refresh data
+        } catch (err) {
+            console.error("Refund failed:", err);
+            alert("Failed to process refund. Please try again.");
+        } finally {
+            setProcessingRefund(null);
+        }
+    };
+
     const getTypeColor = (type: string) => {
         switch (type) {
             case 'order_fee': return 'bg-green-500/10 text-green-400 border-green-500/20';
@@ -116,6 +145,24 @@ export default function RevenueManagementPage() {
         }
     };
 
+    const getStatusBadge = (record: RevenueRecord) => {
+        if (record.refund_status === 'processed') {
+            return (
+                <Badge className="bg-red-500/10 text-red-500 border-red-500/20 text-[10px] font-bold">
+                    REFUNDED
+                </Badge>
+            );
+        }
+        return (
+            <Badge className={`text-[10px] font-bold ${record.status === 'collected'
+                    ? 'bg-green-500/10 text-green-400 border-green-500/20'
+                    : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
+                }`}>
+                {record.status}
+            </Badge>
+        );
+    };
+
     return (
         <div className="min-h-screen bg-black text-white p-8">
             {/* Background */}
@@ -123,13 +170,15 @@ export default function RevenueManagementPage() {
 
             <div className="max-w-7xl mx-auto relative z-10">
                 {/* Header */}
-                <div className="mb-12">
-                    <h1 className="text-5xl font-black uppercase tracking-tighter italic mb-2">
-                        Revenue <span className="text-[#FFB800]">Analytics</span>
-                    </h1>
-                    <p className="text-zinc-500 font-mono text-sm">
-                        Platform fee tracking & commission analytics
-                    </p>
+                <div className="mb-12 flex justify-between items-end">
+                    <div>
+                        <h1 className="text-5xl font-black uppercase tracking-tighter italic mb-2">
+                            Revenue <span className="text-[#FFB800]">Analytics</span>
+                        </h1>
+                        <p className="text-zinc-500 font-mono text-sm">
+                            Platform fee tracking & commission analytics
+                        </p>
+                    </div>
                 </div>
 
                 {/* Stats Grid */}
@@ -239,6 +288,7 @@ export default function RevenueManagementPage() {
                                             <th className="text-right py-4 px-4">Fee %</th>
                                             <th className="text-right py-4 px-4">Amount</th>
                                             <th className="text-center py-4 px-4">Status</th>
+                                            <th className="text-right py-4 px-4">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -265,12 +315,26 @@ export default function RevenueManagementPage() {
                                                     ₦{parseFloat(record.amount.toString()).toLocaleString()}
                                                 </td>
                                                 <td className="py-4 px-4 text-center">
-                                                    <Badge className={`text-[10px] font-bold ${record.status === 'collected'
-                                                            ? 'bg-green-500/10 text-green-400 border-green-500/20'
-                                                            : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
-                                                        }`}>
-                                                        {record.status}
-                                                    </Badge>
+                                                    {getStatusBadge(record)}
+                                                </td>
+                                                <td className="py-4 px-4 text-right">
+                                                    {record.refund_status !== 'processed' && (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            className="h-8 px-2 text-zinc-500 hover:text-red-500 hover:bg-red-500/10"
+                                                            onClick={() => handleRefund(record.id)}
+                                                            disabled={processingRefund === record.id}
+                                                        >
+                                                            <RotateCcw className={`h-4 w-4 ${processingRefund === record.id ? 'animate-spin' : ''}`} />
+                                                            <span className="sr-only">Refund</span>
+                                                        </Button>
+                                                    )}
+                                                    {record.refund_status === 'processed' && (
+                                                        <span className="text-[10px] font-mono text-zinc-600 block text-right" title={record.refund_reason}>
+                                                            REFUNDED
+                                                        </span>
+                                                    )}
                                                 </td>
                                             </tr>
                                         ))}
