@@ -27,6 +27,13 @@ export default function CheckoutPage() {
     const [proofUrl, setProofUrl] = useState<string | null>(null);
     const [agreed, setAgreed] = useState(false);
 
+    // Bank Details State (Default: Moniepoint)
+    const [bankDetails, setBankDetails] = useState({
+        account_number: '9022858358',
+        bank_name: 'Moniepoint MFB',
+        account_name: 'MarketBridge Escrow'
+    });
+
     useEffect(() => {
         if (!authLoading && !user) {
             router.push('/login');
@@ -35,6 +42,22 @@ export default function CheckoutPage() {
             router.push('/cart');
         }
     }, [user, authLoading, items, router]);
+
+    // Fetch dynamic bank settings
+    useEffect(() => {
+        const fetchSettings = async () => {
+            const { data } = await supabase
+                .from('platform_settings')
+                .select('value')
+                .eq('key', 'bank_details')
+                .single();
+
+            if (data?.value) {
+                setBankDetails(data.value);
+            }
+        };
+        fetchSettings();
+    }, []);
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || e.target.files.length === 0) return;
@@ -150,12 +173,12 @@ export default function CheckoutPage() {
                                 <div className="relative z-10 space-y-4">
                                     <h3 className="text-xs font-black uppercase tracking-widest text-[#FFB800]">MarketBridge Escrow Account</h3>
                                     <div className="space-y-1">
-                                        <p className="text-3xl font-black tracking-tighter text-white">0123456789</p>
-                                        <p className="text-sm font-bold text-zinc-400">GTBank PLC</p>
+                                        <p className="text-3xl font-black tracking-tighter text-white">{bankDetails.account_number}</p>
+                                        <p className="text-sm font-bold text-zinc-400">{bankDetails.bank_name}</p>
                                     </div>
                                     <div className="pt-4 border-t border-white/5">
                                         <p className="text-[10px] font-mono text-zinc-500 uppercase">Account Name</p>
-                                        <p className="text-sm font-bold text-white">MarketBridge Escrow</p>
+                                        <p className="text-sm font-bold text-white">{bankDetails.account_name}</p>
                                     </div>
                                 </div>
                             </div>
