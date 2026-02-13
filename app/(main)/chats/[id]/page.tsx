@@ -444,7 +444,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
         return (
             <div className="container mx-auto px-4 py-8 min-h-screen flex items-center justify-center">
                 <div className="text-center">
-                    <Loader2 className="animate-spin h-12 w-12 text-[#FFB800] mx-auto" />
+                    <Loader2 className="animate-spin h-12 w-12 text-[#FF6600] mx-auto" />
                     <p className="mt-4 text-zinc-500 font-mono text-xs tracking-widest uppercase">Decrypting Stream...</p>
                 </div>
             </div>
@@ -487,7 +487,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                             </div>
                         </div>
                         {chat.listing && !activeAgreement && (
-                            <Button onClick={() => setShowEscrowModal(true)} className="gap-2 bg-[#FFB800] text-black font-black uppercase text-xs tracking-widest hover:bg-[#FFB800]/90 h-9">
+                            <Button onClick={() => setShowEscrowModal(true)} className="gap-2 bg-[#FF6600] text-black font-black uppercase text-xs tracking-widest hover:bg-[#FF6600]/90 h-9">
                                 <DollarSign className="h-4 w-4" />
                                 Secure Escrow
                             </Button>
@@ -523,7 +523,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                                         )}
                                         <div className={`space-y-1 ${isOwn ? 'items-end' : 'items-start'} flex flex-col`}>
                                             <div className={`rounded-2xl px-4 py-3 text-sm shadow-sm ${isOwn
-                                                    ? 'bg-[#FFB800] text-black font-medium rounded-tr-none'
+                                                    ? 'bg-[#FF6600] text-black font-medium rounded-tr-none'
                                                     : 'bg-white/10 text-zinc-200 border border-white/5 rounded-tl-none'
                                                 }`}>
                                                 {message.image_url && (
@@ -550,7 +550,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                     <div className="p-4 bg-black/40 backdrop-blur-md border-t border-white/5 shrink-0">
                         {imagePreview && (
                             <div className="mb-3 relative inline-block">
-                                <img src={imagePreview} alt="Preview" className="h-16 w-16 object-cover rounded-md border border-[#FFB800]/50" />
+                                <img src={imagePreview} alt="Preview" className="h-16 w-16 object-cover rounded-md border border-[#FF6600]/50" />
                                 <button onClick={() => { setSelectedImage(null); setImagePreview(null); }} className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 text-white hover:bg-red-600"><X className="h-3 w-3" /></button>
                             </div>
                         )}
@@ -566,7 +566,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                                 type="button"
                                 variant="outline"
                                 size="icon"
-                                className="h-12 w-12 rounded-xl border-white/10 bg-white/5 text-zinc-400 hover:text-[#FFB800] hover:bg-[#FFB800]/10 hover:border-[#FFB800]/30 shrink-0 transition-all"
+                                className="h-12 w-12 rounded-xl border-white/10 bg-white/5 text-zinc-400 hover:text-[#FF6600] hover:bg-[#FF6600]/10 hover:border-[#FF6600]/30 shrink-0 transition-all"
                                 onClick={() => fileInputRef.current?.click()}
                             >
                                 <ImageIcon className="h-5 w-5" />
@@ -576,13 +576,13 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                                 placeholder="Transmit secure message..."
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
-                                className="h-12 bg-black/50 border-white/10 rounded-xl text-white placeholder:text-zinc-600 focus:ring-[#FFB800]/50 focus:border-[#FFB800]/50 font-medium"
+                                className="h-12 bg-black/50 border-white/10 rounded-xl text-white placeholder:text-zinc-600 focus:ring-[#FF6600]/50 focus:border-[#FF6600]/50 font-medium"
                                 disabled={sending}
                             />
 
                             <Button
                                 type="submit"
-                                className="h-12 w-12 rounded-xl bg-[#FFB800] text-black hover:bg-[#FFB800]/90 shadow-[0_0_20px_rgba(255,184,0,0.2)] shrink-0"
+                                className="h-12 w-12 rounded-xl bg-[#FF6600] text-black hover:bg-[#FF6600]/90 shadow-[0_0_20px_rgba(255,184,0,0.2)] shrink-0"
                                 disabled={sending || (!newMessage.trim() && !selectedImage)}
                             >
                                 {uploadingImage ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}

@@ -113,7 +113,7 @@ export default function SubscriptionCheckoutPage() {
     if (authLoading || loading) {
         return (
             <div className="min-h-screen bg-black flex items-center justify-center">
-                <Loader2 className="h-12 w-12 text-[#FFB800] animate-spin" />
+                <Loader2 className="h-12 w-12 text-[#FF6600] animate-spin" />
             </div>
         );
     }
@@ -129,7 +129,7 @@ export default function SubscriptionCheckoutPage() {
             <div className="container mx-auto px-4 md:px-6 py-12 md:py-24 relative z-10 max-w-5xl">
                 <div className="mb-12 text-center">
                     <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter italic font-heading mb-4">
-                        Confirm <span className="text-[#FFB800]">Transfer</span>
+                        Confirm <span className="text-[#FF6600]">Transfer</span>
                     </h1>
                     <p className="text-zinc-400 max-w-lg mx-auto">
                         Please make a bank transfer to activate your <strong>{plan.name}</strong> subscription.
@@ -140,12 +140,12 @@ export default function SubscriptionCheckoutPage() {
 
                     {/* Left Side: Bank Details & Instructions */}
                     <div className="space-y-6">
-                        <div className="glass-card p-6 md:p-8 rounded-3xl border border-[#FFB800]/20 bg-[#FFB800]/5 relative overflow-hidden group">
+                        <div className="glass-card p-6 md:p-8 rounded-3xl border border-[#FF6600]/20 bg-[#FF6600]/5 relative overflow-hidden group">
                             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                                <University className="h-24 w-24 text-[#FFB800]" />
+                                <University className="h-24 w-24 text-[#FF6600]" />
                             </div>
 
-                            <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-[#FFB800]">
+                            <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-[#FF6600]">
                                 <University className="h-5 w-5" />
                                 Bank Account Details
                             </h3>
@@ -166,7 +166,7 @@ export default function SubscriptionCheckoutPage() {
                                             variant="ghost"
                                             size="icon"
                                             onClick={() => copyToClipboard(BANK_DETAILS.accountNumber)}
-                                            className="h-10 w-10 text-[#FFB800] hover:bg-[#FFB800]/20 rounded-full"
+                                            className="h-10 w-10 text-[#FF6600] hover:bg-[#FF6600]/20 rounded-full"
                                         >
                                             <Copy className="h-5 w-5" />
                                         </Button>
@@ -187,19 +187,19 @@ export default function SubscriptionCheckoutPage() {
                             </h3>
                             <ul className="space-y-3 text-sm text-zinc-400">
                                 <li className="flex gap-2">
-                                    <span className="text-[#FFB800] font-bold">1.</span>
+                                    <span className="text-[#FF6600] font-bold">1.</span>
                                     Transfer exactly <span className="text-white font-bold">{formatCurrency(amount)}</span>.
                                 </li>
                                 <li className="flex gap-2">
-                                    <span className="text-[#FFB800] font-bold">2.</span>
+                                    <span className="text-[#FF6600] font-bold">2.</span>
                                     Use your registered name as the sender if possible.
                                 </li>
                                 <li className="flex gap-2">
-                                    <span className="text-[#FFB800] font-bold">3.</span>
+                                    <span className="text-[#FF6600] font-bold">3.</span>
                                     After transfer, fill the form on the right to notify us.
                                 </li>
                                 <li className="flex gap-2">
-                                    <span className="text-[#FFB800] font-bold">4.</span>
+                                    <span className="text-[#FF6600] font-bold">4.</span>
                                     Activation takes 15-30 mins after we confirm receipt.
                                 </li>
                             </ul>
@@ -214,7 +214,7 @@ export default function SubscriptionCheckoutPage() {
                                 <p className="text-sm text-zinc-500 capitalize">{billingCycle} Billing</p>
                             </div>
                             <div className="text-right">
-                                <div className="text-2xl font-black text-[#FFB800]">{formatCurrency(amount)}</div>
+                                <div className="text-2xl font-black text-[#FF6600]">{formatCurrency(amount)}</div>
                             </div>
                         </div>
 
@@ -235,7 +235,7 @@ export default function SubscriptionCheckoutPage() {
                                     value={senderName}
                                     onChange={(e) => setSenderName(e.target.value)}
                                     required
-                                    className="bg-zinc-800/50 border-white/10 focus:border-[#FFB800]"
+                                    className="bg-zinc-800/50 border-white/10 focus:border-[#FF6600]"
                                 />
                                 <p className="text-[10px] text-zinc-500">The name that will appear on our bank statement.</p>
                             </div>
@@ -247,7 +247,7 @@ export default function SubscriptionCheckoutPage() {
                                     placeholder="Enter bank transaction ref/ID"
                                     value={transactionRef}
                                     onChange={(e) => setTransactionRef(e.target.value)}
-                                    className="bg-zinc-800/50 border-white/10 focus:border-[#FFB800]"
+                                    className="bg-zinc-800/50 border-white/10 focus:border-[#FF6600]"
                                 />
                             </div>
 
@@ -259,7 +259,7 @@ export default function SubscriptionCheckoutPage() {
                                     value={paymentDate}
                                     onChange={(e) => setPaymentDate(e.target.value)}
                                     required
-                                    className="bg-zinc-800/50 border-white/10 focus:border-[#FFB800]"
+                                    className="bg-zinc-800/50 border-white/10 focus:border-[#FF6600]"
                                 />
                             </div>
 

@@ -158,14 +158,14 @@ export default function AdminSignupPage() {
         <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-black overflow-hidden relative">
             {/* Background Accents */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,184,0,0.05),transparent)] pointer-events-none"></div>
-            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#FFB800]/5 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#FF6600]/5 blur-[120px] rounded-full pointer-events-none" />
 
             <Card className="w-full max-w-lg glass-card border-none shadow-[0_0_50px_rgba(0,0,0,1)] relative overflow-hidden group">
-                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FFB800]/40 to-transparent"></div>
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF6600]/40 to-transparent"></div>
 
                 <CardHeader className="space-y-6 pt-16 pb-10 text-center">
-                    <div className="mx-auto h-24 w-24 rounded-full border border-[#FFB800]/30 bg-black flex items-center justify-center shadow-[0_0_20px_rgba(255,184,0,0.1)] group-hover:scale-110 transition-transform duration-500">
-                        <ShieldCheck className="h-12 w-12 text-[#FFB800]" />
+                    <div className="mx-auto h-24 w-24 rounded-full border border-[#FF6600]/30 bg-black flex items-center justify-center shadow-[0_0_20px_rgba(255,184,0,0.1)] group-hover:scale-110 transition-transform duration-500">
+                        <ShieldCheck className="h-12 w-12 text-[#FF6600]" />
                     </div>
                     <div>
                         <CardTitle className="text-3xl font-black tracking-[0.3em] text-white uppercase italic">
@@ -189,12 +189,12 @@ export default function AdminSignupPage() {
                             <div className="space-y-2">
                                 <Label htmlFor="displayName" className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Full Name</Label>
                                 <div className="relative group/input">
-                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within/input:text-[#FFB800] transition-colors" />
+                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within/input:text-[#FF6600] transition-colors" />
                                     <input
                                         id="displayName"
                                         name="displayName"
                                         type="text"
-                                        className="w-full h-12 pl-11 pr-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FFB800]/50 transition-all font-medium text-xs"
+                                        className="w-full h-12 pl-11 pr-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6600]/50 transition-all font-medium text-xs"
                                         value={formData.displayName}
                                         onChange={handleChange}
                                         required
@@ -205,7 +205,7 @@ export default function AdminSignupPage() {
                             <div className="space-y-2">
                                 <Label htmlFor="role" className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Leadership Post</Label>
                                 <Select value={role} onValueChange={(v: 'admin' | 'technical_admin' | 'operations_admin' | 'marketing_admin') => setRole(v)}>
-                                    <SelectTrigger className="w-full h-12 bg-black border border-white/10 rounded-xl text-[#FFB800] font-black italic text-xs focus:ring-2 focus:ring-[#FFB800]/50">
+                                    <SelectTrigger className="w-full h-12 bg-black border border-white/10 rounded-xl text-[#FF6600] font-black italic text-xs focus:ring-2 focus:ring-[#FF6600]/50">
                                         <SelectValue placeholder="Select Department" />
                                     </SelectTrigger>
                                     <SelectContent className="bg-zinc-950 border-white/10 text-white">
@@ -221,12 +221,12 @@ export default function AdminSignupPage() {
                         <div className="space-y-2">
                             <Label htmlFor="email" className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Admin Email</Label>
                             <div className="relative group/input">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within/input:text-[#FFB800] transition-colors" />
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within/input:text-[#FF6600] transition-colors" />
                                 <input
                                     id="email"
                                     name="email"
                                     type="email"
-                                    className="w-full h-12 pl-11 pr-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FFB800]/50 transition-all font-medium text-xs"
+                                    className="w-full h-12 pl-11 pr-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6600]/50 transition-all font-medium text-xs"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
@@ -238,12 +238,12 @@ export default function AdminSignupPage() {
                         <div className="space-y-2">
                             <Label htmlFor="secretKey" className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Secret Admin Code <span className="text-red-500">*</span></Label>
                             <div className="relative group/input">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within/input:text-[#FFB800] transition-colors" />
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within/input:text-[#FF6600] transition-colors" />
                                 <input
                                     id="secretKey"
                                     name="secretKey"
                                     type="password"
-                                    className="w-full h-12 pl-11 pr-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FFB800]/50 transition-all font-medium text-xs"
+                                    className="w-full h-12 pl-11 pr-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6600]/50 transition-all font-medium text-xs"
                                     value={formData.secretKey}
                                     onChange={handleChange}
                                     required
@@ -258,7 +258,7 @@ export default function AdminSignupPage() {
                                 <PasswordInput
                                     id="password"
                                     name="password"
-                                    className="w-full h-12 px-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FFB800]/50 transition-all font-medium text-xs"
+                                    className="w-full h-12 px-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6600]/50 transition-all font-medium text-xs"
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
@@ -271,7 +271,7 @@ export default function AdminSignupPage() {
                                 <PasswordInput
                                     id="confirmPassword"
                                     name="confirmPassword"
-                                    className="w-full h-12 px-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FFB800]/50 transition-all font-medium text-xs"
+                                    className="w-full h-12 px-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6600]/50 transition-all font-medium text-xs"
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
                                     required
@@ -298,7 +298,7 @@ export default function AdminSignupPage() {
                         Authorized personnel only. All access attempts are logged.
                     </p>
                     <div className="flex justify-center gap-6 text-[10px] text-zinc-500 font-black uppercase tracking-widest">
-                        <Link href="/admin/login" className="hover:text-[#FFB800] transition-colors underline">Existing Login</Link>
+                        <Link href="/admin/login" className="hover:text-[#FF6600] transition-colors underline">Existing Login</Link>
                         <Link href="/" className="hover:text-white transition-colors">Return to Terminal</Link>
                     </div>
                 </CardFooter>

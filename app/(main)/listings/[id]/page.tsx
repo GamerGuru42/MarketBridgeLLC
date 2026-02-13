@@ -549,7 +549,7 @@ export default function ListingDetailPage() {
     if (loading) {
         return (
             <div className="min-h-screen bg-black flex items-center justify-center text-white">
-                <Loader2 className="h-10 w-10 animate-spin text-[#FFB800]" />
+                <Loader2 className="h-10 w-10 animate-spin text-[#FF6600]" />
             </div>
         );
     }
@@ -570,7 +570,7 @@ export default function ListingDetailPage() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white relative selection:bg-[#FFB800] selection:text-black pt-28 pb-20">
+        <div className="min-h-screen bg-black text-white relative selection:bg-[#FF6600] selection:text-black pt-28 pb-20">
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
@@ -581,7 +581,7 @@ export default function ListingDetailPage() {
                         <Button
                             variant="ghost"
                             onClick={() => router.back()}
-                            className="text-[#FFB800] hover:text-[#FFD700] hover:bg-transparent p-0 h-auto text-[10px] font-black uppercase tracking-[0.2em] font-heading"
+                            className="text-[#FF6600] hover:text-[#FFD700] hover:bg-transparent p-0 h-auto text-[10px] font-black uppercase tracking-[0.2em] font-heading"
                         >
                             <ArrowLeft className="mr-2 h-3 w-3" /> Return to Signal
                         </Button>
@@ -620,7 +620,7 @@ export default function ListingDetailPage() {
                                 {/* Overlay Badges */}
                                 <div className="absolute top-6 left-6 flex flex-col gap-3">
                                     {(listing.is_verified_listing || listing.verification_status === 'verified') && (
-                                        <div className="bg-[#FFB800] text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-[#FFB800]/20 font-heading italic">
+                                        <div className="bg-[#FF6600] text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-[#FF6600]/20 font-heading italic">
                                             <ShieldCheck className="h-3 w-3" /> Verified Node
                                         </div>
                                     )}
@@ -638,7 +638,7 @@ export default function ListingDetailPage() {
                                         className={cn(
                                             "aspect-square rounded-2xl overflow-hidden border transition-all relative group",
                                             selectedImage === idx
-                                                ? "border-[#FFB800] ring-1 ring-[#FFB800]"
+                                                ? "border-[#FF6600] ring-1 ring-[#FF6600]"
                                                 : "border-white/10 hover:border-white/30"
                                         )}
                                     >
@@ -659,7 +659,7 @@ export default function ListingDetailPage() {
                         {/* Price Card */}
                         <div className="glass-card rounded-[2.5rem] p-8 border-white/5 relative overflow-hidden">
                             <div className="absolute top-0 right-0 p-8 opacity-50">
-                                <Zap className="h-24 w-24 text-[#FFB800]/10" />
+                                <Zap className="h-24 w-24 text-[#FF6600]/10" />
                             </div>
 
                             <div className="relative z-10">
@@ -674,7 +674,7 @@ export default function ListingDetailPage() {
                                             <Button
                                                 onClick={handlePlaceOrder}
                                                 disabled={actionLoading}
-                                                className="flex-3 h-16 bg-[#FFB800] text-black hover:bg-[#FFD700] rounded-2xl font-black uppercase tracking-widest text-xs font-heading italic flex-1"
+                                                className="flex-3 h-16 bg-[#FF6600] text-black hover:bg-[#FFD700] rounded-2xl font-black uppercase tracking-widest text-xs font-heading italic flex-1"
                                             >
                                                 {actionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
                                                 Secure Asset Now
@@ -738,10 +738,10 @@ export default function ListingDetailPage() {
                         {/* Merchant Intelligence */}
                         <div className="glass-card p-8 rounded-[2.5rem] border-white/10 bg-white/[0.03] backdrop-blur-xl relative overflow-hidden group">
                             <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-10 transition-opacity">
-                                <ShieldCheck className="h-24 w-24 text-[#FFB800]" />
+                                <ShieldCheck className="h-24 w-24 text-[#FF6600]" />
                             </div>
                             <h3 className="text-white font-black uppercase text-xs tracking-[0.2em] font-heading mb-6 flex items-center gap-3 relative z-10">
-                                <span className="h-1.5 w-1.5 rounded-full bg-[#FFB800]" />
+                                <span className="h-1.5 w-1.5 rounded-full bg-[#FF6600]" />
                                 Merchant Intelligence
                             </h3>
                             <div className="flex items-center gap-6 relative z-10">
@@ -755,12 +755,12 @@ export default function ListingDetailPage() {
                                 <div>
                                     <div className="flex items-center gap-2 mb-1">
                                         <h4 className="text-xl font-black uppercase tracking-tighter italic">{listing.dealer.display_name}</h4>
-                                        {listing.dealer.is_verified && <ShieldCheck className="h-4 w-4 text-[#FFB800]" />}
+                                        {listing.dealer.is_verified && <ShieldCheck className="h-4 w-4 text-[#FF6600]" />}
                                     </div>
                                     <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mb-4">Verified Institutional Node</p>
                                     <div className="flex items-center gap-4">
                                         <div className="flex items-center gap-1.5">
-                                            <Star className="h-3 w-3 fill-[#FFB800] text-[#FFB800]" />
+                                            <Star className="h-3 w-3 fill-[#FF6600] text-[#FF6600]" />
                                             <span className="text-[10px] font-black italic">4.9 RATING</span>
                                         </div>
                                         <span className="w-1 h-1 rounded-full bg-zinc-800" />
@@ -773,7 +773,7 @@ export default function ListingDetailPage() {
                         {/* Description */}
                         <div className="glass-card p-8 rounded-[2.5rem] border-white/5">
                             <h3 className="text-white font-black uppercase text-xs tracking-[0.2em] font-heading mb-6 flex items-center gap-3">
-                                <span className="h-1.5 w-1.5 rounded-full bg-[#FFB800]" />
+                                <span className="h-1.5 w-1.5 rounded-full bg-[#FF6600]" />
                                 Technical Manifest
                             </h3>
                             <p className="text-zinc-400 text-sm leading-relaxed font-medium whitespace-pre-wrap">
@@ -788,7 +788,7 @@ export default function ListingDetailPage() {
             <Dialog open={isReportOpen} onOpenChange={setIsReportOpen}>
                 <DialogContent className="bg-zinc-950 border-white/10 text-white sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle className="text-[#FFB800] uppercase font-black tracking-widest flex items-center gap-2">
+                        <DialogTitle className="text-[#FF6600] uppercase font-black tracking-widest flex items-center gap-2">
                             <AlertTriangle className="h-5 w-5" /> Report Issue
                         </DialogTitle>
                         <DialogDescription className="text-zinc-400 text-xs">

@@ -21,7 +21,7 @@ export async function POST(req: Request) {
             subject: `Waitlist Confirmation: ${category} Access`,
             html: `
                 <div style="font-family: sans-serif; background-color: #000; color: #fff; padding: 40px; border-radius: 10px;">
-                    <h1 style="color: #FFB800; text-transform: uppercase;">Access Requested</h1>
+                    <h1 style="color: #FF6600; text-transform: uppercase;">Access Requested</h1>
                     <p>You have been added to the priority queue for <strong>${category}</strong>.</p>
                     <p>We are currently restricting access to verified nodes only. You will be notified immediately once this protocol level is unlocked for your credentials.</p>
                     <br/>

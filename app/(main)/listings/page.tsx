@@ -187,7 +187,7 @@ function ListingsContent() {
     };
 
     return (
-        <div className="min-h-screen bg-black text-white relative selection:bg-[#FFB800] selection:text-black flex flex-col pt-28 pb-20">
+        <div className="min-h-screen bg-black text-white relative selection:bg-[#FF6600] selection:text-black flex flex-col pt-28 pb-20">
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
@@ -200,7 +200,7 @@ function ListingsContent() {
                             BACK TO HOME
                         </Link>
                         <h1 className="text-5xl md:text-6xl font-black uppercase tracking-tighter italic">
-                            Browse <span className="text-[#FFB800]">Marketplace</span>
+                            Browse <span className="text-[#FF6600]">Marketplace</span>
                         </h1>
                         <p className="text-zinc-500 mt-3 font-mono text-sm">
                             {listings.length} listings available
@@ -217,14 +217,14 @@ function ListingsContent() {
                             placeholder="Search products... (e.g., 'wig', 'laptop', 'shoes')"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full bg-zinc-900 border border-white/10 pl-12 pr-4 py-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#FFB800] rounded-none font-mono text-sm"
+                            className="w-full bg-zinc-900 border border-white/10 pl-12 pr-4 py-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#FF6600] rounded-none font-mono text-sm"
                         />
                     </div>
 
                     <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className="bg-zinc-900 border border-white/10 px-4 py-4 text-white focus:outline-none focus:border-[#FFB800] rounded-none font-mono text-sm"
+                        className="bg-zinc-900 border border-white/10 px-4 py-4 text-white focus:outline-none focus:border-[#FF6600] rounded-none font-mono text-sm"
                     >
                         <option value="All Categories">All Categories</option>
                         {CATEGORIES.map((cat: any, idx: number) => (
@@ -235,7 +235,7 @@ function ListingsContent() {
                     <select
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
-                        className="bg-zinc-900 border border-white/10 px-4 py-4 text-white focus:outline-none focus:border-[#FFB800] rounded-none font-mono text-sm"
+                        className="bg-zinc-900 border border-white/10 px-4 py-4 text-white focus:outline-none focus:border-[#FF6600] rounded-none font-mono text-sm"
                     >
                         <option value="">All Locations</option>
                         <option value="Abuja">Abuja</option>
@@ -243,7 +243,7 @@ function ListingsContent() {
                         <option value="Port Harcourt">Port Harcourt</option>
                     </select>
 
-                    <Button type="submit" className="bg-[#FFB800] text-black hover:bg-[#FFD700] font-black uppercase tracking-widest rounded-none">
+                    <Button type="submit" className="bg-[#FF6600] text-black hover:bg-[#FFD700] font-black uppercase tracking-widest rounded-none">
                         Search
                     </Button>
                 </form>
@@ -251,7 +251,7 @@ function ListingsContent() {
                 {/* Loading */}
                 {loading && (
                     <div className="flex items-center justify-center py-20">
-                        <Loader2 className="h-10 w-10 animate-spin text-[#FFB800]" />
+                        <Loader2 className="h-10 w-10 animate-spin text-[#FF6600]" />
                     </div>
                 )}
 
@@ -287,7 +287,7 @@ function ListingsContent() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {listings.map((listing) => (
                             <Link key={listing.id} href={`/listings/${listing.id}`}>
-                                <Card className="bg-zinc-900 border-white/10 hover:border-[#FFB800] transition-all cursor-pointer group overflow-hidden rounded-none">
+                                <Card className="bg-zinc-900 border-white/10 hover:border-[#FF6600] transition-all cursor-pointer group overflow-hidden rounded-none">
                                     <div className="relative h-48 w-full overflow-hidden bg-zinc-800">
                                         {listing.images && listing.images[0] ? (
                                             <Image
@@ -317,7 +317,7 @@ function ListingsContent() {
                                         </p>
                                     </CardHeader>
                                     <CardFooter className="flex justify-between items-center border-t border-white/5 pt-4">
-                                        <span className="text-2xl font-black text-[#FFB800]">
+                                        <span className="text-2xl font-black text-[#FF6600]">
                                             ₦{listing.price.toLocaleString()}
                                         </span>
                                         {listing.dealer?.is_verified && (
@@ -336,7 +336,7 @@ function ListingsContent() {
 
 export default function ListingsPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-[#FFB800]" /></div>}>
+        <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-[#FF6600]" /></div>}>
             <ListingsContent />
         </Suspense>
     );

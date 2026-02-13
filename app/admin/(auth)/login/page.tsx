@@ -191,14 +191,14 @@ export default function AdminLoginPage() {
         <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-black overflow-hidden relative">
             {/* Background Accents */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,184,0,0.05),transparent)] pointer-events-none"></div>
-            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#FFB800]/5 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#FF6600]/5 blur-[120px] rounded-full pointer-events-none" />
 
             <Card className="w-full max-w-lg glass-card border-none shadow-[0_0_50px_rgba(0,0,0,1)] relative overflow-hidden group">
-                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FFB800]/40 to-transparent"></div>
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF6600]/40 to-transparent"></div>
 
                 <CardHeader className="space-y-6 pt-16 pb-10 text-center">
-                    <div className="mx-auto h-24 w-24 rounded-full border border-[#FFB800]/30 bg-black flex items-center justify-center shadow-[0_0_20px_rgba(255,184,0,0.1)] group-hover:scale-110 transition-transform duration-500">
-                        <ShieldCheck className="h-12 w-12 text-[#FFB800]" />
+                    <div className="mx-auto h-24 w-24 rounded-full border border-[#FF6600]/30 bg-black flex items-center justify-center shadow-[0_0_20px_rgba(255,184,0,0.1)] group-hover:scale-110 transition-transform duration-500">
+                        <ShieldCheck className="h-12 w-12 text-[#FF6600]" />
                     </div>
                     <div>
                         <CardTitle className="text-3xl font-black tracking-[0.3em] text-white uppercase italic">
@@ -215,11 +215,11 @@ export default function AdminLoginPage() {
                         <div className="space-y-2">
                             <Label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Administrator ID</Label>
                             <div className="relative group/input">
-                                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-700 group-focus-within/input:text-[#FFB800] transition-colors" />
+                                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-700 group-focus-within/input:text-[#FF6600] transition-colors" />
                                 <input
                                     name="email"
                                     type="email"
-                                    className="w-full h-16 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FFB800]/50 transition-all font-medium"
+                                    className="w-full h-16 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6600]/50 transition-all font-medium"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
@@ -231,11 +231,11 @@ export default function AdminLoginPage() {
                         <div className="space-y-2">
                             <Label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Signature Key</Label>
                             <div className="relative group/input">
-                                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-700 group-focus-within/input:text-[#FFB800] transition-colors" />
+                                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-700 group-focus-within/input:text-[#FF6600] transition-colors" />
                                 <input
                                     name="password"
                                     type={showPassword ? 'text' : 'password'}
-                                    className="w-full h-16 pl-14 pr-14 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FFB800]/50 transition-all font-medium"
+                                    className="w-full h-16 pl-14 pr-14 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6600]/50 transition-all font-medium"
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
@@ -244,7 +244,7 @@ export default function AdminLoginPage() {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-800 hover:text-[#FFB800] transition-colors"
+                                    className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-800 hover:text-[#FF6600] transition-colors"
                                 >
                                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                 </button>
@@ -271,7 +271,7 @@ export default function AdminLoginPage() {
                 <CardFooter className="flex flex-col items-center gap-6 py-12 relative z-10">
                     <div className="flex items-center gap-8">
                         <Link href="/login" className="text-[9px] font-bold text-zinc-600 hover:text-white uppercase tracking-widest transition-colors">Standard Gateway</Link>
-                        <Link href="/admin/signup" className="text-[9px] font-bold text-zinc-600 hover:text-[#FFB800] uppercase tracking-widest transition-colors underline">Request Access</Link>
+                        <Link href="/admin/signup" className="text-[9px] font-bold text-zinc-600 hover:text-[#FF6600] uppercase tracking-widest transition-colors underline">Request Access</Link>
                         <Link href="/" className="text-[9px] font-bold text-zinc-600 hover:text-white uppercase tracking-widest transition-colors">Public Portal</Link>
                     </div>
                 </CardFooter>

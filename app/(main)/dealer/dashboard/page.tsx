@@ -314,9 +314,9 @@ export default function DealerDashboardPage() {
             <div className="min-h-[80vh] flex items-center justify-center bg-black relative overflow-hidden text-white">
                 <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20 pointer-events-none" />
                 <div className="relative text-center">
-                    <div className="h-24 w-24 rounded-2xl border-2 border-[#FFB800]/20 flex items-center justify-center relative animate-pulse mx-auto">
-                        <Zap className="h-10 w-10 text-[#FFB800] animate-bounce" />
-                        <div className="absolute inset-0 rounded-2xl border border-[#FFB800] animate-ping opacity-25" />
+                    <div className="h-24 w-24 rounded-2xl border-2 border-[#FF6600]/20 flex items-center justify-center relative animate-pulse mx-auto">
+                        <Zap className="h-10 w-10 text-[#FF6600] animate-bounce" />
+                        <div className="absolute inset-0 rounded-2xl border border-[#FF6600] animate-ping opacity-25" />
                     </div>
                     <p className="mt-8 text-zinc-500 font-black uppercase tracking-[0.3em] text-xs font-heading">Syncing Terminal...</p>
                 </div>
@@ -325,7 +325,7 @@ export default function DealerDashboardPage() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white relative flex flex-col selection:bg-[#FFB800] selection:text-black">
+        <div className="min-h-screen bg-black text-white relative flex flex-col selection:bg-[#FF6600] selection:text-black">
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
@@ -337,11 +337,11 @@ export default function DealerDashboardPage() {
                     {/* ... Header Section content ... */}
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
-                            <span className="h-2 w-2 rounded-full bg-[#FFB800] animate-pulse" />
+                            <span className="h-2 w-2 rounded-full bg-[#FF6600] animate-pulse" />
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading leading-tight">Live Operation Panel</span>
                         </div>
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
-                            Dealer <span className="text-[#FFB800]">Hub</span>
+                            Dealer <span className="text-[#FF6600]">Hub</span>
                         </h1>
                         <p className="text-zinc-500 font-medium max-w-xl italic">
                             Command center for <span className="text-white font-bold">{user?.displayName}</span>.
@@ -356,7 +356,7 @@ export default function DealerDashboardPage() {
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#00FF85]" /> Connected
                             </span>
                         </div>
-                        <Button onClick={fetchOrders} className="h-16 px-8 bg-[#FFB800] text-black hover:bg-[#FFD700] rounded-2xl font-black uppercase tracking-widest transition-all font-heading">
+                        <Button onClick={fetchOrders} className="h-16 px-8 bg-[#FF6600] text-black hover:bg-[#FFD700] rounded-2xl font-black uppercase tracking-widest transition-all font-heading">
                             Sync Data
                         </Button>
                     </div>
@@ -401,8 +401,8 @@ export default function DealerDashboardPage() {
                             <div className={cn(
                                 "p-8 rounded-[2rem] transition-all duration-500 h-full flex items-center justify-between border",
                                 action.primary
-                                    ? "bg-[#FFB800] border-[#FFB800] text-black"
-                                    : "bg-white/5 border-white/10 text-white hover:border-[#FFB800]/30"
+                                    ? "bg-[#FF6600] border-[#FF6600] text-black"
+                                    : "bg-white/5 border-white/10 text-white hover:border-[#FF6600]/30"
                             )}>
                                 <div className="space-y-1">
                                     <h4 className="text-xl font-black uppercase tracking-tighter italic font-heading">{action.label}</h4>
@@ -427,8 +427,8 @@ export default function DealerDashboardPage() {
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-white/5 pb-8">
                             <div className="flex bg-black/40 p-1.5 rounded-2xl border border-white/10">
                                 <TabsList className="bg-transparent gap-2 h-auto p-0 border-none shadow-none">
-                                    <TabsTrigger value="orders" className="data-[state=active]:bg-[#FFB800] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading">Orders Queue</TabsTrigger>
-                                    <TabsTrigger value="settings" className="data-[state=active]:bg-[#FFB800] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading">Payout Settings</TabsTrigger>
+                                    <TabsTrigger value="orders" className="data-[state=active]:bg-[#FF6600] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading">Orders Queue</TabsTrigger>
+                                    <TabsTrigger value="settings" className="data-[state=active]:bg-[#FF6600] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading">Payout Settings</TabsTrigger>
                                 </TabsList>
                             </div>
                             <div className="flex items-center gap-4 text-zinc-500 text-[10px] font-black uppercase tracking-widest font-heading italic">
@@ -440,7 +440,7 @@ export default function DealerDashboardPage() {
                             <Tabs defaultValue="all" className="space-y-8">
                                 <TabsList className="bg-transparent h-auto p-0 flex flex-wrap gap-10 overflow-x-auto border-none shadow-none">
                                     {['all', 'pending', 'confirmed', 'completed'].map(t => (
-                                        <TabsTrigger key={t} value={t} className="data-[state=active]:text-[#FFB800] data-[state=active]:border-[#FFB800] bg-transparent border-b-2 border-transparent rounded-none px-0 pb-4 font-black uppercase tracking-widest text-[10px] transition-all font-heading shadow-none">
+                                        <TabsTrigger key={t} value={t} className="data-[state=active]:text-[#FF6600] data-[state=active]:border-[#FF6600] bg-transparent border-b-2 border-transparent rounded-none px-0 pb-4 font-black uppercase tracking-widest text-[10px] transition-all font-heading shadow-none">
                                             {t === 'confirmed' ? 'Shipped' : t}
                                         </TabsTrigger>
                                     ))}
@@ -491,7 +491,7 @@ export default function DealerDashboardPage() {
                                                 value={bankDetails.bankName}
                                                 onChange={e => setBankDetails({ ...bankDetails, bankName: e.target.value })}
                                                 placeholder="e.g. GTBANK"
-                                                className="h-14 bg-white/5 border-white/10 rounded-xl focus:border-[#FFB800] focus:ring-1 focus:ring-[#FFB800] transition-colors font-heading text-sm uppercase tracking-widest"
+                                                className="h-14 bg-white/5 border-white/10 rounded-xl focus:border-[#FF6600] focus:ring-1 focus:ring-[#FF6600] transition-colors font-heading text-sm uppercase tracking-widest"
                                                 required
                                             />
                                         </div>
@@ -501,7 +501,7 @@ export default function DealerDashboardPage() {
                                                 value={bankDetails.accountNumber}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBankDetails({ ...bankDetails, accountNumber: e.target.value })}
                                                 placeholder="0123456789"
-                                                className="h-14 bg-white/5 border-white/10 rounded-xl focus:border-[#FFB800] focus:ring-1 focus:ring-[#FFB800] transition-colors font-mono tracking-tighter"
+                                                className="h-14 bg-white/5 border-white/10 rounded-xl focus:border-[#FF6600] focus:ring-1 focus:ring-[#FF6600] transition-colors font-mono tracking-tighter"
                                                 required
                                             />
                                         </div>
@@ -512,7 +512,7 @@ export default function DealerDashboardPage() {
                                             value={bankDetails.accountName}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBankDetails({ ...bankDetails, accountName: e.target.value })}
                                             placeholder="FULL ACCOUNT NAME"
-                                            className="h-14 bg-white/5 border-white/10 rounded-xl focus:border-[#FFB800] focus:ring-1 focus:ring-[#FFB800] transition-colors font-heading text-sm uppercase tracking-widest"
+                                            className="h-14 bg-white/5 border-white/10 rounded-xl focus:border-[#FF6600] focus:ring-1 focus:ring-[#FF6600] transition-colors font-heading text-sm uppercase tracking-widest"
                                             required
                                         />
                                     </div>
@@ -559,10 +559,10 @@ function OrderCard({
     };
 
     return (
-        <div className="glass-card p-6 flex flex-col md:flex-row gap-8 group/card transition-all duration-500 hover:border-[#FFB800]/20">
+        <div className="glass-card p-6 flex flex-col md:flex-row gap-8 group/card transition-all duration-500 hover:border-[#FF6600]/20">
             <div className="flex-1 flex gap-6 italic">
                 {order.listing?.images?.[0] ? (
-                    <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border border-white/5 bg-zinc-900 group-hover/card:border-[#FFB800]/20 transition-all">
+                    <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border border-white/5 bg-zinc-900 group-hover/card:border-[#FF6600]/20 transition-all">
                         <Image src={order.listing.images[0]} alt={order.listing.title} fill className="object-cover group-hover/card:scale-110 transition-transform duration-700" />
                     </div>
                 ) : (
@@ -579,24 +579,24 @@ function OrderCard({
                     <h3 className="text-xl font-black uppercase tracking-tighter truncate font-heading">{order.listing?.title}</h3>
                     <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-zinc-500">
                         <span className="flex items-center gap-1.5 lowercase font-medium italic"><span className="text-zinc-700 underline">buyer:</span> <span className="text-zinc-300 font-bold">{order.buyer?.display_name}</span></span>
-                        <span className="flex items-center gap-1.5 lowercase font-medium italic"><span className="text-zinc-700 underline">value:</span> <span className="text-[#FFB800] font-black">₦{order.amount.toLocaleString()}</span></span>
+                        <span className="flex items-center gap-1.5 lowercase font-medium italic"><span className="text-zinc-700 underline">value:</span> <span className="text-[#FF6600] font-black">₦{order.amount.toLocaleString()}</span></span>
                         <span className="flex items-center gap-1.5 lowercase font-medium italic"><span className="text-zinc-700 underline">date:</span> <span>{new Date(order.created_at).toLocaleDateString()}</span></span>
                     </div>
                 </div>
             </div>
 
             <div className="flex md:flex-col justify-end gap-3 shrink-0">
-                <Button variant="outline" onClick={() => onOpenChat(order)} className="flex-1 md:w-40 h-12 rounded-xl bg-white/5 border-white/10 hover:border-[#FFB800]/30 hover:bg-white/5 text-white font-black uppercase tracking-widest text-[10px] gap-2 font-heading transition-all">
+                <Button variant="outline" onClick={() => onOpenChat(order)} className="flex-1 md:w-40 h-12 rounded-xl bg-white/5 border-white/10 hover:border-[#FF6600]/30 hover:bg-white/5 text-white font-black uppercase tracking-widest text-[10px] gap-2 font-heading transition-all">
                     <MessageCircle className="h-4 w-4" /> Message Buyer
                 </Button>
 
                 {order.status === 'pending' && (
                     <Select onValueChange={(value: string) => onUpdateStatus(order.id, value as 'pending' | 'confirmed' | 'completed' | 'cancelled')} disabled={isUpdating}>
-                        <SelectTrigger className="flex-1 md:w-40 h-12 rounded-xl bg-[#FFB800] border-none text-black font-black uppercase tracking-widest text-[10px] font-heading shadow-lg shadow-[#FFB800]/10 hover:bg-[#FFD700] transition-all">
+                        <SelectTrigger className="flex-1 md:w-40 h-12 rounded-xl bg-[#FF6600] border-none text-black font-black uppercase tracking-widest text-[10px] font-heading shadow-lg shadow-[#FF6600]/10 hover:bg-[#FFD700] transition-all">
                             <SelectValue placeholder="Dispatch" />
                         </SelectTrigger>
                         <SelectContent className="bg-zinc-900 border-white/10 text-white font-heading text-[10px] uppercase font-black tracking-widest">
-                            <SelectItem value="confirmed" className="focus:bg-[#FFB800] focus:text-black">Mark Shipped</SelectItem>
+                            <SelectItem value="confirmed" className="focus:bg-[#FF6600] focus:text-black">Mark Shipped</SelectItem>
                             <SelectItem value="cancelled" className="focus:bg-red-500 focus:text-white">Cancel Order</SelectItem>
                         </SelectContent>
                     </Select>

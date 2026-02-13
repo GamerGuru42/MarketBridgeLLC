@@ -83,7 +83,7 @@ export default function FindDealersPage() {
     };
 
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-[#FFB800] selection:text-black pt-28 pb-20">
+        <div className="min-h-screen bg-black text-white selection:bg-[#FF6600] selection:text-black pt-28 pb-20">
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
@@ -93,7 +93,7 @@ export default function FindDealersPage() {
                     <div className="space-y-4">
                         <Link
                             href="/"
-                            className="inline-flex items-center text-[#FFB800] hover:text-[#FFD700] p-0 h-auto text-[10px] font-black uppercase tracking-[0.2em] font-heading mb-4 py-3"
+                            className="inline-flex items-center text-[#FF6600] hover:text-[#FFD700] p-0 h-auto text-[10px] font-black uppercase tracking-[0.2em] font-heading mb-4 py-3"
                         >
                             <ArrowLeft className="mr-2 h-4 w-4" /> Return to Core
                         </Link>
@@ -111,7 +111,7 @@ export default function FindDealersPage() {
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                             <Input
                                 placeholder="Scan by Name or Business..."
-                                className="pl-12 bg-white/5 border-white/10 rounded-2xl h-14 uppercase text-[10px] font-black tracking-widest placeholder:text-zinc-600 focus-visible:ring-[#FFB800]/50"
+                                className="pl-12 bg-white/5 border-white/10 rounded-2xl h-14 uppercase text-[10px] font-black tracking-widest placeholder:text-zinc-600 focus-visible:ring-[#FF6600]/50"
                                 value={searchTerm}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                             />
@@ -120,7 +120,7 @@ export default function FindDealersPage() {
                             <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                             <Input
                                 placeholder="Filter Node Location..."
-                                className="pl-12 bg-white/5 border-white/10 rounded-2xl h-14 uppercase text-[10px] font-black tracking-widest placeholder:text-zinc-600 focus-visible:ring-[#FFB800]/50"
+                                className="pl-12 bg-white/5 border-white/10 rounded-2xl h-14 uppercase text-[10px] font-black tracking-widest placeholder:text-zinc-600 focus-visible:ring-[#FF6600]/50"
                                 value={locationFilter}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLocationFilter(e.target.value)}
                             />
@@ -142,7 +142,7 @@ export default function FindDealersPage() {
                 {/* Loading State */}
                 {loading && (
                     <div className="text-center py-48">
-                        <Loader2 className="h-12 w-12 animate-spin text-[#FFB800] mx-auto mb-6" />
+                        <Loader2 className="h-12 w-12 animate-spin text-[#FF6600] mx-auto mb-6" />
                         <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Scanning Merchant Network...</p>
                     </div>
                 )}
@@ -151,11 +151,11 @@ export default function FindDealersPage() {
                 {!loading && filteredDealers.length > 0 && (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {filteredDealers.map((dealer) => (
-                            <Card key={dealer.id} className="bg-zinc-900/40 border-white/5 rounded-[2.5rem] overflow-hidden group hover:border-[#FFB800]/20 transition-all duration-500 relative">
+                            <Card key={dealer.id} className="bg-zinc-900/40 border-white/5 rounded-[2.5rem] overflow-hidden group hover:border-[#FF6600]/20 transition-all duration-500 relative">
                                 <CardHeader className="p-8 pb-4">
                                     <div className="flex justify-between items-start mb-6">
-                                        <div className="h-14 w-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-[#FFB800]/50 transition-colors">
-                                            <Building className="h-6 w-6 text-zinc-500 group-hover:text-[#FFB800]" />
+                                        <div className="h-14 w-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-[#FF6600]/50 transition-colors">
+                                            <Building className="h-6 w-6 text-zinc-500 group-hover:text-[#FF6600]" />
                                         </div>
                                         <div className="bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg flex items-center gap-2">
                                             {getStoreIcon(dealer.store_type)}
@@ -168,13 +168,13 @@ export default function FindDealersPage() {
                                             <VerificationBadge isVerified={dealer.is_verified} showText={false} size="sm" />
                                         </CardTitle>
                                         <div className="flex items-center gap-2 text-[10px] font-black text-zinc-600 uppercase tracking-widest italic font-heading">
-                                            <MapPin className="h-3 w-3 text-[#FFB800]" /> {dealer.location || 'FCT - Abuja'}
+                                            <MapPin className="h-3 w-3 text-[#FF6600]" /> {dealer.location || 'FCT - Abuja'}
                                         </div>
                                     </div>
                                 </CardHeader>
                                 <CardContent className="p-8 pt-0 space-y-6">
                                     <div className="flex gap-2">
-                                        <Badge className="bg-[#FFB800]/10 text-[#FFB800] border-none text-[8px] font-black uppercase tracking-[0.15em] px-3 py-1 font-heading italic">
+                                        <Badge className="bg-[#FF6600]/10 text-[#FF6600] border-none text-[8px] font-black uppercase tracking-[0.15em] px-3 py-1 font-heading italic">
                                             {getRoleLabel(dealer.role)}
                                         </Badge>
                                     </div>
@@ -188,7 +188,7 @@ export default function FindDealersPage() {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="p-8 pt-0">
-                                    <Button className="w-full h-14 bg-white/5 border border-white/10 hover:bg-[#FFB800] hover:text-black rounded-2xl uppercase text-[10px] font-black tracking-[0.2em] transition-all group/btn font-heading italic" asChild>
+                                    <Button className="w-full h-14 bg-white/5 border border-white/10 hover:bg-[#FF6600] hover:text-black rounded-2xl uppercase text-[10px] font-black tracking-[0.2em] transition-all group/btn font-heading italic" asChild>
                                         <Link href={`/dealer/${dealer.id}`} className="flex items-center justify-center gap-2">
                                             Access Node <ArrowUpRight className="h-3 w-3 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                                         </Link>

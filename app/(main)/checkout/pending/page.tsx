@@ -33,7 +33,7 @@ export default function PaymentPendingPage() {
                 {ref && (
                     <div className="bg-black/50 p-4 rounded-xl border border-white/5 mb-8">
                         <p className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Reference ID</p>
-                        <p className="font-mono text-[#FFB800] tracking-wider">{ref}</p>
+                        <p className="font-mono text-[#FF6600] tracking-wider">{ref}</p>
                     </div>
                 )}
 

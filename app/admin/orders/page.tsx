@@ -93,7 +93,7 @@ export default function AdminOrdersPage() {
             <div className="max-w-7xl mx-auto relative z-10">
                 <div className="mb-12">
                     <h1 className="text-4xl font-black uppercase tracking-tighter italic mb-2">
-                        Order <span className="text-[#FFB800]">Verification</span>
+                        Order <span className="text-[#FF6600]">Verification</span>
                     </h1>
                     <p className="text-zinc-500 font-mono text-sm">Review manual payments and manage orders</p>
                 </div>
@@ -104,7 +104,7 @@ export default function AdminOrdersPage() {
                     </CardHeader>
                     <CardContent>
                         {loading ? (
-                            <div className="flex justify-center py-12"><Loader2 className="animate-spin text-[#FFB800]" /></div>
+                            <div className="flex justify-center py-12"><Loader2 className="animate-spin text-[#FF6600]" /></div>
                         ) : orders.length === 0 ? (
                             <div className="text-center py-12 text-zinc-600 font-mono">No orders found</div>
                         ) : (

@@ -129,8 +129,8 @@ function SignupContent() {
                 {steps.map((s, i) => (
                     <React.Fragment key={s}>
                         <div className="flex flex-col items-center gap-2">
-                            <div className={`h-2 w-12 rounded-full transition-all duration-500 ${i <= activeIdx ? 'bg-[#FFB800] shadow-[0_0_10px_rgba(255,184,0,0.5)]' : 'bg-zinc-800'}`} />
-                            <span className={`text-[8px] font-black uppercase tracking-widest ${i <= activeIdx ? 'text-[#FFB800]' : 'text-zinc-600'}`}>{s}</span>
+                            <div className={`h-2 w-12 rounded-full transition-all duration-500 ${i <= activeIdx ? 'bg-[#FF6600] shadow-[0_0_10px_rgba(255,184,0,0.5)]' : 'bg-zinc-800'}`} />
+                            <span className={`text-[8px] font-black uppercase tracking-widest ${i <= activeIdx ? 'text-[#FF6600]' : 'text-zinc-600'}`}>{s}</span>
                         </div>
                         {i < steps.length - 1 && <div className="h-[1px] w-4 bg-zinc-900 mb-4" />}
                     </React.Fragment>
@@ -300,7 +300,7 @@ function SignupContent() {
     if (step === 'role') {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-black overflow-hidden relative">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#FFB800]/5 blur-[120px] rounded-full" />
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#FF6600]/5 blur-[120px] rounded-full" />
 
                 <div className="w-full max-w-5xl relative z-10">
                     <div className="text-center mb-16">
@@ -317,7 +317,7 @@ function SignupContent() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 max-w-4xl mx-auto">
                         {[
                             { id: 'student_buyer', title: 'Student Buyer', icon: UserIcon, desc: 'Browse & Buy Assets', color: 'text-blue-400' },
-                            { id: 'student_seller', title: 'Student Merchant', icon: Briefcase, desc: 'Start your Campus Business', color: 'text-[#FFB800]' },
+                            { id: 'student_seller', title: 'Student Merchant', icon: Briefcase, desc: 'Start your Campus Business', color: 'text-[#FF6600]' },
                             { id: 'admin', title: 'Admin', icon: ShieldCheck, desc: 'Operations Gateway', color: 'text-red-400' }
                         ].map(item => (
                             <Card
@@ -417,7 +417,7 @@ function SignupContent() {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-black">
                 <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden">
-                    <div className="absolute top-[-10%] right-[-10%] w-32 h-32 bg-[#FFB800]/5 blur-[40px] rounded-full" />
+                    <div className="absolute top-[-10%] right-[-10%] w-32 h-32 bg-[#FF6600]/5 blur-[40px] rounded-full" />
                     <CardHeader className="p-0 text-center mb-10">
                         <Button variant="ghost" onClick={() => initialRole ? router.push('/') : setStep('role')} className="text-zinc-600 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> {initialRole ? 'Cancel' : 'Back'}</Button>
                         <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2">
@@ -446,7 +446,7 @@ function SignupContent() {
 
     return (
         <div className="min-h-screen flex items-center justify-center py-20 px-4 bg-black relative">
-            <div className="absolute top-[10%] right-[10%] w-[30%] h-[30%] bg-[#FFB800]/5 blur-[120px] rounded-full" />
+            <div className="absolute top-[10%] right-[10%] w-[30%] h-[30%] bg-[#FF6600]/5 blur-[120px] rounded-full" />
 
             <Card className="w-full max-w-xl glass-card border-none rounded-[3rem] p-12 text-white relative z-10 shadow-2xl">
                 <CardHeader className="p-0 mb-8 text-left">
@@ -471,15 +471,15 @@ function SignupContent() {
                             <div className="space-y-2">
                                 <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Full Name</label>
                                 <div className="relative group">
-                                    <UserIcon className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
-                                    <input name="displayName" value={formData.displayName} onChange={handleChange} required placeholder="SAMUEL ADE" className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase transition-all" />
+                                    <UserIcon className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                    <input name="displayName" value={formData.displayName} onChange={handleChange} required placeholder="SAMUEL ADE" className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase transition-all" />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Email Identity</label>
                                 <div className="relative group">
-                                    <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
-                                    <input name="email" type="email" value={formData.email} onChange={handleChange} required placeholder="FOUNDER@MARKET.IO" className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase transition-all" />
+                                    <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                    <input name="email" type="email" value={formData.email} onChange={handleChange} required placeholder="FOUNDER@MARKET.IO" className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase transition-all" />
                                 </div>
                             </div>
                         </div>
@@ -488,16 +488,16 @@ function SignupContent() {
                             <div className="space-y-2">
                                 <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Secure Key</label>
                                 <div className="relative group">
-                                    <Lock className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
-                                    <input name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleChange} required className="w-full h-14 pl-14 pr-14 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold" />
-                                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-800 hover:text-[#FFB800]">{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
+                                    <Lock className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                    <input name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleChange} required className="w-full h-14 pl-14 pr-14 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold" />
+                                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-800 hover:text-[#FF6600]">{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Confirm Key</label>
                                 <div className="relative group">
-                                    <ShieldCheck className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
-                                    <input name="confirmPassword" type={showPassword ? 'text' : 'password'} value={formData.confirmPassword} onChange={handleChange} required className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold" />
+                                    <ShieldCheck className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                    <input name="confirmPassword" type={showPassword ? 'text' : 'password'} value={formData.confirmPassword} onChange={handleChange} required className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold" />
                                 </div>
                             </div>
                         </div>
@@ -505,10 +505,10 @@ function SignupContent() {
                         <div className="space-y-2">
                             <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Operational Region</label>
                             <div className="relative group">
-                                <Globe className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors z-10" />
+                                <Globe className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors z-10" />
                                 <select
                                     name="location"
-                                    className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase relative"
+                                    className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase relative"
                                     value={formData.location}
                                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                                         setFormData({ ...formData, location: e.target.value, university: '' });
@@ -527,12 +527,12 @@ function SignupContent() {
                                 <div className="space-y-2">
                                     <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Business / Brand Name</label>
                                     <div className="relative group">
-                                        <Briefcase className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
+                                        <Briefcase className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
                                         <input
                                             name="businessName"
                                             value={formData.businessName}
                                             onChange={handleChange}
-                                            className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase transition-all"
+                                            className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase transition-all"
                                             placeholder="CAMPUS KICKS"
                                         />
                                     </div>
@@ -542,18 +542,18 @@ function SignupContent() {
                                     <div className="space-y-2">
                                         <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Matriculation Number (Required)</label>
                                         <div className="relative group">
-                                            <School className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
+                                            <School className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
                                             <input
                                                 name="matricNumber"
                                                 value={formData.matricNumber}
                                                 onChange={handleChange}
                                                 required
                                                 onBlur={(e) => detectUniversity(e.target.value)}
-                                                className="w-full h-14 pl-14 pr-12 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase transition-all"
+                                                className="w-full h-14 pl-14 pr-12 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase transition-all"
                                                 placeholder="U/2024/..."
                                             />
                                             {isDetectingSchool && (
-                                                <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-[#FFB800]" />
+                                                <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-[#FF6600]" />
                                             )}
                                         </div>
                                     </div>
@@ -561,13 +561,13 @@ function SignupContent() {
                                     <div className="space-y-2">
                                         <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Department (Optional)</label>
                                         <div className="relative group">
-                                            <Sparkles className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
+                                            <Sparkles className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
                                             <input
                                                 name="department"
                                                 value={formData.department}
                                                 onChange={handleChange}
                                                 placeholder="COMPUTER SCIENCE"
-                                                className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase"
+                                                className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase"
                                             />
                                         </div>
                                     </div>
@@ -579,7 +579,7 @@ function SignupContent() {
                                         <button
                                             type="button"
                                             onClick={() => setMissingUni(!missingUni)}
-                                            className="text-[8px] font-black text-[#FFB800] uppercase tracking-widest hover:underline"
+                                            className="text-[8px] font-black text-[#FF6600] uppercase tracking-widest hover:underline"
                                         >
                                             {missingUni ? "Back to List" : "Uni not listed?"}
                                         </button>
@@ -588,13 +588,13 @@ function SignupContent() {
                                     {!missingUni ? (
                                         <div className="space-y-2">
                                             <div className="relative group">
-                                                <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
+                                                <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
                                                 <input
                                                     type="text"
                                                     placeholder="SEARCH YOUR INSTITUTION..."
                                                     value={uniSearch}
                                                     onChange={(e) => setUniSearch(e.target.value)}
-                                                    className="w-full h-14 pl-14 pr-10 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase text-xs"
+                                                    className="w-full h-14 pl-14 pr-10 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase text-xs"
                                                 />
                                             </div>
 
@@ -603,7 +603,7 @@ function SignupContent() {
                                                     name="university"
                                                     value={formData.university}
                                                     onChange={(e) => setFormData(p => ({ ...p, university: e.target.value }))}
-                                                    className="w-full h-14 pl-6 pr-10 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase appearance-none transition-all"
+                                                    className="w-full h-14 pl-6 pr-10 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase appearance-none transition-all"
                                                     required
                                                 >
                                                     <option value="" className="bg-zinc-900 font-medium">
@@ -626,7 +626,7 @@ function SignupContent() {
                                                 value={missingUniName}
                                                 onChange={(e) => setMissingUniName(e.target.value)}
                                                 placeholder="ENTER FULL UNIVERSITY NAME"
-                                                className="w-full h-14 bg-black border border-white/10 rounded-2xl px-6 text-white font-bold uppercase outline-none focus:border-[#FFB800]"
+                                                className="w-full h-14 bg-black border border-white/10 rounded-2xl px-6 text-white font-bold uppercase outline-none focus:border-[#FF6600]"
                                             />
                                             <p className="text-[8px] text-zinc-600 italic">Admin will review and enable this node within 24 hours.</p>
                                         </div>
@@ -634,7 +634,7 @@ function SignupContent() {
 
                                     <div className="space-y-3 pt-4">
                                         <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2 block">Upload Student ID Card</label>
-                                        <div className="glass-card rounded-3xl border border-white/10 p-2 group hover:border-[#FFB800]/30 transition-colors">
+                                        <div className="glass-card rounded-3xl border border-white/10 p-2 group hover:border-[#FF6600]/30 transition-colors">
                                             {formData.studentIdUrl ? (
                                                 <div className="relative group overflow-hidden rounded-2xl">
                                                     <img src={formData.studentIdUrl} alt="ID Card" className="h-40 w-full object-cover rounded-2xl" />
@@ -661,14 +661,14 @@ function SignupContent() {
                             <div className="space-y-2 animate-in fade-in slide-in-from-top-4 duration-500">
                                 <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Mobile Comms</label>
                                 <div className="relative group">
-                                    <Zap className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FFB800] transition-colors" />
+                                    <Zap className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
                                     <input
                                         name="phoneNumber"
                                         type="tel"
                                         value={formData.phoneNumber}
                                         onChange={handleChange}
                                         placeholder="080..."
-                                        className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FFB800]/50 outline-none font-bold uppercase text-xs"
+                                        className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase text-xs"
                                     />
                                 </div>
                             </div>
@@ -676,10 +676,10 @@ function SignupContent() {
 
                         {['student_seller', 'dealer'].includes(role) && (
                             <div className="space-y-6 pt-6 border-t border-white/5 animate-in fade-in duration-700 delay-100">
-                                <div className="glass-card p-8 rounded-[2rem] border border-white/5 text-center bg-gradient-to-b from-[#FFB800]/5 to-transparent relative overflow-hidden">
-                                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FFB800]/20 to-transparent" />
-                                    <Sparkles className="h-6 w-6 text-[#FFB800] mx-auto mb-4" />
-                                    <p className="text-[10px] uppercase font-black text-[#FFB800] mb-2 tracking-[0.2em]">Verification Protocol</p>
+                                <div className="glass-card p-8 rounded-[2rem] border border-white/5 text-center bg-gradient-to-b from-[#FF6600]/5 to-transparent relative overflow-hidden">
+                                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF6600]/20 to-transparent" />
+                                    <Sparkles className="h-6 w-6 text-[#FF6600] mx-auto mb-4" />
+                                    <p className="text-[10px] uppercase font-black text-[#FF6600] mb-2 tracking-[0.2em]">Verification Protocol</p>
                                     <p className="text-zinc-500 text-[9px] font-bold uppercase leading-relaxed">
                                         Your account will enter a <span className="text-white">PENDING</span> status for admin security oversight.
                                         Once your Student ID is verified, your dealership node will be activated.
@@ -694,10 +694,10 @@ function SignupContent() {
                                 id="terms"
                                 checked={agreedToTerms}
                                 onChange={(e) => setAgreedToTerms(e.target.checked)}
-                                className="mt-1 md:mt-0 h-5 w-5 rounded-lg border-white/10 bg-zinc-950 checked:bg-[#FFB800] checked:text-black focus:ring-[#FFB800]/50 transition-all"
+                                className="mt-1 md:mt-0 h-5 w-5 rounded-lg border-white/10 bg-zinc-950 checked:bg-[#FF6600] checked:text-black focus:ring-[#FF6600]/50 transition-all"
                             />
                             <label htmlFor="terms" className="text-[11px] text-zinc-600 font-bold leading-tight">
-                                I verify compliance with the <Link href="/legal/terms" className="text-zinc-400 hover:text-white underline decoration-[#FFB800]/40 decoration-1 underline-offset-4 transition-colors">Terms of Engagement</Link> & <Link href="/legal/privacy" className="text-zinc-400 hover:text-white underline decoration-[#FFB800]/40 decoration-1 underline-offset-4 transition-colors">Global Privacy Protocol</Link> (NDPA 2023 Compliant).
+                                I verify compliance with the <Link href="/legal/terms" className="text-zinc-400 hover:text-white underline decoration-[#FF6600]/40 decoration-1 underline-offset-4 transition-colors">Terms of Engagement</Link> & <Link href="/legal/privacy" className="text-zinc-400 hover:text-white underline decoration-[#FF6600]/40 decoration-1 underline-offset-4 transition-colors">Global Privacy Protocol</Link> (NDPA 2023 Compliant).
                             </label>
                         </div>
 
@@ -717,5 +717,5 @@ function SignupContent() {
 }
 
 export default function SignupPage() {
-    return <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-black"><Loader2 className="h-8 w-8 animate-spin text-[#FFB800]" /></div>}><SignupContent /></Suspense>;
+    return <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-black"><Loader2 className="h-8 w-8 animate-spin text-[#FF6600]" /></div>}><SignupContent /></Suspense>;
 }

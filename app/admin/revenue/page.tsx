@@ -172,7 +172,7 @@ export default function RevenueManagementPage() {
                 <div className="mb-12 flex justify-between items-end">
                     <div>
                         <h1 className="text-5xl font-black uppercase tracking-tighter italic mb-2">
-                            Revenue <span className="text-[#FFB800]">Analytics</span>
+                            Revenue <span className="text-[#FF6600]">Analytics</span>
                         </h1>
                         <p className="text-zinc-500 font-mono text-sm">
                             Platform fee tracking & commission analytics
@@ -197,7 +197,7 @@ export default function RevenueManagementPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="bg-zinc-900 border-white/10 border-l-4 border-l-[#FFB800]">
+                    <Card className="bg-zinc-900 border-white/10 border-l-4 border-l-[#FF6600]">
                         <CardHeader className="pb-3">
                             <CardTitle className="text-zinc-500 text-xs uppercase tracking-wider font-bold flex items-center gap-2">
                                 <Calendar className="h-4 w-4" />
@@ -250,8 +250,8 @@ export default function RevenueManagementPage() {
                             key={type}
                             onClick={() => setFilter(type)}
                             className={`px-6 py-3 font-black text-xs uppercase tracking-widest transition-all border ${filter === type
-                                ? 'bg-[#FFB800] text-black border-[#FFB800]'
-                                : 'bg-zinc-900 text-zinc-500 border-white/10 hover:border-[#FFB800]'
+                                ? 'bg-[#FF6600] text-black border-[#FF6600]'
+                                : 'bg-zinc-900 text-zinc-500 border-white/10 hover:border-[#FF6600]'
                                 }`}
                         >
                             {type.replace('_', ' ')}

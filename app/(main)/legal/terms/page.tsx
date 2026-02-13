@@ -4,7 +4,7 @@ export default function TermsOfService() {
     return (
         <div className="min-h-screen bg-black text-white pt-28 pb-20 px-4">
             <div className="container mx-auto max-w-4xl">
-                <h1 className="text-4xl font-black uppercase text-[#FFB800] mb-8">Terms of Service</h1>
+                <h1 className="text-4xl font-black uppercase text-[#FF6600] mb-8">Terms of Service</h1>
 
                 <div className="space-y-6 text-zinc-300">
                     <p><strong>Last Updated:</strong> January 2024</p>

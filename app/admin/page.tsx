@@ -85,7 +85,7 @@ export default function AdminPage() {
 
     const operationalNodes = [
         { title: "Technical", href: "/admin/technical", icon: Cpu, color: "text-blue-400", label: "Infrastructure", status: "Status: Optimal", health: dashboardStats.techHealth },
-        { title: "Operations", href: "/admin/operations", icon: Activity, color: "text-[#FFB800]", label: "Exchange Flux", status: `${dashboardStats.pendingOps} Pending Actions`, health: 85 },
+        { title: "Operations", href: "/admin/operations", icon: Activity, color: "text-[#FF6600]", label: "Exchange Flux", status: `${dashboardStats.pendingOps} Pending Actions`, health: 85 },
         { title: "Marketing", href: "/admin/marketing", icon: Globe, color: "text-emerald-400", label: "Growth Vector", status: `${dashboardStats.marketingGrowth.toLocaleString()} Active Users`, health: 92 },
         { title: "Revenue", href: "/admin/revenue", icon: TrendingUp, color: "text-green-400", label: "Fee Analytics", status: "5% Commission Active", health: 100 },
         { title: "Proposal", href: "/admin/proposals/new", icon: Zap, color: "text-orange-400", label: "Direct Memo", status: "Priority Channel", health: 100, isNew: true },
@@ -94,13 +94,13 @@ export default function AdminPage() {
     if (!user) return (
         <div className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden">
             <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20 pointer-events-none" />
-            <Loader2 className="h-10 w-10 animate-spin text-[#FFB800] relative z-10" />
+            <Loader2 className="h-10 w-10 animate-spin text-[#FF6600] relative z-10" />
         </div>
     );
 
 
     return (
-        <div className="min-h-screen bg-black text-white relative flex flex-col selection:bg-[#FFB800] selection:text-black">
+        <div className="min-h-screen bg-black text-white relative flex flex-col selection:bg-[#FF6600] selection:text-black">
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
@@ -110,16 +110,16 @@ export default function AdminPage() {
                 {/* Header Section */}
                 <div className="space-y-6">
                     <div className="flex items-center gap-3">
-                        <span className="h-2 w-2 rounded-full bg-[#FFB800] animate-pulse" />
+                        <span className="h-2 w-2 rounded-full bg-[#FF6600] animate-pulse" />
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading">Secure Administrative Uplink</span>
                     </div>
                     <div>
                         <h1 className="text-6xl md:text-8xl font-black text-white uppercase tracking-tighter italic font-heading">
-                            Admin <span className="text-[#FFB800]">Control</span>
+                            Admin <span className="text-[#FF6600]">Control</span>
                         </h1>
                         <p className="text-zinc-500 font-medium italic lowercase mt-4 max-w-2xl font-heading">
                             Authorized Access: <span className="text-white font-bold">{user.displayName}</span> //
-                            Protocol: <span className="text-[#FFB800] font-black">{user.role.replace('_', ' ')} terminal</span> //
+                            Protocol: <span className="text-[#FF6600] font-black">{user.role.replace('_', ' ')} terminal</span> //
                             Status: <span className="text-[#00FF85] font-black">Online</span>
                         </p>
                     </div>
@@ -129,9 +129,9 @@ export default function AdminPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {operationalNodes.map((node) => (
                         <Link key={node.title} href={node.href} className="group">
-                            <div className="glass-card p-8 h-full flex flex-col space-y-8 transition-all duration-500 hover:translate-y-[-8px] hover:border-[#FFB800]/20">
+                            <div className="glass-card p-8 h-full flex flex-col space-y-8 transition-all duration-500 hover:translate-y-[-8px] hover:border-[#FF6600]/20">
                                 <div className="flex justify-between items-start">
-                                    <div className="h-14 w-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-[#FFB800]/30 transition-colors">
+                                    <div className="h-14 w-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-[#FF6600]/30 transition-colors">
                                         <node.icon className={cn("h-7 w-7", node.color)} />
                                     </div>
                                     <ArrowRight className="h-5 w-5 text-zinc-700 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
@@ -150,7 +150,7 @@ export default function AdminPage() {
                                     <div className="p-4 rounded-xl bg-black/40 border border-white/5 flex flex-col gap-3">
                                         <div className="flex items-center justify-between">
                                             <span className="text-[10px] font-black text-zinc-400 uppercase italic tracking-widest font-heading">{node.status}</span>
-                                            {node.isNew && <Badge className="bg-[#FFB800] text-black font-black text-[8px] border-none px-2 rounded-sm italic font-heading">Required</Badge>}
+                                            {node.isNew && <Badge className="bg-[#FF6600] text-black font-black text-[8px] border-none px-2 rounded-sm italic font-heading">Required</Badge>}
                                         </div>
                                         <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
                                             <div className={cn("h-full transition-all duration-1000", node.color.replace('text', 'bg'))} style={{ width: `${node.health}%` }} />
@@ -164,7 +164,7 @@ export default function AdminPage() {
 
                 {/* Command Center Quick Access */}
                 <div className="glass-card rounded-[3rem] p-12 overflow-hidden group relative">
-                    <div className="absolute top-0 right-0 w-[40%] h-full bg-gradient-to-l from-[#FFB800]/5 to-transparent pointer-events-none" />
+                    <div className="absolute top-0 right-0 w-[40%] h-full bg-gradient-to-l from-[#FF6600]/5 to-transparent pointer-events-none" />
 
                     <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-12 relative z-10">
                         <div className="space-y-8 flex-1">
@@ -182,7 +182,7 @@ export default function AdminPage() {
                                     { label: 'Resolution Node', href: '/admin/disputes' },
                                     { label: 'System Logs', href: '/admin/logs' }
                                 ].map(link => (
-                                    <Button key={link.label} asChild variant="outline" className="border-white/10 text-white rounded-xl uppercase text-[10px] font-black tracking-widest h-14 px-8 hover:bg-white/5 hover:border-[#FFB800]/30 font-heading transition-all whitespace-nowrap bg-black/20">
+                                    <Button key={link.label} asChild variant="outline" className="border-white/10 text-white rounded-xl uppercase text-[10px] font-black tracking-widest h-14 px-8 hover:bg-white/5 hover:border-[#FF6600]/30 font-heading transition-all whitespace-nowrap bg-black/20">
                                         <Link href={link.href}>{link.label}</Link>
                                     </Button>
                                 ))}

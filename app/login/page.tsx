@@ -120,7 +120,7 @@ export default function LoginPage() {
     if (step === 'role') {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-black overflow-hidden relative">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#FFB800]/5 blur-[120px] rounded-full" />
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#FF6600]/5 blur-[120px] rounded-full" />
 
                 <div className="w-full max-w-5xl relative z-10">
                     <div className="text-center mb-16">
@@ -134,7 +134,7 @@ export default function LoginPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 max-w-4xl mx-auto">
                         {[
                             { id: 'student_buyer', title: 'Student Buyer', icon: User, desc: 'Personal Account', color: 'text-blue-400' },
-                            { id: 'student_seller', title: 'Student Seller', icon: Briefcase, desc: 'Business Terminal', color: 'text-[#FFB800]' },
+                            { id: 'student_seller', title: 'Student Seller', icon: Briefcase, desc: 'Business Terminal', color: 'text-[#FF6600]' },
                             { id: 'admin', title: 'Admin', icon: ShieldCheck, desc: 'Secure Gateway', color: 'text-red-400' }
                         ].map(item => (
                             <Card
@@ -192,7 +192,7 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-black overflow-hidden relative">
-            <div className="absolute top-[10%] left-[10%] w-[40%] h-[40%] bg-[#FFB800]/5 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute top-[10%] left-[10%] w-[40%] h-[40%] bg-[#FF6600]/5 blur-[120px] rounded-full pointer-events-none" />
             <div className="absolute bottom-[10%] right-[10%] w-[40%] h-[40%] bg-[#FF8A00]/5 blur-[120px] rounded-full pointer-events-none" />
 
             <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white relative z-10">
@@ -226,7 +226,7 @@ export default function LoginPage() {
                                     onChange={handleChange}
                                     required
                                     placeholder={role === 'admin' ? "admin@marketbridge.io" : "user@example.com"}
-                                    className="w-full h-16 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FFB800]/50 transition-all font-medium"
+                                    className="w-full h-16 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6600]/50 transition-all font-medium"
                                 />
                             </div>
                         </div>
@@ -234,7 +234,7 @@ export default function LoginPage() {
                         <div className="space-y-2">
                             <div className="flex justify-between items-center ml-2">
                                 <label className="text-[10px] uppercase font-black tracking-widest text-zinc-500">Security Signature</label>
-                                <Link href="/forgot-password" className="text-[10px] font-black uppercase tracking-widest text-[#FFB800] hover:opacity-80 transition-opacity">Reset Key</Link>
+                                <Link href="/forgot-password" className="text-[10px] font-black uppercase tracking-widest text-[#FF6600] hover:opacity-80 transition-opacity">Reset Key</Link>
                             </div>
                             <div className="relative">
                                 <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-600" />
@@ -245,7 +245,7 @@ export default function LoginPage() {
                                     onChange={handleChange}
                                     required
                                     placeholder="••••••••"
-                                    className="w-full h-16 pl-14 pr-16 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FFB800]/50 transition-all font-medium"
+                                    className="w-full h-16 pl-14 pr-16 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6600]/50 transition-all font-medium"
                                 />
                                 <button
                                     type="button"
@@ -282,7 +282,7 @@ export default function LoginPage() {
                     )}
 
                     <p className="text-center text-zinc-500 text-xs font-bold uppercase tracking-widest">
-                        Unauthorized? <Link href="/signup" className="text-[#FFB800] hover:opacity-80 transition-opacity italic ml-1 underline decoration-dotted">Register Identity</Link>
+                        Unauthorized? <Link href="/signup" className="text-[#FF6600] hover:opacity-80 transition-opacity italic ml-1 underline decoration-dotted">Register Identity</Link>
                     </p>
                 </CardContent>
             </Card>

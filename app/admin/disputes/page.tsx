@@ -160,7 +160,7 @@ export default function DisputesPage() {
             case 'open':
                 return <Badge variant="destructive" className="bg-red-500/10 text-red-500 border-red-500/20 font-mono uppercase tracking-wider">Open</Badge>;
             case 'under_review':
-                return <Badge variant="default" className="bg-[#FFB800]/10 text-[#FFB800] border-[#FFB800]/20 font-mono uppercase tracking-wider">Reviewing</Badge>;
+                return <Badge variant="default" className="bg-[#FF6600]/10 text-[#FF6600] border-[#FF6600]/20 font-mono uppercase tracking-wider">Reviewing</Badge>;
             case 'resolved':
                 return <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20 font-mono uppercase tracking-wider">Resolved</Badge>;
             case 'rejected':
@@ -173,14 +173,14 @@ export default function DisputesPage() {
     if (loading) return (
         <div className="min-h-screen bg-black flex items-center justify-center text-white">
             <div className="text-center">
-                <div className="animate-spin h-12 w-12 border-2 border-[#FFB800] border-t-transparent rounded-full mx-auto mb-4" />
+                <div className="animate-spin h-12 w-12 border-2 border-[#FF6600] border-t-transparent rounded-full mx-auto mb-4" />
                 <p className="font-mono text-zinc-500 uppercase tracking-widest text-xs">Loading Jurisdictions...</p>
             </div>
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-black text-white p-6 md:p-12 font-sans selection:bg-[#FFB800] selection:text-black">
+        <div className="min-h-screen bg-black text-white p-6 md:p-12 font-sans selection:bg-[#FF6600] selection:text-black">
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
@@ -188,7 +188,7 @@ export default function DisputesPage() {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/10 pb-8">
                     <div className="space-y-2">
                         <div className="flex items-center gap-3">
-                            <ShieldCheck className="h-5 w-5 text-[#FFB800]" />
+                            <ShieldCheck className="h-5 w-5 text-[#FF6600]" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 font-heading">Operations Command</span>
                         </div>
                         <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading">
@@ -210,8 +210,8 @@ export default function DisputesPage() {
 
                 <Tabs defaultValue="active" className="space-y-8">
                     <TabsList className="bg-transparent border-b border-white/10 w-full justify-start rounded-none h-auto p-0 gap-8">
-                        <TabsTrigger value="active" className="data-[state=active]:border-[#FFB800] data-[state=active]:text-[#FFB800] border-b-2 border-transparent rounded-none px-0 pb-4 font-black uppercase tracking-widest text-xs transition-all font-heading bg-transparent">Active Cases</TabsTrigger>
-                        <TabsTrigger value="closed" className="data-[state=active]:border-[#FFB800] data-[state=active]:text-[#FFB800] border-b-2 border-transparent rounded-none px-0 pb-4 font-black uppercase tracking-widest text-xs transition-all font-heading bg-transparent">Closed Cases</TabsTrigger>
+                        <TabsTrigger value="active" className="data-[state=active]:border-[#FF6600] data-[state=active]:text-[#FF6600] border-b-2 border-transparent rounded-none px-0 pb-4 font-black uppercase tracking-widest text-xs transition-all font-heading bg-transparent">Active Cases</TabsTrigger>
+                        <TabsTrigger value="closed" className="data-[state=active]:border-[#FF6600] data-[state=active]:text-[#FF6600] border-b-2 border-transparent rounded-none px-0 pb-4 font-black uppercase tracking-widest text-xs transition-all font-heading bg-transparent">Closed Cases</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="active" className="space-y-4">
@@ -272,7 +272,7 @@ export default function DisputesPage() {
                                 </div>
                                 <div>
                                     <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest font-heading mb-1">Dispute Value</p>
-                                    <p className="text-xl font-black text-[#FFB800] font-heading">
+                                    <p className="text-xl font-black text-[#FF6600] font-heading">
                                         ₦{(selectedDispute.order?.amount || selectedDispute.escrow_agreement?.amount || 0).toLocaleString()}
                                     </p>
                                 </div>
@@ -358,7 +358,7 @@ function DisputeCard({ dispute, onView }: { dispute: Dispute, onView: () => void
     const title = isOrder ? dispute.order!.listing?.title : 'Direct Escrow Agreement';
 
     return (
-        <div className="group glass-card p-6 flex flex-col md:flex-row gap-6 items-center border border-white/5 hover:border-[#FFB800]/30 transition-all bg-white/[0.02]">
+        <div className="group glass-card p-6 flex flex-col md:flex-row gap-6 items-center border border-white/5 hover:border-[#FF6600]/30 transition-all bg-white/[0.02]">
             <div className="h-12 w-12 rounded-full bg-red-500/10 flex items-center justify-center border border-red-500/20 shrink-0">
                 <AlertTriangle className="h-5 w-5 text-red-500" />
             </div>
@@ -382,13 +382,13 @@ function DisputeCard({ dispute, onView }: { dispute: Dispute, onView: () => void
             </div>
 
             <div className="text-right shrink-0">
-                <div className="text-2xl font-black text-[#FFB800] font-heading tracking-tighter">
+                <div className="text-2xl font-black text-[#FF6600] font-heading tracking-tighter">
                     ₦{amount.toLocaleString()}
                 </div>
                 <div className="text-[10px] uppercase font-bold text-zinc-600 mt-1">Disputed Amount</div>
             </div>
 
-            <Button onClick={onView} variant="outline" className="border-white/10 hover:bg-[#FFB800] hover:text-black hover:border-transparent transition-all font-black uppercase tracking-widest text-[10px] h-12 px-6 rounded-xl font-heading">
+            <Button onClick={onView} variant="outline" className="border-white/10 hover:bg-[#FF6600] hover:text-black hover:border-transparent transition-all font-black uppercase tracking-widest text-[10px] h-12 px-6 rounded-xl font-heading">
                 Open Dossier
             </Button>
         </div>

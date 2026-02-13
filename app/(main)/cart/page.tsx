@@ -19,20 +19,20 @@ export default function CartPage() {
                 <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
                 <div className="container mx-auto max-w-lg text-center relative z-10 space-y-12">
                     <div className="h-32 w-32 rounded-[2rem] bg-white/5 border border-white/10 flex items-center justify-center mx-auto relative group">
-                        <ShoppingBag className="h-12 w-12 text-zinc-500 group-hover:text-[#FFB800] transition-colors" />
-                        <div className="absolute inset-0 rounded-[2rem] border border-[#FFB800]/50 animate-ping opacity-0 group-hover:opacity-20" />
+                        <ShoppingBag className="h-12 w-12 text-zinc-500 group-hover:text-[#FF6600] transition-colors" />
+                        <div className="absolute inset-0 rounded-[2rem] border border-[#FF6600]/50 animate-ping opacity-0 group-hover:opacity-20" />
                     </div>
 
                     <div className="space-y-4">
                         <h1 className="text-5xl font-black uppercase tracking-tighter italic font-heading">
-                            Cart <span className="text-[#FFB800]">Empty</span>
+                            Cart <span className="text-[#FF6600]">Empty</span>
                         </h1>
                         <p className="text-zinc-500 font-medium italic max-w-xs mx-auto">
                             No active assets detected in your current acquisition cycle.
                         </p>
                     </div>
 
-                    <Button asChild className="h-16 px-12 bg-[#FFB800] text-black hover:bg-[#FFD700] rounded-2xl font-black uppercase tracking-widest transition-all font-heading">
+                    <Button asChild className="h-16 px-12 bg-[#FF6600] text-black hover:bg-[#FFD700] rounded-2xl font-black uppercase tracking-widest transition-all font-heading">
                         <Link href="/listings">
                             Scan Marketplace <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
@@ -43,7 +43,7 @@ export default function CartPage() {
     }
 
     return (
-        <div className="min-h-screen pt-40 pb-20 bg-black text-white relative selection:bg-[#FFB800] selection:text-black">
+        <div className="min-h-screen pt-40 pb-20 bg-black text-white relative selection:bg-[#FF6600] selection:text-black">
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
             <div className="container px-6 mx-auto relative z-10 space-y-12">
@@ -51,11 +51,11 @@ export default function CartPage() {
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-12">
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
-                            <span className="h-2 w-2 rounded-full bg-[#FFB800] animate-pulse" />
+                            <span className="h-2 w-2 rounded-full bg-[#FF6600] animate-pulse" />
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading">Asset Staging Terminal</span>
                         </div>
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
-                            Acquisition <span className="text-[#FFB800]">Cart</span>
+                            Acquisition <span className="text-[#FF6600]">Cart</span>
                         </h1>
                         <p className="text-zinc-500 font-medium max-w-xl italic">
                             Reviewing <span className="text-white font-bold">{itemCount} staged assets</span> for immediate deployment.
@@ -73,7 +73,7 @@ export default function CartPage() {
                     {/* Cart Items */}
                     <div className="lg:col-span-2 space-y-6">
                         {items.map((item) => (
-                            <div key={item.listingId} className="glass-card p-6 flex flex-col sm:flex-row gap-8 group transition-all duration-500 hover:border-[#FFB800]/20">
+                            <div key={item.listingId} className="glass-card p-6 flex flex-col sm:flex-row gap-8 group transition-all duration-500 hover:border-[#FF6600]/20">
                                 <div className="h-32 w-32 shrink-0 rounded-2xl overflow-hidden border border-white/5 relative bg-zinc-900">
                                     {item.image ? (
                                         <img src={item.image} alt={item.title} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" />
@@ -90,7 +90,7 @@ export default function CartPage() {
                                             <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest font-heading">Qty: 0{item.quantity}</p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-2xl font-black text-[#FFB800] italic font-heading">₦{item.price.toLocaleString()}</p>
+                                            <p className="text-2xl font-black text-[#FF6600] italic font-heading">₦{item.price.toLocaleString()}</p>
                                         </div>
                                     </div>
                                     <div className="flex justify-end pt-4 border-t border-white/5 mt-4">
@@ -111,7 +111,7 @@ export default function CartPage() {
 
                     {/* Order Summary */}
                     <div className="lg:col-span-1">
-                        <div className="glass-card p-10 rounded-[3rem] sticky top-32 space-y-10 border-[#FFB800]/10">
+                        <div className="glass-card p-10 rounded-[3rem] sticky top-32 space-y-10 border-[#FF6600]/10">
                             <div className="space-y-1">
                                 <h3 className="text-2xl font-black uppercase tracking-tighter font-heading italic">Cycle Summary</h3>
                                 <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest italic">Authorization pending</p>
@@ -135,13 +135,13 @@ export default function CartPage() {
 
                                 <div className="flex justify-between items-end">
                                     <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest font-heading mb-1">Total Payload</span>
-                                    <span className="text-4xl font-black text-[#FFB800] tracking-tighter italic font-heading">₦{total.toLocaleString()}</span>
+                                    <span className="text-4xl font-black text-[#FF6600] tracking-tighter italic font-heading">₦{total.toLocaleString()}</span>
                                 </div>
                             </div>
 
                             <div className="space-y-4 pt-6">
                                 <Button
-                                    className="w-full h-16 bg-[#FFB800] text-black hover:bg-[#FFD700] rounded-2xl font-black uppercase tracking-widest transition-all font-heading shadow-[0_10px_40px_rgba(255,184,0,0.2)]"
+                                    className="w-full h-16 bg-[#FF6600] text-black hover:bg-[#FFD700] rounded-2xl font-black uppercase tracking-widest transition-all font-heading shadow-[0_10px_40px_rgba(255,184,0,0.2)]"
                                     onClick={() => router.push('/checkout')}
                                     disabled={items.length === 0}
                                 >

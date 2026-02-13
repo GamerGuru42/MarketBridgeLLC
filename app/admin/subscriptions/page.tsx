@@ -116,13 +116,13 @@ export default function AdminSubscriptionVerification() {
     };
 
     if (authLoading) return (
-        <div className="min-h-screen bg-black flex items-center justify-center text-[#FFB800]">
+        <div className="min-h-screen bg-black flex items-center justify-center text-[#FF6600]">
             <Loader2 className="h-8 w-8 animate-spin" />
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-black text-white p-6 md:p-12 font-sans selection:bg-[#FFB800] selection:text-black">
+        <div className="min-h-screen bg-black text-white p-6 md:p-12 font-sans selection:bg-[#FF6600] selection:text-black">
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
@@ -130,7 +130,7 @@ export default function AdminSubscriptionVerification() {
                 <div className="flex justify-between items-end mb-12 border-b border-white/10 pb-6">
                     <div>
                         <div className="flex items-center gap-3 mb-2">
-                            <ShieldCheck className="h-5 w-5 text-[#FFB800]" />
+                            <ShieldCheck className="h-5 w-5 text-[#FF6600]" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 font-heading">Operations Command</span>
                         </div>
                         <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading">
@@ -169,7 +169,7 @@ export default function AdminSubscriptionVerification() {
                                                     <h3 className="text-xl font-bold text-white">
                                                         {verification.user?.business_name || 'Individual Seller'}
                                                     </h3>
-                                                    <Badge variant="outline" className="bg-[#FFB800]/10 text-[#FFB800] border-[#FFB800]/20 font-mono text-[10px] uppercase tracking-widest">
+                                                    <Badge variant="outline" className="bg-[#FF6600]/10 text-[#FF6600] border-[#FF6600]/20 font-mono text-[10px] uppercase tracking-widest">
                                                         {plans[verification.plan_id]?.name || 'Unknown Plan'}
                                                     </Badge>
                                                 </div>

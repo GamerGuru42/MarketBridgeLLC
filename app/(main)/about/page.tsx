@@ -12,7 +12,7 @@ export default function AboutPage() {
     const router = useRouter();
 
     return (
-        <div className="min-h-screen bg-black text-white relative selection:bg-[#FFB800] selection:text-black pt-28 pb-20">
+        <div className="min-h-screen bg-black text-white relative selection:bg-[#FF6600] selection:text-black pt-28 pb-20">
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
@@ -23,7 +23,7 @@ export default function AboutPage() {
                         <Button
                             variant="ghost"
                             onClick={() => router.back()}
-                            className="text-[#FFB800] hover:text-[#FFD700] hover:bg-transparent p-0 h-auto text-[10px] font-black uppercase tracking-[0.2em] font-heading"
+                            className="text-[#FF6600] hover:text-[#FFD700] hover:bg-transparent p-0 h-auto text-[10px] font-black uppercase tracking-[0.2em] font-heading"
                         >
                             <ArrowLeft className="mr-2 h-3 w-3" /> Return to Core
                         </Button>
@@ -43,7 +43,7 @@ export default function AboutPage() {
                             <Logo size="xl" hideText />
                         </div>
                         <h2 className="text-3xl font-black uppercase italic font-heading tracking-tighter mb-8 flex items-center gap-4">
-                            <span className="h-2 w-2 rounded-full bg-[#FFB800]" />
+                            <span className="h-2 w-2 rounded-full bg-[#FF6600]" />
                             The Mission
                         </h2>
                         <div className="space-y-6 text-zinc-400 font-medium leading-relaxed">
@@ -56,7 +56,7 @@ export default function AboutPage() {
                             <div className="pt-8 flex gap-4">
                                 <Link href="/signup" className="h-12 px-8 bg-white/5 border border-white/10 rounded-xl flex items-center gap-3 hover:bg-white/10 transition-all group/link">
                                     <span className="text-[10px] font-black uppercase tracking-widest text-white">Join the Protocol</span>
-                                    <ArrowUpRight className="h-3 w-3 text-zinc-500 group-hover/link:text-[#FFB800] group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-all" />
+                                    <ArrowUpRight className="h-3 w-3 text-zinc-500 group-hover/link:text-[#FF6600] group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-all" />
                                 </Link>
                             </div>
                         </div>
@@ -68,9 +68,9 @@ export default function AboutPage() {
                             { title: 'Direct Uplink', desc: 'Encrypted communication channels between participants for secure negotiation.', icon: MessageSquare },
                             { title: 'Zero Friction', desc: 'Built for speed and security, ensuring low-latency asset discovery.', icon: Zap }
                         ].map((item, i) => (
-                            <div key={i} className="glass-card p-8 rounded-3xl border-white/5 hover:border-[#FFB800]/20 transition-all duration-500 group">
-                                <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:border-[#FFB800]/50 group-hover:bg-[#FFB800]/10 transition-all">
-                                    <item.icon className="h-5 w-5 text-zinc-500 group-hover:text-[#FFB800]" />
+                            <div key={i} className="glass-card p-8 rounded-3xl border-white/5 hover:border-[#FF6600]/20 transition-all duration-500 group">
+                                <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:border-[#FF6600]/50 group-hover:bg-[#FF6600]/10 transition-all">
+                                    <item.icon className="h-5 w-5 text-zinc-500 group-hover:text-[#FF6600]" />
                                 </div>
                                 <h3 className="text-sm font-black uppercase tracking-widest text-white mb-3 italic">{item.title}</h3>
                                 <p className="text-xs text-zinc-500 font-medium leading-relaxed">{item.desc}</p>
@@ -82,7 +82,7 @@ export default function AboutPage() {
                 {/* Secure Protocol Steps */}
                 <div className="mb-32">
                     <div className="text-center mb-20 space-y-4">
-                        <p className="text-[10px] text-[#FFB800] font-black uppercase tracking-[0.4em] font-heading">Operational Framework</p>
+                        <p className="text-[10px] text-[#FF6600] font-black uppercase tracking-[0.4em] font-heading">Operational Framework</p>
                         <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading">How the <span className="text-zinc-500">Bridge</span> Functions</h2>
                     </div>
 
@@ -95,9 +95,9 @@ export default function AboutPage() {
                         ].map((item, i) => (
                             <div key={i} className="relative group">
                                 <div className="glass-card p-10 rounded-[2.5rem] border-white/5 h-full relative z-10 hover:translate-y-[-8px] transition-all duration-500">
-                                    <div className="text-5xl font-black text-zinc-900 absolute top-8 right-8 group-hover:text-[#FFB800]/10 transition-colors">{item.step}</div>
+                                    <div className="text-5xl font-black text-zinc-900 absolute top-8 right-8 group-hover:text-[#FF6600]/10 transition-colors">{item.step}</div>
                                     <div className="h-14 w-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-8">
-                                        <item.icon className="h-6 w-6 text-[#FFB800]" />
+                                        <item.icon className="h-6 w-6 text-[#FF6600]" />
                                     </div>
                                     <h3 className="text-lg font-black uppercase tracking-tighter text-white mb-4 italic font-heading">{item.title}</h3>
                                     <p className="text-xs text-zinc-500 font-medium leading-relaxed">{item.desc}</p>
@@ -128,7 +128,7 @@ export default function AboutPage() {
                 {/* Footer CTA */}
                 <div className="text-center py-20 border-t border-white/5">
                     <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic font-heading mb-12">
-                        Ready to <span className="text-[#FFB800]">Escalate?</span>
+                        Ready to <span className="text-[#FF6600]">Escalate?</span>
                     </h2>
                     <div className="flex flex-col sm:flex-row gap-6 justify-center">
                         <Button asChild size="lg" className="h-16 px-12 bg-white text-black hover:bg-zinc-200 rounded-2xl font-black uppercase tracking-widest text-xs italic">

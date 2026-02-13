@@ -113,17 +113,17 @@ function OnboardingContent() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white relative py-20 px-6 selection:bg-[#FFB800] selection:text-black">
+        <div className="min-h-screen bg-black text-white relative py-20 px-6 selection:bg-[#FF6600] selection:text-black">
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
             <div className="max-w-2xl mx-auto relative z-10 space-y-12">
                 <div className="text-center space-y-4">
                     <div className="flex items-center justify-center gap-3">
-                        <span className="h-2 w-2 rounded-full bg-[#FFB800] animate-pulse" />
+                        <span className="h-2 w-2 rounded-full bg-[#FF6600] animate-pulse" />
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading">Protocol Identification</span>
                     </div>
                     <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
-                        Establish <span className="text-[#FFB800]">Profile</span>
+                        Establish <span className="text-[#FF6600]">Profile</span>
                     </h1>
                     <p className="text-zinc-500 font-medium italic">
                         Initialize your operational parameters for the Abuja Pilot Phase.
@@ -138,7 +138,7 @@ function OnboardingContent() {
                                 <div className="flex justify-center mb-10">
                                     <div className="w-40 space-y-4">
                                         <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-center block font-heading">Digital Identity Avatar</Label>
-                                        <div className="glass-card rounded-[2rem] p-2 hover:border-[#FFB800]/30 transition-all">
+                                        <div className="glass-card rounded-[2rem] p-2 hover:border-[#FF6600]/30 transition-all">
                                             <ImageUpload
                                                 onImagesSelected={(urls) => setFormData({ ...formData, photoURL: urls[0] || '' })}
                                                 defaultImages={formData.photoURL ? [formData.photoURL] : []}
@@ -158,7 +158,7 @@ function OnboardingContent() {
                                             onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
                                             placeholder="OPERATIVE NAME"
                                             required
-                                            className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FFB800]/50 transition-all font-heading uppercase tracking-widest text-xs"
+                                            className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FF6600]/50 transition-all font-heading uppercase tracking-widest text-xs"
                                         />
                                     </div>
 
@@ -169,7 +169,7 @@ function OnboardingContent() {
                                             value={formData.location}
                                             onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                                             placeholder="e.g. FCT - ABUJA"
-                                            className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FFB800]/50 transition-all font-heading uppercase tracking-widest text-xs"
+                                            className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FF6600]/50 transition-all font-heading uppercase tracking-widest text-xs"
                                         />
                                     </div>
                                 </div>
@@ -183,7 +183,7 @@ function OnboardingContent() {
                                     >
                                         <div className={cn(
                                             "flex items-center space-x-4 border rounded-[2rem] p-6 cursor-pointer transition-all duration-500",
-                                            formData.role === 'student_buyer' || formData.role === 'customer' ? "bg-[#FFB800] border-[#FFB800] text-black" : "bg-white/5 border-white/10 text-white hover:border-white/20"
+                                            formData.role === 'student_buyer' || formData.role === 'customer' ? "bg-[#FF6600] border-[#FF6600] text-black" : "bg-white/5 border-white/10 text-white hover:border-white/20"
                                         )} onClick={() => setFormData({ ...formData, role: 'student_buyer' })}>
                                             <RadioGroupItem value="student_buyer" id="student_buyer" className="hidden" />
                                             <Label htmlFor="student_buyer" className="cursor-pointer flex-1 space-y-1">
@@ -195,7 +195,7 @@ function OnboardingContent() {
                                         </div>
                                         <div className={cn(
                                             "flex items-center space-x-4 border rounded-[2rem] p-6 cursor-pointer transition-all duration-500",
-                                            formData.role === 'student_seller' || formData.role === 'dealer' ? "bg-[#FFB800] border-[#FFB800] text-black" : "bg-white/5 border-white/10 text-white hover:border-white/20"
+                                            formData.role === 'student_seller' || formData.role === 'dealer' ? "bg-[#FF6600] border-[#FF6600] text-black" : "bg-white/5 border-white/10 text-white hover:border-white/20"
                                         )} onClick={() => setFormData({ ...formData, role: 'student_seller' })}>
                                             <RadioGroupItem value="student_seller" id="student_seller" className="hidden" />
                                             <Label htmlFor="student_seller" className="cursor-pointer flex-1 space-y-1">
@@ -219,7 +219,7 @@ function OnboardingContent() {
                                                     onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
                                                     placeholder="e.g. UNIVERSITY GADGETS"
                                                     required={['student_seller', 'dealer'].includes(formData.role)}
-                                                    className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FFB800]/50 transition-all font-heading uppercase tracking-widest text-xs"
+                                                    className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FF6600]/50 transition-all font-heading uppercase tracking-widest text-xs"
                                                 />
                                             </div>
 
@@ -231,7 +231,7 @@ function OnboardingContent() {
                                                     onChange={(e) => setFormData({ ...formData, university: e.target.value })}
                                                     placeholder="e.g. UNIVERSITY OF ABUJA"
                                                     required={['student_seller', 'dealer'].includes(formData.role)}
-                                                    className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FFB800]/50 transition-all font-heading uppercase tracking-widest text-xs"
+                                                    className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FF6600]/50 transition-all font-heading uppercase tracking-widest text-xs"
                                                 />
                                             </div>
                                         </div>
@@ -244,7 +244,7 @@ function OnboardingContent() {
                                                 onChange={(e) => setFormData({ ...formData, matricNumber: e.target.value })}
                                                 placeholder="e.g. U/2024/CORE/001"
                                                 required={['student_seller', 'dealer'].includes(formData.role)}
-                                                className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FFB800]/50 transition-all font-heading uppercase tracking-widest text-xs"
+                                                className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FF6600]/50 transition-all font-heading uppercase tracking-widest text-xs"
                                             />
                                         </div>
 
@@ -257,7 +257,7 @@ function OnboardingContent() {
                                             >
                                                 {['physical', 'online', 'both'].map((type) => (
                                                     <div key={type} className="flex items-center space-x-2">
-                                                        <RadioGroupItem value={type} id={type} className="border-zinc-700 text-[#FFB800]" />
+                                                        <RadioGroupItem value={type} id={type} className="border-zinc-700 text-[#FF6600]" />
                                                         <Label htmlFor={type} className="text-[10px] font-black uppercase tracking-widest cursor-pointer font-heading">{type}</Label>
                                                     </div>
                                                 ))}
@@ -290,7 +290,7 @@ function OnboardingContent() {
 
 export default function OnboardingPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-black"><Loader2 className="h-8 w-8 animate-spin text-[#FFB800]" /></div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-black"><Loader2 className="h-8 w-8 animate-spin text-[#FF6600]" /></div>}>
             <OnboardingContent />
         </Suspense>
     );

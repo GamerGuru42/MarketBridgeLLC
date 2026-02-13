@@ -98,7 +98,7 @@ export default function AdminPayoutsPage() {
             <div className="max-w-7xl mx-auto relative z-10">
                 <div className="mb-12">
                     <h1 className="text-4xl font-black uppercase tracking-tighter italic mb-2">
-                        Seller <span className="text-[#FFB800]">Payouts</span>
+                        Seller <span className="text-[#FF6600]">Payouts</span>
                     </h1>
                     <p className="text-zinc-500 font-mono text-sm">Review pending transfers to sellers.</p>
                 </div>
@@ -109,7 +109,7 @@ export default function AdminPayoutsPage() {
                     </CardHeader>
                     <CardContent>
                         {loading ? (
-                            <div className="flex justify-center py-12"><Loader2 className="animate-spin text-[#FFB800]" /></div>
+                            <div className="flex justify-center py-12"><Loader2 className="animate-spin text-[#FF6600]" /></div>
                         ) : orders.length === 0 ? (
                             <div className="text-center py-12 text-zinc-600 font-mono">No pending payouts found</div>
                         ) : (
@@ -120,7 +120,7 @@ export default function AdminPayoutsPage() {
                                     const hasBankDetails = seller?.bank_name && seller?.account_number;
 
                                     return (
-                                        <div key={order.id} className="bg-black border border-white/10 rounded-2xl p-6 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between group hover:border-[#FFB800]/30 transition-colors">
+                                        <div key={order.id} className="bg-black border border-white/10 rounded-2xl p-6 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between group hover:border-[#FF6600]/30 transition-colors">
 
                                             {/* Order Info */}
                                             <div className="space-y-2 min-w-[200px]">
@@ -133,7 +133,7 @@ export default function AdminPayoutsPage() {
 
                                             {/* Seller / Bank Info */}
                                             <div className="flex-1 space-y-2 border-l border-white/5 pl-6">
-                                                <div className="text-xs font-black uppercase tracking-widest text-[#FFB800]">Pay To: {seller?.display_name || 'Unknown Seller'}</div>
+                                                <div className="text-xs font-black uppercase tracking-widest text-[#FF6600]">Pay To: {seller?.display_name || 'Unknown Seller'}</div>
                                                 {hasBankDetails ? (
                                                     <div className="grid grid-cols-2 gap-4 text-sm font-mono text-zinc-300">
                                                         <div>
@@ -167,7 +167,7 @@ export default function AdminPayoutsPage() {
                                                 <Button
                                                     onClick={() => handleMarkPaid(order.id)}
                                                     disabled={processingId === order.id || !hasBankDetails}
-                                                    className="bg-[#FFB800] text-black hover:bg-[#FFD700] border-none font-bold uppercase tracking-widest disabled:opacity-50"
+                                                    className="bg-[#FF6600] text-black hover:bg-[#FFD700] border-none font-bold uppercase tracking-widest disabled:opacity-50"
                                                 >
                                                     {processingId === order.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4 mr-2" />}
                                                     Mark Paid

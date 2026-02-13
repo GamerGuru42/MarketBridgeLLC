@@ -146,7 +146,7 @@ export default function ChatsPage() {
             <div className="container mx-auto px-4 py-8">
                 <div className="flex items-center justify-center min-h-[400px]">
                     <div className="text-center">
-                        <Loader2 className="animate-spin h-12 w-12 text-[#FFB800] mx-auto" />
+                        <Loader2 className="animate-spin h-12 w-12 text-[#FF6600] mx-auto" />
                         <p className="mt-4 text-zinc-500 font-mono text-xs tracking-widest uppercase">Syncing Encrypted Feeds...</p>
                     </div>
                 </div>
@@ -158,7 +158,7 @@ export default function ChatsPage() {
         <div className="container mx-auto py-10 px-4 space-y-8 min-h-screen">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl border-l-4 border-[#FFB800] pl-4 text-white">
+                    <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl border-l-4 border-[#FF6600] pl-4 text-white">
                         Terminal Link
                     </h1>
                     <p className="text-zinc-500 mt-2 font-mono text-sm uppercase tracking-wider">
@@ -166,7 +166,7 @@ export default function ChatsPage() {
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="px-3 py-1 font-mono text-[10px] border-[#FFB800]/20 bg-[#FFB800]/5 text-[#FFB800] animate-pulse">
+                    <Badge variant="outline" className="px-3 py-1 font-mono text-[10px] border-[#FF6600]/20 bg-[#FF6600]/5 text-[#FF6600] animate-pulse">
                         ENCRYPTION STATUS: ACTIVE
                     </Badge>
                 </div>
@@ -175,12 +175,12 @@ export default function ChatsPage() {
             <Card className="border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden bg-black/50 backdrop-blur-sm">
                 <CardHeader className="border-b border-white/5 bg-white/5 pb-6">
                     <div className="relative group max-w-md w-full">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 group-focus-within:text-[#FFB800] transition-colors" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 group-focus-within:text-[#FF6600] transition-colors" />
                         <Input
                             placeholder="FILTER CONVERSATIONS..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10 h-11 bg-black/50 border-white/10 font-mono text-xs tracking-widest uppercase focus:ring-1 focus:ring-[#FFB800] text-white placeholder:text-zinc-700"
+                            className="pl-10 h-11 bg-black/50 border-white/10 font-mono text-xs tracking-widest uppercase focus:ring-1 focus:ring-[#FF6600] text-white placeholder:text-zinc-700"
                         />
                     </div>
                 </CardHeader>
@@ -194,7 +194,7 @@ export default function ChatsPage() {
                             <p className="text-zinc-500 mb-8 text-sm italic max-w-md mx-auto">
                                 Connections will appear here once you initiate contact with a terminal provider (Seller).
                             </p>
-                            <Button asChild className="font-bold uppercase tracking-widest text-xs h-12 px-10 bg-[#FFB800] text-black hover:bg-[#FFB800]/90">
+                            <Button asChild className="font-bold uppercase tracking-widest text-xs h-12 px-10 bg-[#FF6600] text-black hover:bg-[#FF6600]/90">
                                 <Link href="/listings">Initialize Marketplace</Link>
                             </Button>
                         </div>
@@ -206,7 +206,7 @@ export default function ChatsPage() {
                                     href={`/chats/${chat.id}`}
                                     className="block group transition-all hover:bg-white/5"
                                 >
-                                    <div className="flex items-center gap-5 p-6 transition-all border-l-2 border-transparent hover:border-l-[#FFB800]">
+                                    <div className="flex items-center gap-5 p-6 transition-all border-l-2 border-transparent hover:border-l-[#FF6600]">
                                         <div className="relative">
                                             <Avatar className="h-14 w-14 border border-white/10 shadow-md group-hover:scale-105 transition-transform">
                                                 <AvatarImage src={chat.other_user?.avatar_url || chat.other_user?.photo_url || ''} />
@@ -216,7 +216,7 @@ export default function ChatsPage() {
                                             </Avatar>
                                             {/* Unread indicator (simplified for now) */}
                                             {chat.unread_count! > 0 && (
-                                                <span className="absolute -top-1 -right-1 h-5 w-5 bg-[#FFB800] rounded-full border-2 border-black flex items-center justify-center text-[10px] font-black text-black shadow-lg">
+                                                <span className="absolute -top-1 -right-1 h-5 w-5 bg-[#FF6600] rounded-full border-2 border-black flex items-center justify-center text-[10px] font-black text-black shadow-lg">
                                                     {chat.unread_count}
                                                 </span>
                                             )}
@@ -224,7 +224,7 @@ export default function ChatsPage() {
                                         <div className="flex-1 min-w-0 py-1">
                                             <div className="flex items-center justify-between mb-1.5">
                                                 <div className="flex items-center gap-2 overflow-hidden">
-                                                    <h3 className="font-black italic uppercase tracking-tighter text-base truncate text-white group-hover:text-[#FFB800] transition-colors">
+                                                    <h3 className="font-black italic uppercase tracking-tighter text-base truncate text-white group-hover:text-[#FF6600] transition-colors">
                                                         {chat.other_user?.display_name || 'Unknown User'}
                                                     </h3>
                                                     {['dealer', 'student_seller'].includes(chat.other_user?.role as any) && (
@@ -242,7 +242,7 @@ export default function ChatsPage() {
 
                                             {chat.listing_title && (
                                                 <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1 flex items-center gap-1">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-[#FFB800] inline-block"></span>
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-[#FF6600] inline-block"></span>
                                                     Re: {chat.listing_title}
                                                 </p>
                                             )}

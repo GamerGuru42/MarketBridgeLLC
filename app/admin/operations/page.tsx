@@ -73,7 +73,7 @@ export default function OperationsAdminPage() {
             value: stats.pendingVerifications,
             label: 'Dealers Pending',
             icon: Users,
-            color: 'text-[#FFB800]',
+            color: 'text-[#FF6600]',
             href: '/admin/users'
         },
         {
@@ -103,7 +103,7 @@ export default function OperationsAdminPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-black text-white p-6 md:p-12 font-sans selection:bg-[#FFB800] selection:text-black">
+        <div className="min-h-screen bg-black text-white p-6 md:p-12 font-sans selection:bg-[#FF6600] selection:text-black">
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
@@ -111,7 +111,7 @@ export default function OperationsAdminPage() {
                 <div className="flex flex-col md:flex-row justify-between items-end border-b border-white/10 pb-6">
                     <div>
                         <div className="flex items-center gap-3 mb-2">
-                            <Activity className="h-5 w-5 text-[#FFB800]" />
+                            <Activity className="h-5 w-5 text-[#FF6600]" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 font-heading">Central Command</span>
                         </div>
                         <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading">
@@ -123,7 +123,7 @@ export default function OperationsAdminPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {opsCards.map((card) => (
                         <Link key={card.title} href={card.href} className="group">
-                            <div className="glass-card p-6 h-full border border-white/10 hover:border-[#FFB800]/50 transition-all bg-zinc-900/20 group-hover:bg-zinc-900/40">
+                            <div className="glass-card p-6 h-full border border-white/10 hover:border-[#FF6600]/50 transition-all bg-zinc-900/20 group-hover:bg-zinc-900/40">
                                 <div className="flex justify-between items-start mb-4">
                                     <div className={`p-3 rounded-lg bg-black border border-white/10 ${card.color}`}>
                                         <card.icon className="h-6 w-6" />

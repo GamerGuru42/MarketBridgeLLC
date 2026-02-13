@@ -115,7 +115,7 @@ export default function DisputePage() {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center min-h-screen bg-black text-[#FFB800]">
+            <div className="flex justify-center items-center min-h-screen bg-black text-[#FF6600]">
                 <Loader2 className="h-8 w-8 animate-spin" />
                 <span className="ml-3 font-mono text-sm uppercase tracking-widest">Accessing Secure Records...</span>
             </div>
@@ -158,7 +158,7 @@ export default function DisputePage() {
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
             <div className="max-w-2xl mx-auto relative z-10">
-                <Button variant="ghost" asChild className="mb-8 pl-0 hover:bg-transparent hover:text-[#FFB800] transition-colors group">
+                <Button variant="ghost" asChild className="mb-8 pl-0 hover:bg-transparent hover:text-[#FF6600] transition-colors group">
                     <Link href="/orders" className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-zinc-500">
                         <ArrowLeft className="h-3 w-3 group-hover:-translate-x-1 transition-transform" /> Abort Sequence
                     </Link>

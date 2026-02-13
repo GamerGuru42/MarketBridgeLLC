@@ -5,7 +5,7 @@
 @layer base {
   :root {
     --radius: 1rem;
-    /* MarketBridge Revamp (Pure Black & Gold) */
+    /* MarketBridge Revamp (Pure Black & Vibrant Orange) */
     --background: 0 0% 0%;
     --foreground: 0 0% 100%;
 
@@ -15,7 +15,7 @@
     --popover: 0 0% 6%;
     --popover-foreground: 0 0% 100%;
 
-    --primary: 38 100% 50%;
+    --primary: 28 100% 50%;
     --primary-foreground: 0 0% 0%;
 
     --secondary: 0 0% 10%;
@@ -24,17 +24,17 @@
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 65%;
 
-    --accent: 38 100% 50%;
-    --accent-foreground: 38 100% 50%;
+    --accent: 28 100% 50%;
+    --accent-foreground: 28 100% 50%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 0 0% 100%;
     --input: 0 0% 100%;
-    --ring: 38 100% 50%;
+    --ring: 28 100% 50%;
 
-    --chart-1: 38 100% 50%;
+    --chart-1: 28 100% 50%;
     --chart-2: 45 90% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 20 70% 50%;
@@ -42,12 +42,12 @@
 
     --sidebar-background: 0 0% 0%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 38 100% 50%;
+    --sidebar-primary: 28 100% 50%;
     --sidebar-primary-foreground: 0 0% 0%;
     --sidebar-accent: 0 0% 100%;
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 0 0% 100%;
-    --sidebar-ring: 38 100% 50%;
+    --sidebar-ring: 28 100% 50%;
   }
 
   .dark {
@@ -57,19 +57,19 @@
     --card-foreground: 0 0% 100%;
     --popover: 0 0% 6%;
     --popover-foreground: 0 0% 100%;
-    --primary: 38 100% 50%;
+    --primary: 28 100% 50%;
     --primary-foreground: 0 0% 0%;
     --secondary: 0 0% 10%;
     --secondary-foreground: 0 0% 100%;
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 65%;
-    --accent: 38 100% 50%;
-    --accent-foreground: 38 100% 50%;
+    --accent: 28 100% 50%;
+    --accent-foreground: 28 100% 50%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 100%;
     --input: 0 0% 100%;
-    --ring: 38 100% 50%;
+    --ring: 28 100% 50%;
   }
 }
 
@@ -109,18 +109,19 @@
   }
 
   .text-glow {
-    text-shadow: 0 0 30px hsla(38, 100%, 50%, 0.6);
+    text-shadow: 0 0 30px hsla(28, 100%, 50%, 0.6);
   }
 
   .bg-gold-gradient {
-    background: linear-gradient(135deg, #FFB800 0%, #FF9500 100%);
+    /* Kept name for compatibility, updated to Orange */
+    background: linear-gradient(135deg, #FF6600 0%, #FF4500 100%);
   }
 
   .gold-blur {
     position: absolute;
     width: 600px;
     height: 600px;
-    background: radial-gradient(circle, hsla(38, 100%, 50%, 0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, hsla(28, 100%, 50%, 0.1) 0%, transparent 70%);
     filter: blur(100px);
     z-index: -1;
     pointer-events: none;
@@ -131,7 +132,7 @@
   }
 
   .glow-on-hover:hover {
-    box-shadow: 0 0 20px hsla(38, 100%, 50%, 0.3);
+    box-shadow: 0 0 20px hsla(28, 100%, 50%, 0.3);
     transform: translateY(-2px);
   }
 

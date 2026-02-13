@@ -125,14 +125,14 @@ export default function AdminUsersPage() {
     const getRoleBadge = (role: string) => {
         switch (role) {
             case 'admin': return <Badge className="bg-red-500/10 text-red-500 border-red-500/20 font-mono uppercase tracking-widest text-[10px]">Admin</Badge>;
-            case 'ceo': return <Badge className="bg-[#FFB800]/10 text-[#FFB800] border-[#FFB800]/20 font-mono uppercase tracking-widest text-[10px]">CEO</Badge>;
+            case 'ceo': return <Badge className="bg-[#FF6600]/10 text-[#FF6600] border-[#FF6600]/20 font-mono uppercase tracking-widest text-[10px]">CEO</Badge>;
             case 'dealer': return <Badge className="bg-blue-500/10 text-blue-500 border-blue-500/20 font-mono uppercase tracking-widest text-[10px]">Dealer</Badge>;
             default: return <Badge variant="outline" className="text-zinc-500 border-zinc-800 font-mono uppercase tracking-widest text-[10px]">{role}</Badge>;
         }
     };
 
     return (
-        <div className="min-h-screen bg-black text-white p-6 md:p-12 font-sans selection:bg-[#FFB800] selection:text-black">
+        <div className="min-h-screen bg-black text-white p-6 md:p-12 font-sans selection:bg-[#FF6600] selection:text-black">
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
@@ -140,7 +140,7 @@ export default function AdminUsersPage() {
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-6">
                     <div>
                         <div className="flex items-center gap-3 mb-2">
-                            <Users className="h-5 w-5 text-[#FFB800]" />
+                            <Users className="h-5 w-5 text-[#FF6600]" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 font-heading">Network Administration</span>
                         </div>
                         <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading">
@@ -156,7 +156,7 @@ export default function AdminUsersPage() {
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                             <Input
                                 placeholder="Scan for identity signatures..."
-                                className="pl-10 bg-black border-white/10 text-white placeholder:text-zinc-700 h-10 focus:border-[#FFB800]/50"
+                                className="pl-10 bg-black border-white/10 text-white placeholder:text-zinc-700 h-10 focus:border-[#FF6600]/50"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -169,7 +169,7 @@ export default function AdminUsersPage() {
                                     size="sm"
                                     onClick={() => setFilterRole(role === 'All' ? null : role.toLowerCase())}
                                     className={`text-[10px] font-black uppercase tracking-widest h-10 ${filterRole === (role === 'All' ? null : role.toLowerCase())
-                                            ? 'bg-[#FFB800] text-black hover:bg-[#FFB800]/90'
+                                            ? 'bg-[#FF6600] text-black hover:bg-[#FF6600]/90'
                                             : 'border-white/10 text-zinc-400 hover:text-white hover:bg-white/5'
                                         }`}
                                 >
@@ -194,7 +194,7 @@ export default function AdminUsersPage() {
                                 {loading ? (
                                     <TableRow>
                                         <TableCell colSpan={5} className="h-64 text-center">
-                                            <Loader2 className="h-8 w-8 animate-spin mx-auto text-[#FFB800]" />
+                                            <Loader2 className="h-8 w-8 animate-spin mx-auto text-[#FF6600]" />
                                             <p className="mt-2 text-zinc-500 font-mono text-xs uppercase tracking-widest">Establishing Uplink...</p>
                                         </TableCell>
                                     </TableRow>
@@ -210,11 +210,11 @@ export default function AdminUsersPage() {
                                         <TableRow key={user.id} className="border-white/5 hover:bg-white/5 transition-colors group">
                                             <TableCell>
                                                 <div className="flex items-center gap-4">
-                                                    <div className="h-10 w-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center text-[#FFB800] font-bold shrink-0">
+                                                    <div className="h-10 w-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center text-[#FF6600] font-bold shrink-0">
                                                         {user.display_name?.[0]?.toUpperCase() || '?'}
                                                     </div>
                                                     <div className="flex flex-col min-w-0">
-                                                        <span className="font-bold text-white group-hover:text-[#FFB800] transition-colors text-sm truncate">
+                                                        <span className="font-bold text-white group-hover:text-[#FF6600] transition-colors text-sm truncate">
                                                             {user.display_name || 'Anonymous User'}
                                                         </span>
                                                         <span className="text-xs text-zinc-600 font-mono italic truncate">{user.email}</span>
@@ -261,7 +261,7 @@ export default function AdminUsersPage() {
                                                         )}
 
                                                         {user.role !== 'dealer' && user.role !== 'admin' && (
-                                                            <DropdownMenuItem onClick={() => handleAction(user.id, 'make_dealer')} className="gap-2 cursor-pointer focus:bg-[#FFB800]/10 focus:text-[#FFB800]">
+                                                            <DropdownMenuItem onClick={() => handleAction(user.id, 'make_dealer')} className="gap-2 cursor-pointer focus:bg-[#FF6600]/10 focus:text-[#FF6600]">
                                                                 <Briefcase className="h-4 w-4" /> Grant Dealer License
                                                             </DropdownMenuItem>
                                                         )}

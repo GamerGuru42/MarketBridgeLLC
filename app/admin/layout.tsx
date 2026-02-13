@@ -47,7 +47,7 @@ export default function AdminLayout({
 
     if (loading) return (
         <div className="min-h-screen flex items-center justify-center bg-black">
-            <Loader2 className="h-12 w-12 animate-spin text-[#FFB800]" />
+            <Loader2 className="h-12 w-12 animate-spin text-[#FF6600]" />
         </div>
     );
 
@@ -109,7 +109,7 @@ export default function AdminLayout({
             </div>
             <div className="flex-1 md:ml-72 flex flex-col relative">
                 {/* Global Background Blobs */}
-                <div className="fixed top-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#FFB800]/5 blur-[120px] rounded-full pointer-events-none" />
+                <div className="fixed top-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#FF6600]/5 blur-[120px] rounded-full pointer-events-none" />
 
                 <DashboardHeader title="MISSION CONTROL" sidebarItems={filteredItems} />
                 <main className="flex-1 p-6 md:p-10 relative z-10">
