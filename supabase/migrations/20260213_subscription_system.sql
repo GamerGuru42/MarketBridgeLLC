@@ -23,12 +23,13 @@ CREATE TABLE IF NOT EXISTS subscriptions (
 );
 
 -- Ensure one active subscription per user (partial unique index)
-CREATE UNIQUE INDEX unique_active_subscription ON subscriptions(user_id) WHERE status = 'active';
-
+DROP INDEX IF EXISTS unique_active_subscription;
+CREATE UNIQUE INDEX IF NOT EXISTS unique_active_subscription ON subscriptions(user_id) 
+WHERE status IN ('active', 'trialing', 'past_due');
 -- Indexes for performance
-CREATE INDEX idx_subscriptions_user_id ON subscriptions(user_id);
-CREATE INDEX idx_subscriptions_status ON subscriptions(status);
-CREATE INDEX idx_subscriptions_period_end ON subscriptions(current_period_end);
+CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id ON subscriptions(user_id);
+CREATE INDEX IF NOT EXISTS idx_subscriptions_status ON subscriptions(status);
+CREATE INDEX IF NOT EXISTS idx_subscriptions_period_end ON subscriptions(current_period_end);
 
 -- ============================================
 -- 2. PAYMENTS TABLE
@@ -58,11 +59,11 @@ CREATE TABLE IF NOT EXISTS payments (
 );
 
 -- Indexes for performance
-CREATE INDEX idx_payments_user_id ON payments(user_id);
-CREATE INDEX idx_payments_subscription_id ON payments(subscription_id);
-CREATE INDEX idx_payments_processor_reference ON payments(processor_reference);
-CREATE INDEX idx_payments_status ON payments(status);
-CREATE INDEX idx_payments_created_at ON payments(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_payments_user_id ON payments(user_id);
+CREATE INDEX IF NOT EXISTS idx_payments_subscription_id ON payments(subscription_id);
+CREATE INDEX IF NOT EXISTS idx_payments_processor_reference ON payments(processor_reference);
+CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);
+CREATE INDEX IF NOT EXISTS idx_payments_created_at ON payments(created_at DESC);
 
 -- ============================================
 -- 3. INVOICES TABLE
@@ -119,11 +120,13 @@ CREATE TABLE IF NOT EXISTS payment_methods (
 );
 
 -- Ensure only one default payment method per user (partial unique index)
+-- Ensure only one default payment method per user (partial unique index)
+DROP INDEX IF EXISTS unique_default_payment_method;
 CREATE UNIQUE INDEX unique_default_payment_method ON payment_methods(user_id) WHERE is_default = TRUE;
 
 -- Indexes for performance
-CREATE INDEX idx_payment_methods_user_id ON payment_methods(user_id);
-CREATE INDEX idx_payment_methods_processor_token ON payment_methods(processor_token);
+CREATE INDEX IF NOT EXISTS idx_payment_methods_user_id ON payment_methods(user_id);
+CREATE INDEX IF NOT EXISTS idx_payment_methods_processor_token ON payment_methods(processor_token);
 
 -- ============================================
 -- 5. SUBSCRIPTION PLANS TABLE (Reference Data)
@@ -193,7 +196,7 @@ CREATE TABLE IF NOT EXISTS promo_codes (
     CHECK (current_uses <= max_uses OR max_uses IS NULL)
 );
 
-CREATE INDEX idx_promo_codes_code ON promo_codes(code) WHERE is_active = TRUE;
+CREATE INDEX IF NOT EXISTS idx_promo_codes_code ON promo_codes(code) WHERE is_active = TRUE;
 
 -- ============================================
 -- 7. SUBSCRIPTION USAGE TABLE (For Analytics)
@@ -262,11 +265,18 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Apply trigger to all tables
+-- Apply trigger to all tables
+DROP TRIGGER IF EXISTS update_subscriptions_updated_at ON subscriptions;
 CREATE TRIGGER update_subscriptions_updated_at BEFORE UPDATE ON subscriptions FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_payments_updated_at ON payments;
 CREATE TRIGGER update_payments_updated_at BEFORE UPDATE ON payments FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_invoices_updated_at ON invoices;
 CREATE TRIGGER update_invoices_updated_at BEFORE UPDATE ON invoices FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_payment_methods_updated_at ON payment_methods;
 CREATE TRIGGER update_payment_methods_updated_at BEFORE UPDATE ON payment_methods FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_subscription_plans_updated_at ON subscription_plans;
 CREATE TRIGGER update_subscription_plans_updated_at BEFORE UPDATE ON subscription_plans FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_promo_codes_updated_at ON promo_codes;
 CREATE TRIGGER update_promo_codes_updated_at BEFORE UPDATE ON promo_codes FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Function to generate invoice number
@@ -301,11 +311,34 @@ ALTER TABLE payment_methods ENABLE ROW LEVEL SECURITY;
 ALTER TABLE subscription_usage ENABLE ROW LEVEL SECURITY;
 
 -- Policies: Users can only see their own data
-CREATE POLICY subscriptions_user_policy ON subscriptions FOR ALL USING (auth.uid() = user_id);
-CREATE POLICY payments_user_policy ON payments FOR ALL USING (auth.uid() = user_id);
-CREATE POLICY invoices_user_policy ON invoices FOR ALL USING (auth.uid() = user_id);
-CREATE POLICY payment_methods_user_policy ON payment_methods FOR ALL USING (auth.uid() = user_id);
-CREATE POLICY subscription_usage_user_policy ON subscription_usage FOR ALL USING (auth.uid() = user_id);
+-- Policies: Users can only see their own data
+DROP POLICY IF EXISTS "subscriptions_user_policy" ON subscriptions;
+CREATE POLICY "subscriptions_user_policy" ON subscriptions FOR ALL USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "payments_user_policy" ON payments;
+CREATE POLICY "payments_user_policy" ON payments FOR ALL USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "invoices_user_policy" ON invoices;
+CREATE POLICY "invoices_user_policy" ON invoices FOR ALL USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "payment_methods_user_policy" ON payment_methods;
+CREATE POLICY "payment_methods_user_policy" ON payment_methods FOR ALL USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "subscription_usage_user_policy" ON subscription_usage;
+CREATE POLICY "subscription_usage_user_policy" ON subscription_usage FOR ALL USING (auth.uid() = user_id);
+
+-- Admin Access Policies
+DROP POLICY IF EXISTS "Admins view all subscriptions" ON subscriptions;
+CREATE POLICY "Admins view all subscriptions" ON subscriptions 
+FOR ALL USING (
+    EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND (role = 'admin' OR email = 'bennyben@marketbridge.com'))
+);
+
+DROP POLICY IF EXISTS "Admins view all payments" ON payments;
+CREATE POLICY "Admins view all payments" ON payments 
+FOR ALL USING (
+    EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND (role = 'admin' OR email = 'bennyben@marketbridge.com'))
+);
 
 -- Policies: Everyone can read subscription plans
 CREATE POLICY subscription_plans_read_policy ON subscription_plans FOR SELECT USING (TRUE);
