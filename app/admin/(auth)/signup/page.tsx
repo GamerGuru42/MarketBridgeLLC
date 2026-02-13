@@ -120,17 +120,23 @@ export default function AdminSignupPage() {
                 // Refresh context
                 await refreshUser(activeUser.id);
 
-                // Determine destination
-                let targetPath = '/admin';
-                if (role === 'technical_admin') targetPath = '/admin/technical';
-                else if (role === 'operations_admin') targetPath = '/admin/operations';
-                else if (role === 'marketing_admin') targetPath = '/admin/marketing';
+                // Sign out immediately after creating account to force proper login
+                await supabase.auth.signOut();
 
-                console.log(`Redirecting new admin to: ${targetPath}`);
+                //Determine the correct login redirect based on role
+                let targetLoginPath = '/admin/login';
+                if (role === 'technical_admin') targetLoginPath = '/admin/login?dept=technical';
+                else if (role === 'operations_admin') targetLoginPath = '/admin/login?dept=operations';
+                else if (role === 'marketing_admin') targetLoginPath = '/admin/login?dept=marketing';
 
-                // Smooth transition using router
-                router.refresh(); // Sync server components
-                router.push(targetPath);
+                console.log(`Admin account created successfully. Redirecting to: ${targetLoginPath}`);
+
+                // Show success message
+                setError(''); // Clear any errors
+                alert(`✅ Admin account created successfully!\n\nYou can now log in with your credentials.`);
+
+                // Redirect to login page
+                router.push(targetLoginPath);
             }
         } catch (err: unknown) {
             console.error("Admin Signup Main Error:", err);

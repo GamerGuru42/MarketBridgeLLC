@@ -22,7 +22,8 @@ import {
     Loader2,
     Shield,
     Globe,
-    Cpu
+    Cpu,
+    TrendingUp
 } from 'lucide-react';
 import { TourGuide } from '@/components/tour-guide';
 import { cn } from '@/lib/utils';
@@ -86,6 +87,7 @@ export default function AdminPage() {
         { title: "Technical", href: "/admin/technical", icon: Cpu, color: "text-blue-400", label: "Infrastructure", status: "Status: Optimal", health: dashboardStats.techHealth },
         { title: "Operations", href: "/admin/operations", icon: Activity, color: "text-[#FFB800]", label: "Exchange Flux", status: `${dashboardStats.pendingOps} Pending Actions`, health: 85 },
         { title: "Marketing", href: "/admin/marketing", icon: Globe, color: "text-emerald-400", label: "Growth Vector", status: `${dashboardStats.marketingGrowth.toLocaleString()} Active Users`, health: 92 },
+        { title: "Revenue", href: "/admin/revenue", icon: TrendingUp, color: "text-green-400", label: "Fee Analytics", status: "5% Commission Active", health: 100 },
         { title: "Proposal", href: "/admin/proposals/new", icon: Zap, color: "text-orange-400", label: "Direct Memo", status: "Priority Channel", health: 100, isNew: true },
     ];
 
