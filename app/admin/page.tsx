@@ -177,6 +177,7 @@ export default function AdminPage() {
                                 {[
                                     { label: 'User Index', href: '/admin/users' },
                                     { label: 'Asset Ledger', href: '/admin/listings' },
+                                    { label: 'Order Verification', href: '/admin/orders' },
                                     { label: 'Resolution Node', href: '/admin/disputes' },
                                     { label: 'System Logs', href: '/admin/logs' }
                                 ].map(link => (

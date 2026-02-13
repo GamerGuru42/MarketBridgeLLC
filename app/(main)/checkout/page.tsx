@@ -5,21 +5,27 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
-import { MessageSquare, ShoppingBag, ShieldCheck, Zap, Globe, Cpu, Loader2, CreditCard, Wallet, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
-import { getFlutterwaveConfig, useFlutterwave } from '@/lib/flutterwave';
-import { initiateOPayCheckout } from '@/lib/opay';
-import { supabase } from '@/lib/supabase';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ShieldCheck, Zap, Loader2, ArrowLeft, Building2, UploadCloud, CheckCircle2 } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
+
+const supabase = createClient();
 
 export default function CheckoutPage() {
     const router = useRouter();
     const { user, loading: authLoading } = useAuth();
     const { items, total, clearCart } = useCart();
-    const { initializePayment: initFlutterwave } = useFlutterwave();
 
     const [actionLoading, setActionLoading] = useState(false);
-    const [paymentProvider, setPaymentProvider] = useState<'card' | 'transfer' | 'opay'>('card');
+    const [uploading, setUploading] = useState(false);
+
+    // Form State
+    const [paymentRef, setPaymentRef] = useState('');
+    const [proofUrl, setProofUrl] = useState<string | null>(null);
+    const [agreed, setAgreed] = useState(false);
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -30,80 +36,77 @@ export default function CheckoutPage() {
         }
     }, [user, authLoading, items, router]);
 
-    const handleConfirmPayment = async () => {
-        if (!user || items.length === 0) return;
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || e.target.files.length === 0) return;
 
-        setActionLoading(true);
-        const txRef = `MB-CART-${Date.now()}-${user.id.slice(0, 5)}`;
-
-        const onSuccess = async (response: any) => {
-            try {
-                // Verify transaction via API
-                const verifyRes = await fetch('/api/verify-transaction', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        transaction_id: response.transaction_id,
-                        tx_ref: txRef,
-                        is_cart: true,
-                        items: items
-                    })
-                });
-
-                if (!verifyRes.ok) throw new Error('Payment verification protocols failed.');
-
-                clearCart();
-                alert('Secure cart acquisition successful!');
-                router.push('/orders');
-            } catch (err: unknown) {
-                console.error('Error verifying cart order:', err);
-                alert('Payment detected but verification timed out. Support notified.');
-            } finally {
-                setActionLoading(false);
-            }
-        };
-
-        const onCancel = () => {
-            setActionLoading(false);
-        };
+        setUploading(true);
+        const file = e.target.files[0];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `${user?.id}/${fileName}`;
 
         try {
-            // For now, we simulate a single consolidated order or handle via backend
-            // In a real flow, we might want to split orders per dealer
+            const { error: uploadError } = await supabase.storage
+                .from('receipts')
+                .upload(filePath, file);
 
-            if (paymentProvider === 'opay') {
-                const res = await initiateOPayCheckout({
-                    amount: total,
-                    email: user.email,
-                    reference: txRef,
-                    description: `Escrow release for ${items.length} assets`
-                });
-                if (!res.success) {
-                    alert(res.message);
-                    setActionLoading(false);
-                }
-            } else {
-                const flwOptions = paymentProvider === 'card' ? 'card' : 'banktransfer';
-                const config = getFlutterwaveConfig(
-                    txRef,
-                    total,
-                    user.email || '',
-                    user.displayName || 'Student Operative',
-                    user.phone_number || '08000000000',
-                    onSuccess,
-                    onCancel,
-                    flwOptions
-                );
+            if (uploadError) throw uploadError;
 
-                const started = await initFlutterwave(config);
-                if (!started) {
-                    alert('Gateway linkage failed.');
-                    setActionLoading(false);
-                }
+            const { data } = supabase.storage
+                .from('receipts')
+                .getPublicUrl(filePath);
+
+            setProofUrl(data.publicUrl);
+        } catch (error) {
+            console.error('Error uploading receipt:', error);
+            alert('Failed to upload receipt. Please try again.');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleConfirmPayment = async () => {
+        if (!user || items.length === 0) return;
+        if (!paymentRef || !proofUrl || !agreed) {
+            alert('Please complete all payment verification steps.');
+            return;
+        }
+
+        setActionLoading(true);
+
+        try {
+            const response = await fetch('/api/orders/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: user.id,
+                    items: items.map(item => ({
+                        listingId: item.listingId,
+                        quantity: item.quantity,
+                        price: item.price,
+                        dealerId: item.dealerId
+                    })),
+                    totalAmount: total,
+                    proofUrl,
+                    paymentRef
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Order creation failed');
             }
-        } catch (err: unknown) {
+
+            const data = await response.json();
+
+            clearCart();
+            alert('Order placed successfully! Pending admin verification.');
+            router.push(`/orders?new=${data.orderId}`);
+
+        } catch (err: any) {
             console.error('Checkout error:', err);
-            alert('Acquisition protocol initialization failed.');
+            alert(err.message || 'Failed to place order. Please try again.');
+        } finally {
             setActionLoading(false);
         }
     };
@@ -127,70 +130,102 @@ export default function CheckoutPage() {
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading leading-tight">Secure Handshake Protocol</span>
                     </div>
                     <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
-                        Finalize <span className="text-[#FFB800]">Escrow</span>
+                        Order <span className="text-[#FFB800]">Verification</span>
                     </h1>
                     <p className="text-zinc-500 font-medium max-w-2xl mx-auto italic lowercase leading-relaxed">
-                        Establishing <span className="text-white font-bold">Smart Escrow Mesh</span> for your staged assets.
-                        Funds will be held securely until the physical verification handshake is completed on campus.
+                        To guarantee 0% transaction fees, please transfer the exact amount directly to our secure escrow account.
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-                    {/* Items & Options */}
+                    {/* Bank Details & Upload Form */}
                     <div className="lg:col-span-7 space-y-8">
                         <div className="glass-card rounded-[3rem] p-10 border-white/5 space-y-10">
-                            <div>
-                                <h3 className="text-xl font-black uppercase tracking-tight font-heading italic mb-6">Staged Assets</h3>
-                                <div className="space-y-4">
-                                    {items.map(item => (
-                                        <div key={item.listingId} className="flex items-center gap-6 p-4 rounded-2xl bg-white/5 border border-white/5">
-                                            <div className="h-12 w-12 rounded-lg bg-zinc-900 overflow-hidden shrink-0">
-                                                {item.image && <img src={item.image} className="w-full h-full object-cover opacity-50" />}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-[#FFB800] mb-0.5 truncate">{item.title}</p>
-                                                <p className="text-[9px] font-bold text-zinc-500 uppercase">Unit Acquisition Verified</p>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="text-sm font-black italic tracking-tighter">₦{item.price.toLocaleString()}</p>
-                                            </div>
-                                        </div>
-                                    ))}
+
+                            {/* Bank Details Card */}
+                            <div className="bg-zinc-900 border border-white/10 rounded-3xl p-8 relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 p-6 opacity-10">
+                                    <Building2 className="h-32 w-32 text-white" />
+                                </div>
+                                <div className="relative z-10 space-y-4">
+                                    <h3 className="text-xs font-black uppercase tracking-widest text-[#FFB800]">MarketBridge Escrow Account</h3>
+                                    <div className="space-y-1">
+                                        <p className="text-3xl font-black tracking-tighter text-white">0123456789</p>
+                                        <p className="text-sm font-bold text-zinc-400">GTBank PLC</p>
+                                    </div>
+                                    <div className="pt-4 border-t border-white/5">
+                                        <p className="text-[10px] font-mono text-zinc-500 uppercase">Account Name</p>
+                                        <p className="text-sm font-bold text-white">MarketBridge Escrow</p>
+                                    </div>
                                 </div>
                             </div>
 
                             <Separator className="bg-white/5" />
 
-                            <div>
-                                <h3 className="text-xl font-black uppercase tracking-tight font-heading italic mb-6">Protocol Channel</h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    {[
-                                        { id: 'card', label: 'Credit/Debit', icon: CreditCard, desc: 'Instant Clearance' },
-                                        { id: 'transfer', label: 'Direct Wire', icon: Globe, desc: 'Lekki-Hub Route' },
-                                        { id: 'opay', label: 'OPay App', icon: Wallet, desc: 'Mobile Linkage' }
-                                    ].map(method => (
-                                        <button
-                                            key={method.id}
-                                            onClick={() => setPaymentProvider(method.id as any)}
-                                            className={cn(
-                                                "p-6 rounded-3xl border transition-all text-left group",
-                                                paymentProvider === method.id
-                                                    ? "bg-[#FFB800] border-[#FFB800] text-black"
-                                                    : "bg-white/5 border-white/10 text-white hover:bg-white/10"
+                            {/* Verification Form */}
+                            <div className="space-y-6">
+                                <h3 className="text-xl font-black uppercase tracking-tight font-heading italic">Proof of Payment</h3>
+
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="ref" className="text-xs uppercase font-bold text-zinc-500">Transaction Reference / Sender Name</Label>
+                                        <Input
+                                            id="ref"
+                                            value={paymentRef}
+                                            onChange={(e) => setPaymentRef(e.target.value)}
+                                            placeholder="e.g. Ref: 123456789 or John Doe"
+                                            className="bg-black border-white/10 h-12 text-white focus:border-[#FFB800]"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label className="text-xs uppercase font-bold text-zinc-500">Upload Receipt (Screenshot)</Label>
+                                        <div className="border-2 border-dashed border-white/10 rounded-xl p-8 text-center hover:border-[#FFB800]/50 transition-colors cursor-pointer relative">
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleFileUpload}
+                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                                disabled={uploading}
+                                            />
+                                            {uploading ? (
+                                                <Loader2 className="h-8 w-8 text-[#FFB800] animate-spin mx-auto" />
+                                            ) : proofUrl ? (
+                                                <div className="flex flex-col items-center gap-2">
+                                                    <CheckCircle2 className="h-8 w-8 text-green-500" />
+                                                    <p className="text-xs font-bold text-green-500">Receipt Uploaded</p>
+                                                    <a href={proofUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] underline text-zinc-500 z-10 relative">View</a>
+                                                </div>
+                                            ) : (
+                                                <div className="flex flex-col items-center gap-2 text-zinc-500">
+                                                    <UploadCloud className="h-8 w-8" />
+                                                    <p className="text-xs font-bold">Click to upload screenshot</p>
+                                                </div>
                                             )}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-3 pt-4">
+                                        <div
+                                            className={cn(
+                                                "h-5 w-5 rounded border flex items-center justify-center cursor-pointer transition-colors",
+                                                agreed ? "bg-[#FFB800] border-[#FFB800]" : "border-zinc-700 hover:border-zinc-500"
+                                            )}
+                                            onClick={() => setAgreed(!agreed)}
                                         >
-                                            <method.icon className={cn("h-6 w-6 mb-4 transition-transform group-hover:scale-110", paymentProvider === method.id ? "text-black" : "text-[#FFB800]")} />
-                                            <p className="text-[10px] font-black uppercase tracking-widest leading-none mb-1">{method.label}</p>
-                                            <p className={cn("text-[8px] font-bold uppercase italic", paymentProvider === method.id ? "text-black/60" : "text-zinc-500")}>{method.desc}</p>
-                                        </button>
-                                    ))}
+                                            {agreed && <CheckCircle2 className="h-3.5 w-3.5 text-black" />}
+                                        </div>
+                                        <p className="text-xs text-zinc-500 cursor-pointer select-none" onClick={() => setAgreed(!agreed)}>
+                                            I confirm I have transferred <span className="text-white font-bold">₦{total.toLocaleString()}</span> to the account above.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <div className="flex items-center justify-between px-8">
                             <Button variant="ghost" onClick={() => router.back()} className="text-zinc-600 hover:text-white text-[10px] font-black uppercase tracking-widest">
-                                <ArrowLeft className="mr-2 h-4 w-4" /> Modify Assets
+                                <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
                             </Button>
                         </div>
                     </div>
@@ -204,28 +239,24 @@ export default function CheckoutPage() {
 
                             <div className="relative z-10 space-y-10">
                                 <div className="space-y-1">
-                                    <h3 className="text-2xl font-black uppercase tracking-tighter font-heading italic">Acquisition Ledger</h3>
-                                    <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest italic">Node-to-Node Secure Mapping</p>
+                                    <h3 className="text-2xl font-black uppercase tracking-tighter font-heading italic">Order Summary</h3>
+                                    <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest italic">Manual Verification Node</p>
                                 </div>
 
                                 <div className="space-y-6">
                                     <div className="flex justify-between items-center text-zinc-400">
-                                        <span className="text-[10px] font-black uppercase tracking-widest font-heading">Asset Sum</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest font-heading">Subtotal</span>
                                         <span className="text-sm font-bold">₦{total.toLocaleString()}</span>
                                     </div>
                                     <div className="flex justify-between items-center text-zinc-400">
-                                        <span className="text-[10px] font-black uppercase tracking-widest font-heading">Escrow Buffer</span>
-                                        <span className="text-sm font-black text-[#00FF85] uppercase tracking-tighter italic">DIRECTED (₦0)</span>
-                                    </div>
-                                    <div className="flex justify-between items-center text-zinc-400">
-                                        <span className="text-[10px] font-black uppercase tracking-widest font-heading">Campus Rating</span>
-                                        <span className="text-sm font-black text-[#00FF85] uppercase tracking-tighter italic">A+ SECURE</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest font-heading">Fees (0%)</span>
+                                        <span className="text-sm font-black text-[#00FF85] uppercase tracking-tighter italic">WAIVED</span>
                                     </div>
 
                                     <Separator className="bg-white/5" />
 
                                     <div className="flex flex-col space-y-2">
-                                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] font-heading">Total Authorization Request</span>
+                                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] font-heading">Total To Send</span>
                                         <span className="text-5xl font-black text-[#FFB800] tracking-tighter italic font-heading">₦{total.toLocaleString()}</span>
                                     </div>
                                 </div>
@@ -233,40 +264,44 @@ export default function CheckoutPage() {
                                 <div className="pt-6">
                                     <Button
                                         onClick={handleConfirmPayment}
-                                        disabled={actionLoading}
-                                        className="w-full h-20 bg-[#FFB800] text-black hover:bg-[#FFD700] rounded-2xl font-black uppercase tracking-[0.2em] transition-all font-heading shadow-[0_15px_45px_rgba(255,184,0,0.3)] border-none relative group scale-100 hover:scale-[1.02]"
+                                        disabled={actionLoading || uploading || !proofUrl || !paymentRef || !agreed}
+                                        className="w-full h-20 bg-[#FFB800] text-black hover:bg-[#FFD700] rounded-2xl font-black uppercase tracking-[0.2em] transition-all font-heading shadow-[0_15px_45px_rgba(255,184,0,0.3)] border-none relative group scale-100 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {actionLoading ? (
                                             <Loader2 className="h-6 w-6 animate-spin" />
                                         ) : (
                                             <>
-                                                Initialize Handshake
+                                                Verify & Place Order
                                                 <Zap className="ml-3 h-4 w-4 fill-black group-hover:scale-125 transition-transform" />
                                             </>
                                         )}
                                     </Button>
                                     <p className="text-[8px] text-zinc-600 font-bold uppercase tracking-widest text-center mt-6 italic">
-                                        By initializing, you authorize the Smart Escrow Mesh to hold funds under NDPA 2023 compliance.
+                                        Your order will be processed once payment is confirmed by Admin.
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Security Badge */}
-                        <div className="glass-card p-6 rounded-3xl border-white/5 flex items-center gap-6">
-                            <div className="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
-                                <ShieldCheck className="h-5 w-5 text-emerald-500" />
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-black text-white uppercase tracking-widest italic leading-none mb-1">Handshake Protection</p>
-                                <p className="text-[8px] font-bold text-zinc-600 uppercase">Funds only released after physical verification</p>
+                        {/* Items Preview (Compact) */}
+                        <div className="glass-card p-6 rounded-3xl border-white/5 space-y-4">
+                            <h4 className="text-xs font-black uppercase tracking-widest text-zinc-500">Items ({items.length})</h4>
+                            <div className="space-y-3 max-h-60 overflow-y-auto pr-2">
+                                {items.map(item => (
+                                    <div key={item.listingId} className="flex items-center gap-4">
+                                        <div className="h-10 w-10 rounded bg-zinc-800 overflow-hidden shrink-0">
+                                            {item.image && <img src={item.image} className="w-full h-full object-cover" />}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-[10px] font-bold text-white truncate">{item.title}</p>
+                                            <p className="text-[9px] text-zinc-500">Qty: {item.quantity}</p>
+                                        </div>
+                                        <p className="text-xs font-bold text-[#FFB800]">₦{item.price.toLocaleString()}</p>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div className="mt-20 text-center">
-                    <p className="text-[9px] font-black text-zinc-800 uppercase tracking-[0.5em] font-heading italic">MarketBridge Handshake v2.1 // Authorized Nodes Only</p>
                 </div>
             </div>
         </div>
@@ -276,4 +311,3 @@ export default function CheckoutPage() {
 const Separator = ({ className }: { className?: string }) => (
     <div className={cn("h-[1px] w-full", className)} />
 );
-
