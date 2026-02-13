@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
+import { startConversation } from '@/lib/chat';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -134,19 +135,16 @@ export default function OrdersPage() {
             if (error) throw error;
 
             // Send notification message to seller
-            const { data: chatData } = await supabase
-                .from('chats')
-                .select('id')
-                .contains('participants', [user!.id, selectedOrder.seller_id])
-                .eq('listing_id', selectedOrder.listing_id)
-                .single();
+            try {
+                const conversationId = await startConversation(user!.id, selectedOrder.seller_id, selectedOrder.listing_id);
 
-            if (chatData) {
                 await supabase.from('messages').insert({
-                    chat_id: chatData.id,
+                    conversation_id: conversationId,
                     sender_id: user!.id,
                     content: `✅ Order #${selectedOrder.id.slice(-8).toUpperCase()} confirmed! Payment of ₦${selectedOrder.amount.toLocaleString()} has been released.`,
                 });
+            } catch (chatErr) {
+                console.error('Failed to notify seller:', chatErr);
             }
 
             setShowConfirmDialog(false);
@@ -157,6 +155,17 @@ export default function OrdersPage() {
             alert('Failed to confirm delivery. Please try again.');
         } finally {
             setConfirmingOrder(null);
+        }
+    };
+
+    // ... (getStatusIcon, getStatusVariant, getStatusText skipped as they are unchanged)
+
+    const openChat = async (order: Order) => {
+        try {
+            const conversationId = await startConversation(user!.id, order.seller_id, order.listing_id);
+            router.push(`/chats/${conversationId}`);
+        } catch (err) {
+            console.error('Failed to open chat:', err);
         }
     };
 
@@ -217,22 +226,7 @@ export default function OrdersPage() {
         }
     };
 
-    const openChat = async (order: Order) => {
-        try {
-            const { data: chatData } = await supabase
-                .from('chats')
-                .select('id')
-                .contains('participants', [user!.id, order.seller_id])
-                .eq('listing_id', order.listing_id)
-                .single();
 
-            if (chatData) {
-                router.push(`/chats/${chatData.id}`);
-            }
-        } catch (err) {
-            console.error('Failed to open chat:', err);
-        }
-    };
 
     if (authLoading || loading) {
         return (
@@ -440,8 +434,24 @@ export default function OrdersPage() {
                                                 </div>
                                             </div>
                                         )}
-                                        {/* Order Notes */}
-                                        {order.notes && (
+                                        {order.status === 'disputed' && (
+                                            <div className="border-t pt-3">
+                                                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
+                                                    <div className="flex items-start gap-2">
+                                                        <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5" />
+                                                        <div>
+                                                            <p className="text-sm font-medium text-red-800 dark:text-red-200">
+                                                                Dispute Active
+                                                            </p>
+                                                            <p className="text-xs text-red-700 dark:text-red-300 mt-1">
+                                                                This order is currently under review by our Trust & Safety team. Funds are held securely until resolution.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {/* Order Notes */}{order.notes && (
                                             <div className="border-t pt-3">
                                                 <p className="text-sm font-medium mb-1">Order Notes</p>
                                                 <p className="text-sm text-muted-foreground">{order.notes}</p>

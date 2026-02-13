@@ -11,6 +11,7 @@ import { useCart } from '@/contexts/CartContext';
 import { Loader2, MapPin, MessageCircle, ShoppingCart, ArrowLeft, ShieldCheck, Phone, CreditCard, Zap, AlertTriangle, Box, Activity, Store, Star } from 'lucide-react';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
+import { startConversation } from '@/lib/chat';
 import { ReviewsSection } from '@/components/ReviewsSection';
 import { useFlutterwave, getFlutterwaveConfig } from '@/lib/flutterwave';
 import { initiateOPayCheckout } from '@/lib/opay';
@@ -377,29 +378,10 @@ export default function ListingDetailPage() {
 
         setActionLoading(true);
         try {
-            const { data: existingChats } = await supabase
-                .from('chats')
-                .select('id')
-                .contains('participants', [user.id, listing.dealer.id])
-                .eq('listing_id', listing.id)
-                .limit(1);
-
-            if (existingChats && existingChats.length > 0) {
-                router.push(`/chats/${existingChats[0].id}`);
-            } else {
-                const { data: newChat, error } = await supabase
-                    .from('chats')
-                    .insert({
-                        participants: [user.id, listing.dealer.id],
-                        listing_id: listing.id,
-                    })
-                    .select()
-                    .single();
-
-                if (error) throw error;
-                router.push(`/chats/${newChat.id}`);
-            }
+            const conversationId = await startConversation(user.id, listing.dealer.id, listing.id);
+            router.push(`/chats/${conversationId}`);
         } catch (err: unknown) {
+            console.error('Error starting chat:', err);
             const message = err instanceof Error ? err.message : 'Failed to start chat';
             alert(message);
         } finally {

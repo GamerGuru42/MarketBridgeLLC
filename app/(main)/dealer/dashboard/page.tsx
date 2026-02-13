@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { createClient } from '@/lib/supabase/client';
+import { startConversation } from '@/lib/chat';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -262,14 +263,9 @@ export default function DealerDashboardPage() {
 
             const order = orders.find(o => o.id === orderId);
             if (order) {
-                const { data: chatData } = await supabase
-                    .from('chats')
-                    .select('id')
-                    .contains('participants', [user!.id, order.buyer_id])
-                    .eq('listing_id', order.listing_id)
-                    .single();
+                try {
+                    const conversationId = await startConversation(user!.id, order.buyer_id, order.listing_id);
 
-                if (chatData) {
                     let message = '';
                     if (newStatus === 'confirmed') {
                         message = `📦 Your order #${orderId.slice(-8).toUpperCase()} has been marked as shipped!`;
@@ -279,11 +275,13 @@ export default function DealerDashboardPage() {
 
                     if (message) {
                         await supabase.from('messages').insert({
-                            chat_id: chatData.id,
+                            conversation_id: conversationId,
                             sender_id: user!.id,
                             content: message,
                         });
                     }
+                } catch (chatErr) {
+                    console.error('Failed to notify buyer via chat:', chatErr);
                 }
             }
 
@@ -298,16 +296,8 @@ export default function DealerDashboardPage() {
 
     const openChat = async (order: Order) => {
         try {
-            const { data: chatData } = await supabase
-                .from('chats')
-                .select('id')
-                .contains('participants', [user!.id, order.buyer_id])
-                .eq('listing_id', order.listing_id)
-                .single();
-
-            if (chatData) {
-                router.push(`/chats/${chatData.id}`);
-            }
+            const conversationId = await startConversation(user!.id, order.buyer_id, order.listing_id);
+            router.push(`/chats/${conversationId}`);
         } catch (err) {
             console.error('Failed to open chat:', err);
         }
