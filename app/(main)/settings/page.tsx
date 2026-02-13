@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, CheckCircle, User, Building, Shield, Bell, MapPin, Phone, Mail } from 'lucide-react';
+import { Loader2, CheckCircle, User, Building, Shield, Bell, MapPin, Phone, Mail, Banknote, Landmark } from 'lucide-react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NIGERIAN_STATES } from '@/lib/constants';
 
@@ -26,6 +26,12 @@ export default function SettingsPage() {
         storeType: '',
     });
 
+    const [bankData, setBankData] = useState({
+        bankName: '',
+        accountNumber: '',
+        accountName: ''
+    });
+
     useEffect(() => {
         if (user) {
             setFormData({
@@ -36,6 +42,24 @@ export default function SettingsPage() {
                 businessName: user.businessName || '',
                 storeType: user.storeType || '',
             });
+
+            // Fetch payout details
+            const fetchBankDetails = async () => {
+                const { data } = await supabase
+                    .from('users')
+                    .select('bank_name, account_number, account_name')
+                    .eq('id', user.id)
+                    .single();
+
+                if (data) {
+                    setBankData({
+                        bankName: data.bank_name || '',
+                        accountNumber: data.account_number || '',
+                        accountName: data.account_name || ''
+                    });
+                }
+            };
+            fetchBankDetails();
         }
     }, [user]);
 
@@ -75,6 +99,33 @@ export default function SettingsPage() {
             console.error('Update settings error:', err);
             const message = err instanceof Error ? err.message : 'Failed to update settings';
             alert(message);
+        } finally {
+            setUpdating(false);
+        }
+    };
+
+    const handleUpdateBank = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!user) return;
+        setUpdating(true);
+        setSuccessMessage('');
+        try {
+            const { error } = await supabase
+                .from('users')
+                .update({
+                    bank_name: bankData.bankName,
+                    account_number: bankData.accountNumber,
+                    account_name: bankData.accountName,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', user.id);
+
+            if (error) throw error;
+            setSuccessMessage('Payout details updated!');
+            setTimeout(() => setSuccessMessage(''), 3000);
+        } catch (err: any) {
+            console.error('Update bank error:', err);
+            alert(err.message || 'Failed to update payout details');
         } finally {
             setUpdating(false);
         }
@@ -131,10 +182,16 @@ export default function SettingsPage() {
                             Identity
                         </TabsTrigger>
                         {['dealer', 'student_seller'].includes(user.role) && (
-                            <TabsTrigger value="business" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FFB800] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
-                                <Building className="h-3.5 w-3.5" />
-                                Business
-                            </TabsTrigger>
+                            <>
+                                <TabsTrigger value="business" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FFB800] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
+                                    <Building className="h-3.5 w-3.5" />
+                                    Business
+                                </TabsTrigger>
+                                <TabsTrigger value="financials" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FFB800] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
+                                    <Banknote className="h-3.5 w-3.5" />
+                                    Payouts
+                                </TabsTrigger>
+                            </>
                         )}
                         <TabsTrigger value="security" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FFB800] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
                             <Shield className="h-3.5 w-3.5" />
@@ -146,7 +203,7 @@ export default function SettingsPage() {
                         </TabsTrigger>
                     </TabsList>
 
-                    {/* Identity Tab */}
+                    {/* Identity Tab (Standard) */}
                     <TabsContent value="profile" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
                             <CardHeader className="p-8 pb-4">
@@ -227,7 +284,7 @@ export default function SettingsPage() {
                         </Card>
                     </TabsContent>
 
-                    {/* Business Tab */}
+                    {/* Business Tab (Sellers Only) */}
                     {['dealer', 'student_seller'].includes(user.role) && (
                         <TabsContent value="business" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
@@ -268,6 +325,67 @@ export default function SettingsPage() {
                                     <Button onClick={handleUpdateProfile} disabled={updating} className="h-14 px-10 bg-[#FFB800] hover:bg-[#FFD700] text-black font-black uppercase tracking-widest rounded-2xl border-none">
                                         {updating ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <CheckCircle className="mr-3 h-5 w-5" />}
                                         Sync Assets
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        </TabsContent>
+                    )}
+
+                    {/* Financials / Payouts Tab (Sellers Only) */}
+                    {['dealer', 'student_seller'].includes(user.role) && (
+                        <TabsContent value="financials" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
+                                <CardHeader className="p-8 pb-4">
+                                    <CardTitle className="text-xl font-black uppercase tracking-tight">Payout Matrix</CardTitle>
+                                    <CardDescription className="text-zinc-500 uppercase text-[9px] font-bold tracking-widest">Designated transfer coordinates for revenue</CardDescription>
+                                </CardHeader>
+                                <CardContent className="p-8 space-y-8">
+                                    <div className="grid md:grid-cols-2 gap-8">
+                                        <div className="grid gap-3">
+                                            <Label htmlFor="bankName" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Bank Name</Label>
+                                            <div className="relative group">
+                                                <Landmark className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FFB800] transition-colors" />
+                                                <Input
+                                                    id="bankName"
+                                                    placeholder="e.g. GTBank, Kuda, Moniepoint"
+                                                    className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus:ring-[#FFB800] focus:border-[#FFB800] font-bold text-white"
+                                                    value={bankData.bankName}
+                                                    onChange={(e) => setBankData({ ...bankData, bankName: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="grid gap-3">
+                                            <Label htmlFor="accountNumber" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Account Number</Label>
+                                            <div className="relative group">
+                                                <Banknote className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FFB800] transition-colors" />
+                                                <Input
+                                                    id="accountNumber"
+                                                    placeholder="10-digit NUBAN"
+                                                    className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus:ring-[#FFB800] focus:border-[#FFB800] font-bold text-white font-mono"
+                                                    value={bankData.accountNumber}
+                                                    onChange={(e) => setBankData({ ...bankData, accountNumber: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="grid gap-3">
+                                        <Label htmlFor="accountName" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Account Name</Label>
+                                        <div className="relative group">
+                                            <User className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FFB800] transition-colors" />
+                                            <Input
+                                                id="accountName"
+                                                placeholder="Matching Bank Account Name"
+                                                className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus:ring-[#FFB800] focus:border-[#FFB800] font-bold text-white"
+                                                value={bankData.accountName}
+                                                onChange={(e) => setBankData({ ...bankData, accountName: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+                                </CardContent>
+                                <CardFooter className="bg-white/5 border-t border-white/10 p-8 flex justify-end">
+                                    <Button onClick={handleUpdateBank} disabled={updating} className="h-14 px-10 bg-[#FFB800] hover:bg-[#FFD700] text-black font-black uppercase tracking-widest rounded-2xl border-none">
+                                        {updating ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <CheckCircle className="mr-3 h-5 w-5" />}
+                                        Save Credentials
                                     </Button>
                                 </CardFooter>
                             </Card>
