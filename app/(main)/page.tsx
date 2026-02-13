@@ -182,13 +182,7 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* Floating Chat Asset */}
-            <div className="fixed bottom-8 right-8 z-[100] group">
-                <button className="h-16 w-16 bg-[#FFB800] rounded-full shadow-[0_0_40px_rgba(255,184,0,0.4)] flex items-center justify-center hover:scale-110 transition-transform duration-500 relative">
-                    <div className="absolute inset-0 rounded-full bg-[#FFB800] animate-ping opacity-20 group-hover:opacity-40" />
-                    <Sparkles className="h-7 w-7 text-black" />
-                </button>
-            </div>
+
 
             {/* Protocol/Verification Strip */}
             <section className="bg-[#0A0A0A] border-y border-white/5 overflow-hidden py-6">
