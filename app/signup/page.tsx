@@ -245,6 +245,41 @@ function SignupContent() {
 
             if (profileError) console.error("Profile establishing error:", profileError);
 
+            // 3. Create 14-day trial subscription for new sellers
+            if (isMerchant) {
+                const trialEndDate = new Date();
+                trialEndDate.setDate(trialEndDate.getDate() + 14);
+
+                const { error: subscriptionError } = await supabase
+                    .from('subscriptions')
+                    .insert({
+                        user_id: authData.user.id,
+                        plan_id: 'campus_pro', // Give them the best plan during trial
+                        status: 'trialing',
+                        current_period_start: new Date().toISOString(),
+                        current_period_end: trialEndDate.toISOString(),
+                        trial_end: trialEndDate.toISOString(),
+                        metadata: {
+                            trial_started_at: new Date().toISOString(),
+                            trial_plan: 'campus_pro',
+                            auto_created: true
+                        }
+                    });
+
+                if (subscriptionError) {
+                    console.error("Trial subscription creation error:", subscriptionError);
+                } else {
+                    // Update user with subscription status
+                    await supabase
+                        .from('users')
+                        .update({
+                            subscription_status: 'trialing',
+                            subscription_plan_id: 'campus_pro'
+                        })
+                        .eq('id', authData.user.id);
+                }
+            }
+
             await refreshUser(authData.user.id);
 
             if (['student_seller', 'dealer'].includes(role)) {

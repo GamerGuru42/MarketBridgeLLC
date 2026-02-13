@@ -36,6 +36,7 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { DealerGuide } from '@/components/DealerGuide';
+import { TrialBanner } from '@/components/subscription/TrialBanner';
 
 interface Order {
     id: string;
@@ -333,13 +334,6 @@ export default function DealerDashboardPage() {
         );
     }
 
-    const now = new Date();
-    const expiryDate = user?.subscription_expires_at ? new Date(user.subscription_expires_at) : null;
-    const daysRemaining = expiryDate ? Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)) : 0;
-    const isTrial = user?.subscriptionStatus === 'trial';
-    const isExpiringSoon = daysRemaining <= 3 && daysRemaining > 0;
-    const isExpired = daysRemaining <= 0 && expiryDate;
-
     return (
         <div className="min-h-screen bg-black text-white relative flex flex-col selection:bg-[#FFB800] selection:text-black">
             {/* Background Grid */}
@@ -350,6 +344,7 @@ export default function DealerDashboardPage() {
             <div className="container mx-auto py-12 px-6 relative z-10 space-y-12 pb-24">
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-12">
+                    {/* ... Header Section content ... */}
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
                             <span className="h-2 w-2 rounded-full bg-[#FFB800] animate-pulse" />
@@ -378,45 +373,7 @@ export default function DealerDashboardPage() {
                 </div>
 
                 {/* Subscription Banners */}
-                {(isTrial || isExpiringSoon || isExpired) && (
-                    <div className={cn(
-                        "p-10 rounded-[2.5rem] border-none relative overflow-hidden group",
-                        isExpired ? "bg-red-950/20" : "bg-zinc-900/40"
-                    )}>
-                        <div className={cn(
-                            "absolute left-0 top-0 w-2 h-full",
-                            isExpired ? "bg-red-500" : (isExpiringSoon ? "bg-amber-500" : "bg-[#FFB800]")
-                        )} />
-
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
-                            <div className="flex items-center gap-8">
-                                <div className={cn(
-                                    "h-20 w-20 rounded-3xl flex items-center justify-center border transition-all duration-500 group-hover:scale-110",
-                                    isExpired ? "bg-red-500/10 border-red-500/20 text-red-500" : "bg-[#FFB800]/10 border-[#FFB800]/20 text-[#FFB800]"
-                                )}>
-                                    {isExpired ? <AlertCircle className="h-10 w-10" /> : (isExpiringSoon ? <Clock className="h-10 w-10" /> : <Zap className="h-10 w-10" />)}
-                                </div>
-                                <div className="space-y-1 text-center md:text-left">
-                                    <h3 className="text-2xl font-black uppercase tracking-tighter font-heading italic">
-                                        {isExpired ? "Access Restricted" : (isExpiringSoon ? "Critical Expiry Warning" : "Premium Trial Status")}
-                                    </h3>
-                                    <p className="text-zinc-500 font-medium lowercase italic">
-                                        {isExpired
-                                            ? "Your plan has expired. Re-activate to restore full listing capacity."
-                                            : `${daysRemaining} days remaining in your current ${user?.subscriptionPlan || 'Premium'} operational cycle.`}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <Button asChild className={cn(
-                                "h-14 px-10 rounded-xl font-black uppercase tracking-widest italic font-heading",
-                                isExpired ? "bg-red-500 hover:bg-red-600 text-white" : "bg-white text-black hover:bg-zinc-200"
-                            )}>
-                                <Link href="/pricing">Optimize Plan <ArrowRight className="ml-2 h-4 w-4" /></Link>
-                            </Button>
-                        </div>
-                    </div>
-                )}
+                <TrialBanner />
 
                 {/* Performance Metrics */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

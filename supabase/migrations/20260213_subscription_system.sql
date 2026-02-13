@@ -314,7 +314,25 @@ CREATE POLICY subscription_plans_read_policy ON subscription_plans FOR SELECT US
 -- 12. INITIAL DATA SETUP
 -- ============================================
 
--- Create a default free subscription for existing users
+-- Create 14-day trial subscriptions for NEW sellers (Campus Pro features)
+-- New sellers get full Campus Pro access for 14 days, then must choose to pay or downgrade
+INSERT INTO subscriptions (user_id, plan_id, status, current_period_start, current_period_end, trial_end)
+SELECT 
+    id,
+    'campus_pro', -- Give them the best plan during trial
+    'trialing',
+    NOW(),
+    NOW() + INTERVAL '14 days',
+    NOW() + INTERVAL '14 days'
+FROM users
+WHERE role IN ('dealer', 'student_seller')
+AND created_at >= NOW() - INTERVAL '7 days' -- Only users created in last 7 days get trial
+AND NOT EXISTS (
+    SELECT 1 FROM subscriptions WHERE subscriptions.user_id = users.id
+)
+ON CONFLICT DO NOTHING;
+
+-- Create free subscriptions for EXISTING sellers (those created before recent period)
 INSERT INTO subscriptions (user_id, plan_id, status, current_period_start, current_period_end)
 SELECT 
     id,
@@ -324,6 +342,7 @@ SELECT
     NOW() + INTERVAL '100 years' -- Free tier never expires
 FROM users
 WHERE role IN ('dealer', 'student_seller')
+AND created_at < NOW() - INTERVAL '7 days' -- Existing users get free tier
 AND NOT EXISTS (
     SELECT 1 FROM subscriptions WHERE subscriptions.user_id = users.id
 )
@@ -332,14 +351,56 @@ ON CONFLICT DO NOTHING;
 -- Update users table with subscription info
 UPDATE users u
 SET 
-    subscription_status = 'free',
-    subscription_plan_id = 'free',
+    subscription_status = CASE 
+        WHEN s.status = 'trialing' THEN 'trialing'
+        ELSE 'free'
+    END,
+    subscription_plan_id = s.plan_id,
     subscription_id = s.id
 FROM subscriptions s
 WHERE u.id = s.user_id
-AND s.plan_id = 'free'
-AND s.status = 'active'
+AND s.status IN ('active', 'trialing')
 AND u.subscription_id IS NULL;
+
+-- ============================================
+-- 13. TRIAL EXPIRATION FUNCTION
+-- ============================================
+
+-- Function to auto-downgrade expired trials to free tier
+CREATE OR REPLACE FUNCTION handle_expired_trials()
+RETURNS void AS $$
+BEGIN
+    -- Update expired trial subscriptions to free tier
+    UPDATE subscriptions
+    SET 
+        status = 'active',
+        plan_id = 'free',
+        current_period_start = NOW(),
+        current_period_end = NOW() + INTERVAL '100 years',
+        trial_end = NULL,
+        metadata = metadata || jsonb_build_object(
+            'trial_expired_at', NOW(),
+            'original_trial_plan', plan_id,
+            'auto_downgraded', true
+        )
+    WHERE status = 'trialing'
+    AND trial_end < NOW();
+    
+    -- Update users table to reflect the downgrade
+    UPDATE users u
+    SET 
+        subscription_status = 'free',
+        subscription_plan_id = 'free'
+    FROM subscriptions s
+    WHERE u.id = s.user_id
+    AND s.plan_id = 'free'
+    AND s.status = 'active'
+    AND s.metadata->>'auto_downgraded' = 'true';
+END;
+$$ LANGUAGE plpgsql;
+
+-- Note: This function should be called by a cron job or scheduled task
+-- For Supabase, you can use pg_cron or call it from your application daily
 
 -- ============================================
 -- MIGRATION COMPLETE
