@@ -137,8 +137,8 @@ function ListingsContent() {
                 resultData = data || [];
             }
 
-            // Fallback to mock data if empty
-            if (!resultData || resultData.length === 0) {
+            // Fallback to mock data ONLY if no search query provided (demo mode)
+            if ((!resultData || resultData.length === 0) && !search) {
                 const mockListings: Listing[] = [
                     {
                         id: 'mock-1',
@@ -203,7 +203,7 @@ function ListingsContent() {
                             Browse <span className="text-[#FFB800]">Marketplace</span>
                         </h1>
                         <p className="text-zinc-500 mt-3 font-mono text-sm">
-                            {listings.length} listings available • AI-powered search
+                            {listings.length} listings available
                         </p>
                     </div>
                 </div>

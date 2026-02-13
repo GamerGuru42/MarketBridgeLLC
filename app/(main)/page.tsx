@@ -122,7 +122,7 @@ export default function HomePage() {
                             {/* Beta Tag */}
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
                                 <span className="h-2 w-2 rounded-full bg-[#00FF85] animate-pulse shadow-[0_0_10px_#00FF85]" />
-                                <span className="text-[10px] uppercase font-black tracking-[0.2em] text-zinc-300">{currentNode} Node v0.1</span>
+                                <span className="text-[10px] uppercase font-black tracking-[0.2em] text-zinc-300">Beta Access v0.1</span>
                             </div>
 
                             <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white leading-[0.9]">

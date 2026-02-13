@@ -202,24 +202,6 @@ export async function intelligentSearch(params: {
     }
 
     if (!data || data.length === 0) {
-        // Fallback: Try broader searchif no results
-        const fallbackQuery = await supabase
-            .from('listings')
-            .select(`
-                *,
-                dealer:users!listings_dealer_id_fkey(
-                    id,
-                    display_name,
-                    is_verified,
-                    store_type
-                )
-            `)
-            .eq('status', 'active')
-            .limit(20);
-
-        if (fallbackQuery.data) {
-            return fallbackQuery.data.slice(0, limit);
-        }
         return [];
     }
 
