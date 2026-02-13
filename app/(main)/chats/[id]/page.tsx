@@ -12,15 +12,16 @@ import { Send, ArrowLeft, DollarSign, Package, Image as ImageIcon, Loader2, X } 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { SmartEscrowModal } from '@/components/chat/SmartEscrowModal';
-import { EscrowProgress } from '@/components/chat/EscrowProgress';
+import { EscrowProgress, EscrowAgreement, EscrowStep } from '@/components/chat/EscrowProgress';
+import { formatDistanceToNow } from 'date-fns';
 
 interface Message {
     id: string;
-    chat_id: string;
+    conversation_id: string;
     sender_id: string;
     content: string;
     image_url?: string | null;
-    read: boolean;
+    is_read: boolean;
     created_at: string;
     sender?: {
         display_name: string;
@@ -28,10 +29,13 @@ interface Message {
     };
 }
 
-interface Chat {
+interface Conversation {
     id: string;
-    participants: string[];
+    participant1_id: string;
+    participant2_id: string;
     listing_id: string | null;
+    last_message: string | null;
+    last_message_at: string | null;
     listing?: {
         id: string;
         title: string;
@@ -43,15 +47,14 @@ interface Chat {
         display_name: string;
         photo_url: string | null;
         role: string;
+        avatar_url?: string;
     };
 }
-
-import { EscrowAgreement, EscrowStep } from '@/components/chat/EscrowProgress';
 
 export default function ChatPage({ params }: { params: Promise<{ id: string }> }) {
     const { user, loading: authLoading } = useAuth();
     const router = useRouter();
-    const [chat, setChat] = useState<Chat | null>(null);
+    const [chat, setChat] = useState<Conversation | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(true);
@@ -69,6 +72,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
     const [escrowSteps, setEscrowSteps] = useState<EscrowStep[]>([]);
     const [chatId, setChatId] = useState<string | null>(null);
 
+    // Unwrap params
     useEffect(() => {
         params.then(p => setChatId(p.id));
     }, [params]);
@@ -83,8 +87,11 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
             fetchChat();
             fetchMessages();
             fetchActiveEscrow();
+
             const unsubscribeMessages = subscribeToMessages();
             const unsubscribeEscrow = subscribeToEscrow();
+
+            // Mark initial batch as read
             markMessagesAsRead();
 
             return () => {
@@ -103,77 +110,99 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
     };
 
     const fetchChat = async () => {
-        if (!user) return;
+        if (!user || !chatId) return;
 
         try {
             const { data: chatData, error } = await supabase
-                .from('chats')
-                .select('*')
+                .from('conversations')
+                .select(`
+                    *,
+                    listing:listings(id, title, price, images)
+                `)
                 .eq('id', chatId)
                 .single();
 
             if (error) throw error;
 
-            if (!chatData.participants.includes(user.id)) {
+            // Verify Participant
+            if (chatData.participant1_id !== user.id && chatData.participant2_id !== user.id) {
+                console.warn('Unauthorized access to chat');
                 router.push('/chats');
                 return;
             }
 
-            const otherUserId = chatData.participants.find((id: string) => id !== user.id);
+            // Identify Other User ID
+            const otherUserId = chatData.participant1_id === user.id
+                ? chatData.participant2_id
+                : chatData.participant1_id;
 
-            if (otherUserId) {
-                const { data: userData } = await supabase
-                    .from('users')
-                    .select('id, display_name, photo_url, role')
-                    .eq('id', otherUserId)
-                    .single();
+            // Fetch Other User Details
+            const { data: userData } = await supabase
+                .from('users')
+                .select('id, display_name, photo_url, role, avatar_url')
+                .eq('id', otherUserId)
+                .single();
 
-                chatData.other_user = userData;
-            }
-
-            if (chatData.listing_id) {
-                const { data: listingData } = await supabase
-                    .from('listings')
-                    .select('id, title, price, images')
-                    .eq('id', chatData.listing_id)
-                    .single();
-
-                chatData.listing = listingData;
+            if (userData) {
+                // Normalize photo_url vs avatar_url
+                chatData.other_user = {
+                    ...userData,
+                    photo_url: userData.avatar_url || userData.photo_url
+                };
             }
 
             setChat(chatData);
         } catch (error) {
             console.error('Error fetching chat:', error);
+            // router.push('/chats'); // Optional redirect on error
         } finally {
             setLoading(false);
         }
     };
 
     const fetchMessages = async () => {
+        if (!chatId) return;
         try {
             const { data, error } = await supabase
                 .from('messages')
                 .select(`
                     *,
-                    sender:users!messages_sender_id_fkey(display_name, photo_url)
+                    sender:users!messages_sender_id_fkey(display_name, photo_url, avatar_url)
                 `)
-                .eq('chat_id', chatId)
+                .eq('conversation_id', chatId) // Note: Renamed from chat_id to conversation_id in schema migration?
+                // Wait, in schema I used 'conversation_id'? 
+                // Migration 20260213_messaging_system.sql: conversation_id UUID REFERENCES conversations(id)
+                // Yes.
                 .order('created_at', { ascending: true });
 
-            if (error) throw error;
+            if (error) {
+                // Determine if error is due to column name mismatch (if migration failed)
+                // We assume migration succeeded.
+                throw error;
+            }
 
-            setMessages(data || []);
+            // Standardize sender photo
+            const mapped = (data || []).map((m: any) => ({
+                ...m,
+                sender: m.sender ? {
+                    ...m.sender,
+                    photo_url: m.sender.avatar_url || m.sender.photo_url
+                } : null
+            }));
+
+            setMessages(mapped);
         } catch (error) {
             console.error('Error fetching messages:', error);
         }
     };
 
     const fetchActiveEscrow = async () => {
+        if (!chatId) return;
         try {
             const { data: agreement, error } = await supabase
                 .from('escrow_agreements')
                 .select('*')
-                .eq('chat_id', chatId)
+                .eq('conversation_id', chatId) // conversation_id
                 .in('status', ['pending', 'active'])
                 .single();
 
@@ -194,6 +223,8 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
     };
 
     const subscribeToMessages = () => {
+        if (!chatId) return () => { };
+
         const subscription = supabase
             .channel(`chat:${chatId}`)
             .on(
@@ -202,19 +233,26 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                     event: 'INSERT',
                     schema: 'public',
                     table: 'messages',
-                    filter: `chat_id=eq.${chatId}`,
+                    filter: `conversation_id=eq.${chatId}`,
                 },
                 async (payload) => {
+                    // Fetch sender details for the new message
                     const { data: senderData } = await supabase
                         .from('users')
-                        .select('display_name, photo_url')
+                        .select('display_name, photo_url, avatar_url')
                         .eq('id', payload.new.sender_id)
                         .single();
 
-                    setMessages((prev) => [
-                        ...prev,
-                        { ...payload.new, sender: senderData } as Message,
-                    ]);
+                    const newMsg: Message = {
+                        ...payload.new,
+                        // Fix types
+                        sender: senderData ? {
+                            display_name: senderData.display_name,
+                            photo_url: senderData.avatar_url || senderData.photo_url
+                        } : undefined
+                    } as Message;
+
+                    setMessages((prev) => [...prev, newMsg]);
 
                     if (payload.new.sender_id !== user?.id) {
                         markMessagesAsRead();
@@ -224,11 +262,13 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
             .subscribe();
 
         return () => {
-            subscription.unsubscribe();
+            supabase.removeChannel(subscription);
         };
     };
 
     const subscribeToEscrow = () => {
+        if (!chatId) return () => { };
+
         const subscription = supabase
             .channel(`escrow:${chatId}`)
             .on(
@@ -237,12 +277,12 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                     event: '*',
                     schema: 'public',
                     table: 'escrow_agreements',
-                    filter: `chat_id=eq.${chatId}`,
+                    filter: `conversation_id=eq.${chatId}`,
                 },
                 (payload) => {
                     if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
                         setActiveAgreement(payload.new as EscrowAgreement);
-                        fetchActiveEscrow(); // Refresh steps too
+                        fetchActiveEscrow(); // Refresh steps/details full object
                     }
                 }
             )
@@ -252,75 +292,37 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                     event: '*',
                     schema: 'public',
                     table: 'escrow_steps',
+                    // Filter by agreement_id is harder without knowing ID upfront if it changes.
+                    // Use broad filter? No, inefficient.
+                    // Just listen to all steps? Also inefficient.
+                    // Since steps belong to agreements which belong to this chat, 
+                    // maybe we just refresh on any step change if we have an active agreement?
                 },
                 () => {
-                    fetchActiveEscrow(); // Refresh steps
+                    fetchActiveEscrow(); // Aggressive refresh
                 }
             )
             .subscribe();
 
         return () => {
-            subscription.unsubscribe();
+            supabase.removeChannel(subscription);
         };
     };
 
     const markMessagesAsRead = async () => {
-        if (!user) return;
+        if (!user || !chatId) return;
 
         await supabase
             .from('messages')
-            .update({ read: true })
-            .eq('chat_id', chatId)
+            .update({ is_read: true })
+            .eq('conversation_id', chatId)
             .neq('sender_id', user.id)
-            .eq('read', false);
-    };
-
-    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            if (file.size > 5 * 1024 * 1024) {
-                alert('Image must be less than 5MB');
-                return;
-            }
-            setSelectedImage(file);
-            setImagePreview(URL.createObjectURL(file));
-        }
-    };
-
-    const clearSelectedImage = () => {
-        setSelectedImage(null);
-        setImagePreview(null);
-        if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-        }
-    };
-
-    const uploadImage = async (file: File): Promise<string | null> => {
-        try {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${user?.id}-${Date.now()}.${fileExt}`;
-            const filePath = `${chatId}/${fileName}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from('chat-images')
-                .upload(filePath, file);
-
-            if (uploadError) throw uploadError;
-
-            const { data: { publicUrl } } = supabase.storage
-                .from('chat-images')
-                .getPublicUrl(filePath);
-
-            return publicUrl;
-        } catch (error) {
-            console.error('Error uploading image:', error);
-            return null;
-        }
+            .eq('is_read', false);
     };
 
     const sendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
-        if ((!newMessage.trim() && !selectedImage) || !user || sending) return;
+        if ((!newMessage.trim() && !selectedImage) || !user || sending || !chatId) return;
 
         setSending(true);
         setUploadingImage(!!selectedImage);
@@ -329,11 +331,25 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
             let imageUrl: string | null = null;
 
             if (selectedImage) {
-                imageUrl = await uploadImage(selectedImage);
+                // Upload logic
+                const fileExt = selectedImage.name.split('.').pop();
+                const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+                const filePath = `${chatId}/${fileName}`;
+
+                const { error: uploadError } = await supabase.storage
+                    .from('chat-images') // Ensure bucket exists!
+                    .upload(filePath, selectedImage);
+
+                if (!uploadError) {
+                    const { data } = supabase.storage
+                        .from('chat-images')
+                        .getPublicUrl(filePath);
+                    imageUrl = data.publicUrl;
+                }
             }
 
             const { error } = await supabase.from('messages').insert({
-                chat_id: chatId,
+                conversation_id: chatId,
                 sender_id: user.id,
                 content: newMessage.trim() || (imageUrl ? '📷 Image' : ''),
                 image_url: imageUrl,
@@ -341,17 +357,13 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
 
             if (error) throw error;
 
-            // Update chat's last message
-            await supabase
-                .from('chats')
-                .update({
-                    last_message: newMessage.trim() || '📷 Image',
-                    last_message_timestamp: new Date().toISOString(),
-                })
-                .eq('id', chatId);
+            // Trigger update on conversation for last_message (done via DB trigger usually, but safe to keep)
+            // My migration has a trigger: update_conversation_last_message()
+            // So no need to manually update conversations table!
 
             setNewMessage('');
-            clearSelectedImage();
+            setSelectedImage(null);
+            setImagePreview(null);
         } catch (error) {
             console.error('Error sending message:', error);
         } finally {
@@ -366,20 +378,20 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
         steps: string[];
         tosText: string;
     }) => {
-        if (!user || !chat || !chat.other_user) return;
+        if (!user || !chat || !chat.other_user || !chatId) return;
 
         try {
             // 1. Create Agreement
             const { data: agreement, error: agreementError } = await supabase
                 .from('escrow_agreements')
                 .insert({
-                    chat_id: chatId,
+                    conversation_id: chatId,
                     buyer_id: user.id,
                     seller_id: chat.other_user.id,
                     amount: data.amount,
                     agreement_type: data.type,
                     status: 'pending',
-                    tos_accepted_buyer: true, // Creator accepts by default
+                    tos_accepted_buyer: true, // Creator accepts
                 })
                 .select()
                 .single();
@@ -402,27 +414,38 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
 
             // 3. Send System Message
             await supabase.from('messages').insert({
-                chat_id: chatId,
+                conversation_id: chatId,
                 sender_id: user.id,
-                content: `🔒 Smart Escrow initiated for ₦${data.amount.toLocaleString()}. Please review and accept the conditions.`,
+                content: `🔒 Smart Escrow initiated for ₦${data.amount.toLocaleString()}. Please review and accept conditions.`,
             });
 
             setActiveAgreement(agreement);
-            fetchActiveEscrow();
+            fetchActiveEscrow(); // Refresh steps
         } catch (error) {
             console.error('Error creating escrow:', error);
-            alert('Failed to create escrow agreement');
+            alert('Failed to create escrow agreement. Please try again.');
         }
     };
 
+    // Image handling helpers
+    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Image must be less than 5MB');
+                return;
+            }
+            setSelectedImage(file);
+            setImagePreview(URL.createObjectURL(file));
+        }
+    }
+
     if (authLoading || loading) {
         return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="flex items-center justify-center min-h-[400px]">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                        <p className="mt-4 text-muted-foreground">Loading chat...</p>
-                    </div>
+            <div className="container mx-auto px-4 py-8 min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <Loader2 className="animate-spin h-12 w-12 text-[#FFB800] mx-auto" />
+                    <p className="mt-4 text-zinc-500 font-mono text-xs tracking-widest uppercase">Decrypting Stream...</p>
                 </div>
             </div>
         );
@@ -431,67 +454,51 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
     if (!chat) {
         return (
             <div className="container mx-auto px-4 py-8">
-                <Card>
-                    <CardContent className="py-12 text-center">
-                        <p className="text-muted-foreground">Chat not found</p>
-                        <Button asChild className="mt-4">
-                            <Link href="/chats">Back to Chats</Link>
-                        </Button>
-                    </CardContent>
-                </Card>
+                <div className="text-center text-zinc-500">Chat Not Found</div>
+                <Button asChild className="mt-4"><Link href="/chats">Return to Terminal</Link></Button>
             </div>
         );
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <Card className="h-[calc(100vh-12rem)]">
-                <CardHeader className="border-b">
+        <div className="container mx-auto px-4 py-8 h-[calc(100vh-4rem)] flex flex-col">
+            <Card className="flex-1 flex flex-col bg-black/50 border-white/10 backdrop-blur-md overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+                <CardHeader className="border-b border-white/5 bg-white/5 py-4 shrink-0">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                            <Button variant="ghost" size="icon" asChild>
+                            <Button variant="ghost" size="icon" asChild className="text-zinc-400 hover:text-white hover:bg-white/10">
                                 <Link href="/chats">
                                     <ArrowLeft className="h-5 w-5" />
                                 </Link>
                             </Button>
-                            <Avatar>
+                            <Avatar className="h-10 w-10 border border-white/10">
                                 <AvatarImage src={chat.other_user?.photo_url || ''} />
-                                <AvatarFallback>
-                                    {chat.other_user?.display_name.charAt(0).toUpperCase()}
+                                <AvatarFallback className="bg-zinc-800 text-zinc-500 font-black uppercase">
+                                    {chat.other_user?.display_name?.charAt(0).toUpperCase()}
                                 </AvatarFallback>
                             </Avatar>
                             <div>
-                                <CardTitle className="text-lg">{chat.other_user?.display_name}</CardTitle>
-                                <Badge variant="secondary" className="mt-1">
-                                    {['dealer', 'student_seller'].includes(chat.other_user?.role as any) ? 'Merchant' : 'Buyer'}
+                                <CardTitle className="text-base text-white font-bold tracking-wide">
+                                    {chat.other_user?.display_name}
+                                </CardTitle>
+                                <Badge variant="secondary" className="mt-1 bg-white/5 text-zinc-400 border border-white/5 text-[10px] uppercase tracking-wider">
+                                    {['dealer', 'student_seller'].includes(chat.other_user?.role || '') ? 'Verified Merchant' : 'User'}
                                 </Badge>
                             </div>
                         </div>
                         {chat.listing && !activeAgreement && (
-                            <Button onClick={() => setShowEscrowModal(true)} className="gap-2">
+                            <Button onClick={() => setShowEscrowModal(true)} className="gap-2 bg-[#FFB800] text-black font-black uppercase text-xs tracking-widest hover:bg-[#FFB800]/90 h-9">
                                 <DollarSign className="h-4 w-4" />
-                                Initiate Escrow
+                                Secure Escrow
                             </Button>
                         )}
                     </div>
-                    {chat.listing && (
-                        <div className="mt-4 p-3 bg-muted rounded-lg flex items-center gap-3">
-                            <Package className="h-5 w-5 text-muted-foreground" />
-                            <div className="flex-1">
-                                <p className="font-medium text-sm">{chat.listing.title}</p>
-                                <p className="text-sm text-muted-foreground">
-                                    ₦{chat.listing.price.toLocaleString()}
-                                </p>
-                            </div>
-                            <Button variant="outline" size="sm" asChild>
-                                <Link href={`/listings/${chat.listing.id}`}>View</Link>
-                            </Button>
-                        </div>
-                    )}
                 </CardHeader>
-                <CardContent className="flex flex-col h-[calc(100%-10rem)] p-0">
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                        {/* Active Escrow Progress */}
+
+                <CardContent className="flex-1 flex flex-col p-0 overflow-hidden relative">
+                    {/* Messages Area */}
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-zinc-800">
+                        {/* Escrow Widget */}
                         {activeAgreement && (
                             <EscrowProgress
                                 agreement={activeAgreement}
@@ -500,48 +507,36 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                             />
                         )}
 
+                        {/* Messages */}
                         {messages.map((message) => {
                             const isOwn = message.sender_id === user?.id;
                             return (
-                                <div
-                                    key={message.id}
-                                    className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
-                                >
-                                    <div className={`flex gap-2 max-w-[70%] ${isOwn ? 'flex-row-reverse' : ''}`}>
+                                <div key={message.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
+                                    <div className={`flex gap-3 max-w-[80%] md:max-w-[60%] ${isOwn ? 'flex-row-reverse' : ''}`}>
                                         {!isOwn && (
-                                            <Avatar className="h-8 w-8">
+                                            <Avatar className="h-8 w-8 mt-1 border border-white/10 hidden sm:block">
                                                 <AvatarImage src={message.sender?.photo_url || ''} />
-                                                <AvatarFallback>
-                                                    {message.sender?.display_name.charAt(0).toUpperCase()}
+                                                <AvatarFallback className="text-[10px] bg-zinc-800 text-zinc-500">
+                                                    {message.sender?.display_name?.charAt(0)}
                                                 </AvatarFallback>
                                             </Avatar>
                                         )}
-                                        <div>
-                                            <div
-                                                className={`rounded-lg px-4 py-2 ${isOwn
-                                                    ? 'bg-primary text-primary-foreground'
-                                                    : 'bg-muted'
-                                                    }`}
-                                            >
+                                        <div className={`space-y-1 ${isOwn ? 'items-end' : 'items-start'} flex flex-col`}>
+                                            <div className={`rounded-2xl px-4 py-3 text-sm shadow-sm ${isOwn
+                                                    ? 'bg-[#FFB800] text-black font-medium rounded-tr-none'
+                                                    : 'bg-white/10 text-zinc-200 border border-white/5 rounded-tl-none'
+                                                }`}>
                                                 {message.image_url && (
                                                     <div className="mb-2">
-                                                        <img
-                                                            src={message.image_url}
-                                                            alt="Chat image"
-                                                            className="rounded-lg max-w-full max-h-64 object-contain cursor-pointer"
-                                                            onClick={() => window.open(message.image_url!, '_blank')}
-                                                        />
+                                                        <img src={message.image_url} alt="Shared" className="rounded-lg max-h-60 object-cover" onClick={() => window.open(message.image_url!, '_blank')} />
                                                     </div>
                                                 )}
-                                                {message.content && message.content !== '📷 Image' && (
-                                                    <p className="text-sm">{message.content}</p>
+                                                {message.content && !message.content.startsWith('📷 Image') && (
+                                                    <p>{message.content}</p>
                                                 )}
                                             </div>
-                                            <p className="text-xs text-muted-foreground mt-1 px-1">
-                                                {new Date(message.created_at).toLocaleTimeString([], {
-                                                    hour: '2-digit',
-                                                    minute: '2-digit',
-                                                })}
+                                            <p className="text-[10px] text-zinc-600 px-1 font-mono">
+                                                {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </p>
                                         </div>
                                     </div>
@@ -551,58 +546,49 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                         <div ref={messagesEndRef} />
                     </div>
 
-                    {/* Image Preview */}
-                    {imagePreview && (
-                        <div className="border-t p-2">
-                            <div className="relative inline-block">
-                                <img
-                                    src={imagePreview}
-                                    alt="Selected"
-                                    className="h-20 w-20 object-cover rounded-lg"
-                                />
-                                <button
-                                    onClick={clearSelectedImage}
-                                    className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1"
-                                >
-                                    <X className="h-3 w-3" />
-                                </button>
+                    {/* Input Area */}
+                    <div className="p-4 bg-black/40 backdrop-blur-md border-t border-white/5 shrink-0">
+                        {imagePreview && (
+                            <div className="mb-3 relative inline-block">
+                                <img src={imagePreview} alt="Preview" className="h-16 w-16 object-cover rounded-md border border-[#FFB800]/50" />
+                                <button onClick={() => { setSelectedImage(null); setImagePreview(null); }} className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 text-white hover:bg-red-600"><X className="h-3 w-3" /></button>
                             </div>
-                        </div>
-                    )}
-
-                    <form onSubmit={sendMessage} className="border-t p-4">
-                        <div className="flex gap-2">
+                        )}
+                        <form onSubmit={sendMessage} className="flex gap-3 items-end">
                             <input
                                 type="file"
-                                accept="image/*"
                                 ref={fileInputRef}
                                 onChange={handleImageSelect}
+                                accept="image/*"
                                 className="hidden"
                             />
                             <Button
                                 type="button"
                                 variant="outline"
                                 size="icon"
+                                className="h-12 w-12 rounded-xl border-white/10 bg-white/5 text-zinc-400 hover:text-[#FFB800] hover:bg-[#FFB800]/10 hover:border-[#FFB800]/30 shrink-0 transition-all"
                                 onClick={() => fileInputRef.current?.click()}
-                                disabled={sending}
                             >
-                                <ImageIcon className="h-4 w-4" />
+                                <ImageIcon className="h-5 w-5" />
                             </Button>
+
                             <Input
-                                placeholder="Type a message..."
+                                placeholder="Transmit secure message..."
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
+                                className="h-12 bg-black/50 border-white/10 rounded-xl text-white placeholder:text-zinc-600 focus:ring-[#FFB800]/50 focus:border-[#FFB800]/50 font-medium"
                                 disabled={sending}
                             />
-                            <Button type="submit" disabled={sending || (!newMessage.trim() && !selectedImage)}>
-                                {uploadingImage ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                    <Send className="h-4 w-4" />
-                                )}
+
+                            <Button
+                                type="submit"
+                                className="h-12 w-12 rounded-xl bg-[#FFB800] text-black hover:bg-[#FFB800]/90 shadow-[0_0_20px_rgba(255,184,0,0.2)] shrink-0"
+                                disabled={sending || (!newMessage.trim() && !selectedImage)}
+                            >
+                                {uploadingImage ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                             </Button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </CardContent>
             </Card>
 

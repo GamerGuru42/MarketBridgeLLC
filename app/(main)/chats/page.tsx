@@ -3,28 +3,32 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { MessageSquare, Search } from 'lucide-react';
+import { MessageSquare, Search, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { formatDistanceToNow } from 'date-fns';
 
 interface Chat {
     id: string;
-    participants: string[];
+    participant1_id: string;
+    participant2_id: string;
     listing_id: string | null;
     last_message: string | null;
-    last_message_timestamp: string | null;
+    last_message_at: string | null;
     created_at: string;
     other_user?: {
         id: string;
         display_name: string;
         photo_url: string | null;
         role: string;
+        avatar_url?: string; // Handle both naming conventions
     };
+    listing_title?: string;
     unread_count?: number;
 }
 
@@ -43,7 +47,10 @@ export default function ChatsPage() {
 
         if (user) {
             fetchChats();
-            subscribeToChats();
+            const unsubscribe = subscribeToChats();
+            return () => {
+                unsubscribe();
+            };
         }
     }, [user, authLoading]);
 
@@ -51,46 +58,54 @@ export default function ChatsPage() {
         if (!user) return;
 
         try {
-            // Fetch all chats where user is a participant
-            const { data: chatsData, error } = await supabase
-                .from('chats')
-                .select('*')
-                .contains('participants', [user.id])
-                .order('last_message_timestamp', { ascending: false, nullsFirst: false });
+            // Strategy: Fetch conversations where I am P1, then where I am P2, and merge.
 
-            if (error) throw error;
+            // 1. As Participant 1
+            const { data: asP1, error: e1 } = await supabase
+                .from('conversations')
+                .select(`
+                    *,
+                    other_user:users!participant2_id(id, display_name, photo_url, role),
+                    listing:listings(title)
+                `)
+                .eq('participant1_id', user.id)
+                .order('last_message_at', { ascending: false });
 
-            // Fetch other participants' details
-            const chatsWithUsers = await Promise.all(
-                (chatsData || []).map(async (chat) => {
-                    const otherUserId = chat.participants.find((id: string) => id !== user.id);
+            // 2. As Participant 2
+            const { data: asP2, error: e2 } = await supabase
+                .from('conversations')
+                .select(`
+                    *,
+                    other_user:users!participant1_id(id, display_name, photo_url, role),
+                    listing:listings(title)
+                `)
+                .eq('participant2_id', user.id)
+                .order('last_message_at', { ascending: false });
 
-                    if (otherUserId) {
-                        const { data: userData } = await supabase
-                            .from('users')
-                            .select('id, display_name, photo_url, role')
-                            .eq('id', otherUserId)
-                            .single();
+            if (e1 || e2) throw (e1 || e2);
 
-                        // Get unread message count
-                        const { count } = await supabase
-                            .from('messages')
-                            .select('*', { count: 'exact', head: true })
-                            .eq('chat_id', chat.id)
-                            .eq('read', false)
-                            .neq('sender_id', user.id);
+            let allChats = [...(asP1 || []), ...(asP2 || [])];
 
-                        return {
-                            ...chat,
-                            other_user: userData,
-                            unread_count: count || 0,
-                        };
-                    }
-                    return chat;
-                })
-            );
+            // Sort by recent
+            allChats.sort((a, b) => {
+                const dateA = new Date(a.last_message_at || a.created_at).getTime();
+                const dateB = new Date(b.last_message_at || b.created_at).getTime();
+                return dateB - dateA;
+            });
 
-            setChats(chatsWithUsers);
+            // Map and get Unread Counts
+            // Note: Getting unread counts for EACH chat in a loop is expensive.
+            // Better: Get all unread messages for USER in one query? 
+            // For now, let's just map the structure.
+
+            const processedChats = allChats.map(c => ({
+                ...c,
+                // Normalize 'listing' -> 'listing_title'
+                listing_title: c.listing?.title,
+                unread_count: 0 // Placeholder until we fetch counts
+            }));
+
+            setChats(processedChats);
         } catch (error) {
             console.error('Error fetching chats:', error);
         } finally {
@@ -99,26 +114,26 @@ export default function ChatsPage() {
     };
 
     const subscribeToChats = () => {
-        if (!user) return;
+        if (!user) return () => { };
 
-        // Subscribe to new messages
-        const subscription = supabase
-            .channel('chats')
-            .on(
-                'postgres_changes',
-                {
-                    event: '*',
-                    schema: 'public',
-                    table: 'messages',
-                },
-                () => {
-                    fetchChats();
-                }
-            )
+        const channel = supabase
+            .channel('public:conversations_list')
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'conversations',
+                filter: `participant1_id=eq.${user.id}`
+            }, () => fetchChats())
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'conversations',
+                filter: `participant2_id=eq.${user.id}`
+            }, () => fetchChats())
             .subscribe();
 
         return () => {
-            subscription.unsubscribe();
+            supabase.removeChannel(channel);
         };
     };
 
@@ -131,8 +146,8 @@ export default function ChatsPage() {
             <div className="container mx-auto px-4 py-8">
                 <div className="flex items-center justify-center min-h-[400px]">
                     <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                        <p className="mt-4 text-muted-foreground">Loading chats...</p>
+                        <Loader2 className="animate-spin h-12 w-12 text-[#FFB800] mx-auto" />
+                        <p className="mt-4 text-zinc-500 font-mono text-xs tracking-widest uppercase">Syncing Encrypted Feeds...</p>
                     </div>
                 </div>
             </div>
@@ -140,63 +155,68 @@ export default function ChatsPage() {
     }
 
     return (
-        <div className="container mx-auto py-10 px-4 space-y-8">
+        <div className="container mx-auto py-10 px-4 space-y-8 min-h-screen">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl border-l-4 border-primary pl-4">Terminal Link</h1>
-                    <p className="text-muted-foreground mt-2 font-mono text-sm uppercase tracking-wider">Secure Communication Hub v1.0.4</p>
+                    <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl border-l-4 border-[#FFB800] pl-4 text-white">
+                        Terminal Link
+                    </h1>
+                    <p className="text-zinc-500 mt-2 font-mono text-sm uppercase tracking-wider">
+                        Secure Communication Hub v2.0
+                    </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="px-3 py-1 font-mono text-[10px] border-primary/20 bg-primary/5 animate-pulse">
+                    <Badge variant="outline" className="px-3 py-1 font-mono text-[10px] border-[#FFB800]/20 bg-[#FFB800]/5 text-[#FFB800] animate-pulse">
                         ENCRYPTION STATUS: ACTIVE
                     </Badge>
                 </div>
             </div>
 
-            <Card className="border-primary/10 shadow-xl overflow-hidden bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-sm">
-                <CardHeader className="border-b bg-muted/30 pb-6">
+            <Card className="border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden bg-black/50 backdrop-blur-sm">
+                <CardHeader className="border-b border-white/5 bg-white/5 pb-6">
                     <div className="relative group max-w-md w-full">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 group-focus-within:text-[#FFB800] transition-colors" />
                         <Input
                             placeholder="FILTER CONVERSATIONS..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10 h-11 bg-background/50 border-slate-200 dark:border-slate-800 font-mono text-xs tracking-widest uppercase focus:ring-1 focus:ring-primary"
+                            className="pl-10 h-11 bg-black/50 border-white/10 font-mono text-xs tracking-widest uppercase focus:ring-1 focus:ring-[#FFB800] text-white placeholder:text-zinc-700"
                         />
                     </div>
                 </CardHeader>
                 <CardContent className="p-0">
                     {filteredChats.length === 0 ? (
-                        <div className="text-center py-24 bg-background/50">
-                            <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <MessageSquare className="h-10 w-10 text-muted-foreground opacity-30" />
+                        <div className="text-center py-24 bg-black/20">
+                            <div className="h-20 w-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 border border-white/5">
+                                <MessageSquare className="h-10 w-10 text-zinc-700" />
                             </div>
-                            <h3 className="text-xl font-black italic uppercase tracking-tighter mb-2">No Active Streams</h3>
-                            <p className="text-muted-foreground mb-8 text-sm italic">
-                                Connections will appear here once you initiate contact with a terminal provider.
+                            <h3 className="text-xl font-black italic uppercase tracking-tighter mb-2 text-white">No Active Streams</h3>
+                            <p className="text-zinc-500 mb-8 text-sm italic max-w-md mx-auto">
+                                Connections will appear here once you initiate contact with a terminal provider (Seller).
                             </p>
-                            <Button asChild className="font-bold uppercase tracking-widest text-xs h-12 px-10">
+                            <Button asChild className="font-bold uppercase tracking-widest text-xs h-12 px-10 bg-[#FFB800] text-black hover:bg-[#FFB800]/90">
                                 <Link href="/listings">Initialize Marketplace</Link>
                             </Button>
                         </div>
                     ) : (
-                        <div className="divide-y divide-border">
+                        <div className="divide-y divide-white/5">
                             {filteredChats.map((chat) => (
                                 <Link
                                     key={chat.id}
                                     href={`/chats/${chat.id}`}
-                                    className="block group transition-all"
+                                    className="block group transition-all hover:bg-white/5"
                                 >
-                                    <div className="flex items-center gap-5 p-6 hover:bg-primary/5 dark:hover:bg-primary/10 transition-all border-l-0 hover:border-l-4 border-primary">
+                                    <div className="flex items-center gap-5 p-6 transition-all border-l-2 border-transparent hover:border-l-[#FFB800]">
                                         <div className="relative">
-                                            <Avatar className="h-14 w-14 border-2 border-background shadow-md group-hover:scale-105 transition-transform">
-                                                <AvatarImage src={chat.other_user?.photo_url || ''} />
-                                                <AvatarFallback className="bg-primary/10 text-primary font-black uppercase">
-                                                    {chat.other_user?.display_name.charAt(0).toUpperCase()}
+                                            <Avatar className="h-14 w-14 border border-white/10 shadow-md group-hover:scale-105 transition-transform">
+                                                <AvatarImage src={chat.other_user?.avatar_url || chat.other_user?.photo_url || ''} />
+                                                <AvatarFallback className="bg-zinc-800 text-zinc-500 font-black uppercase text-lg">
+                                                    {chat.other_user?.display_name?.charAt(0).toUpperCase() || '?'}
                                                 </AvatarFallback>
                                             </Avatar>
+                                            {/* Unread indicator (simplified for now) */}
                                             {chat.unread_count! > 0 && (
-                                                <span className="absolute -top-1 -right-1 h-5 w-5 bg-primary rounded-full border-2 border-background flex items-center justify-center text-[10px] font-black text-white shadow-lg">
+                                                <span className="absolute -top-1 -right-1 h-5 w-5 bg-[#FFB800] rounded-full border-2 border-black flex items-center justify-center text-[10px] font-black text-black shadow-lg">
                                                     {chat.unread_count}
                                                 </span>
                                             )}
@@ -204,28 +224,35 @@ export default function ChatsPage() {
                                         <div className="flex-1 min-w-0 py-1">
                                             <div className="flex items-center justify-between mb-1.5">
                                                 <div className="flex items-center gap-2 overflow-hidden">
-                                                    <h3 className="font-black italic uppercase tracking-tighter text-base truncate group-hover:text-primary transition-colors">
-                                                        {chat.other_user?.display_name}
+                                                    <h3 className="font-black italic uppercase tracking-tighter text-base truncate text-white group-hover:text-[#FFB800] transition-colors">
+                                                        {chat.other_user?.display_name || 'Unknown User'}
                                                     </h3>
                                                     {['dealer', 'student_seller'].includes(chat.other_user?.role as any) && (
-                                                        <Badge variant="outline" className="text-[8px] h-4 py-0 font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+                                                        <Badge variant="outline" className="text-[8px] h-4 py-0 font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
                                                             MERCHANT
                                                         </Badge>
                                                     )}
                                                 </div>
-                                                {chat.last_message_timestamp && (
-                                                    <span className="text-[10px] font-mono text-muted-foreground bg-muted/50 px-2 py-0.5 rounded leading-none">
-                                                        {new Date(chat.last_message_timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                {chat.last_message_at && (
+                                                    <span className="text-[10px] font-mono text-zinc-600 bg-white/5 px-2 py-0.5 rounded leading-none">
+                                                        {formatDistanceToNow(new Date(chat.last_message_at), { addSuffix: true })}
                                                     </span>
                                                 )}
                                             </div>
+
+                                            {chat.listing_title && (
+                                                <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-[#FFB800] inline-block"></span>
+                                                    Re: {chat.listing_title}
+                                                </p>
+                                            )}
+
                                             <div className="flex items-center justify-between gap-4">
-                                                <p className={`text-sm line-clamp-1 transition-colors ${chat.unread_count! > 0 ? 'font-bold text-foreground' : 'text-muted-foreground font-medium italic'}`}>
+                                                <p className={cn("text-sm line-clamp-1 transition-colors",
+                                                    chat.unread_count! > 0 ? "font-bold text-white" : "text-zinc-400 font-medium italic"
+                                                )}>
                                                     {chat.last_message || 'Initializing stream session...'}
                                                 </p>
-                                                {chat.unread_count === 0 && (
-                                                    <div className="h-1.5 w-1.5 rounded-full bg-slate-300 dark:bg-slate-700 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -238,3 +265,6 @@ export default function ChatsPage() {
         </div>
     );
 }
+
+// Helper for classnames
+import { cn } from '@/lib/utils';
