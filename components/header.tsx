@@ -126,32 +126,48 @@ export const Header = () => {
 
                     {user && (
                         <div className="flex items-center gap-3">
-                            <DropdownMenu modal={false}>
+                            {/* External Logout Button for easier access */}
+                            <Button
+                                variant="ghost"
+                                onClick={handleSignOut}
+                                className="hidden md:flex items-center gap-2 h-11 px-5 rounded-full border border-white/10 bg-white/5 hover:bg-red-500/10 hover:border-red-500/50 text-zinc-400 hover:text-red-500 transition-all font-black uppercase text-[10px] tracking-widest group"
+                            >
+                                <LogOut className="h-4 w-4 transition-transform group-hover:scale-110" />
+                                <span>Logout</span>
+                            </Button>
+
+                            <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="h-11 w-11 rounded-full p-0 border border-white/10 bg-white/5 hover:bg-white/10 ring-offset-black transition-all hover:scale-105">
-                                        <User className="h-5 w-5 text-zinc-300" />
+                                    <Button variant="ghost" className="h-11 w-11 rounded-full p-0 border border-white/10 bg-white/5 hover:bg-white/10 ring-offset-black transition-all hover:scale-105 active:scale-95">
+                                        <div className="relative">
+                                            <User className="h-5 w-5 text-zinc-300" />
+                                            <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6600] opacity-75"></span>
+                                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#FF6600]"></span>
+                                            </span>
+                                        </div>
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent
                                     align="end"
                                     sideOffset={15}
-                                    className="w-72 bg-black border border-white/10 p-2 text-white z-[999] shadow-[0_20px_50px_rgba(0,0,0,0.9)] rounded-3xl"
+                                    className="w-72 bg-black border border-white/10 p-2 text-white z-[999] shadow-[0_20px_50px_rgba(0,0,0,0.8)] rounded-3xl backdrop-blur-3xl"
                                 >
                                     <div className="px-4 py-4 mb-2 border-b border-white/5 bg-zinc-900/50 rounded-2xl">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Authenticated Session</p>
-                                        <p className="text-sm font-black truncate text-white uppercase tracking-tight">{user.displayName || 'User'}</p>
-                                        <p className="text-[10px] text-[#FF6600] font-bold truncate">{user.email}</p>
+                                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Account Protocol</p>
+                                        <p className="text-sm font-black truncate text-white uppercase tracking-tight">{user.displayName || 'MarketBridge User'}</p>
+                                        <p className="text-[10px] text-[#FF6600] font-bold truncate opacity-80">{user.email}</p>
                                     </div>
-                                    <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1">
+                                    <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1 outline-none transition-colors border border-transparent focus:border-white/5">
                                         <Link href="/settings" className="flex items-center gap-4 w-full px-2">
                                             <div className="h-9 w-9 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center group-hover:border-[#FF6600]/50 transition-colors">
                                                 <User className="h-4 w-4 text-zinc-500 group-hover:text-[#FF6600]" />
                                             </div>
-                                            <span className="font-bold uppercase text-[10px] tracking-widest text-zinc-400 group-hover:text-white transition-colors">Profile Settings</span>
+                                            <span className="font-bold uppercase text-[10px] tracking-widest text-zinc-400 group-hover:text-white transition-colors">Profile Node</span>
                                         </Link>
                                     </DropdownMenuItem>
                                     {['dealer', 'student_seller'].includes(user.role) && (
-                                        <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1">
+                                        <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1 outline-none border border-transparent focus:border-white/5">
                                             <Link href="/dealer/dashboard" className="flex items-center gap-4 w-full px-2">
                                                 <div className="h-9 w-9 rounded-xl bg-[#FF6600]/10 border border-[#FF6600]/20 flex items-center justify-center group-hover:bg-[#FF6600]/20 transition-all">
                                                     <LayoutDashboard className="h-4 w-4 text-[#FF6600]" />
@@ -161,22 +177,22 @@ export const Header = () => {
                                         </DropdownMenuItem>
                                     )}
                                     {['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'].includes(user.role) && (
-                                        <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1">
+                                        <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1 outline-none border border-transparent focus:border-white/5">
                                             <Link href="/admin" className="flex items-center gap-4 w-full px-2">
                                                 <div className="h-9 w-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
                                                     <Crown className="h-4 w-4 text-emerald-500" />
                                                 </div>
-                                                <span className="font-bold uppercase text-[10px] tracking-widest text-emerald-500">Admin Control</span>
+                                                <span className="font-bold uppercase text-[10px] tracking-widest text-emerald-500">Master Control</span>
                                             </Link>
                                         </DropdownMenuItem>
                                     )}
                                     <div className="my-2 border-t border-white/5" />
-                                    <DropdownMenuItem onClick={handleSignOut} className="focus:bg-red-500/10 text-red-500 rounded-2xl cursor-pointer py-3 group my-1">
+                                    <DropdownMenuItem onClick={handleSignOut} className="focus:bg-red-500/10 text-red-500 rounded-2xl cursor-pointer py-3 group my-1 border border-transparent focus:border-red-500/10">
                                         <span className="flex items-center gap-4 w-full px-2">
                                             <div className="h-9 w-9 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center group-hover:bg-red-500/20">
                                                 <LogOut className="h-4 w-4 text-red-500" />
                                             </div>
-                                            <span className="font-bold uppercase text-[10px] tracking-widest">Logout</span>
+                                            <span className="font-bold uppercase text-[10px] tracking-widest">Disconnect</span>
                                         </span>
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>

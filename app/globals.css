@@ -90,6 +90,7 @@
   }
 
   body {
+    scrollbar-gutter: stable;
     @apply bg-background text-foreground font-sans antialiased;
     background-image:
       linear-gradient(to right, hsla(0, 0%, 100%, 0.03) 1px, transparent 1px),
@@ -243,4 +244,5 @@
 html {
   scrollbar-width: thin;
   scrollbar-color: #333 #000;
+  scrollbar-gutter: stable;
 }
