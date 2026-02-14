@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     Smartphone, Shirt, BookOpen, Utensils, Sparkles,
-    Briefcase, Camera, Headphones, Coffee, Laptop, Globe
+    Briefcase, Laptop, Home, Car, Armchair
 } from 'lucide-react';
 
 export interface Category {
@@ -18,6 +18,26 @@ export interface Category {
 
 export const CATEGORIES: Category[] = [
     {
+        id: 'gadgets',
+        name: 'Gadgets',
+        icon: Smartphone,
+        color: 'text-blue-500',
+        bg: 'bg-blue-500/10',
+        isActive: true,
+        slug: 'gadgets',
+        description: 'Phones, tablets, and tech essentials.'
+    },
+    {
+        id: 'laptops',
+        name: 'Laptops',
+        icon: Laptop,
+        color: 'text-indigo-500',
+        bg: 'bg-indigo-500/10',
+        isActive: true,
+        slug: 'laptops',
+        description: 'High-performance laptops for students.'
+    },
+    {
         id: 'fashion',
         name: 'Fashion',
         icon: Shirt,
@@ -28,14 +48,54 @@ export const CATEGORIES: Category[] = [
         description: 'Clothing, shoes, bags, and student styles.'
     },
     {
-        id: 'gadgets',
-        name: 'Gadgets',
-        icon: Smartphone,
-        color: 'text-blue-500',
-        bg: 'bg-blue-500/10',
+        id: 'vehicles',
+        name: 'Vehicles',
+        icon: Car,
+        color: 'text-red-500',
+        bg: 'bg-red-500/10',
         isActive: true,
-        slug: 'gadgets',
-        description: 'Phones, laptops, chargers, and tech essentials.'
+        slug: 'vehicles',
+        description: 'Cars, motorcycles, and easy mobility.'
+    },
+    {
+        id: 'properties',
+        name: 'Properties',
+        icon: Home,
+        color: 'text-green-500',
+        bg: 'bg-green-500/10',
+        isActive: true,
+        slug: 'properties',
+        description: 'Student accommodation and rentals.'
+    },
+    {
+        id: 'furniture',
+        name: 'Furniture',
+        icon: Armchair,
+        color: 'text-amber-600',
+        bg: 'bg-amber-600/10',
+        isActive: true,
+        slug: 'furniture',
+        description: 'Home decor and comfortable living.'
+    },
+    {
+        id: 'books',
+        name: 'Books',
+        icon: BookOpen,
+        color: 'text-emerald-600',
+        bg: 'bg-emerald-600/10',
+        isActive: true,
+        slug: 'books',
+        description: 'Textbooks, novels, and academic resources.'
+    },
+    {
+        id: 'beauty',
+        name: 'Beauty',
+        icon: Sparkles,
+        color: 'text-rose-500',
+        bg: 'bg-rose-500/10',
+        isActive: true,
+        slug: 'beauty',
+        description: 'Skincare, makeup, and personal care.'
     },
     {
         id: 'food',
@@ -55,26 +115,6 @@ export const CATEGORIES: Category[] = [
         bg: 'bg-purple-500/10',
         isActive: true,
         slug: 'services',
-        description: 'Hair styling, makeup, photography, and tutoring.'
-    },
-    {
-        id: 'accessories',
-        name: 'Accessories',
-        icon: Sparkles,
-        color: 'text-rose-500',
-        bg: 'bg-rose-500/10',
-        isActive: true,
-        slug: 'accessories',
-        description: 'Jewelry, watches, and campus vanity.'
-    },
-    {
-        id: 'others',
-        name: 'Others',
-        icon: Globe,
-        color: 'text-zinc-500',
-        bg: 'bg-zinc-500/10',
-        isActive: true,
-        slug: 'others',
-        description: 'Miscellaneous items for student life.'
+        description: 'Professional services and campus gigs.'
     }
 ];

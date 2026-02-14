@@ -140,7 +140,18 @@ function ListingsContent() {
 
             // Fallback to mock data ONLY if no search query provided (demo mode) or if DB is empty
             if ((!resultData || resultData.length === 0) && !search) {
-                const mockListings: Listing[] = COMPREHENSIVE_MOCK_LISTINGS.map(item => ({
+                // Filter mock data based on active filters
+                let filteredMock = COMPREHENSIVE_MOCK_LISTINGS;
+
+                if (category && category !== 'All Categories') {
+                    filteredMock = filteredMock.filter(item => item.category === category);
+                }
+
+                if (location && location !== 'All Locations') {
+                    filteredMock = filteredMock.filter(item => item.location.includes(location));
+                }
+
+                const mockListings: Listing[] = filteredMock.map(item => ({
                     id: item._id,
                     title: item.title,
                     description: item.description,
