@@ -14,6 +14,7 @@ import { CATEGORIES } from '@/lib/categories';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { intelligentSearch, trackSearch } from '@/lib/ai-search';
+import { COMPREHENSIVE_MOCK_LISTINGS } from '@/lib/mockData';
 
 interface Listing {
     id: string;
@@ -137,38 +138,27 @@ function ListingsContent() {
                 resultData = data || [];
             }
 
-            // Fallback to mock data ONLY if no search query provided (demo mode)
+            // Fallback to mock data ONLY if no search query provided (demo mode) or if DB is empty
             if ((!resultData || resultData.length === 0) && !search) {
-                const mockListings: Listing[] = [
-                    {
-                        id: 'mock-1',
-                        title: 'iPhone 13 - 128GB (Clean)',
-                        description: 'Battery health 89%. Face ID working perfect. UK Used but very clean. Available at UniAbuja.',
-                        price: 450000,
-                        category: 'gadgets',
-                        location: 'FCT - Abuja',
-                        status: 'active',
-                        dealer_id: 'mock',
-                        created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&q=80'],
-                        is_verified_listing: true,
-                        dealer: { id: 'mock', display_name: 'Boluwatife (Verified Student)', is_verified: true }
-                    },
-                    {
-                        id: 'mock-2',
-                        title: 'Nike Dunk Low - Retro Black/White',
-                        description: 'Brand new. Size 42-45 available. Pick up at Baze Gate 2.',
-                        price: 45000,
-                        category: 'fashion',
-                        location: 'FCT - Abuja',
-                        status: 'active',
-                        dealer_id: 'mock',
-                        created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&q=80'],
-                        is_verified_listing: true,
-                        dealer: { id: 'mock', display_name: 'Chidi (Verified Student)', is_verified: true }
+                const mockListings: Listing[] = COMPREHENSIVE_MOCK_LISTINGS.map(item => ({
+                    id: item._id,
+                    title: item.title,
+                    description: item.description,
+                    price: item.price,
+                    category: item.category,
+                    location: item.location,
+                    status: 'active',
+                    dealer_id: item.dealer._id,
+                    created_at: new Date().toISOString(),
+                    images: item.images,
+                    is_verified_listing: Math.random() > 0.7,
+                    dealer: {
+                        id: item.dealer._id,
+                        display_name: item.dealer.displayName,
+                        is_verified: item.dealer.isVerified,
+                        store_type: item.dealer.shopType
                     }
-                ];
+                }));
                 setListings(mockListings);
             } else {
                 setListings(resultData);
@@ -185,6 +175,51 @@ function ListingsContent() {
         e.preventDefault();
         fetchListings();
     };
+
+    // Auth Wall: Block access if not logged in
+    if (!loading && !user) {
+        return (
+            <div className="min-h-screen bg-black text-white relative flex flex-col pt-28 pb-20 overflow-hidden">
+                <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
+
+                <div className="container px-6 mx-auto relative z-10 flex flex-col items-center justify-center flex-1 text-center space-y-8">
+                    <div className="h-24 w-24 rounded-3xl bg-gradient-to-br from-[#FF6600]/20 to-black border border-[#FF6600]/30 flex items-center justify-center shadow-[0_0_50px_rgba(255,102,0,0.2)] mb-4">
+                        <Store className="h-12 w-12 text-[#FF6600]" />
+                    </div>
+
+                    <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter max-w-3xl leading-tight">
+                        Unlock Exclusive <span className="text-[#FF6600]">Details</span>
+                    </h1>
+
+                    <p className="text-zinc-400 text-lg md:text-xl font-medium max-w-xl">
+                        Join thousands of students trading securely. Sign up to view prices, contact sellers, and access over 300+ campus listings.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md pt-4">
+                        <Button size="lg" asChild className="h-14 flex-1 bg-[#FF6600] text-black font-black uppercase tracking-widest hover:bg-[#FF8533] hover:scale-105 transition-all shadow-[0_0_40px_rgba(255,102,0,0.3)] rounded-xl">
+                            <Link href="/signup">
+                                Create Account
+                            </Link>
+                        </Button>
+                        <Button size="lg" variant="outline" asChild className="h-14 flex-1 border-white/20 text-white font-bold uppercase tracking-widest hover:bg-white hover:text-black hover:border-transparent transition-all rounded-xl">
+                            <Link href="/login">
+                                Sign In
+                            </Link>
+                        </Button>
+                    </div>
+
+                    {/* Teaser Background (Blurred Listings) */}
+                    <div className="absolute inset-x-0 bottom-0 h-64 opacity-50 mask-linear-fade pointer-events-none -z-10 overflow-hidden">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 filter blur-sm transform translate-y-10">
+                            {COMPREHENSIVE_MOCK_LISTINGS.slice(0, 4).map((item, i) => (
+                                <div key={i} className="bg-zinc-900/50 rounded-xl h-48 border border-white/5 mx-2"></div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-black text-white relative selection:bg-[#FF6600] selection:text-black flex flex-col pt-28 pb-20">
@@ -333,6 +368,7 @@ function ListingsContent() {
         </div>
     );
 }
+
 
 export default function ListingsPage() {
     return (

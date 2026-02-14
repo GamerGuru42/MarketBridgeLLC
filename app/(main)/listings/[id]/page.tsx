@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +17,7 @@ import { ReviewsSection } from '@/components/ReviewsSection';
 import { useFlutterwave, getFlutterwaveConfig } from '@/lib/flutterwave';
 import { initiateOPayCheckout } from '@/lib/opay';
 import { cn } from '@/lib/utils';
+import { COMPREHENSIVE_MOCK_LISTINGS } from '@/lib/mockData';
 import {
     Dialog,
     DialogContent,
@@ -91,224 +93,36 @@ export default function ListingDetailPage() {
             // Handle mock data request explicitly
             const listingId = Array.isArray(params.id) ? params.id[0] : params.id;
 
-            if (listingId && listingId.startsWith('mock-')) {
-                const mockListings: Record<string, any> = {
-                    'mock-1': {
-                        id: 'mock-1',
-                        title: 'iPhone 12 Pro (UK Used)',
-                        description: 'Clean UK used iPhone 12 Pro. 128GB, Pacific Blue. Battery health 89%. No FaceID issues. Comes with generic charger.',
-                        price: 320000,
-                        category: 'Gadgets',
-                        location: 'UniAbuja Main Campus',
-                        dealer_id: 'mock_student_1',
-                        created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1603539268574-e3fb65e4ff8a?auto=format&fit=crop&w=800&q=80'],
-                        is_verified_listing: true,
-                        condition: 'Foreign Used',
-                        make: 'Apple',
-                        model: 'iPhone 12 Pro',
-                        dealer: {
-                            id: 'mock_student_1',
-                            display_name: 'Campus Gadgets',
-                            is_verified: true,
-                            store_type: 'online',
-                            phone_number: '08122222222',
-                            subscription_plan: 'starter'
-                        }
-                    },
-                    'mock-2': {
-                        id: 'mock-2',
-                        title: 'Bone Straight Wig (24 inches)',
-                        description: 'Super double drawn bone straight wig. 300g fullness. Vietnam original. Can be styled and dyed. Payment on delivery within campus.',
-                        price: 150000,
-                        category: 'Beauty',
-                        location: 'Veritas University',
-                        dealer_id: 'mock_student_2',
-                        created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1635396603077-4b711739fe88?auto=format&fit=crop&w=800&q=80'],
-                        is_verified_listing: true,
-                        condition: 'Brand New',
-                        make: 'Vietnam Hair',
-                        model: 'Bone Straight',
-                        dealer: {
-                            id: 'mock_student_2',
-                            display_name: 'Slay with Precious',
-                            is_verified: true,
-                            store_type: 'physical',
-                            phone_number: '08133333333',
-                            subscription_plan: 'professional'
-                        }
-                    },
-                    'mock-3': {
-                        id: 'mock-3',
-                        title: 'Math 101 Textbook + Past Questions',
-                        description: 'Essential calculus textbook for freshers. Includes solved past questions from 2015-2023. Clean pages, no torn parts.',
-                        price: 5000,
-                        category: 'Education',
-                        location: 'UniAbuja Mini Campus',
-                        dealer_id: 'mock_student_3',
-                        created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80'],
-                        is_verified_listing: false,
-                        condition: 'Used',
-                        make: 'Educational',
-                        model: 'Textbook',
-                        dealer: {
-                            id: 'mock_student_3',
-                            display_name: 'Bookworm Hub',
-                            is_verified: false,
-                            store_type: 'physical',
-                            phone_number: '08144444444',
-                            subscription_plan: 'starter'
-                        }
-                    },
-                    'mock-4': {
-                        id: 'mock-4',
-                        title: 'Nike Air Force 1 (White)',
-                        description: 'Classic white Air Force 1s. Size 42-45 available. Durable and clean. Good for everyday lecture wear.',
-                        price: 25000,
-                        category: 'Fashion',
-                        location: 'Baze University',
-                        dealer_id: 'mock_student_4',
-                        created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=800&q=80'],
-                        is_verified_listing: true,
-                        condition: 'Brand New',
-                        make: 'Nike',
-                        model: 'Air Force 1',
-                        dealer: {
-                            id: 'mock_student_4',
-                            display_name: 'Kicks by Jide',
-                            is_verified: true,
-                            store_type: 'online',
-                            phone_number: '08155555555',
-                            subscription_plan: 'professional'
-                        }
-                    },
-                    'mock-5': {
-                        id: 'mock-5',
-                        title: 'Student Indomie Combo Pack',
-                        description: 'Carton of Indomie Super Pack (40 pieces). Best price on campus. Free delivery to hostels for orders above 2 cartons.',
-                        price: 8500,
-                        category: 'Food',
-                        location: 'Nile University',
-                        dealer_id: 'mock_student_5',
-                        created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?auto=format&fit=crop&w=800&q=80'],
-                        is_verified_listing: true,
-                        condition: 'Brand New',
-                        make: 'Indomie',
-                        model: 'Super Pack',
-                        dealer: {
-                            id: 'mock_student_5',
-                            display_name: 'Nile Foodies',
-                            is_verified: true,
-                            store_type: 'physical',
-                            phone_number: '08166666666',
-                            subscription_plan: 'starter'
-                        }
-                    },
-                    'mock-6': {
-                        id: 'mock-6',
-                        title: 'HP EliteBook 840 G5',
-                        description: 'Core i5, 8th Gen, 16GB RAM, 512GB SSD. Perfect for assignments and coding. Backlit keyboard and fingerprint sensor.',
-                        price: 280000,
-                        category: 'Laptops',
-                        location: 'UniAbuja Main Campus',
-                        dealer_id: 'mock_student_1',
-                        created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1544731612-de7f96afe55f?auto=format&fit=crop&w=800&q=80'],
-                        is_verified_listing: true,
-                        condition: 'Foreign Used',
-                        make: 'HP',
-                        model: 'EliteBook 840 G5',
-                        dealer: {
-                            id: 'mock_student_1',
-                            display_name: 'Campus Gadgets',
-                            is_verified: true,
-                            store_type: 'online',
-                            phone_number: '08122222222',
-                            subscription_plan: 'starter'
-                        }
-                    },
-                    'mock-7': {
-                        id: 'mock-7',
-                        title: 'Professional Makeup Session',
-                        description: 'Full face glam for matriculation, birthdays, and events. Home service available in hostels. Lashes included.',
-                        price: 15000,
-                        category: 'Services',
-                        location: 'Veritas University',
-                        dealer_id: 'mock_student_2',
-                        created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=800&q=80'],
-                        is_verified_listing: true,
-                        condition: 'New',
-                        make: 'Service',
-                        model: 'Glam',
-                        dealer: {
-                            id: 'mock_student_2',
-                            display_name: 'Slay with Precious',
-                            is_verified: true,
-                            store_type: 'physical',
-                            phone_number: '08133333333',
-                            subscription_plan: 'professional'
-                        }
-                    },
-                    'mock-8': {
-                        id: 'mock-8',
-                        title: 'Oraimo FreePods 4',
-                        description: 'Brand new Oraimo FreePods 4. Active Noise Cancellation. Long battery life. 1 year warranty from purchase.',
-                        price: 28000,
-                        category: 'Gadgets',
-                        location: 'Gwagwalada',
-                        dealer_id: 'mock_student_1',
-                        created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=800&q=80'],
-                        is_verified_listing: true,
-                        condition: 'Brand New',
-                        make: 'Oraimo',
-                        model: 'FreePods 4',
-                        dealer: {
-                            id: 'mock_student_1',
-                            display_name: 'Campus Gadgets',
-                            is_verified: true,
-                            store_type: 'online',
-                            phone_number: '08122222222',
-                            subscription_plan: 'starter'
-                        }
-                    },
-                    'mock-9': {
-                        id: 'mock-9',
-                        title: 'Vintage Oversized Tees',
-                        description: 'High quality cotton vintage tees. Various designs available. Unisex. Size M, L, XL, XXL.',
-                        price: 8000,
-                        category: 'Fashion',
-                        location: 'UniAbuja Main Campus',
-                        dealer_id: 'mock_student_4',
-                        created_at: new Date().toISOString(),
-                        images: ['https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?auto=format&fit=crop&w=800&q=80'],
-                        is_verified_listing: true,
-                        condition: 'Brand New',
-                        make: 'Vintage',
-                        model: 'Oversized',
-                        dealer: {
-                            id: 'mock_student_4',
-                            display_name: 'Kicks by Jide',
-                            is_verified: true,
-                            store_type: 'online',
-                            phone_number: '08155555555',
-                            subscription_plan: 'professional'
-                        }
+            // Check comprehensive mock data first
+            const mockItem = COMPREHENSIVE_MOCK_LISTINGS.find(item => item._id === listingId);
+
+            if (mockItem) {
+                const mappedListing: Listing = {
+                    id: mockItem._id,
+                    title: mockItem.title,
+                    description: mockItem.description,
+                    price: mockItem.price,
+                    category: mockItem.category,
+                    location: mockItem.location,
+                    dealer_id: mockItem.dealer._id,
+                    created_at: new Date().toISOString(),
+                    images: mockItem.images,
+                    is_verified_listing: Math.random() > 0.7,
+                    condition: 'Brand New', // Default for mock
+                    make: mockItem.category, // Fallback
+                    model: 'Standard Model', // Fallback
+                    dealer: {
+                        id: mockItem.dealer._id,
+                        display_name: mockItem.dealer.displayName,
+                        is_verified: mockItem.dealer.isVerified,
+                        store_type: mockItem.dealer.shopType,
+                        phone_number: '08123456789',
+                        subscription_plan: 'starter'
                     }
                 };
-
-                const mockListing = mockListings[listingId];
-                if (mockListing) {
-                    // Force the type
-                    setListing(mockListing as unknown as Listing);
-                    setLoading(false);
-                    return;
-                }
+                setListing(mappedListing);
+                setLoading(false);
+                return;
             }
 
             const { data, error } = await supabase
@@ -550,6 +364,54 @@ export default function ListingDetailPage() {
         return (
             <div className="min-h-screen bg-black flex items-center justify-center text-white">
                 <Loader2 className="h-10 w-10 animate-spin text-[#FF6600]" />
+            </div>
+        );
+    }
+
+    // Auth Gate: Check if user is logged in
+    if (!user && listing) {
+        return (
+            <div className="min-h-screen bg-black text-white relative flex flex-col pt-28 pb-20 overflow-hidden">
+                <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
+
+                <div className="container px-6 mx-auto relative z-10 flex flex-col items-center justify-center flex-1 text-center space-y-8">
+                    <div className="glass-card rounded-[2.5rem] overflow-hidden p-2 border-white/5 relative group mb-8 max-w-sm w-full mx-auto shadow-2xl shadow-[#FF6600]/10">
+                        <div className="aspect-[4/3] rounded-[2rem] overflow-hidden relative bg-zinc-900 filter blur-sm opacity-50">
+                            {listing.images && listing.images.length > 0 && (
+                                <Image
+                                    src={listing.images[0]}
+                                    alt="Preview"
+                                    fill
+                                    className="object-cover"
+                                />
+                            )}
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                            <ShieldCheck className="h-16 w-16 text-[#FF6600]" />
+                        </div>
+                    </div>
+
+                    <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter max-w-3xl leading-tight">
+                        Unlock Full <span className="text-[#FF6600]">Details</span>
+                    </h1>
+
+                    <p className="text-zinc-400 text-lg md:text-xl font-medium max-w-xl">
+                        Sign in to view price, location, seller info, and contact number for this item.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md pt-4">
+                        <Button size="lg" asChild className="h-14 flex-1 bg-[#FF6600] text-black font-black uppercase tracking-widest hover:bg-[#FF8533] hover:scale-105 transition-all shadow-[0_0_40px_rgba(255,102,0,0.3)] rounded-xl">
+                            <Link href={`/signup?redirect=/listings/${listing.id}`}>
+                                Create Account
+                            </Link>
+                        </Button>
+                        <Button size="lg" variant="outline" asChild className="h-14 flex-1 border-white/20 text-white font-bold uppercase tracking-widest hover:bg-white hover:text-black hover:border-transparent transition-all rounded-xl">
+                            <Link href={`/login?redirect=/listings/${listing.id}`}>
+                                Sign In
+                            </Link>
+                        </Button>
+                    </div>
+                </div>
             </div>
         );
     }

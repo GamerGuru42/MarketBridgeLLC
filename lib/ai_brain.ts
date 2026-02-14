@@ -28,90 +28,23 @@ interface ConversationContext {
     recentSearchResults?: SearchResult[]; // To remember what we just showed
 }
 
+import { COMPREHENSIVE_MOCK_LISTINGS } from './mockData';
+
 // Extended Product Database - SYNCED WITH LISTING PAGE MOCK DATA
-const MOCK_DB: SearchResult[] = [
-    {
-        id: 'mock-1',
-        title: 'iPhone 12 Pro (UK Used)',
-        price: 320000,
-        category: 'Gadgets',
-        location: 'UniAbuja Main Campus',
-        keywords: ['phone', 'apple', 'iphone', '12', 'pro', 'mobile', 'uk used'],
-        description: 'Clean UK used iPhone 12 Pro. 128GB, Pacific Blue. Battery health 89%.'
-    },
-    {
-        id: 'mock-2',
-        title: 'Bone Straight Wig (24 inches)',
-        price: 150000,
-        category: 'Beauty',
-        location: 'Veritas University',
-        keywords: ['wig', 'hair', 'bone', 'straight', 'human', 'hair', 'beauty'],
-        description: 'Super double drawn bone straight wig. 300g fullness. Vietnam original.'
-    },
-    {
-        id: 'mock-3',
-        title: 'Math 101 Textbook + Past Questions',
-        price: 5000,
-        category: 'Education',
-        location: 'UniAbuja Mini Campus',
-        keywords: ['book', 'textbook', 'math', '101', 'pq', 'past questions', 'handout'],
-        description: 'Essential calculus textbook for freshers. Includes solved past questions from 2015-2023.'
-    },
-    {
-        id: 'mock-4',
-        title: 'Nike Air Force 1 (White)',
-        price: 25000,
-        category: 'Fashion',
-        location: 'Baze University',
-        keywords: ['shoe', 'sneakers', 'nike', 'air', 'force', 'white', 'kicks'],
-        description: 'Classic white Air Force 1s. Size 42-45 available. Durable and clean.'
-    },
-    {
-        id: 'mock-5',
-        title: 'Student Indomie Combo Pack',
-        price: 8500,
-        category: 'Food',
-        location: 'Nile University',
-        keywords: ['food', 'indomie', 'carton', 'noodles', 'hungry', 'super pack'],
-        description: 'Carton of Indomie Super Pack (40 pieces). Best price on campus. Free delivery to hostels.'
-    },
-    {
-        id: 'mock-6',
-        title: 'HP EliteBook 840 G5',
-        price: 280000,
-        category: 'Laptops',
-        location: 'UniAbuja Main Campus',
-        keywords: ['laptop', 'hp', 'elitebook', 'computer', 'pc', 'assignment'],
-        description: 'Core i5, 8th Gen, 16GB RAM, 512GB SSD. Perfect for assignments and coding.'
-    },
-    {
-        id: 'mock-7',
-        title: 'Professional Makeup Session',
-        price: 15000,
-        category: 'Services',
-        location: 'Veritas University',
-        keywords: ['makeup', 'beauty', 'face', 'beat', 'service', 'glam'],
-        description: 'Full face glam for matriculation, birthdays, and events. Home service available in hostels.'
-    },
-    {
-        id: 'mock-8',
-        title: 'Oraimo FreePods 4',
-        price: 28000,
-        category: 'Gadgets',
-        location: 'Gwagwalada',
-        keywords: ['earbuds', 'oriamo', 'freepods', 'music', 'bluetooth', 'audio'],
-        description: 'Brand new Oraimo FreePods 4. Active Noise Cancellation. Long battery life.'
-    },
-    {
-        id: 'mock-9',
-        title: 'Vintage Oversized Tees',
-        price: 8000,
-        category: 'Fashion',
-        location: 'UniAbuja Main Campus',
-        keywords: ['shirt', 't-shirt', 'vintage', 'oversized', 'fashion', 'clothes'],
-        description: 'High quality cotton vintage tees. Various designs available. Unisex.'
-    }
-];
+const MOCK_DB: SearchResult[] = COMPREHENSIVE_MOCK_LISTINGS.map(item => ({
+    id: item._id,
+    title: item.title,
+    price: item.price,
+    category: item.category,
+    location: item.location,
+    image: item.images[0],
+    keywords: [
+        ...item.title.toLowerCase().split(' '),
+        item.category.toLowerCase(),
+        ...item.description.toLowerCase().split(' ').filter(w => w.length > 3)
+    ],
+    description: item.description
+}));
 
 const GREETINGS = [
     "Hey there! I'm Sage. Looking for campus deals today?",
