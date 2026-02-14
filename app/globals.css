@@ -176,6 +176,11 @@
   .clip-diagonal-section {
     clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
   }
+
+  .mask-linear-fade {
+    mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
+  }
 }
 
 /* Mobile Optimizations */
