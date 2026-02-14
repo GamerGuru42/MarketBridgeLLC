@@ -126,7 +126,7 @@ export const Header = () => {
 
                     {user && (
                         <div className="flex items-center gap-3">
-                            <DropdownMenu>
+                            <DropdownMenu modal={false}>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" className="h-11 w-11 rounded-full p-0 border border-white/10 bg-white/5 hover:bg-white/10 ring-offset-black transition-all hover:scale-105">
                                         <User className="h-5 w-5 text-zinc-300" />

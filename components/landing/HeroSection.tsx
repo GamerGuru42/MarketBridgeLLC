@@ -119,7 +119,7 @@ export const HeroSection = () => {
                 </motion.div>
 
                 {/* Mobile Horizontal Scroll (Visible on Mobile Only) */}
-                <div className="lg:hidden w-full overflow-x-auto pb-8 pt-4 no-scrollbar">
+                <div className="lg:hidden w-full overflow-x-auto pb-8 pt-4 no-scrollbar [mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)] [-webkit-mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)]">
                     <div className="flex gap-4 px-4 min-w-max">
                         {items.map((item, index) => (
                             <motion.div
