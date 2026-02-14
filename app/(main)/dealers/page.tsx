@@ -52,7 +52,28 @@ export default function FindDealersPage() {
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
-            setDealers(data || []);
+
+            if (data && data.length > 0) {
+                setDealers(data);
+            } else {
+                // Fallback to mock dealers
+                const { COMPREHENSIVE_MOCK_LISTINGS } = require('@/lib/mockData');
+                const uniqueDealers = Array.from(new Set(COMPREHENSIVE_MOCK_LISTINGS.map((l: any) => l.dealer._id)))
+                    .map(id => {
+                        const listing = COMPREHENSIVE_MOCK_LISTINGS.find((l: any) => l.dealer._id === id);
+                        return {
+                            id: listing.dealer._id,
+                            display_name: listing.dealer.displayName,
+                            business_name: listing.dealer.displayName,
+                            location: listing.location,
+                            is_verified: listing.dealer.isVerified,
+                            store_type: listing.dealer.shopType || 'Online',
+                            role: 'dealer',
+                            created_at: new Date().toISOString()
+                        };
+                    });
+                setDealers(uniqueDealers);
+            }
         } catch (error) {
             console.error('Error fetching dealers:', error);
         } finally {

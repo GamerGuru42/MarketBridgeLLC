@@ -4,16 +4,54 @@ import React, { useRef, useState } from 'react';
 import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowRight, Smartphone, Shirt, Book, Headphones, Zap, MousePointer2 } from 'lucide-react';
+import {
+    ArrowRight, Smartphone, Shirt, Book, Laptop, Sparkles,
+    Utensils, Briefcase, Car, Home, Armchair, MousePointer2
+} from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
-const items = [
-    { icon: Smartphone, label: 'MacBook Pro', price: '₦2.1M', rotation: -6, color: 'bg-zinc-900', top: '10%', left: '10%' },
-    { icon: Shirt, label: 'Nike Dunk', price: '₦45k', rotation: 12, color: 'bg-black', top: '30%', left: '60%' },
-    { icon: Headphones, label: 'Sony XM5', price: '₦350k', rotation: -3, color: 'bg-zinc-800', top: '60%', left: '20%' },
-    { icon: Book, label: 'Anatomy', price: '₦12k', rotation: 8, color: 'bg-zinc-900', top: '70%', left: '55%' },
-    { icon: Zap, label: 'PowerBank', price: '₦15k', rotation: -15, color: 'bg-black', top: '5%', left: '70%' },
-];
+import { COMPREHENSIVE_MOCK_LISTINGS } from '@/lib/mockData';
+
+const iconMap: Record<string, any> = {
+    'Gadgets': Smartphone,
+    'Fashion': Shirt,
+    'Laptops': Laptop,
+    'Books': Book,
+    'Beauty': Sparkles,
+    'Food': Utensils,
+    'Services': Briefcase,
+    'Vehicles': Car,
+    'Properties': Home,
+    'Furniture': Armchair
+};
+
+// Select 5 distinct items for the hero
+const getHeroItems = () => {
+    const shuffled = [...COMPREHENSIVE_MOCK_LISTINGS].sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, 5);
+
+    const positions = [
+        { top: '10%', left: '10%', rotation: -6 },
+        { top: '30%', left: '60%', rotation: 12 },
+        { top: '60%', left: '20%', rotation: -3 },
+        { top: '70%', left: '55%', rotation: 8 },
+        { top: '5%', left: '70%', rotation: -15 }
+    ];
+
+    const colors = ['bg-zinc-900', 'bg-black', 'bg-zinc-800', 'bg-zinc-900', 'bg-black'];
+
+    return selected.map((item, i) => ({
+        icon: iconMap[item.category] || Smartphone,
+        label: item.title,
+        price: `₦${item.price.toLocaleString()}`,
+        top: positions[i].top,
+        left: positions[i].left,
+        rotation: positions[i].rotation,
+        color: colors[i]
+    }));
+};
+
+const items = getHeroItems();
 
 export const HeroSection = () => {
     const { user } = useAuth();

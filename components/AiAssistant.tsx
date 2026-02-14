@@ -27,6 +27,7 @@ interface SearchResult {
     price: number;
     category: string;
     location: string;
+    image?: string;
     description?: string;
     keywords?: string[];
 }
@@ -189,11 +190,22 @@ export function AiAssistant() {
                                             {/* Product Details Card (Single Item) */}
                                             {msg.productDetail && (
                                                 <div className="rounded-xl border border-primary/20 bg-card overflow-hidden shadow-lg animate-in fade-in zoom-in-95 duration-300">
-                                                    <div className="h-32 bg-muted relative">
-                                                        {/* Placeholder for image */}
-                                                        <div className="absolute inset-0 flex items-center justify-center bg-zinc-800 text-zinc-500">
-                                                            <ShoppingBag className="h-8 w-8 opacity-20" />
-                                                        </div>
+                                                    <div className="h-48 bg-muted relative">
+                                                        {msg.productDetail.image ? (
+                                                            <img
+                                                                src={msg.productDetail.image}
+                                                                alt={msg.productDetail.title}
+                                                                className="w-full h-full object-cover"
+                                                                onError={(e) => {
+                                                                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1523475496153-3d6cc0f0bf19?w=800&q=80';
+                                                                }}
+                                                            />
+                                                        ) : (
+                                                            /* Placeholder for image */
+                                                            <div className="absolute inset-0 flex items-center justify-center bg-zinc-800 text-zinc-500">
+                                                                <ShoppingBag className="h-8 w-8 opacity-20" />
+                                                            </div>
+                                                        )}
                                                         <Badge className="absolute top-2 right-2 bg-[#FF6600] text-black">
                                                             {msg.productDetail.category}
                                                         </Badge>
