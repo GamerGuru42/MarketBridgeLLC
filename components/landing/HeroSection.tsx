@@ -62,22 +62,22 @@ export const HeroSection = () => {
                     initial={{ opacity: 0, x: -50 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.8, ease: "easeOut", staggerChildren: 0.1 }}
-                    className="space-y-10 text-center lg:text-left relative z-20"
+                    className="space-y-8 text-center lg:text-left relative z-20"
                 >
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl shadow-xl shadow-black/20 hover:border-[#FF6600]/30 transition-colors cursor-default"
+                        className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl shadow-xl shadow-black/20 hover:border-[#FF6600]/30 transition-colors cursor-default mx-auto lg:mx-0"
                     >
                         <span className="relative flex h-2.5 w-2.5">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6600] opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#FF6600]"></span>
                         </span>
-                        <span className="text-xs font-black uppercase tracking-[0.2em] text-zinc-300">Beta Access Live</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-300">Beta Access Live</span>
                     </motion.div>
 
-                    <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white leading-[0.85] select-none">
+                    <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white leading-[0.9] lg:leading-[0.85] select-none">
                         <motion.span className="block" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }}>CAMPUS</motion.span>
                         <motion.span className="block" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }}>COMMERCE</motion.span>
                         <motion.span
@@ -92,7 +92,7 @@ export const HeroSection = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.6 }}
-                        className="text-zinc-400 text-lg md:text-xl font-medium max-w-lg mx-auto lg:mx-0 leading-relaxed"
+                        className="text-zinc-400 text-base md:text-xl font-medium max-w-lg mx-auto lg:mx-0 leading-relaxed px-4 lg:px-0"
                     >
                         The fastest, safest way to buy and sell on campus. <br className="hidden md:block" />
                         Join thousands of students trading securely with <span className="text-white font-bold">MarketBridge</span>.
@@ -102,15 +102,15 @@ export const HeroSection = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.7 }}
-                        className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start pt-4"
+                        className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4 px-4 lg:px-0"
                     >
-                        <Button size="lg" asChild className="h-16 px-10 bg-[#FF6600] text-black font-black uppercase tracking-widest hover:bg-[#FF8533] hover:scale-105 transition-all shadow-[0_0_40px_rgba(255,102,0,0.3)] rounded-[2rem] border border-white/10 group">
+                        <Button size="lg" asChild className="h-14 md:h-16 px-8 md:px-10 bg-[#FF6600] text-black font-black uppercase tracking-widest hover:bg-[#FF8533] hover:scale-105 transition-all shadow-[0_0_40px_rgba(255,102,0,0.3)] rounded-[2rem] border border-white/10 group w-full sm:w-auto">
                             <Link href="/listings">
                                 Start Shopping
                                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                             </Link>
                         </Button>
-                        <Button size="lg" variant="outline" asChild className="h-16 px-10 border-white/20 text-white font-bold uppercase tracking-widest hover:bg-white hover:text-black hover:border-transparent transition-all rounded-[2rem] bg-transparent backdrop-blur-sm">
+                        <Button size="lg" variant="outline" asChild className="h-14 md:h-16 px-8 md:px-10 border-white/20 text-white font-bold uppercase tracking-widest hover:bg-white hover:text-black hover:border-transparent transition-all rounded-[2rem] bg-transparent backdrop-blur-sm w-full sm:w-auto">
                             <Link href={user ? '/dealer/dashboard' : '/signup?role=dealer'}>
                                 Become a Seller
                             </Link>
@@ -118,7 +118,31 @@ export const HeroSection = () => {
                     </motion.div>
                 </motion.div>
 
-                {/* Interactive Visuals (Floating Cards) */}
+                {/* Mobile Horizontal Scroll (Visible on Mobile Only) */}
+                <div className="lg:hidden w-full overflow-x-auto pb-8 pt-4 no-scrollbar">
+                    <div className="flex gap-4 px-4 min-w-max">
+                        {items.map((item, index) => (
+                            <motion.div
+                                key={`mobile-${index}`}
+                                initial={{ opacity: 0, x: 50 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.2 + (index * 0.1) }}
+                                className={`p-5 rounded-3xl border border-white/10 shadow-xl ${item.color} flex flex-col items-center gap-3 w-40 flex-shrink-0 relative overflow-hidden`}
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-50 rounded-3xl pointer-events-none" />
+                                <div className="h-12 w-12 rounded-xl bg-black/40 border border-white/5 flex items-center justify-center">
+                                    <item.icon className="h-6 w-6 text-[#FF6600]" />
+                                </div>
+                                <div className="text-center">
+                                    <h3 className="text-zinc-300 font-bold text-[10px] uppercase tracking-wider">{item.label}</h3>
+                                    <p className="text-white font-black text-lg italic mt-1">{item.price}</p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Desktop Interactive Visuals (Floating Cards) */}
                 <motion.div
                     style={{ y, opacity }}
                     className="relative h-[600px] w-full hidden lg:block perspective-1000"

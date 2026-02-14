@@ -59,7 +59,15 @@ export const CategoryGrid = ({ onCategoryClick }: CategoryGridProps) => {
                         const Icon = cat.icon;
                         return (
                             <motion.div variants={item} key={idx}>
-                                <Link href={cat.locked ? '#' : `/listings?category=${cat.name}`}>
+                                <Link
+                                    href={cat.locked ? '#' : `/listings?category=${cat.name}`}
+                                    onClick={(e) => {
+                                        if (cat.locked && onCategoryClick) {
+                                            e.preventDefault();
+                                            onCategoryClick(cat);
+                                        }
+                                    }}
+                                >
                                     <div className={cn(
                                         "group relative bg-zinc-900 border border-zinc-800 rounded-3xl p-6 aspect-square flex flex-col items-center justify-center gap-4 transition-all duration-300 overflow-hidden",
                                         cat.locked ? "opacity-50 cursor-not-allowed" : "hover:bg-[#FF6600] hover:border-[#FF6600] cursor-pointer"
