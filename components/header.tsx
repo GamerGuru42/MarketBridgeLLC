@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 import { useAuth } from '@/contexts/AuthContext';
-import { Menu, User, LogOut, LayoutDashboard, Crown, MapPin } from 'lucide-react';
+import { Menu, User, LogOut, LayoutDashboard, Crown, MapPin, ChevronRight } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useEffect } from 'react';
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -26,6 +26,13 @@ export const Header = () => {
     const router = useRouter();
     const pathname = usePathname();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
+
+    const { scrollY } = useScroll();
+
+    useMotionValueEvent(scrollY, "change", (latest) => {
+        setScrolled(latest > 20);
+    });
 
     const handleSignOut = () => {
         logout();
@@ -49,40 +56,70 @@ export const Header = () => {
     }, []);
 
     const navLinkClass = (path: string) => cn(
-        "transition-colors relative after:absolute after:bottom-[-4px] after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-[#FF6600] after:rounded-full transition-all duration-300",
-        isActive(path) ? "text-white after:opacity-100 scale-110" : "text-zinc-500 hover:text-white after:opacity-0"
+        "relative text-xs font-bold uppercase tracking-widest transition-colors duration-300",
+        isActive(path) ? "text-white" : "text-zinc-400 hover:text-white"
     );
 
     return (
-        <header className="sticky top-0 z-[100] w-full bg-black/50 backdrop-blur-xl border-b border-white/5 h-20 flex items-center">
-            <div className="container mx-auto px-4 flex items-center justify-between">
+        <motion.header
+            className={cn(
+                "fixed top-0 left-0 right-0 z-[100] transition-all duration-300 border-b",
+                scrolled
+                    ? "bg-black/80 backdrop-blur-xl border-white/5 h-20 shadow-2xl"
+                    : "bg-transparent border-transparent h-24"
+            )}
+            initial={{ y: -100 }}
+            animate={{ y: 0 }}
+            transition={{ duration: 0.5, ease: "circOut" }}
+        >
+            <div className="container mx-auto px-4 h-full flex items-center justify-between">
                 {/* Logo & Node */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-6">
                     <Logo />
-                    <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-[#FF6600]/10 border border-[#FF6600]/20 rounded-full cursor-pointer hover:bg-[#FF6600]/20 transition-all group" onClick={() => localStorage.removeItem('mb-preferred-node')}>
-                        <div className="h-1.5 w-1.5 rounded-full bg-[#00FF85] animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.1em] text-[#FF6600]">{currentNode} Node</span>
-                        <MapPin className="h-3 w-3 text-zinc-600 group-hover:text-[#FF6600] transition-colors" />
+                    <div
+                        className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full cursor-pointer hover:bg-white/10 hover:border-[#FF6600]/30 transition-all group"
+                        onClick={() => localStorage.removeItem('mb-preferred-node')}
+                    >
+                        <div className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00FF85] opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00FF85]"></span>
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.1em] text-zinc-300 group-hover:text-white transition-colors">{currentNode} Node</span>
                     </div>
                 </div>
 
                 {/* Desktop Nav */}
-                <nav className="hidden lg:flex items-center gap-10 text-[11px] font-bold uppercase tracking-[0.2em]">
-                    <Link href="/" className={navLinkClass('/')}>HOME</Link>
-                    <Link href="/listings" className={navLinkClass('/listings')}>LISTINGS</Link>
-                    <Link href="/dealers" className={navLinkClass('/dealers')}>DEALERS</Link>
-                    <Link href="/about" className={navLinkClass('/about')}>ABOUT</Link>
+                <nav className="hidden lg:flex items-center gap-8 bg-black/50 border border-white/5 px-8 py-3 rounded-full backdrop-blur-md">
+                    <Link href="/" className={navLinkClass('/')}>
+                        Home
+                        {isActive('/') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6600] rounded-full" />}
+                    </Link>
+                    <Link href="/listings" className={navLinkClass('/listings')}>
+                        Listings
+                        {isActive('/listings') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6600] rounded-full" />}
+                    </Link>
+                    <Link href="/dealers" className={navLinkClass('/dealers')}>
+                        Dealers
+                        {isActive('/dealers') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6600] rounded-full" />}
+                    </Link>
+                    <Link href="/about" className={navLinkClass('/about')}>
+                        About
+                        {isActive('/about') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6600] rounded-full" />}
+                    </Link>
                 </nav>
 
                 {/* Actions */}
                 <div className="flex items-center gap-4">
                     {!user && !loading && (
-                        <div className="hidden lg:flex items-center gap-6">
-                            <Link href="/login" className="text-white font-black text-[11px] uppercase tracking-widest hover:opacity-80 transition-opacity">
-                                SIGN IN
+                        <div className="hidden lg:flex items-center gap-4">
+                            <Link href="/login" className="text-white font-bold text-xs uppercase tracking-widest hover:text-[#FF6600] transition-colors">
+                                Sign In
                             </Link>
-                            <Button asChild className="bg-gold-gradient text-black font-black uppercase tracking-widest px-8 rounded-full h-11 glow-on-hover border-none">
-                                <Link href="/signup">SIGN UP</Link>
+                            <Button asChild className="bg-[#FF6600] hover:bg-[#FF8533] text-black font-black uppercase tracking-widest px-6 rounded-full h-10 transition-all shadow-lg shadow-[#FF6600]/20 hover:shadow-[#FF6600]/40 hover:scale-105 border-none">
+                                <Link href="/signup">
+                                    Get Started
+                                    <ChevronRight className="ml-1 h-4 w-4" />
+                                </Link>
                             </Button>
                         </div>
                     )}
@@ -91,55 +128,55 @@ export const Header = () => {
                         <div className="flex items-center gap-3">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="h-11 w-11 rounded-full p-0 glass-border bg-white/5 hover:bg-white/10 ring-offset-black">
-                                        <User className="h-5 w-5 text-zinc-400" />
+                                    <Button variant="ghost" className="h-11 w-11 rounded-full p-0 border border-white/10 bg-white/5 hover:bg-white/10 ring-offset-black transition-all hover:scale-105">
+                                        <User className="h-5 w-5 text-zinc-300" />
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent
                                     align="end"
                                     sideOffset={15}
-                                    className="w-64 bg-zinc-950 border border-white/10 p-2 text-white z-[999] shadow-[0_20px_50px_rgba(0,0,0,0.8)] rounded-2xl"
+                                    className="w-72 bg-black border border-white/10 p-2 text-white z-[999] shadow-[0_20px_50px_rgba(0,0,0,0.9)] rounded-3xl"
                                 >
-                                    <div className="px-3 py-3 mb-2 border-b border-white/5">
-                                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Authenticated Operative</p>
-                                        <p className="text-sm font-black truncate text-[#FF6600] italic font-heading tracking-tight">{user.displayName || 'AUTHENTICATED USER'}</p>
-                                        <p className="text-[10px] text-zinc-500 font-medium truncate italic">{user.email}</p>
+                                    <div className="px-4 py-4 mb-2 border-b border-white/5 bg-zinc-900/50 rounded-2xl">
+                                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Authenticated Session</p>
+                                        <p className="text-sm font-black truncate text-white uppercase tracking-tight">{user.displayName || 'User'}</p>
+                                        <p className="text-[10px] text-[#FF6600] font-bold truncate">{user.email}</p>
                                     </div>
-                                    <DropdownMenuItem asChild className="focus:bg-white/5 rounded-xl cursor-pointer py-3 group">
-                                        <Link href="/settings" className="flex items-center gap-3 w-full">
-                                            <div className="h-8 w-8 rounded-lg bg-zinc-900 border border-white/5 flex items-center justify-center group-hover:border-[#FF6600]/50 transition-colors">
+                                    <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1">
+                                        <Link href="/settings" className="flex items-center gap-4 w-full px-2">
+                                            <div className="h-9 w-9 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center group-hover:border-[#FF6600]/50 transition-colors">
                                                 <User className="h-4 w-4 text-zinc-500 group-hover:text-[#FF6600]" />
                                             </div>
-                                            <span className="font-black uppercase text-[10px] tracking-widest text-zinc-400 group-hover:text-white transition-colors">Operational Profile</span>
+                                            <span className="font-bold uppercase text-[10px] tracking-widest text-zinc-400 group-hover:text-white transition-colors">Profile Settings</span>
                                         </Link>
                                     </DropdownMenuItem>
                                     {['dealer', 'student_seller'].includes(user.role) && (
-                                        <DropdownMenuItem asChild className="focus:bg-white/5 rounded-xl cursor-pointer py-3 group">
-                                            <Link href="/dealer/dashboard" className="flex items-center gap-3 w-full">
-                                                <div className="h-8 w-8 rounded-lg bg-[#FF6600]/10 border border-[#FF6600]/20 flex items-center justify-center group-hover:bg-[#FF6600]/20 transition-all">
+                                        <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1">
+                                            <Link href="/dealer/dashboard" className="flex items-center gap-4 w-full px-2">
+                                                <div className="h-9 w-9 rounded-xl bg-[#FF6600]/10 border border-[#FF6600]/20 flex items-center justify-center group-hover:bg-[#FF6600]/20 transition-all">
                                                     <LayoutDashboard className="h-4 w-4 text-[#FF6600]" />
                                                 </div>
-                                                <span className="font-black uppercase text-[10px] tracking-widest text-[#FF6600]">Dealer Command</span>
+                                                <span className="font-bold uppercase text-[10px] tracking-widest text-[#FF6600]">Merchant Terminal</span>
                                             </Link>
                                         </DropdownMenuItem>
                                     )}
                                     {['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'].includes(user.role) && (
-                                        <DropdownMenuItem asChild className="focus:bg-white/5 rounded-xl cursor-pointer py-3 group">
-                                            <Link href="/admin" className="flex items-center gap-3 w-full">
-                                                <div className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                                        <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1">
+                                            <Link href="/admin" className="flex items-center gap-4 w-full px-2">
+                                                <div className="h-9 w-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
                                                     <Crown className="h-4 w-4 text-emerald-500" />
                                                 </div>
-                                                <span className="font-black uppercase text-[10px] tracking-widest text-emerald-500">Vision Control</span>
+                                                <span className="font-bold uppercase text-[10px] tracking-widest text-emerald-500">Admin Control</span>
                                             </Link>
                                         </DropdownMenuItem>
                                     )}
                                     <div className="my-2 border-t border-white/5" />
-                                    <DropdownMenuItem onClick={handleSignOut} className="focus:bg-red-500/10 text-red-500 rounded-xl cursor-pointer py-3 group">
-                                        <span className="flex items-center gap-3 w-full">
-                                            <div className="h-8 w-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center group-hover:bg-red-500/20">
+                                    <DropdownMenuItem onClick={handleSignOut} className="focus:bg-red-500/10 text-red-500 rounded-2xl cursor-pointer py-3 group my-1">
+                                        <span className="flex items-center gap-4 w-full px-2">
+                                            <div className="h-9 w-9 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center group-hover:bg-red-500/20">
                                                 <LogOut className="h-4 w-4 text-red-500" />
                                             </div>
-                                            <span className="font-black uppercase text-[10px] tracking-widest">Terminate Session</span>
+                                            <span className="font-bold uppercase text-[10px] tracking-widest">Logout</span>
                                         </span>
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -150,41 +187,41 @@ export const Header = () => {
                     {/* Mobile Menu Toggle */}
                     <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                         <SheetTrigger asChild>
-                            <Button variant="ghost" size="icon" className="lg:hidden h-11 w-11 glass-border bg-white/5 hover:bg-white/10">
+                            <Button variant="ghost" size="icon" className="lg:hidden h-11 w-11 rounded-full border border-white/10 bg-white/5 hover:bg-white/10">
                                 <Menu className="h-5 w-5 text-white" />
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="right" className="w-full bg-black border-l border-white/5 p-8 flex flex-col">
+                        <SheetContent side="right" className="w-full bg-black/95 backdrop-blur-2xl border-l border-white/10 p-8 flex flex-col">
                             <div className="flex justify-between items-center mb-16">
                                 <Logo />
                             </div>
 
-                            <nav className="flex flex-col gap-8 text-2xl font-black uppercase tracking-tighter italic">
+                            <nav className="flex flex-col gap-8 text-3xl font-black uppercase tracking-tighter italic">
                                 <Link
                                     href="/"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={cn(isActive('/') ? "text-[#FF6600]" : "text-white/60")}
+                                    className={cn("transition-all hover:translate-x-4", isActive('/') ? "text-[#FF6600]" : "text-white/40 hover:text-white")}
                                 >
                                     Home
                                 </Link>
                                 <Link
                                     href="/listings"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={cn(isActive('/listings') ? "text-[#FF6600]" : "text-white/60")}
+                                    className={cn("transition-all hover:translate-x-4", isActive('/listings') ? "text-[#FF6600]" : "text-white/40 hover:text-white")}
                                 >
                                     Listings
                                 </Link>
                                 <Link
                                     href="/dealers"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={cn(isActive('/dealers') ? "text-[#FF6600]" : "text-white/60")}
+                                    className={cn("transition-all hover:translate-x-4", isActive('/dealers') ? "text-[#FF6600]" : "text-white/40 hover:text-white")}
                                 >
                                     Dealers
                                 </Link>
                                 <Link
                                     href="/about"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={cn(isActive('/about') ? "text-[#FF6600]" : "text-white/60")}
+                                    className={cn("transition-all hover:translate-x-4", isActive('/about') ? "text-[#FF6600]" : "text-white/40 hover:text-white")}
                                 >
                                     About
                                 </Link>
@@ -193,16 +230,16 @@ export const Header = () => {
                             <div className="mt-auto flex flex-col gap-4">
                                 {!user ? (
                                     <>
-                                        <Button asChild className="h-16 rounded-3xl bg-gold-gradient text-black font-black uppercase tracking-widest border-none">
-                                            <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>Establish Account</Link>
+                                        <Button asChild className="h-16 rounded-[2rem] bg-[#FF6600] text-black font-black uppercase tracking-widest border-none hover:bg-[#FF8533]">
+                                            <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>Create Account</Link>
                                         </Button>
-                                        <Button variant="outline" asChild className="h-16 rounded-3xl bg-transparent border-white/20 text-white font-black uppercase tracking-widest">
+                                        <Button variant="outline" asChild className="h-16 rounded-[2rem] bg-transparent border-white/20 text-white font-black uppercase tracking-widest hover:bg-white hover:text-black hover:border-transparent transition-all">
                                             <Link href="/login" onClick={() => setMobileMenuOpen(false)}>Sign In</Link>
                                         </Button>
                                     </>
                                 ) : (
-                                    <Button onClick={handleSignOut} className="h-16 rounded-3xl bg-red-600 text-white font-black uppercase tracking-widest border-none">
-                                        Terminate Session
+                                    <Button onClick={handleSignOut} className="h-16 rounded-[2rem] bg-zinc-900 border border-white/10 text-red-500 font-black uppercase tracking-widest hover:bg-red-950/30">
+                                        Log Out
                                     </Button>
                                 )}
                             </div>
@@ -210,6 +247,6 @@ export const Header = () => {
                     </Sheet>
                 </div>
             </div>
-        </header>
+        </motion.header>
     );
 };
