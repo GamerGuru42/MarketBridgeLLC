@@ -65,6 +65,37 @@ function SignupContent() {
     const [missingUniName, setMissingUniName] = useState('');
 
     const [success, setSuccess] = useState(false);
+    const [otpCode, setOtpCode] = useState('');
+    const [isVerifying, setIsVerifying] = useState(false);
+
+    const handleVerification = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsVerifying(true);
+        setError('');
+
+        try {
+            const { data, error } = await supabase.auth.verifyOtp({
+                email: formData.email,
+                token: otpCode,
+                type: 'signup'
+            });
+
+            if (error) throw error;
+
+            if (data.session) {
+                await refreshUser(data.user?.id);
+                if (['student_seller', 'dealer'].includes(role)) {
+                    router.push('/dealer/dashboard');
+                } else {
+                    router.push('/listings');
+                }
+            }
+        } catch (err: any) {
+            console.error("Verification failed:", err);
+            setError(err.message || 'Verification failed. Invalid code.');
+            setIsVerifying(false);
+        }
+    };
 
     // AI-Simulated University Detection
     const detectUniversity = async (matric: string) => {
@@ -445,26 +476,41 @@ function SignupContent() {
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF6600] to-transparent" />
                     <CardHeader className="p-0 text-center mb-10">
                         <div className="mx-auto h-24 w-24 rounded-full bg-[#FF6600]/10 flex items-center justify-center mb-6 relative">
-                            <Mail className="h-10 w-10 text-[#FF6600] animate-bounce" />
+                            <Lock className="h-10 w-10 text-[#FF6600] animate-bounce" />
                             <div className="absolute inset-0 rounded-full border border-[#FF6600]/30 animate-ping opacity-25" />
                         </div>
                         <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-4">Signal Transmitted</CardTitle>
                         <CardDescription className="text-zinc-500 font-medium leading-relaxed">
-                            We have dispatched a verification link to <br /><span className="text-white font-bold">{formData.email}</span>.
+                            We have dispatched a verification code to <br /><span className="text-white font-bold">{formData.email}</span>.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="p-0 space-y-6 text-center">
                         <div className="p-4 bg-zinc-900/50 rounded-2xl border border-white/5">
-                            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mb-1">Mission Directive</p>
-                            <p className="text-sm text-white font-medium">Please check your inbox (and spam) to activate your merchant node.</p>
+                            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mb-1">Secure Protocol</p>
+                            <p className="text-sm text-white font-medium">Please enter the code sent to your inbox.</p>
                         </div>
 
-                        <Button onClick={() => window.open('https://mail.google.com', '_blank')} className="w-full h-14 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-zinc-200 transition-all">
-                            Open Comms Channel
-                        </Button>
+                        {error && <div className="bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-red-500/20">{error}</div>}
+
+                        <form onSubmit={handleVerification} className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600">Activation Code</label>
+                                <input
+                                    value={otpCode}
+                                    onChange={(e) => setOtpCode(e.target.value)}
+                                    placeholder="• • • • • •"
+                                    className="w-full h-16 bg-black border border-white/10 rounded-2xl text-center text-2xl font-black tracking-[1em] text-white focus:border-[#FF6600] outline-none transition-all placeholder:tracking-normal placeholder:text-zinc-800"
+                                    maxLength={6}
+                                />
+                            </div>
+
+                            <Button type="submit" className="w-full h-14 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-zinc-200 transition-all" disabled={isVerifying}>
+                                {isVerifying ? <Loader2 className="animate-spin h-5 w-5" /> : "Initialize Node"}
+                            </Button>
+                        </form>
 
                         <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest pt-4">
-                            Once verified, refresh this page to access dashboard.
+                            Didn't receive code? Check spam or <button onClick={() => window.open('https://mail.google.com', '_blank')} className="text-[#FF6600] hover:underline">Open Mail</button>
                         </p>
                     </CardContent>
                 </Card>
