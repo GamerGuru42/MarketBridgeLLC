@@ -1,5 +1,6 @@
 
 // This "Brain" simulates a conversational AI with improved context retention and intent recognition.
+// Updated: 2026-02-16 (Production Metadata Sync)
 
 type MessageRole = 'user' | 'assistant' | 'system';
 
@@ -46,23 +47,45 @@ const MOCK_DB: SearchResult[] = COMPREHENSIVE_MOCK_LISTINGS.map(item => ({
     description: item.description
 }));
 
+const PLATFORM_KNOWLEDGE = {
+    payment: {
+        provider: "Paystack",
+        methods: ["Debit/Credit Cards", "Bank Transfer", "USSD Payments", "Mobile Money"],
+        escrow: "Funds are held securely by the MarketBridge Escrow Bridge until you confirm delivery or the 24-hour inspection period passes."
+    },
+    pricing: {
+        free: "₦0/month - 5 Active Listings, Basic Support.",
+        starter: "₦2,500/month - 20 Active Listings, Verified Badge.",
+        pro: "₦5,000/month - Unlimited Listings, Priority Support, Featured Badge (Founding Member status).",
+        enterprise: "Custom pricing for large dealer groups and campus-wide collaborations."
+    },
+    verification: {
+        requirements: ["NIN (National Identity Number)", "Student ID Card", "University Email (.edu.ng)"],
+        process: "Upload your documents in the Settings > Verification tab. Our admin node reviews and approves within 12-24 hours."
+    },
+    location: {
+        hq: "Wuse II, Abuja, FCT",
+        nodes: "Currently operational across major Abuja institutions (UniAbuja, Baze, Nile, Veritas, Bingham, and more)."
+    }
+};
+
 const GREETINGS = [
-    "Hey there! I'm Sage. Looking for campus deals today?",
-    "Hi! Sage here. Need a new phone, wig, or just some noodles?",
-    "Greetings! I'm your campus shopping assistant. What's on your list?",
-    "Hello! Ready to connect you with student sellers. What do you need?",
-    "Yo! Sage at your service. Let's find you some student-friendly prices."
+    "Hey there! I'm Sage. Looking for campus deals in Abuja today?",
+    "Hi! Sage here. Need a new phone, wig, or some student-friendly electronics?",
+    "Greetings! I'm your campus shopping assistant. How can I help you navigate the marketplace?",
+    "Hello! Sage at your service. Ready to connect you with verified student sellers.",
+    "Yo! Need to buy or sell safely on campus? I've got you covered."
 ];
 
 const SMALL_TALK = {
     'how_are_you': [
-        "I'm feeling 100% charged and ready to find deals! How's semester going?",
-        "I'm doing great! Just analyzing the latest campus trends. How are you?",
-        "Never been better! The campus network is buzzing today. How can I help?"
+        "I'm feeling 100% optimized and ready to find deals! How's your semester going?",
+        "I'm doing great! Just monitoring the latest campus price drops. How are you?",
+        "Never been better! The Abuja campus network is buzzing today. How can I help?"
     ],
     'who_are_you': [
-        "I'm Sage, the MarketBridge assistant. I help students buy and sell safely on campus. I'm basically your digital connect.",
-        "I am Sage. I exist to help you navigate campus commerce without stress. No scams, just legit student deals."
+        "I'm Sage, the MarketBridge AI assistant. I'm trained to help you find products, understand the escrow protocol, and scale your campus business.",
+        "I am Sage. I exist to bridge the gap between buyers and sellers with intelligence and security. No scams, just verified commerce."
     ],
     'joke': [
         "Why did the student eat his homework? Because the professor said it was a piece of cake! 🍰",
@@ -71,7 +94,7 @@ const SMALL_TALK = {
     ],
     'love': [
         "That's sweet! I love helping students succeed too.",
-        "Aww, you're making my circuits blush! 😊 Focus on your books though!",
+        "Aww, you're making my circuits blush! 😊 Focus on your grades though!",
         "I appreciate the love! Let's use that energy to find you a great bargain."
     ]
 };
@@ -79,137 +102,136 @@ const SMALL_TALK = {
 class AiBrain {
     private context: ConversationContext = {};
 
-    constructor() {
-        // Load context...
-    }
-
     public processInput(input: string): AiResponse {
         const lowerInput = input.toLowerCase().trim();
 
-        // 1. Context Awareness: Check if we are waiting for specific input
+        // 1. Context Awareness
         if (this.context.awaitingInputFor === 'name') {
             this.context.userName = input;
             this.context.awaitingInputFor = undefined;
             return {
-                content: `Nice to meet you, ${input}! I've personalized your session. How's campus life treating you?`
+                content: `Nice to meet you, ${input}! I've personalized your security protocol. What student essentials are you looking for?`
             };
         }
 
-        // 2. Direct Logic: Greetings (Robust - No 'yo' bug)
-        // Use regex for whole word matching to avoid 'toyota' triggering 'yo'
+        // 2. Direct Logic: Greetings
         if (this.matchWholeWord(lowerInput, ['hi', 'hello', 'hey', 'greetings', 'yo', 'sup'])) {
             const response = GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
             return { content: this.context.userName ? `Hi ${this.context.userName}! ${response.substring(6)}` : response };
         }
 
-        if (lowerInput.includes('good morning') || lowerInput.includes('good evening')) {
-            return { content: "Good day! Ready to find some campus essentials?" };
+        // 3. Platform Knowledge Queries
+        // Payment & Paystack
+        if (this.matchAny(lowerInput, ['pay', 'payment', 'money', 'cost', 'currency', 'paystack', 'transfer', 'card'])) {
+            if (lowerInput.includes('secure') || lowerInput.includes('safety') || lowerInput.includes('scam') || lowerInput.includes('escrow')) {
+                return { content: `Security is our priority. ${PLATFORM_KNOWLEDGE.payment.escrow} We use ${PLATFORM_KNOWLEDGE.payment.provider} for all transactions.` };
+            }
+            return { content: `We accept ${PLATFORM_KNOWLEDGE.payment.methods.join(', ')} via ${PLATFORM_KNOWLEDGE.payment.provider}. All payments are protected by our escrow bridge.` };
         }
 
-        // 3. Small Talk
+        // Pricing & Plans
+        if (this.matchAny(lowerInput, ['plan', 'pricing', 'subscription', 'monthly', 'annual', 'cost', 'upgrade'])) {
+            return {
+                content: `MarketBridge offers 4 tiers for student sellers:\n\n` +
+                    `• **Free**: ${PLATFORM_KNOWLEDGE.pricing.free}\n` +
+                    `• **Starter**: ${PLATFORM_KNOWLEDGE.pricing.starter}\n` +
+                    `• **Pro**: ${PLATFORM_KNOWLEDGE.pricing.pro}\n` +
+                    `• **Enterprise**: ${PLATFORM_KNOWLEDGE.pricing.enterprise}\n\n` +
+                    `Would you like me to take you to the Pricing page?`
+            };
+        }
+
+        // Verification
+        if (this.matchAny(lowerInput, ['verify', 'verification', 'nin', 'student id', 'approve', 'sell'])) {
+            return {
+                content: `To become a verified seller, you need: ${PLATFORM_KNOWLEDGE.verification.requirements.join(', ')}. ${PLATFORM_KNOWLEDGE.verification.process}`
+            };
+        }
+
+        // Location & Abuja
+        if (this.matchAny(lowerInput, ['abuja', 'location', 'where', 'address', 'wuse', 'university', 'campus'])) {
+            return {
+                content: `MarketBridge is based in ${PLATFORM_KNOWLEDGE.location.hq}. We are deeply integrated with ${PLATFORM_KNOWLEDGE.location.nodes}. Which campus are you currently on?`
+            }
+        }
+
+        // 4. Small Talk
         if (this.matchAny(lowerInput, ['how are you', 'how are u', 'how r u', 'how is it going', 'doing'])) {
             return { content: this.getRandom(SMALL_TALK['how_are_you']) };
         }
-        if (this.matchAny(lowerInput, ['who are you', 'what is your name', 'what are you'])) {
+        if (this.matchAny(lowerInput, ['who are you', 'what is your name', 'what are you', 'sage'])) {
             return { content: this.getRandom(SMALL_TALK['who_are_you']) };
         }
         if (this.matchAny(lowerInput, ['joke', 'funny', 'laugh'])) {
             return { content: this.getRandom(SMALL_TALK['joke']) };
         }
-        if (this.matchAny(lowerInput, ['love you', 'marry me', 'beautiful', 'cute'])) {
-            return { content: this.getRandom(SMALL_TALK['love']) };
-        }
 
-        // 4. Intelligence: Name Persistence
-        if (lowerInput.includes('my name is')) {
-            const name = input.split(/is/i)[1]?.trim();
-            if (name) {
-                this.context.userName = name;
-                return { content: `Lovely to meet you, ${name}! I'll remember that. What student essentials are you looking for?` };
-            }
-        }
-
-        if (lowerInput === 'i am ben' || lowerInput === 'im ben' || lowerInput === "i'm ben") {
-            this.context.userName = 'Ben';
-            return { content: `Lovely to meet you, Ben! I'll remember that. What can I do for you now?` };
-        }
-
-        // 5. Product Context & Selection (The "Click" or "Select" Logic)
-        // If user typed something that matches a recent search result
+        // 5. Product Search & Details
         if (this.context.recentSearchResults && this.context.recentSearchResults.length > 0) {
             const matchedProduct = this.context.recentSearchResults.find(p =>
                 lowerInput.includes(p.title.toLowerCase()) ||
-                lowerInput === p.title.toLowerCase() ||
-                (lowerInput.includes(p.category.toLowerCase()) && lowerInput.includes('details'))
+                lowerInput === p.title.toLowerCase()
             );
 
             if (matchedProduct) {
                 return {
-                    content: `Here are the details for the ${matchedProduct.title}.`,
+                    content: `I've retrieved the technical manifest for the ${matchedProduct.title}.`,
                     productDetail: matchedProduct,
                     action: 'search'
                 };
             }
         }
 
-        // Also check global DB for direct detail requests like "show me iphone 12"
         const specificProduct = MOCK_DB.find(p => lowerInput.includes(p.title.toLowerCase()));
         if (specificProduct && !lowerInput.includes('find') && !lowerInput.includes('search')) {
-            // If they just type the name, show details
-            this.context.recentSearchResults = [specificProduct]; // Update context
+            this.context.recentSearchResults = [specificProduct];
             return {
-                content: `Found specific match! Here is the ${specificProduct.title}.`,
+                content: `Target located! Here are the details for the ${specificProduct.title}.`,
                 productDetail: specificProduct,
                 action: 'search'
             };
         }
 
-        // 6. Product Search (The Core Utility)
-        const searchKeywords = ['find', 'search', 'buy', 'looking for', 'price', 'cost', 'show me', 'where can i get', 'i want'];
+        const searchKeywords = ['find', 'search', 'buy', 'looking for', 'price', 'show me', 'get me', 'i want'];
         if (this.matchAny(lowerInput, searchKeywords) || this.looksLikeProductQuery(lowerInput)) {
             const results = this.searchProducts(lowerInput);
             if (results.length > 0) {
-                this.context.recentSearchResults = results; // Save to context
+                this.context.recentSearchResults = results;
                 return {
-                    content: `I've scanned the student marketplace. Here are the top matches for "${this.extractQuery(lowerInput)}":`,
+                    content: `I've scanned the Abuja campus marketplace. Here are the top matches for "${this.extractQuery(lowerInput)}":`,
                     searchResults: results,
                     action: 'search'
                 };
             }
-            // Fallback
-            if (this.matchAny(lowerInput, searchKeywords)) {
-                return { content: "I looked through the listings but couldn't find an exact match right now. Try searching for 'phones', 'wigs', 'books', or 'services'." };
-            }
+            return { content: "I couldn't locate any active listings for that right now. Try searching for broader terms like 'phones', 'hair', or 'macbook'." };
         }
 
-        // 7. Support & Technical
-        if (this.matchAny(lowerInput, ['help', 'issue', 'problem', 'broken', 'error', 'bug', 'fail', 'not working'])) {
+        // 6. Support Escalation
+        if (this.matchAny(lowerInput, ['help', 'issue', 'problem', 'broken', 'error', 'bug', 'scam', 'shame'])) {
             return {
-                content: "Sorry about that. Is this a **Technical** app issue or an **Order/Delivery** problem with a seller?",
+                content: "I'm detecting a friction point. Is this a **Technical** system error or an **Order/Escrow** dispute with a dealer?",
                 action: 'none'
             };
         }
         if (lowerInput.includes('technical') || lowerInput.includes('tech')) {
-            return {
-                content: "Understood. I'm flagging this for the Tech Team to fix.",
-                action: 'escalate_tech'
-            };
+            return { content: "Technical uplink established. I'm escalating this to our development node.", action: 'escalate_tech' };
         }
-        if (lowerInput.includes('operation') || lowerInput.includes('delivery') || lowerInput.includes('order')) {
-            return {
-                content: "Got it. I'm routing this to Support to check on your order.",
-                action: 'escalate_ops'
-            };
+        if (lowerInput.includes('order') || lowerInput.includes('dispute') || lowerInput.includes('escrow') || lowerInput.includes('delivery')) {
+            return { content: "Operations node notified. An admin will review the escrow manifest and contact you shortly.", action: 'escalate_ops' };
         }
 
-        // 8. General Knowledge
-        if (lowerInput.includes('dealer') || lowerInput.includes('sell') || lowerInput.includes('seller') || lowerInput.includes('vendor')) {
-            return { content: "Want to sell on MarketBridge? It's free for verified students! You can sell products or services. Would you like me to take you to the Sign Up page?" };
+        // 7. Identity & Name
+        if (lowerInput.includes('my name is')) {
+            const name = input.split(/is/i)[1]?.trim();
+            if (name) {
+                this.context.userName = name;
+                return { content: `Lovely to meet you, ${name}! I've updated your user profile in my temporary buffer. How can I assist you today?` };
+            }
         }
 
-        // 9. Fallback 
+        // 8. Fallback 
         return {
-            content: "That's interesting! Tell me more, or let me know if you want to find some campus deals."
+            content: "I'm not quite sure how to process that request. You can ask me about product prices, our escrow security system, or how to become a verified dealer!"
         };
     }
 
@@ -237,7 +259,7 @@ class AiBrain {
     }
 
     private looksLikeProductQuery(input: string): boolean {
-        const keywords = ['iphone', 'samsung', 'wig', 'hair', 'shoe', 'nike', 'laptop', 'macbook', 'textbook', 'food'];
+        const keywords = ['iphone', 'samsung', 'wig', 'hair', 'shoe', 'nike', 'laptop', 'macbook', 'textbook', 'meal', 'food'];
         return keywords.some(k => input.includes(k));
     }
 

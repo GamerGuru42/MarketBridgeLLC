@@ -45,7 +45,7 @@ export function AiAssistant() {
         {
             id: '1',
             role: 'assistant',
-            content: 'Hello! I\'m Sage, your MarketBridge AI assistant. I can help you find products, troubleshoot issues, or connect you with our support team. How can I help you shop without fear today?',
+            content: "Hello! I'm Sage, your MarketBridge AI assistant. I'm here to help you shop safely across Abuja campuses. I can help you find products, explain our Paystack escrow system, or help you become a verified dealer. How can I assist your hustle today?",
             timestamp: new Date()
         }
     ]);

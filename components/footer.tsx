@@ -44,7 +44,7 @@ export const Footer = () => {
                         <h3 className="text-white font-black uppercase text-[10px] tracking-[0.2em] mb-8">Connect</h3>
                         <div className="flex space-x-6">
                             {[
-                                { Icon: Instagram, href: "https://instagram.com/marketbridgeng" },
+                                { Icon: Instagram, href: "https://instagram.com/marketbridge.ng" },
                                 { Icon: Twitter, href: "https://x.com/marketbridgeng" },
                                 { Icon: Facebook, href: "https://facebook.com/marketbridgeng" }
                             ].map((social, i) => (
