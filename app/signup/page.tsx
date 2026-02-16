@@ -75,7 +75,7 @@ function SignupContent() {
 
         try {
             const { data, error } = await supabase.auth.verifyOtp({
-                email: formData.email,
+                email: normalizeIdentifier(formData.email),
                 token: otpCode,
                 type: 'signup'
             });
@@ -93,6 +93,23 @@ function SignupContent() {
         } catch (err: any) {
             console.error("Verification failed:", err);
             setError(err.message || 'Verification failed. Invalid code.');
+            setIsVerifying(false);
+        }
+    };
+
+    const resendCode = async () => {
+        setIsVerifying(true);
+        setError('');
+        try {
+            const { error } = await supabase.auth.resend({
+                type: 'signup',
+                email: normalizeIdentifier(formData.email)
+            });
+            if (error) throw error;
+            alert("Activation code resent to your inbox.");
+        } catch (err: any) {
+            setError(err.message || "Failed to resend code.");
+        } finally {
             setIsVerifying(false);
         }
     };
@@ -246,14 +263,11 @@ function SignupContent() {
 
     const createAccount = async () => {
         try {
-            // Priority: Use the main email input (which we enforced to be school email for School Email verification method)
             const isMerchant = ['student_seller', 'dealer'].includes(role);
-            let emailToUse = normalizeIdentifier(formData.email);
-            // No conditional swap needed anymore as we enforced logic at input level
-
+            const emailToUse = normalizeIdentifier(formData.email);
             const finalUniversity = missingUni ? missingUniName : formData.university;
 
-            // 1. Auth Sign Up
+            // 1. Auth Sign Up with ENHANCED METADATA for Trigger
             const { data: authData, error: signUpError } = await supabase.auth.signUp({
                 email: emailToUse,
                 password: formData.password,
@@ -263,7 +277,13 @@ function SignupContent() {
                         role: role,
                         location: formData.location,
                         university: finalUniversity,
-                        matric_number: formData.matricNumber
+                        matric_number: formData.matricNumber,
+                        phone_number: formData.phoneNumber,
+                        business_name: isMerchant ? formData.businessName : null,
+                        department: formData.department,
+                        verification_method: isMerchant ? verificationMethod : 'none',
+                        student_id_url: isMerchant && verificationMethod === 'id_card' ? formData.studentIdUrl : null,
+                        is_manual_override: missingUni
                     },
                 },
             });
@@ -271,7 +291,7 @@ function SignupContent() {
             if (signUpError) throw signUpError;
             if (!authData.user) throw new Error("Account creation protocol failed.");
 
-            // 2. Profile Upsert
+            // 2. Profile Upsert (Robust Redundancy)
             const { error: profileError } = await supabase
                 .from('users')
                 .upsert({
@@ -286,7 +306,6 @@ function SignupContent() {
                     matric_number: isMerchant ? formData.matricNumber : null,
                     subscription_status: isMerchant ? 'pending_verification' : 'active',
                     is_verified: false,
-                    // Store extra student data
                     metadata: {
                         department: formData.department,
                         student_id_url: isMerchant && verificationMethod === 'id_card' ? formData.studentIdUrl : null,
@@ -297,7 +316,7 @@ function SignupContent() {
 
             if (profileError) console.error("Profile establishing error:", profileError);
 
-            // 3. Create 14-day trial subscription for new sellers
+            // 3. Beta Founding Subscription (Optional)
             if (isMerchant) {
                 const trialEndDate = new Date();
                 trialEndDate.setDate(trialEndDate.getDate() + 14);
@@ -306,42 +325,30 @@ function SignupContent() {
                     .from('subscriptions')
                     .insert({
                         user_id: authData.user.id,
-                        plan_id: 'campus_pro', // Give them the best plan during trial
+                        plan_id: 'beta_campus_founder',
                         status: 'trialing',
                         current_period_start: new Date().toISOString(),
                         current_period_end: trialEndDate.toISOString(),
                         trial_end: trialEndDate.toISOString(),
                         metadata: {
                             trial_started_at: new Date().toISOString(),
-                            trial_plan: 'campus_pro',
                             auto_created: true
                         }
                     });
 
                 if (subscriptionError) {
-                    console.error("Trial subscription creation error:", subscriptionError);
-                } else {
-                    // Update user with subscription status
-                    await supabase
-                        .from('users')
-                        .update({
-                            subscription_status: 'trialing',
-                            subscription_plan_id: 'campus_pro'
-                        })
-                        .eq('id', authData.user.id);
+                    console.error("Trial subscription error:", subscriptionError);
                 }
             }
 
             if (authData.session) {
-                // Session is active (e.g. Google auth or auto-confirm enabled for dev)
                 await refreshUser(authData.user.id);
-                if (['student_seller', 'dealer'].includes(role)) {
+                if (isMerchant) {
                     router.push('/dealer/dashboard');
                 } else {
                     router.push('/listings');
                 }
             } else {
-                // Email confirmation required - DO NOT redirect to login. Show specific instructions.
                 setSuccess(true);
             }
 
@@ -351,539 +358,542 @@ function SignupContent() {
             setIsLoading(false);
         }
     };
+    setIsLoading(false);
+}
+    };
 
-    // UI Renders
-    if (step === 'role') {
-        return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-black overflow-hidden relative">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#FF6600]/5 blur-[120px] rounded-full" />
+// UI Renders
+if (step === 'role') {
+    return (
+        <div className="min-h-screen flex items-center justify-center p-4 bg-black overflow-hidden relative">
+            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#FF6600]/5 blur-[120px] rounded-full" />
 
-                <div className="w-full max-w-5xl relative z-10">
-                    <div className="text-center mb-16">
-                        <Link href="/" className="inline-flex items-center text-zinc-500 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest transition-colors py-3">
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Return to Home
-                        </Link>
-                        <div className="flex justify-center mb-6">
-                            <Logo showText={false} className="scale-125" />
-                        </div>
-                        <h1 className="text-5xl font-black uppercase tracking-tighter text-white italic mb-4">Join MarketBridge</h1>
-                        <p className="text-zinc-500 font-medium lowercase italic">select your status to begin identity establishment</p>
+            <div className="w-full max-w-5xl relative z-10">
+                <div className="text-center mb-16">
+                    <Link href="/" className="inline-flex items-center text-zinc-500 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest transition-colors py-3">
+                        <ArrowLeft className="mr-2 h-4 w-4" /> Return to Home
+                    </Link>
+                    <div className="flex justify-center mb-6">
+                        <Logo showText={false} className="scale-125" />
                     </div>
+                    <h1 className="text-5xl font-black uppercase tracking-tighter text-white italic mb-4">Join MarketBridge</h1>
+                    <p className="text-zinc-500 font-medium lowercase italic">select your status to begin identity establishment</p>
+                </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 max-w-4xl mx-auto">
-                        {[
-                            { id: 'student_buyer', title: 'Student Buyer', icon: UserIcon, desc: 'Browse & Buy Assets', color: 'text-blue-400' },
-                            { id: 'student_seller', title: 'Student Merchant', icon: Briefcase, desc: 'Start your Campus Business', color: 'text-[#FF6600]' },
-                            { id: 'admin', title: 'Admin', icon: ShieldCheck, desc: 'Operations Gateway', color: 'text-red-400' }
-                        ].map(item => (
-                            <Card
-                                key={item.id}
-                                className="glass-card border-white/5 rounded-[2rem] p-8 text-center group cursor-pointer hover:bg-white/[0.08] hover:translate-y-[-8px] transition-all duration-500"
-                                onClick={() => handleRoleSelect(item.id as any)}
-                            >
-                                <div className="h-16 w-16 glass-card rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                                    <item.icon className={`h-8 w-8 ${item.color}`} />
-                                </div>
-                                <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2 italic">{item.title}</h3>
-                                <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">{item.desc}</p>
-                            </Card>
-                        ))}
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 max-w-4xl mx-auto">
+                    {[
+                        { id: 'student_buyer', title: 'Student Buyer', icon: UserIcon, desc: 'Browse & Buy Assets', color: 'text-blue-400' },
+                        { id: 'student_seller', title: 'Student Merchant', icon: Briefcase, desc: 'Start your Campus Business', color: 'text-[#FF6600]' },
+                        { id: 'admin', title: 'Admin', icon: ShieldCheck, desc: 'Operations Gateway', color: 'text-red-400' }
+                    ].map(item => (
+                        <Card
+                            key={item.id}
+                            className="glass-card border-white/5 rounded-[2rem] p-8 text-center group cursor-pointer hover:bg-white/[0.08] hover:translate-y-[-8px] transition-all duration-500"
+                            onClick={() => handleRoleSelect(item.id as any)}
+                        >
+                            <div className="h-16 w-16 glass-card rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                                <item.icon className={`h-8 w-8 ${item.color}`} />
+                            </div>
+                            <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2 italic">{item.title}</h3>
+                            <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">{item.desc}</p>
+                        </Card>
+                    ))}
                 </div>
             </div>
-        );
-    }
+        </div>
+    );
+}
 
 
 
 
 
-    if (step === 'admin-code') {
-        return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-black">
-                <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-[1px] bg-red-500/50 shadow-[0_0_20px_red]" />
-                    <CardHeader className="p-0 text-center mb-10">
-                        <Button variant="ghost" onClick={() => setStep('role')} className="text-zinc-600 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
-                        <div className="mx-auto h-16 w-16 rounded-2xl border border-red-500/30 bg-red-500/5 flex items-center justify-center mb-6">
-                            <Lock className="h-8 w-8 text-red-500" />
-                        </div>
-                        <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2 text-red-500">Restricted</CardTitle>
-                        <CardDescription className="text-zinc-500 font-medium italic lowercase">enter administrative access key</CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-0 space-y-6 pb-8">
-                        {error && <div className="bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-red-500/20">{error}</div>}
-                        <form onSubmit={handleAdminCodeSubmit} className="space-y-6">
-                            <input
-                                type="password"
-                                className="w-full h-16 bg-black border border-white/5 rounded-2xl text-center tracking-[0.5em] font-mono text-xl focus:outline-none focus:ring-2 focus:ring-red-500/50 text-red-500"
-                                value={adminCode}
-                                onChange={(e) => setAdminCode(e.target.value)}
-                                placeholder="••••••••"
-                                autoFocus
-                                required
-                            />
-                            <Button type="submit" className="w-full h-16 rounded-2xl bg-red-600 text-white font-black uppercase tracking-widest hover:bg-red-700 shadow-[0_0_30px_rgba(220,38,38,0.3)]">
-                                Authorize
-                            </Button>
-                        </form>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
-
-    if (step === 'admin-dept') {
-        return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-black">
-                <Card className="w-full max-w-2xl glass-card border-none rounded-[3rem] p-12 text-white">
-                    <CardHeader className="p-0 text-center mb-12">
-                        <CardTitle className="text-4xl font-black uppercase italic tracking-tighter mb-2">Select Sector</CardTitle>
-                        <CardDescription className="text-zinc-500 font-medium italic lowercase">Define your administrative jurisdiction</CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-0 grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {[
-                            { id: 'marketing', title: 'Marketing', icon: Zap, color: 'text-orange-400' },
-                            { id: 'operations', title: 'Operations', icon: Briefcase, desc: 'Ops & Escrow', color: 'text-red-400' },
-                            { id: 'technical', title: 'Technical', icon: Loader2, desc: 'System Core', color: 'text-blue-400' }
-                        ].map(dept => (
-                            <button
-                                key={dept.id}
-                                onClick={() => handleDeptSelect(dept.id as any)}
-                                className="glass-card p-8 rounded-3xl border-white/5 hover:bg-white/5 transition-all group flex flex-col items-center gap-4 text-center"
-                            >
-                                <div className="h-14 w-14 rounded-xl bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <dept.icon className={`h-7 w-7 ${dept.color}`} />
-                                </div>
-                                <div>
-                                    <h4 className="font-black uppercase italic tracking-tight">{dept.title}</h4>
-                                    <p className="text-[10px] text-zinc-600 font-bold uppercase mt-1">Management</p>
-                                </div>
-                            </button>
-                        ))}
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
-
-
-
-    if (success) {
-        return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-black">
-                <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF6600] to-transparent" />
-                    <CardHeader className="p-0 text-center mb-10">
-                        <div className="mx-auto h-24 w-24 rounded-full bg-[#FF6600]/10 flex items-center justify-center mb-6 relative">
-                            <Lock className="h-10 w-10 text-[#FF6600] animate-bounce" />
-                            <div className="absolute inset-0 rounded-full border border-[#FF6600]/30 animate-ping opacity-25" />
-                        </div>
-                        <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-4">Signal Transmitted</CardTitle>
-                        <CardDescription className="text-zinc-500 font-medium leading-relaxed">
-                            We have dispatched a verification code to <br /><span className="text-white font-bold">{formData.email}</span>.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-0 space-y-6 text-center">
-                        <div className="p-4 bg-zinc-900/50 rounded-2xl border border-white/5">
-                            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mb-1">Secure Protocol</p>
-                            <p className="text-sm text-white font-medium">Please enter the code sent to your inbox.</p>
-                        </div>
-
-                        {error && <div className="bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-red-500/20">{error}</div>}
-
-                        <form onSubmit={handleVerification} className="space-y-6">
-                            <div className="space-y-2">
-                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600">Activation Code</label>
-                                <input
-                                    value={otpCode}
-                                    onChange={(e) => setOtpCode(e.target.value)}
-                                    placeholder="• • • • • •"
-                                    className="w-full h-16 bg-black border border-white/10 rounded-2xl text-center text-2xl font-black tracking-[1em] text-white focus:border-[#FF6600] outline-none transition-all placeholder:tracking-normal placeholder:text-zinc-800"
-                                    maxLength={6}
-                                />
-                            </div>
-
-                            <Button type="submit" className="w-full h-14 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-zinc-200 transition-all" disabled={isVerifying}>
-                                {isVerifying ? <Loader2 className="animate-spin h-5 w-5" /> : "Initialize Node"}
-                            </Button>
-                        </form>
-
-                        <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest pt-4">
-                            Didn't receive code? Check spam or <button onClick={() => window.open('https://mail.google.com', '_blank')} className="text-[#FF6600] hover:underline">Open Mail</button>
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
-
-    if (step === 'auth-method') {
-        return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-black">
-                <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden">
-                    <div className="absolute top-[-10%] right-[-10%] w-32 h-32 bg-[#FF6600]/5 blur-[40px] rounded-full" />
-                    <CardHeader className="p-0 text-center mb-10">
-                        <Button variant="ghost" onClick={() => initialRole ? router.push('/') : setStep('role')} className="text-zinc-600 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> {initialRole ? 'Cancel' : 'Back'}</Button>
-                        <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2">
-                            {['student_seller', 'dealer'].includes(role) ? 'Merchant Verification' : 'Verification Channel'}
-                        </CardTitle>
-                        <CardDescription className="text-zinc-500 font-medium italic lowercase">
-                            {['student_seller', 'dealer'].includes(role) ? 'establish your secure business path' : 'choose your identity entry point'}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-0 space-y-6 pb-8">
-                        <div className="space-y-2">
-                            <Button variant="outline" className="w-full h-16 rounded-[1.5rem] border-white/10 hover:bg-white/5 text-white font-bold uppercase tracking-widest group transition-all" onClick={signInWithGoogle}>
-                                <Globe className="mr-3 h-5 w-5 text-blue-500 group-hover:scale-110 transition-transform" /> Google Identity Hub
-                            </Button>
-                            {['student_seller', 'dealer'].includes(role) && (
-                                <p className="text-[8px] text-zinc-500 text-center font-bold uppercase">Sellers must select School Email account</p>
-                            )}
-                        </div>
-
-                        <div className="relative flex items-center justify-center py-4">
-                            <div className="absolute inset-x-0 h-px bg-white/5"></div>
-                            <span className="relative bg-black px-4 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-800">Protocol Selection</span>
-                        </div>
-                        <Button className="w-full h-16 rounded-[1.5rem] bg-white border border-white/10 text-black font-black uppercase tracking-widest hover:scale-[1.02] transition-all" onClick={() => setStep('details')}>
-                            <Mail className="mr-3 h-5 w-5" /> Direct Email Path
-                        </Button>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
-
+if (step === 'admin-code') {
     return (
-        <div className="min-h-screen flex items-center justify-center py-20 px-4 bg-black relative">
-            <div className="absolute top-[10%] right-[10%] w-[30%] h-[30%] bg-[#FF6600]/5 blur-[120px] rounded-full" />
-
-            <Card className="w-full max-w-xl glass-card border-none rounded-[3rem] p-12 text-white relative z-10 shadow-2xl">
-                <CardHeader className="p-0 mb-8 text-left">
-                    <div className="flex justify-between items-start mb-6">
-                        <Button variant="ghost" onClick={() => setStep('auth-method')} className="text-zinc-600 hover:text-white p-0 h-auto text-[10px] font-black uppercase tracking-widest"><ArrowLeft className="mr-2 h-3 w-3" /> Secure Gate</Button>
-                        <Logo showText={false} className="opacity-50" />
+        <div className="min-h-screen flex items-center justify-center p-4 bg-black">
+            <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-red-500/50 shadow-[0_0_20px_red]" />
+                <CardHeader className="p-0 text-center mb-10">
+                    <Button variant="ghost" onClick={() => setStep('role')} className="text-zinc-600 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
+                    <div className="mx-auto h-16 w-16 rounded-2xl border border-red-500/30 bg-red-500/5 flex items-center justify-center mb-6">
+                        <Lock className="h-8 w-8 text-red-500" />
                     </div>
-
-                    <StepProgress currentStep={step} role={role} />
-
-                    <CardTitle className="text-4xl font-black uppercase italic tracking-tighter mb-2">Establish Identity</CardTitle>
-                    <CardDescription className="text-zinc-500 font-medium italic lowercase">
-                        {['student_seller', 'dealer'].includes(role) ? `Establishing verified merchant node` : "Please define your global attributes"}
-                    </CardDescription>
+                    <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2 text-red-500">Restricted</CardTitle>
+                    <CardDescription className="text-zinc-500 font-medium italic lowercase">enter administrative access key</CardDescription>
                 </CardHeader>
-
-                <CardContent className="p-0">
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        {error && <div className="bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest p-4 rounded-2xl border border-red-500/20 text-center mb-6 animate-pulse">{error}</div>}
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Full Name</label>
-                                <div className="relative group">
-                                    <UserIcon className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
-                                    <input name="displayName" value={formData.displayName} onChange={handleChange} required placeholder="Samuel Ade" className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all" />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">
-                                    {['student_seller', 'dealer'].includes(role) ? "School Email (.edu.ng)" : "Email Identity"}
-                                </label>
-                                <div className="relative group">
-                                    <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
-                                    <input
-                                        name="email"
-                                        type="email"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        required
-                                        placeholder={['student_seller', 'dealer'].includes(role) ? "benny@uni.edu.ng" : "founder@market.io"}
-                                        className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Secure Key</label>
-                                <div className="relative group">
-                                    <Lock className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
-                                    <input name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleChange} required className="w-full h-14 pl-14 pr-14 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold" />
-                                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-800 hover:text-[#FF6600]">{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Confirm Key</label>
-                                <div className="relative group">
-                                    <ShieldCheck className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
-                                    <input name="confirmPassword" type={showPassword ? 'text' : 'password'} value={formData.confirmPassword} onChange={handleChange} required className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Operational Region</label>
-                            <div className="relative group">
-                                <Globe className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors z-10" />
-                                <select
-                                    name="location"
-                                    className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold relative"
-                                    value={formData.location}
-                                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                                        setFormData({ ...formData, location: e.target.value, university: '' });
-                                        setUniSearch('');
-                                    }}
-                                    required
-                                >
-                                    <option value="" className="bg-zinc-900">Select Node State</option>
-                                    {NIGERIAN_STATES.map(s => <option key={s} value={s} className="bg-zinc-900">{s}</option>)}
-                                </select>
-                            </div>
-                        </div>
-
-                        {['student_seller', 'dealer'].includes(role) && (
-                            <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
-                                <div className="space-y-2">
-                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Business / Brand Name</label>
-                                    <div className="relative group">
-                                        <Briefcase className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
-                                        <input
-                                            name="businessName"
-                                            value={formData.businessName}
-                                            onChange={handleChange}
-                                            className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all"
-                                            placeholder="Campus Kicks"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Matriculation Number (Required)</label>
-                                        <div className="relative group">
-                                            <School className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
-                                            <input
-                                                name="matricNumber"
-                                                value={formData.matricNumber}
-                                                onChange={handleChange}
-                                                required
-                                                onBlur={(e) => detectUniversity(e.target.value)}
-                                                className="w-full h-14 pl-14 pr-12 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all"
-                                                placeholder="U/2024/..."
-                                            />
-                                            {isDetectingSchool && (
-                                                <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-[#FF6600]" />
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Department (Optional)</label>
-                                        <div className="relative group">
-                                            <Sparkles className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
-                                            <input
-                                                name="department"
-                                                value={formData.department}
-                                                onChange={handleChange}
-                                                placeholder="Computer Science"
-                                                className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    <div className="flex justify-between items-center ml-2">
-                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600">University / Campus Node</label>
-                                        <button
-                                            type="button"
-                                            onClick={() => setMissingUni(!missingUni)}
-                                            className="text-[8px] font-black text-[#FF6600] uppercase tracking-widest hover:underline"
-                                        >
-                                            {missingUni ? "Back to List" : "Uni not listed?"}
-                                        </button>
-                                    </div>
-
-                                    {!missingUni ? (
-                                        <div className="space-y-2">
-                                            <div className="relative group">
-                                                <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
-                                                <input
-                                                    type="text"
-                                                    placeholder="Search your institution..."
-                                                    value={uniSearch}
-                                                    onChange={(e) => setUniSearch(e.target.value)}
-                                                    className="w-full h-14 pl-14 pr-10 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold text-xs"
-                                                />
-                                            </div>
-
-                                            <div className="relative group">
-                                                <select
-                                                    name="university"
-                                                    value={formData.university}
-                                                    onChange={(e) => setFormData(p => ({ ...p, university: e.target.value }))}
-                                                    className="w-full h-14 pl-6 pr-10 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold appearance-none transition-all"
-                                                    required
-                                                >
-                                                    <option value="" className="bg-zinc-900 font-medium">
-                                                        {formData.location ? `Select Official Node in ${formData.location}...` : "Select Region Above First..."}
-                                                    </option>
-                                                    {filteredUniversities.length > 0 ? (
-                                                        filteredUniversities.map(uni => (
-                                                            <option key={uni} value={uni} className="bg-zinc-900 font-medium">{uni}</option>
-                                                        ))
-                                                    ) : (
-                                                        <option disabled className="bg-zinc-900 text-zinc-700 italic">No matching institutions found in this region</option>
-                                                    )}
-                                                </select>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-2 p-6 bg-white/5 border border-white/5 rounded-3xl animate-in zoom-in-95 duration-300">
-                                            <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mb-4">Request New Institution Node</p>
-                                            <input
-                                                value={missingUniName}
-                                                onChange={(e) => setMissingUniName(e.target.value)}
-                                                placeholder="Enter full university name"
-                                                className="w-full h-14 bg-black border border-white/10 rounded-2xl px-6 text-white font-bold outline-none focus:border-[#FF6600]"
-                                            />
-                                            <p className="text-[8px] text-zinc-600 italic">Admin will review and enable this node within 24 hours.</p>
-                                        </div>
-                                    )}
-
-                                    <div className="space-y-4 pt-4">
-                                        <div className="flex items-center justify-between ml-2 mb-2">
-                                            <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 block">Verification Method</label>
-                                        </div>
-
-                                        <div className="flex bg-white/5 p-1 rounded-2xl mb-6">
-                                            <button
-                                                type="button"
-                                                onClick={() => setVerificationMethod('id_card')}
-                                                className={`flex-1 h-10 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${verificationMethod === 'id_card' ? 'bg-[#FF6600] text-black shadow-lg' : 'text-zinc-500 hover:text-white'}`}
-                                            >
-                                                Upload ID Card
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setVerificationMethod('school_email')}
-                                                className={`flex-1 h-10 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${verificationMethod === 'school_email' ? 'bg-[#FF6600] text-black shadow-lg' : 'text-zinc-500 hover:text-white'}`}
-                                            >
-                                                School Email
-                                            </button>
-                                        </div>
-
-                                        {verificationMethod === 'id_card' ? (
-                                            <div className="animate-in fade-in slide-in-from-left-4 duration-300">
-                                                <div className="flex items-center justify-between ml-2">
-                                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 block">Upload Student ID Card</label>
-                                                    {formData.studentIdUrl && (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setFormData({ ...formData, studentIdUrl: '' })}
-                                                            className="text-[8px] font-black text-red-500 uppercase tracking-widest hover:underline"
-                                                        >
-                                                            Reset Upload
-                                                        </button>
-                                                    )}
-                                                </div>
-
-                                                <div className="glass-card rounded-[2rem] border border-white/10 p-4 group hover:border-[#FF6600]/30 transition-colors bg-zinc-950/50 mt-2">
-                                                    <ImageUpload
-                                                        onImagesSelected={(urls: string[]) => {
-                                                            if (urls && urls.length > 0) setFormData({ ...formData, studentIdUrl: urls[0] });
-                                                            else setFormData({ ...formData, studentIdUrl: '' });
-                                                        }}
-                                                        defaultImages={formData.studentIdUrl ? [formData.studentIdUrl] : []}
-                                                        maxImages={1}
-                                                        bucketName="identity"
-                                                        isIDCard={true}
-                                                    />
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-                                                <div className="p-6 bg-[#FF6600]/5 border border-[#FF6600]/20 rounded-2xl">
-                                                    <p className="text-[10px] text-[#FF6600] font-bold uppercase leading-relaxed mb-4">
-                                                        <ShieldCheck className="h-4 w-4 inline-block mr-1 mb-0.5" />
-                                                        Automatic Verification
-                                                    </p>
-                                                    <div className="space-y-2">
-                                                        <p className="text-zinc-500 font-medium italic text-[10px]">
-                                                            We will verify your status via <span className="text-white font-bold">{formData.email || "your provided email"}</span>.
-                                                        </p>
-                                                        <p className="text-[8px] text-zinc-600 font-bold uppercase tracking-widest mt-2 ml-1">
-                                                            Check your inbox immediately after signup to activate your node.
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {!['student_seller', 'dealer'].includes(role) && (
-                            <div className="space-y-2 animate-in fade-in slide-in-from-top-4 duration-500">
-                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Mobile Comms</label>
-                                <div className="relative group">
-                                    <Zap className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
-                                    <input
-                                        name="phoneNumber"
-                                        type="tel"
-                                        value={formData.phoneNumber}
-                                        onChange={handleChange}
-                                        placeholder="080..."
-                                        className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold text-xs"
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                        {['student_seller', 'dealer'].includes(role) && (
-                            <div className="space-y-6 pt-6 border-t border-white/5 animate-in fade-in duration-700 delay-100">
-                                <div className="glass-card p-8 rounded-[2rem] border border-white/5 text-center bg-gradient-to-b from-[#FF6600]/5 to-transparent relative overflow-hidden">
-                                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF6600]/20 to-transparent" />
-                                    <Sparkles className="h-6 w-6 text-[#FF6600] mx-auto mb-4" />
-                                    <p className="text-[10px] uppercase font-black text-[#FF6600] mb-2 tracking-[0.2em]">Verification Protocol</p>
-                                    <p className="text-zinc-500 text-[9px] font-bold uppercase leading-relaxed">
-                                        {verificationMethod === 'school_email'
-                                            ? "A verification link will be sent to your school email. Click it to activate your dealership instantly."
-                                            : "Your account will enter a PENDING status for admin security oversight. Once your ID is verified, your dealership node will be activated."}
-                                    </p>
-                                </div>
-                            </div>
-                        )}
-
-                        <div className="flex items-start md:items-center gap-4 pt-6 border-t border-white/5">
-                            <input
-                                type="checkbox"
-                                id="terms"
-                                checked={agreedToTerms}
-                                onChange={(e) => setAgreedToTerms(e.target.checked)}
-                                className="mt-1 md:mt-0 h-5 w-5 rounded-lg border-white/10 bg-zinc-950 checked:bg-[#FF6600] checked:text-black focus:ring-[#FF6600]/50 transition-all cursor-pointer"
-                            />
-                            <label htmlFor="terms" className="text-[11px] text-zinc-500 font-bold leading-tight cursor-pointer">
-                                I verify compliance with the <Link href="/terms" target="_blank" className="text-zinc-300 hover:text-white underline decoration-[#FF6600]/40 decoration-1 underline-offset-4 transition-colors">Terms of Engagement</Link> & <Link href="/privacy" target="_blank" className="text-zinc-300 hover:text-white underline decoration-[#FF6600]/40 decoration-1 underline-offset-4 transition-colors">Privacy Protocol</Link> (NDPA 2023).
-                            </label>
-                        </div>
-
-                        <Button type="submit" className="w-full h-18 bg-[#FF6600] hover:bg-[#FF6600]/90 text-black font-black uppercase tracking-widest rounded-[1.5rem] shadow-[0_0_30px_rgba(255,102,0,0.3)] border-none mt-4 text-xs group transition-all" disabled={isLoading}>
-                            {isLoading ? <Loader2 className="animate-spin h-6 w-6" /> : (
-                                <span className="flex items-center gap-3">
-                                    {['student_seller', 'dealer'].includes(role) ? 'Initialize Beta Node' : 'Enter MarketBridge'}
-                                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                                </span>
-                            )}
+                <CardContent className="p-0 space-y-6 pb-8">
+                    {error && <div className="bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-red-500/20">{error}</div>}
+                    <form onSubmit={handleAdminCodeSubmit} className="space-y-6">
+                        <input
+                            type="password"
+                            className="w-full h-16 bg-black border border-white/5 rounded-2xl text-center tracking-[0.5em] font-mono text-xl focus:outline-none focus:ring-2 focus:ring-red-500/50 text-red-500"
+                            value={adminCode}
+                            onChange={(e) => setAdminCode(e.target.value)}
+                            placeholder="••••••••"
+                            autoFocus
+                            required
+                        />
+                        <Button type="submit" className="w-full h-16 rounded-2xl bg-red-600 text-white font-black uppercase tracking-widest hover:bg-red-700 shadow-[0_0_30px_rgba(220,38,38,0.3)]">
+                            Authorize
                         </Button>
                     </form>
                 </CardContent>
             </Card>
         </div>
     );
+}
+
+if (step === 'admin-dept') {
+    return (
+        <div className="min-h-screen flex items-center justify-center p-4 bg-black">
+            <Card className="w-full max-w-2xl glass-card border-none rounded-[3rem] p-12 text-white">
+                <CardHeader className="p-0 text-center mb-12">
+                    <CardTitle className="text-4xl font-black uppercase italic tracking-tighter mb-2">Select Sector</CardTitle>
+                    <CardDescription className="text-zinc-500 font-medium italic lowercase">Define your administrative jurisdiction</CardDescription>
+                </CardHeader>
+                <CardContent className="p-0 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {[
+                        { id: 'marketing', title: 'Marketing', icon: Zap, color: 'text-orange-400' },
+                        { id: 'operations', title: 'Operations', icon: Briefcase, desc: 'Ops & Escrow', color: 'text-red-400' },
+                        { id: 'technical', title: 'Technical', icon: Loader2, desc: 'System Core', color: 'text-blue-400' }
+                    ].map(dept => (
+                        <button
+                            key={dept.id}
+                            onClick={() => handleDeptSelect(dept.id as any)}
+                            className="glass-card p-8 rounded-3xl border-white/5 hover:bg-white/5 transition-all group flex flex-col items-center gap-4 text-center"
+                        >
+                            <div className="h-14 w-14 rounded-xl bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <dept.icon className={`h-7 w-7 ${dept.color}`} />
+                            </div>
+                            <div>
+                                <h4 className="font-black uppercase italic tracking-tight">{dept.title}</h4>
+                                <p className="text-[10px] text-zinc-600 font-bold uppercase mt-1">Management</p>
+                            </div>
+                        </button>
+                    ))}
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
+
+
+
+if (success) {
+    return (
+        <div className="min-h-screen flex items-center justify-center p-4 bg-black">
+            <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF6600] to-transparent" />
+                <CardHeader className="p-0 text-center mb-10">
+                    <div className="mx-auto h-24 w-24 rounded-full bg-[#FF6600]/10 flex items-center justify-center mb-6 relative">
+                        <Lock className="h-10 w-10 text-[#FF6600] animate-bounce" />
+                        <div className="absolute inset-0 rounded-full border border-[#FF6600]/30 animate-ping opacity-25" />
+                    </div>
+                    <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-4">Signal Transmitted</CardTitle>
+                    <CardDescription className="text-zinc-500 font-medium leading-relaxed">
+                        We have dispatched a verification code to <br /><span className="text-white font-bold">{formData.email}</span>.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="p-0 space-y-6 text-center">
+                    <div className="p-4 bg-zinc-900/50 rounded-2xl border border-white/5">
+                        <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mb-1">Secure Protocol</p>
+                        <p className="text-sm text-white font-medium">Please enter the code sent to your inbox.</p>
+                    </div>
+
+                    {error && <div className="bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-red-500/20">{error}</div>}
+
+                    <form onSubmit={handleVerification} className="space-y-6">
+                        <div className="space-y-2">
+                            <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600">Activation Code</label>
+                            <input
+                                value={otpCode}
+                                onChange={(e) => setOtpCode(e.target.value)}
+                                placeholder="• • • • • •"
+                                className="w-full h-16 bg-black border border-white/10 rounded-2xl text-center text-2xl font-black tracking-[1em] text-white focus:border-[#FF6600] outline-none transition-all placeholder:tracking-normal placeholder:text-zinc-800"
+                                maxLength={6}
+                            />
+                        </div>
+
+                        <Button type="submit" className="w-full h-14 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-zinc-200 transition-all" disabled={isVerifying}>
+                            {isVerifying ? <Loader2 className="animate-spin h-5 w-5" /> : "Initialize Node"}
+                        </Button>
+                    </form>
+
+                    <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest pt-4">
+                        Didn't receive code? Check spam or <button type="button" onClick={resendCode} className="text-[#FF6600] hover:underline" disabled={isVerifying}>Resend Code</button>
+                    </p>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
+
+if (step === 'auth-method') {
+    return (
+        <div className="min-h-screen flex items-center justify-center p-4 bg-black">
+            <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden">
+                <div className="absolute top-[-10%] right-[-10%] w-32 h-32 bg-[#FF6600]/5 blur-[40px] rounded-full" />
+                <CardHeader className="p-0 text-center mb-10">
+                    <Button variant="ghost" onClick={() => initialRole ? router.push('/') : setStep('role')} className="text-zinc-600 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> {initialRole ? 'Cancel' : 'Back'}</Button>
+                    <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2">
+                        {['student_seller', 'dealer'].includes(role) ? 'Merchant Verification' : 'Verification Channel'}
+                    </CardTitle>
+                    <CardDescription className="text-zinc-500 font-medium italic lowercase">
+                        {['student_seller', 'dealer'].includes(role) ? 'establish your secure business path' : 'choose your identity entry point'}
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="p-0 space-y-6 pb-8">
+                    <div className="space-y-2">
+                        <Button variant="outline" className="w-full h-16 rounded-[1.5rem] border-white/10 hover:bg-white/5 text-white font-bold uppercase tracking-widest group transition-all" onClick={signInWithGoogle}>
+                            <Globe className="mr-3 h-5 w-5 text-blue-500 group-hover:scale-110 transition-transform" /> Google Identity Hub
+                        </Button>
+                        {['student_seller', 'dealer'].includes(role) && (
+                            <p className="text-[8px] text-zinc-500 text-center font-bold uppercase">Sellers must select School Email account</p>
+                        )}
+                    </div>
+
+                    <div className="relative flex items-center justify-center py-4">
+                        <div className="absolute inset-x-0 h-px bg-white/5"></div>
+                        <span className="relative bg-black px-4 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-800">Protocol Selection</span>
+                    </div>
+                    <Button className="w-full h-16 rounded-[1.5rem] bg-white border border-white/10 text-black font-black uppercase tracking-widest hover:scale-[1.02] transition-all" onClick={() => setStep('details')}>
+                        <Mail className="mr-3 h-5 w-5" /> Direct Email Path
+                    </Button>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
+
+return (
+    <div className="min-h-screen flex items-center justify-center py-20 px-4 bg-black relative">
+        <div className="absolute top-[10%] right-[10%] w-[30%] h-[30%] bg-[#FF6600]/5 blur-[120px] rounded-full" />
+
+        <Card className="w-full max-w-xl glass-card border-none rounded-[3rem] p-12 text-white relative z-10 shadow-2xl">
+            <CardHeader className="p-0 mb-8 text-left">
+                <div className="flex justify-between items-start mb-6">
+                    <Button variant="ghost" onClick={() => setStep('auth-method')} className="text-zinc-600 hover:text-white p-0 h-auto text-[10px] font-black uppercase tracking-widest"><ArrowLeft className="mr-2 h-3 w-3" /> Secure Gate</Button>
+                    <Logo showText={false} className="opacity-50" />
+                </div>
+
+                <StepProgress currentStep={step} role={role} />
+
+                <CardTitle className="text-4xl font-black uppercase italic tracking-tighter mb-2">Establish Identity</CardTitle>
+                <CardDescription className="text-zinc-500 font-medium italic lowercase">
+                    {['student_seller', 'dealer'].includes(role) ? `Establishing verified merchant node` : "Please define your global attributes"}
+                </CardDescription>
+            </CardHeader>
+
+            <CardContent className="p-0">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    {error && <div className="bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest p-4 rounded-2xl border border-red-500/20 text-center mb-6 animate-pulse">{error}</div>}
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Full Name</label>
+                            <div className="relative group">
+                                <UserIcon className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                <input name="displayName" value={formData.displayName} onChange={handleChange} required placeholder="Samuel Ade" className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all" />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">
+                                {['student_seller', 'dealer'].includes(role) ? "School Email (.edu.ng)" : "Email Identity"}
+                            </label>
+                            <div className="relative group">
+                                <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                <input
+                                    name="email"
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder={['student_seller', 'dealer'].includes(role) ? "benny@uni.edu.ng" : "founder@market.io"}
+                                    className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Secure Key</label>
+                            <div className="relative group">
+                                <Lock className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                <input name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleChange} required className="w-full h-14 pl-14 pr-14 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold" />
+                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-800 hover:text-[#FF6600]">{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Confirm Key</label>
+                            <div className="relative group">
+                                <ShieldCheck className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                <input name="confirmPassword" type={showPassword ? 'text' : 'password'} value={formData.confirmPassword} onChange={handleChange} required className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Operational Region</label>
+                        <div className="relative group">
+                            <Globe className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors z-10" />
+                            <select
+                                name="location"
+                                className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold relative"
+                                value={formData.location}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                                    setFormData({ ...formData, location: e.target.value, university: '' });
+                                    setUniSearch('');
+                                }}
+                                required
+                            >
+                                <option value="" className="bg-zinc-900">Select Node State</option>
+                                {NIGERIAN_STATES.map(s => <option key={s} value={s} className="bg-zinc-900">{s}</option>)}
+                            </select>
+                        </div>
+                    </div>
+
+                    {['student_seller', 'dealer'].includes(role) && (
+                        <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
+                            <div className="space-y-2">
+                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Business / Brand Name</label>
+                                <div className="relative group">
+                                    <Briefcase className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                    <input
+                                        name="businessName"
+                                        value={formData.businessName}
+                                        onChange={handleChange}
+                                        className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all"
+                                        placeholder="Campus Kicks"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Matriculation Number (Required)</label>
+                                    <div className="relative group">
+                                        <School className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                        <input
+                                            name="matricNumber"
+                                            value={formData.matricNumber}
+                                            onChange={handleChange}
+                                            required
+                                            onBlur={(e) => detectUniversity(e.target.value)}
+                                            className="w-full h-14 pl-14 pr-12 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all"
+                                            placeholder="U/2024/..."
+                                        />
+                                        {isDetectingSchool && (
+                                            <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-[#FF6600]" />
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Department (Optional)</label>
+                                    <div className="relative group">
+                                        <Sparkles className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                        <input
+                                            name="department"
+                                            value={formData.department}
+                                            onChange={handleChange}
+                                            placeholder="Computer Science"
+                                            className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center ml-2">
+                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600">University / Campus Node</label>
+                                    <button
+                                        type="button"
+                                        onClick={() => setMissingUni(!missingUni)}
+                                        className="text-[8px] font-black text-[#FF6600] uppercase tracking-widest hover:underline"
+                                    >
+                                        {missingUni ? "Back to List" : "Uni not listed?"}
+                                    </button>
+                                </div>
+
+                                {!missingUni ? (
+                                    <div className="space-y-2">
+                                        <div className="relative group">
+                                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                            <input
+                                                type="text"
+                                                placeholder="Search your institution..."
+                                                value={uniSearch}
+                                                onChange={(e) => setUniSearch(e.target.value)}
+                                                className="w-full h-14 pl-14 pr-10 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold text-xs"
+                                            />
+                                        </div>
+
+                                        <div className="relative group">
+                                            <select
+                                                name="university"
+                                                value={formData.university}
+                                                onChange={(e) => setFormData(p => ({ ...p, university: e.target.value }))}
+                                                className="w-full h-14 pl-6 pr-10 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold appearance-none transition-all"
+                                                required
+                                            >
+                                                <option value="" className="bg-zinc-900 font-medium">
+                                                    {formData.location ? `Select Official Node in ${formData.location}...` : "Select Region Above First..."}
+                                                </option>
+                                                {filteredUniversities.length > 0 ? (
+                                                    filteredUniversities.map(uni => (
+                                                        <option key={uni} value={uni} className="bg-zinc-900 font-medium">{uni}</option>
+                                                    ))
+                                                ) : (
+                                                    <option disabled className="bg-zinc-900 text-zinc-700 italic">No matching institutions found in this region</option>
+                                                )}
+                                            </select>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-2 p-6 bg-white/5 border border-white/5 rounded-3xl animate-in zoom-in-95 duration-300">
+                                        <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mb-4">Request New Institution Node</p>
+                                        <input
+                                            value={missingUniName}
+                                            onChange={(e) => setMissingUniName(e.target.value)}
+                                            placeholder="Enter full university name"
+                                            className="w-full h-14 bg-black border border-white/10 rounded-2xl px-6 text-white font-bold outline-none focus:border-[#FF6600]"
+                                        />
+                                        <p className="text-[8px] text-zinc-600 italic">Admin will review and enable this node within 24 hours.</p>
+                                    </div>
+                                )}
+
+                                <div className="space-y-4 pt-4">
+                                    <div className="flex items-center justify-between ml-2 mb-2">
+                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 block">Verification Method</label>
+                                    </div>
+
+                                    <div className="flex bg-white/5 p-1 rounded-2xl mb-6">
+                                        <button
+                                            type="button"
+                                            onClick={() => setVerificationMethod('id_card')}
+                                            className={`flex-1 h-10 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${verificationMethod === 'id_card' ? 'bg-[#FF6600] text-black shadow-lg' : 'text-zinc-500 hover:text-white'}`}
+                                        >
+                                            Upload ID Card
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setVerificationMethod('school_email')}
+                                            className={`flex-1 h-10 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${verificationMethod === 'school_email' ? 'bg-[#FF6600] text-black shadow-lg' : 'text-zinc-500 hover:text-white'}`}
+                                        >
+                                            School Email
+                                        </button>
+                                    </div>
+
+                                    {verificationMethod === 'id_card' ? (
+                                        <div className="animate-in fade-in slide-in-from-left-4 duration-300">
+                                            <div className="flex items-center justify-between ml-2">
+                                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 block">Upload Student ID Card</label>
+                                                {formData.studentIdUrl && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setFormData({ ...formData, studentIdUrl: '' })}
+                                                        className="text-[8px] font-black text-red-500 uppercase tracking-widest hover:underline"
+                                                    >
+                                                        Reset Upload
+                                                    </button>
+                                                )}
+                                            </div>
+
+                                            <div className="glass-card rounded-[2rem] border border-white/10 p-4 group hover:border-[#FF6600]/30 transition-colors bg-zinc-950/50 mt-2">
+                                                <ImageUpload
+                                                    onImagesSelected={(urls: string[]) => {
+                                                        if (urls && urls.length > 0) setFormData({ ...formData, studentIdUrl: urls[0] });
+                                                        else setFormData({ ...formData, studentIdUrl: '' });
+                                                    }}
+                                                    defaultImages={formData.studentIdUrl ? [formData.studentIdUrl] : []}
+                                                    maxImages={1}
+                                                    bucketName="identity"
+                                                    isIDCard={true}
+                                                />
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                                            <div className="p-6 bg-[#FF6600]/5 border border-[#FF6600]/20 rounded-2xl">
+                                                <p className="text-[10px] text-[#FF6600] font-bold uppercase leading-relaxed mb-4">
+                                                    <ShieldCheck className="h-4 w-4 inline-block mr-1 mb-0.5" />
+                                                    Automatic Verification
+                                                </p>
+                                                <div className="space-y-2">
+                                                    <p className="text-zinc-500 font-medium italic text-[10px]">
+                                                        We will verify your status via <span className="text-white font-bold">{formData.email || "your provided email"}</span>.
+                                                    </p>
+                                                    <p className="text-[8px] text-zinc-600 font-bold uppercase tracking-widest mt-2 ml-1">
+                                                        Check your inbox immediately after signup to activate your node.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {!['student_seller', 'dealer'].includes(role) && (
+                        <div className="space-y-2 animate-in fade-in slide-in-from-top-4 duration-500">
+                            <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Mobile Comms</label>
+                            <div className="relative group">
+                                <Zap className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                <input
+                                    name="phoneNumber"
+                                    type="tel"
+                                    value={formData.phoneNumber}
+                                    onChange={handleChange}
+                                    placeholder="080..."
+                                    className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold text-xs"
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {['student_seller', 'dealer'].includes(role) && (
+                        <div className="space-y-6 pt-6 border-t border-white/5 animate-in fade-in duration-700 delay-100">
+                            <div className="glass-card p-8 rounded-[2rem] border border-white/5 text-center bg-gradient-to-b from-[#FF6600]/5 to-transparent relative overflow-hidden">
+                                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF6600]/20 to-transparent" />
+                                <Sparkles className="h-6 w-6 text-[#FF6600] mx-auto mb-4" />
+                                <p className="text-[10px] uppercase font-black text-[#FF6600] mb-2 tracking-[0.2em]">Verification Protocol</p>
+                                <p className="text-zinc-500 text-[9px] font-bold uppercase leading-relaxed">
+                                    {verificationMethod === 'school_email'
+                                        ? "A verification link will be sent to your school email. Click it to activate your dealership instantly."
+                                        : "Your account will enter a PENDING status for admin security oversight. Once your ID is verified, your dealership node will be activated."}
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="flex items-start md:items-center gap-4 pt-6 border-t border-white/5">
+                        <input
+                            type="checkbox"
+                            id="terms"
+                            checked={agreedToTerms}
+                            onChange={(e) => setAgreedToTerms(e.target.checked)}
+                            className="mt-1 md:mt-0 h-5 w-5 rounded-lg border-white/10 bg-zinc-950 checked:bg-[#FF6600] checked:text-black focus:ring-[#FF6600]/50 transition-all cursor-pointer"
+                        />
+                        <label htmlFor="terms" className="text-[11px] text-zinc-500 font-bold leading-tight cursor-pointer">
+                            I verify compliance with the <Link href="/terms" target="_blank" className="text-zinc-300 hover:text-white underline decoration-[#FF6600]/40 decoration-1 underline-offset-4 transition-colors">Terms of Engagement</Link> & <Link href="/privacy" target="_blank" className="text-zinc-300 hover:text-white underline decoration-[#FF6600]/40 decoration-1 underline-offset-4 transition-colors">Privacy Protocol</Link> (NDPA 2023).
+                        </label>
+                    </div>
+
+                    <Button type="submit" className="w-full h-18 bg-[#FF6600] hover:bg-[#FF6600]/90 text-black font-black uppercase tracking-widest rounded-[1.5rem] shadow-[0_0_30px_rgba(255,102,0,0.3)] border-none mt-4 text-xs group transition-all" disabled={isLoading}>
+                        {isLoading ? <Loader2 className="animate-spin h-6 w-6" /> : (
+                            <span className="flex items-center gap-3">
+                                {['student_seller', 'dealer'].includes(role) ? 'Initialize Beta Node' : 'Enter MarketBridge'}
+                                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                            </span>
+                        )}
+                    </Button>
+                </form>
+            </CardContent>
+        </Card>
+    </div>
+);
 }
 
 export default function SignupPage() {

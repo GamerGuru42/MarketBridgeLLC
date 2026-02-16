@@ -93,4 +93,5 @@ GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
 GRANT ALL ON public.users TO service_role; -- Trigger runs as owner usually, or we can key it to service_role
 
 -- Allow public read of users (for validating emails/referrals) - Restricted
+DROP POLICY IF EXISTS "Public profiles are viewable by everyone" ON public.users;
 CREATE POLICY "Public profiles are viewable by everyone" ON public.users FOR SELECT USING (true);
