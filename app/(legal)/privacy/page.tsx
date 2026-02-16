@@ -75,7 +75,7 @@ export default function PrivacyPage() {
                             We do not sell your data. We share necessary data only with:
                         </p>
                         <ul className="list-disc pl-5 space-y-2 mt-2">
-                            <li><strong>Payment Processors:</strong> Paystack / Flutterwave (for financial execution).</li>
+                            <li><strong>Payment Processors:</strong> Paystack (for secure financial execution).</li>
                             <li><strong>University Authorities:</strong> Only upon formal request regarding criminal investigation.</li>
                         </ul>
                     </section>

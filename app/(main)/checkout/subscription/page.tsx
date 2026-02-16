@@ -8,9 +8,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Check, Copy, ShieldCheck, University, Loader2, AlertCircle, ArrowRight } from 'lucide-react';
+import { Check, Copy, ShieldCheck, University, Loader2, AlertCircle, ArrowRight, Zap } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { useToast } from '@/contexts/ToastContext';
+import { usePaystackPayment } from 'react-paystack';
+import { PAYSTACK_PUBLIC_KEY_CLIENT } from '@/lib/payment/paystack';
 
 export default function SubscriptionCheckoutPage() {
     const { user, loading: authLoading } = useAuth();
@@ -35,8 +37,54 @@ export default function SubscriptionCheckoutPage() {
     const BANK_DETAILS = {
         bankName: 'Moniepoint MFB',
         accountNumber: '9022858358',
-        accountName: 'MarketBridge LLC' // Assuming business name, update if different
+        accountName: 'MarketBridge LLC'
     };
+
+    const amount = plan ? (billingCycle === 'annual' ? plan.price_annual : plan.price_monthly) : 0;
+
+    // Paystack Hook
+    const paystackConfig = {
+        reference: `SUB-${Date.now()}-${user?.id.slice(0, 5)}`,
+        email: user?.email || '',
+        amount: amount * 100, // kobo
+        publicKey: PAYSTACK_PUBLIC_KEY_CLIENT,
+        metadata: {
+            plan_id: planId,
+            billing_cycle: billingCycle,
+            user_id: user?.id,
+            custom_fields: []
+        } as any
+    };
+
+    const onPaystackSuccess = async (response: any) => {
+        setSubmitting(true);
+        try {
+            const res = await fetch('/api/subscriptions/confirm', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    reference: response.reference,
+                    planId,
+                    billingCycle
+                })
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || 'Activation failed');
+
+            router.push('/checkout/pending?status=success&ref=' + response.reference);
+        } catch (err: any) {
+            setError(err.message || 'Failed to verify automated payment. Please contact support.');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const onPaystackCancel = () => {
+        setSubmitting(false);
+    };
+
+    const initializePaystack = usePaystackPayment(paystackConfig);
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -120,7 +168,7 @@ export default function SubscriptionCheckoutPage() {
 
     if (!user || !plan) return null;
 
-    const amount = billingCycle === 'annual' ? plan.price_annual : plan.price_monthly;
+
 
     return (
         <div className="min-h-screen bg-black text-white relative overflow-hidden flex flex-col">
@@ -218,6 +266,37 @@ export default function SubscriptionCheckoutPage() {
                             </div>
                         </div>
 
+                        {/* Paystack Automated Payment */}
+                        <div className="mb-10">
+                            <Button
+                                onClick={() => {
+                                    // @ts-ignore
+                                    initializePaystack(onPaystackSuccess, onPaystackCancel);
+                                }}
+                                disabled={submitting}
+                                className="w-full h-16 bg-[#00FF85] hover:bg-[#00CC6A] text-black font-black uppercase tracking-widest rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(0,255,133,0.3)] mb-4"
+                            >
+                                {submitting ? (
+                                    <Loader2 className="h-6 w-6 animate-spin" />
+                                ) : (
+                                    <>
+                                        <Zap className="h-6 w-6 fill-current" />
+                                        Pay Instantly with Paystack
+                                    </>
+                                )}
+                            </Button>
+                            <p className="text-[10px] text-zinc-500 text-center flex items-center justify-center gap-2">
+                                <ShieldCheck className="h-3 w-3 text-[#00FF85]" />
+                                Securely processed by Paystack. Instant activation.
+                            </p>
+                        </div>
+
+                        <div className="relative flex items-center gap-4 mb-10">
+                            <div className="h-[1px] flex-1 bg-white/10" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">OR PAY VIA TRANSFER</span>
+                            <div className="h-[1px] flex-1 bg-white/10" />
+                        </div>
+
                         <form onSubmit={handleManualPaymentSubmit} className="space-y-6">
                             {error && (
                                 <Alert variant="destructive" className="bg-red-500/10 border-red-500/50 text-red-500">
@@ -283,6 +362,6 @@ export default function SubscriptionCheckoutPage() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

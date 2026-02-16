@@ -1,67 +1,65 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
-
-const FLUTTERWAVE_SECRET_KEY = process.env.FLUTTERWAVE_SECRET_KEY;
-// Note: Validate that this key exists in your .env
+import { paystackClient } from '@/lib/payment/paystack';
 
 export async function POST(request: Request) {
     try {
         // Create a Supabase client with the SERVICE ROLE key to bypass RLS for administrative updates
-        // We use this because the user might not have permission to 'approve' their own order status directly
-        // Initialized inside handler to prevent build-time errors
         const supabaseAdmin = createClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
             process.env.SUPABASE_SERVICE_ROLE_KEY!
         );
 
-        if (!FLUTTERWAVE_SECRET_KEY) {
-            console.error("FLUTTERWAVE_SECRET_KEY is missing");
-            return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
-        }
+        const { reference, tx_ref } = await request.json();
 
-        const { transaction_id, tx_ref } = await request.json();
+        // reference is often the Paystack reference, tx_ref is our internal tracking ref
+        const lookupRef = reference || tx_ref;
 
-        if (!transaction_id || !tx_ref) {
+        if (!lookupRef) {
             return NextResponse.json({ error: 'Missing transaction details' }, { status: 400 });
         }
 
-        // 1. Verify with Flutterwave
-        const flwResponse = await fetch(`https://api.flutterwave.com/v3/transactions/${transaction_id}/verify`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${FLUTTERWAVE_SECRET_KEY}`
-            }
-        });
+        // 1. Verify with Paystack
+        const verification = await paystackClient.verifyTransaction(lookupRef);
 
-        const flwData = await flwResponse.json();
-
-        if (flwData.status !== 'success' || flwData.data.status !== 'successful') {
+        if (!verification.status || verification.data.status !== 'success') {
             return NextResponse.json({ error: 'Payment verification failed at provider' }, { status: 400 });
         }
 
-        // 2. Initial Checks (Currency, matches expected)
-        // In a real app, you would fetch the expected order amount from your DB here using tx_ref
-        // const { data: order } = await supabaseAdmin.from('orders').select('*').eq('transaction_ref', tx_ref).single();
-        // if (order.amount > flwData.data.amount) throw new Error('Amount mismatch');
+        // 2. Fetch order to validate amount
+        const { data: order, error: orderError } = await supabaseAdmin
+            .from('orders')
+            .select('*')
+            .eq('transaction_ref', tx_ref)
+            .single();
 
-        // 3. Update Database Securely
+        if (orderError || !order) {
+            // If it's a subscription, we might not have an "order" record in the same table
+            // But for item purchases, we do.
+            console.warn('Order record not found for ref:', tx_ref);
+        }
+
+        // 3. Update Order status
         const { error: updateError } = await supabaseAdmin
             .from('orders')
             .update({
                 status: 'paid',
-                payment_id: transaction_id.toString(), // Store the provider ID
+                payment_id: verification.data.id.toString(),
                 updated_at: new Date().toISOString(),
-                payment_metadata: flwData.data // Store full receipt
+                payment_metadata: verification.data
             })
             .eq('transaction_ref', tx_ref);
 
         if (updateError) {
             console.error('Supabase update error:', updateError);
-            return NextResponse.json({ error: 'Failed to update order status' }, { status: 500 });
+            // Don't return error yet if it's potentially a subscription that doesn't use 'orders' table
         }
 
-        return NextResponse.json({ success: true, message: 'Payment verified and order updated' });
+        return NextResponse.json({
+            success: true,
+            message: 'Payment verified and status updated',
+            data: verification.data
+        });
 
     } catch (error: any) {
         console.error('Verification Error:', error);

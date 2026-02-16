@@ -62,7 +62,7 @@ export default function TermsPage() {
                     <section>
                         <h2 className="text-lg font-bold text-white uppercase tracking-widest mb-4">4. Payment & Escrow</h2>
                         <p>
-                            Payments are processed via Paystack/Flutterwave under Nigerian banking regulations.
+                            Payments are processed via Paystack under Nigerian banking regulations.
                             Funds are held in escrow until delivery is confirmed or the inspection period (24 hours) lapses.
                             MarketBridge charges a platform fee which is non-refundable once the transaction is initiated.
                         </p>

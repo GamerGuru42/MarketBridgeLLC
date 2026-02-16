@@ -32,7 +32,7 @@ export default function DisclaimerPage() {
                     <AlertTriangle className="h-6 w-6 text-yellow-500 flex-shrink-0" />
                     <p className="text-sm text-yellow-500 mt-1">
                         <strong>TESTING PHASE WARNING:</strong> MarketBridge is currently in a Live Beta.
-                        While funds are secured via Paystack/Flutterwave, user experience may vary.
+                        While funds are secured via Paystack, user experience may vary.
                         By using this platform, you agree to report bugs via the Feedback tool.
                     </p>
                 </div>
