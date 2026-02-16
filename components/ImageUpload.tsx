@@ -12,16 +12,19 @@ interface ImageUploadProps {
     defaultImages?: string[];
     maxImages?: number;
     bucketName?: string;
+    isIDCard?: boolean;
 }
 
 export function ImageUpload({
     onImagesSelected,
     defaultImages = [],
     maxImages = 5,
-    bucketName = 'listings'
+    bucketName = 'listings',
+    isIDCard = false
 }: ImageUploadProps) {
     const [images, setImages] = useState<string[]>(defaultImages);
     const [uploading, setUploading] = useState(false);
+    const [identifying, setIdentifying] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,31 +38,51 @@ export function ImageUpload({
         }
 
         setUploading(true);
+        if (isIDCard) setIdentifying(true);
+
         const newUrls: string[] = [];
 
         try {
             for (const file of files) {
-                // Validate file type
+                // 1. Basic Type Validation
                 if (!file.type.startsWith('image/')) {
                     alert(`File ${file.name} is not an image.`);
                     continue;
                 }
 
-                // Validate file size (e.g., 5MB)
+                // 2. Size Validation
                 if (file.size > 5 * 1024 * 1024) {
-                    alert(`File ${file.name} is too large (max 5MB).`);
+                    alert(`ID file is too large (max 5MB).`);
                     continue;
                 }
 
+                // 3. Simulated ID Identification Logic
+                if (isIDCard) {
+                    // Artificial delay to simulate AI scanning the card
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+
+                    // Basic Heuristic: ID cards are usually landscape or very high res
+                    const img = new globalThis.Image();
+                    const objectUrl = URL.createObjectURL(file);
+
+                    await new Promise((resolve, reject) => {
+                        img.onload = resolve;
+                        img.onerror = reject;
+                        img.src = objectUrl;
+                    });
+
+                    // If it's a very narrow portrait, it's probably not a plastic ID card
+                    if (img.height > img.width * 1.5) {
+                        alert("The image does not appear to be a standard Student ID card (too tall). Please upload a landscape photo of your card.");
+                        URL.revokeObjectURL(objectUrl);
+                        continue;
+                    }
+                    URL.revokeObjectURL(objectUrl);
+                }
+
                 const { data: { user } } = await supabase.auth.getUser();
-                // if (!user) throw new Error("Authentication required for upload."); // Relaxed for signup flow
-
                 const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-                // Remove special chars from filename to prevent path issues
-                const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
                 const fileName = `${Math.random().toString(36).substring(2, 10)}_${Date.now()}.${fileExt}`;
-
-                // Upload to user-specific folder for RLS compliance, or 'public' if anon
                 const filePath = user ? `${user.id}/${fileName}` : `public/${fileName}`;
 
                 const { error: uploadError } = await supabase.storage
@@ -70,6 +93,9 @@ export function ImageUpload({
                     });
 
                 if (uploadError) {
+                    if (uploadError.message.includes('bucket not found') || uploadError.message.includes('404')) {
+                        throw new Error(`CRITICAL: The '${bucketName}' storage bucket does not exist in your Supabase project. Please run the provided SQL migration script to create it.`);
+                    }
                     throw new Error(`Upload failed: ${uploadError.message}`);
                 }
 
@@ -89,9 +115,10 @@ export function ImageUpload({
             onImagesSelected(updatedImages);
         } catch (error: any) {
             console.error('Error uploading image:', error);
-            alert(error.message || 'Error uploading image. Please check your internet connection or permissions.');
+            alert(error.message);
         } finally {
             setUploading(false);
+            setIdentifying(false);
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
@@ -159,7 +186,9 @@ export function ImageUpload({
                         {uploading ? (
                             <div className="flex flex-col items-center gap-2">
                                 <Loader2 className="h-8 w-8 animate-spin text-[#FF6600]" />
-                                <span className="text-[10px] uppercase font-black tracking-widest text-[#FF6600]">Processing Stream...</span>
+                                <span className="text-[10px] uppercase font-black tracking-widest text-[#FF6600]">
+                                    {identifying ? "Identifying ID Card..." : "Processing Stream..."}
+                                </span>
                             </div>
                         ) : (
                             <>

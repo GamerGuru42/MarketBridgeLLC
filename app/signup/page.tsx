@@ -655,6 +655,7 @@ function SignupContent() {
                                                 defaultImages={formData.studentIdUrl ? [formData.studentIdUrl] : []}
                                                 maxImages={1}
                                                 bucketName="identity"
+                                                isIDCard={true}
                                             />
                                         </div>
                                     </div>

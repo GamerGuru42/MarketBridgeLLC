@@ -12,8 +12,8 @@ VALUES
     ('avatars', 'avatars', true)
 ON CONFLICT (id) DO NOTHING;
 
--- 2. Enable RLS on storage.objects (just in case)
-ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+-- 2. Storage Policies Initialization
+-- Note: We skip 'ALTER TABLE storage.objects' as it is managed by the Supabase platform.
 
 -- 3. Clear existing policies to avoid conflicts
 DO $$ 
