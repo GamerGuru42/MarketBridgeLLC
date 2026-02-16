@@ -24,7 +24,10 @@ import {
     RotateCcw,
     ArrowRight,
     ChevronRight,
-    Loader2
+    Loader2,
+    Mail,
+    ShieldAlert,
+    RefreshCw
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -412,6 +415,75 @@ export default function DealerDashboardPage() {
                     <Button variant="ghost" onClick={() => router.push('/login')} className="w-full mt-4 text-zinc-500 hover:text-white font-black uppercase tracking-widest text-[10px]">
                         Return to Gate
                     </Button>
+                </div>
+            </div>
+        );
+    }
+
+    if (user && !user.isVerified) {
+        // Safe access to metadata
+        const verificationMethod = (user as any).metadata?.verification_method;
+        const isEmailMethod = verificationMethod === 'school_email';
+
+        const resendEmail = async () => {
+            alert("Re-transmitting verification signal...");
+            try {
+                const { error } = await supabase.auth.resend({
+                    type: 'signup',
+                    email: user.email,
+                });
+                if (error) alert(error.message);
+                else alert("Signal transmitted. Check your inbox.");
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-black text-white p-6 relative overflow-hidden">
+                <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none" />
+                <div className="max-w-xl w-full glass-card p-12 rounded-[3rem] text-center relative z-10 border border-white/10 shadow-2xl">
+                    <div className="h-24 w-24 rounded-3xl bg-[#FF6600]/10 border border-[#FF6600]/20 flex items-center justify-center mx-auto mb-8 relative">
+                        {isEmailMethod ? (
+                            <Mail className="h-10 w-10 text-[#FF6600]" />
+                        ) : (
+                            <ShieldAlert className="h-10 w-10 text-[#FF6600]" />
+                        )}
+                        <div className="absolute inset-0 rounded-3xl border border-[#FF6600]/30 animate-pulse" />
+                    </div>
+
+                    <h2 className="text-4xl font-black uppercase italic tracking-tighter mb-4">
+                        {isEmailMethod ? "Verify Identity" : "Protocol Pending"}
+                    </h2>
+
+                    <p className="text-zinc-500 font-medium mb-10 leading-relaxed max-w-sm mx-auto">
+                        {isEmailMethod
+                            ? <span>We have transmitted a secure link to <span className="text-white font-bold">{user.email}</span>. Please authorize this node to activate your dashboard.</span>
+                            : "Your merchant credentials are under review by central command. Access will be granted upon successful ID verification."
+                        }
+                    </p>
+
+                    {isEmailMethod ? (
+                        <div className="space-y-4">
+                            <Button onClick={() => window.location.reload()} className="w-full h-16 bg-[#FF6600] text-black font-black uppercase tracking-widest rounded-2xl hover:bg-[#FF8533] transition-all shadow-[0_0_30px_rgba(255,102,0,0.2)]">
+                                <RefreshCw className="mr-3 h-5 w-5" /> I Have Verified
+                            </Button>
+                            <button onClick={resendEmail} className="text-[10px] font-black uppercase tracking-widest text-zinc-600 hover:text-[#FF6600] transition-colors">
+                                Re-transmit Signal
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="bg-zinc-900/50 rounded-2xl p-6 border border-white/5">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-2">Estimated Arrival</p>
+                            <p className="text-xl font-black text-white italic">~24 Hours</p>
+                        </div>
+                    )}
+
+                    <div className="mt-12 pt-8 border-t border-white/5">
+                        <Button variant="ghost" onClick={() => router.push('/')} className="text-zinc-500 hover:text-white font-black uppercase tracking-widest text-[10px]">
+                            Return to Base
+                        </Button>
+                    </div>
                 </div>
             </div>
         );
