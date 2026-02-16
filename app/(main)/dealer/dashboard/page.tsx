@@ -67,7 +67,7 @@ interface Stats {
 }
 
 export default function DealerDashboardPage() {
-    const { user, loading: authLoading } = useAuth();
+    const { user, sessionUser, loading: authLoading } = useAuth();
     const router = useRouter();
     const supabase = createClient();
     const [orders, setOrders] = useState<Order[]>([]);
@@ -106,11 +106,13 @@ export default function DealerDashboardPage() {
     };
 
     useEffect(() => {
-        if (!authLoading && !user) {
+        // 1. Unauthenticated Check
+        if (!authLoading && !sessionUser) {
             router.push('/login');
             return;
         }
 
+        // 2. Role Check (only if profile 'user' is loaded)
         if (user && !['dealer', 'student_seller'].includes(user.role)) {
             router.push('/');
             return;
@@ -118,6 +120,7 @@ export default function DealerDashboardPage() {
 
         let unsubscribe: (() => void) | undefined;
 
+        // 3. Data Fetching (Require 'user' profile)
         if (user) {
             fetchOrders();
             fetchBankDetails();
@@ -128,7 +131,7 @@ export default function DealerDashboardPage() {
         return () => {
             if (unsubscribe) unsubscribe();
         };
-    }, [user, authLoading]);
+    }, [user, sessionUser, authLoading]);
 
     const checkSubscriptionStatus = async () => {
         if (!user || !user.subscription_expires_at) return;
@@ -146,7 +149,8 @@ export default function DealerDashboardPage() {
                 })
                 .eq('id', user.id);
 
-            window.location.reload();
+            // Refresh data without page reload
+            fetchOrders();
         }
     };
 
