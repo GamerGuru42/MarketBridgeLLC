@@ -61,7 +61,7 @@ export const MobileBottomNav = () => {
     ];
 
     return (
-        <nav className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[90%] glass-card rounded-[2rem] border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] h-20 px-8">
+        <nav className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] w-[90%] glass-card rounded-[2rem] border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] h-20 px-8">
             <div className="flex h-full items-center justify-between">
                 {navItems.filter(item => item.show).map((item) => {
                     const isActive = pathname === item.href;

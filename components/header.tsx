@@ -211,7 +211,7 @@ export const Header = () => {
                                 <Menu className="h-5 w-5 text-white" />
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="right" className="w-full bg-black/95 backdrop-blur-2xl border-l border-white/10 p-8 flex flex-col">
+                        <SheetContent side="right" className="w-full bg-black backdrop-blur-2xl border-none p-8 flex flex-col z-[200]">
                             <div className="flex justify-between items-center mb-16">
                                 <Logo />
                             </div>
