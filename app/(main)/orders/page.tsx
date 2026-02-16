@@ -268,11 +268,11 @@ export default function OrdersPage() {
                     <div className="space-y-4">
                         {orders.map(order => (
                             <Card key={order.id} className="hover:shadow-md transition-shadow">
-                                <CardHeader className="pb-3">
+                                <CardHeader className="pb-3 border-b border-white/5">
                                     <div className="flex justify-between items-start">
                                         <div>
-                                            <CardTitle className="text-lg">Order #{order.id.slice(-8).toUpperCase()}</CardTitle>
-                                            <p className="text-sm text-muted-foreground mt-1">
+                                            <CardTitle className="text-lg font-black uppercase tracking-tighter">Order #{order.id.slice(-8).toUpperCase()}</CardTitle>
+                                            <p className="text-[10px] text-muted-foreground mt-1 font-bold uppercase tracking-widest">
                                                 Placed on {new Date(order.created_at).toLocaleDateString('en-NG', {
                                                     year: 'numeric',
                                                     month: 'long',
@@ -280,33 +280,42 @@ export default function OrdersPage() {
                                                 })}
                                             </p>
                                         </div>
-                                        <Badge variant={getStatusVariant(order.status)} className="gap-1">
-                                            {getStatusIcon(order.status)}
-                                            {getStatusText(order.status)}
-                                        </Badge>
+                                        <div className="flex flex-col items-end gap-2">
+                                            <Badge variant={getStatusVariant(order.status)} className="gap-1 font-bold">
+                                                {getStatusIcon(order.status)}
+                                                {getStatusText(order.status)}
+                                            </Badge>
+                                            <Badge variant="outline" className="text-[9px] uppercase tracking-widest text-[#FF6600] border-[#FF6600]/20 bg-[#FF6600]/5">
+                                                Paid via Paystack
+                                            </Badge>
+                                        </div>
                                     </div>
                                 </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-4">
+                                <CardContent className="pt-6">
+                                    <div className="space-y-6">
                                         {/* Order Items */}
                                         <div className="flex gap-4">
                                             {order.listing?.images?.[0] && (
-                                                <Image
-                                                    src={order.listing.images[0]}
-                                                    alt={order.listing.title ?? 'Product image'}
-                                                    width={80}
-                                                    height={80}
-                                                    className="rounded object-cover"
-                                                />
+                                                <div className="h-20 w-20 rounded-xl overflow-hidden relative bg-zinc-900 border border-white/10 shrink-0">
+                                                    <Image
+                                                        src={order.listing.images[0]}
+                                                        alt={order.listing.title ?? 'Product image'}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                </div>
                                             )}
                                             <div className="flex-1">
-                                                <h4 className="font-semibold">{order.listing?.title || 'Product'}</h4>
+                                                <h4 className="font-bold text-lg uppercase tracking-tight">{order.listing?.title || 'Product'}</h4>
                                                 {order.seller && (
-                                                    <p className="text-sm text-muted-foreground">Seller: {order.seller.display_name}</p>
+                                                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mt-1">
+                                                        Seller: <span className="text-white">{order.seller.display_name}</span>
+                                                    </p>
                                                 )}
                                             </div>
                                             <div className="text-right">
-                                                <p className="font-bold">₦{order.amount.toLocaleString()}</p>
+                                                <p className="text-lg font-black tracking-tighter text-[#00FF85]">₦{order.amount.toLocaleString()}</p>
+                                                <p className="text-[9px] text-zinc-500 uppercase tracking-widest mt-1">Secured via Paystack</p>
                                             </div>
                                         </div>
                                         {/* Shipping Address */}

@@ -44,9 +44,9 @@ export const Footer = () => {
                         <h3 className="text-white font-black uppercase text-[10px] tracking-[0.2em] mb-8">Connect</h3>
                         <div className="flex space-x-6">
                             {[
-                                { Icon: Instagram, href: "https://instagram.com/marketbridgeng" },
+                                { Icon: Instagram, href: "https://www.instagram.com/marketbridge_ng?igsh=Nnowc3ozbTE0em0w&utm_source=qr" },
                                 { Icon: Twitter, href: "https://x.com/marketbridgeng" },
-                                { Icon: Facebook, href: "https://facebook.com/marketbridgeng" }
+                                // { Icon: Facebook, href: "https://facebook.com/marketbridgeng" } // Disabled until confirmed
                             ].map((social, i) => (
                                 <Link key={i} href={social.href} target="_blank" rel="noopener noreferrer" className="h-10 w-10 glass-card rounded-xl flex items-center justify-center text-zinc-500 hover:text-[#FF6600] hover:border-[#FF6600]/50 transition-all">
                                     <social.Icon className="h-4 w-4" />
