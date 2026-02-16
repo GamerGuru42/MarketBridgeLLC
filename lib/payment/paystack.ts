@@ -61,28 +61,86 @@ class PaystackClient {
      */
     async initializeTransaction(params: {
         email: string;
-        amount: number; // In kobo (smallest currency unit)
+        amount: number; // In kobo
         currency?: Currency;
         reference?: string;
         callback_url?: string;
         metadata?: Record<string, any>;
         channels?: string[];
         plan?: string;
+        subaccount?: string; // Subaccount code for split payments
+        transaction_charge?: number; // Transaction charge in kobo
+        bearer?: 'account' | 'subaccount' | 'all' | 'none';
     }): Promise<PaystackInitializeResponse> {
+        const payload: any = {
+            email: params.email,
+            amount: params.amount,
+            currency: params.currency || 'NGN',
+            reference: params.reference || this.generateReference(),
+            callback_url: params.callback_url,
+            metadata: params.metadata,
+            channels: params.channels || ['card', 'bank', 'ussd', 'qr', 'bank_transfer'],
+        };
+
+        if (params.plan) payload.plan = params.plan;
+        if (params.subaccount) {
+            payload.subaccount = params.subaccount;
+            payload.bearer = params.bearer || 'account'; // Main account usually bears fees in split
+            if (params.transaction_charge) payload.transaction_charge = params.transaction_charge;
+        }
+
         const response = await this.client.post<PaystackInitializeResponse>(
             '/transaction/initialize',
-            {
-                email: params.email,
-                amount: params.amount,
-                currency: params.currency || 'NGN',
-                reference: params.reference || this.generateReference(),
-                callback_url: params.callback_url,
-                metadata: params.metadata,
-                channels: params.channels || ['card', 'bank', 'ussd', 'qr', 'mobile_money'],
-                plan: params.plan,
-            }
+            payload
         );
 
+        return response.data;
+    }
+
+    /**
+     * Create a subaccount
+     */
+    async createSubaccount(params: {
+        business_name: string;
+        settlement_bank: string; // Bank code
+        account_number: string;
+        percentage_charge: number;
+        description?: string;
+        primary_contact_email?: string;
+    }) {
+        const response = await this.client.post('/subaccount', params);
+        return response.data;
+    }
+
+    /**
+     * Update a subaccount
+     */
+    async updateSubaccount(code: string, params: {
+        business_name?: string;
+        settlement_bank?: string;
+        account_number?: string;
+        percentage_charge?: number;
+        active?: boolean;
+    }) {
+        const response = await this.client.put(`/subaccount/${code}`, params);
+        return response.data;
+    }
+
+    /**
+     * List banks
+     */
+    async listBanks() {
+        const response = await this.client.get('/bank');
+        return response.data;
+    }
+
+    /**
+     * Resolve account number
+     */
+    async resolveAccount(account_number: string, bank_code: string) {
+        const response = await this.client.get(`/bank/resolve`, {
+            params: { account_number, bank_code }
+        });
         return response.data;
     }
 
@@ -339,22 +397,49 @@ export class PaystackWebhookHandler {
                     })
                     .eq('id', userId);
             }
-            // 2. Is it a product order?
-            else if (reference.startsWith('TX-')) {
-                const { error: orderError } = await supabaseAdmin
-                    .from('orders')
-                    .update({
-                        status: 'paid',
-                        payment_id: id.toString(),
-                        payment_metadata: event.data,
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('transaction_ref', reference);
+            // 2. Is it a marketplace sale?
+            else if (reference.startsWith('TXNL-')) {
+                const listingId = metadata?.listing_id;
+                const buyerId = metadata?.buyer_id;
+                const sellerId = metadata?.seller_id;
+                const commissionRate = metadata?.platform_commission_percent || 7;
 
-                if (orderError) console.error('Error updating order:', orderError);
+                if (listingId) {
+                    // Update Listing Status
+                    const { error: listingError } = await supabaseAdmin
+                        .from('listings')
+                        .update({
+                            status: 'sold',
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', listingId);
+
+                    if (listingError) console.error('Error updating listing status:', listingError);
+
+                    // Record Sale Transaction
+                    const amountTotal = amount / 100;
+                    const amountPlatform = (amountTotal * commissionRate) / 100;
+                    const amountSeller = amountTotal - amountPlatform;
+
+                    const { error: transError } = await supabaseAdmin
+                        .from('sales_transactions')
+                        .insert({
+                            paystack_reference: reference,
+                            listing_id: listingId,
+                            buyer_id: buyerId,
+                            seller_id: sellerId,
+                            amount_total: amountTotal,
+                            amount_seller: amountSeller,
+                            amount_platform: amountPlatform,
+                            commission_rate: commissionRate,
+                            status: 'success',
+                            metadata: event.data
+                        });
+
+                    if (transError) console.error('Error recording sales transaction:', transError);
+                }
             }
-
-            // 3. Record Payment
+            // 3. Record General Payment
             await supabaseAdmin
                 .from('payments')
                 .insert({

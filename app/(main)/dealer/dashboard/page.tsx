@@ -23,7 +23,8 @@ import {
     AlertCircle,
     RotateCcw,
     ArrowRight,
-    ChevronRight
+    ChevronRight,
+    Loader2
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -80,9 +81,29 @@ export default function DealerDashboardPage() {
     const [updatingOrder, setUpdatingOrder] = useState<string | null>(null);
     const [bankDetails, setBankDetails] = useState({
         bankName: '',
+        bankCode: '',
         accountNumber: '',
         accountName: ''
     });
+
+    const fetchBankDetails = async () => {
+        if (!user) return;
+        const { data, error } = await supabase
+            .from('users')
+            .select('bank_details, bank_name, account_number, account_name')
+            .eq('id', user.id)
+            .single();
+
+        if (data) {
+            setBankDetails({
+                bankName: data.bank_name || '',
+                bankCode: data.bank_details?.bank_code || '',
+                accountNumber: data.account_number || '',
+                accountName: data.account_name || ''
+            });
+        }
+        fetchBanks();
+    };
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -129,44 +150,73 @@ export default function DealerDashboardPage() {
         }
     };
 
-    const fetchBankDetails = async () => {
-        if (!user) return;
-        const { data, error } = await supabase
-            .from('users')
-            .select('bank_name, account_number, account_name')
-            .eq('id', user.id)
-            .single();
+    const [banks, setBanks] = useState<{ name: string; code: string }[]>([]);
+    const [isResolving, setIsResolving] = useState(false);
+    const [submittingBank, setSubmittingBank] = useState(false);
 
-        if (data) {
-            setBankDetails({
-                bankName: data.bank_name || '',
-                accountNumber: data.account_number || '',
-                accountName: data.account_name || ''
-            });
+    const fetchBanks = async () => {
+        try {
+            const res = await fetch('/api/paystack/banks');
+            const data = await res.json();
+            if (data.status) {
+                setBanks(data.data.map((b: any) => ({ name: b.name, code: b.code })));
+            }
+        } catch (err) {
+            console.error('Failed to fetch banks:', err);
         }
     };
 
+    const resolveAccount = async () => {
+        if (bankDetails.accountNumber.length !== 10 || !bankDetails.bankCode) return;
+
+        setIsResolving(true);
+        try {
+            const res = await fetch(`/api/paystack/resolve?accountNumber=${bankDetails.accountNumber}&bankCode=${bankDetails.bankCode}`);
+            const data = await res.json();
+            if (data.status) {
+                setBankDetails(prev => ({ ...prev, accountName: data.data.account_name }));
+            } else {
+                alert('Could not resolve account name. Please verify details.');
+            }
+        } catch (err) {
+            console.error('Resolution error:', err);
+        } finally {
+            setIsResolving(false);
+        }
+    };
+
+    useEffect(() => {
+        if (bankDetails.accountNumber.length === 10 && bankDetails.bankCode) {
+            const timer = setTimeout(() => resolveAccount(), 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [bankDetails.accountNumber, bankDetails.bankCode]);
+
     const updateBankDetails = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
+        setSubmittingBank(true);
         try {
-            const { error } = await supabase
-                .from('users')
-                .update({
-                    bank_name: bankDetails.bankName,
-                    account_number: bankDetails.accountNumber,
-                    account_name: bankDetails.accountName
-                })
-                .eq('id', user!.id);
+            const selectedBank = banks.find(b => b.code === bankDetails.bankCode);
 
-            if (error) throw error;
-            // Using a basic toast would be better, but keeping original alert for logic consistency
-            alert('Bank details updated successfully');
-        } catch (err: unknown) {
+            const res = await fetch('/api/paystack/subaccount', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...bankDetails,
+                    bankName: selectedBank?.name,
+                    businessName: user?.displayName
+                })
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error);
+
+            alert('Payout system synchronized with Paystack. Your earnings will now settle automatically.');
+        } catch (err: any) {
             console.error('Failed to update bank details:', err);
-            alert('Failed to update bank details');
+            alert(err.message || 'Failed to update bank details');
         } finally {
-            setLoading(false);
+            setSubmittingBank(false);
         }
     };
 
@@ -220,6 +270,21 @@ export default function DealerDashboardPage() {
                 completedOrders,
                 totalRevenue,
             });
+
+            // Fetch Financial Stats from sales_transactions
+            const { data: financialData } = await supabase
+                .from('sales_transactions')
+                .select('amount_seller')
+                .eq('seller_id', user.id)
+                .eq('status', 'success');
+
+            if (financialData) {
+                const totalSellerEarnings = financialData.reduce((sum, t) => sum + Number(t.amount_seller), 0);
+                setStats(prev => ({
+                    ...prev,
+                    totalRevenue: totalSellerEarnings || totalRevenue // Fallback to orders revenue if no transactions yet
+                }));
+            }
         } catch (err) {
             console.error('Failed to fetch orders:', err);
         } finally {
@@ -481,43 +546,70 @@ export default function DealerDashboardPage() {
                             <div className="max-w-xl space-y-8">
                                 <div className="space-y-1">
                                     <h3 className="text-2xl font-black uppercase tracking-tighter font-heading italic">Payout Terminal</h3>
-                                    <p className="text-zinc-500 text-sm italic">Define where your marketplace revenue is routed.</p>
+                                    <p className="text-zinc-500 text-sm italic mb-4">Establishing secure Paystack subaccount for auto-payouts.</p>
+                                    <div className="bg-[#00FF85]/5 border border-[#00FF85]/10 p-4 rounded-2xl flex items-start gap-4 mb-8">
+                                        <Zap className="h-5 w-5 text-[#00FF85] shrink-0 mt-1" />
+                                        <p className="text-[10px] text-[#00FF85] font-black uppercase tracking-widest leading-relaxed">
+                                            Beta Feature: Funds are split automatically. You receive the net amount minus platform commission directly to this bank via Paystack settlement.
+                                        </p>
+                                    </div>
                                 </div>
                                 <form onSubmit={updateBankDetails} className="space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-3">
-                                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 font-heading">Bank Agency</Label>
-                                            <Input
-                                                value={bankDetails.bankName}
-                                                onChange={e => setBankDetails({ ...bankDetails, bankName: e.target.value })}
-                                                placeholder="e.g. GTBANK"
-                                                className="h-14 bg-white/5 border-white/10 rounded-xl focus:border-[#FF6600] focus:ring-1 focus:ring-[#FF6600] transition-colors font-heading text-sm uppercase tracking-widest"
+                                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 font-heading">Select Bank</Label>
+                                            <Select
+                                                value={bankDetails.bankCode}
+                                                onValueChange={(val) => setBankDetails(prev => ({ ...prev, bankCode: val }))}
                                                 required
-                                            />
+                                            >
+                                                <SelectTrigger className="h-14 bg-white/5 border-white/10 rounded-xl font-heading text-[10px] font-black uppercase tracking-widest text-left">
+                                                    <SelectValue placeholder="CHOOSE INSTITUTION" />
+                                                </SelectTrigger>
+                                                <SelectContent className="bg-zinc-900 border-white/10 text-white font-heading text-[10px] font-black uppercase tracking-widest">
+                                                    {banks.map((bank) => (
+                                                        <SelectItem key={bank.code} value={bank.code} className="focus:bg-[#FF6600] focus:text-black py-3">
+                                                            {bank.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
                                         </div>
                                         <div className="space-y-3">
                                             <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 font-heading">Account Serial</Label>
-                                            <Input
-                                                value={bankDetails.accountNumber}
-                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBankDetails({ ...bankDetails, accountNumber: e.target.value })}
-                                                placeholder="0123456789"
-                                                className="h-14 bg-white/5 border-white/10 rounded-xl focus:border-[#FF6600] focus:ring-1 focus:ring-[#FF6600] transition-colors font-mono tracking-tighter"
-                                                required
-                                            />
+                                            <div className="relative">
+                                                <Input
+                                                    value={bankDetails.accountNumber}
+                                                    onChange={(e) => setBankDetails({ ...bankDetails, accountNumber: e.target.value.replace(/\D/g, '').slice(0, 10) })}
+                                                    placeholder="0123456789"
+                                                    className="h-14 bg-white/5 border-white/10 rounded-xl focus:border-[#FF6600] focus:ring-1 focus:ring-[#FF6600] transition-colors font-mono tracking-widest"
+                                                    required
+                                                />
+                                                {isResolving && <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-[#FF6600]" />}
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="space-y-3">
                                         <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 font-heading">Entity Name</Label>
                                         <Input
                                             value={bankDetails.accountName}
-                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBankDetails({ ...bankDetails, accountName: e.target.value })}
-                                            placeholder="FULL ACCOUNT NAME"
-                                            className="h-14 bg-white/5 border-white/10 rounded-xl focus:border-[#FF6600] focus:ring-1 focus:ring-[#FF6600] transition-colors font-heading text-sm uppercase tracking-widest"
+                                            readOnly
+                                            placeholder="AUTO-RESOLVING NAME..."
+                                            className="h-14 bg-white/[0.02] border-white/10 rounded-xl font-heading text-sm uppercase tracking-widest text-[#00FF85] cursor-not-allowed"
                                             required
                                         />
                                     </div>
-                                    <Button type="submit" disabled={loading} className="h-14 px-8 bg-white text-black hover:bg-zinc-200 rounded-xl font-black uppercase tracking-widest font-heading transition-all whitespace-nowrap">
-                                        {loading ? 'Processing...' : 'Sync Payout Profile'}
+                                    <Button type="submit" disabled={submittingBank || isResolving} className="h-14 px-12 bg-white text-black hover:bg-zinc-200 rounded-xl font-black uppercase tracking-widest font-heading transition-all whitespace-nowrap shadow-xl shadow-white/5 group">
+                                        {submittingBank ? (
+                                            <>
+                                                <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                                                Syncing Protocol...
+                                            </>
+                                        ) : (
+                                            <>
+                                                Sync Payout Profile <ArrowRight className="ml-3 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                            </>
+                                        )}
                                     </Button>
                                 </form>
                             </div>

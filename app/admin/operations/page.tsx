@@ -13,6 +13,11 @@ export default function OperationsAdminPage() {
     const [pendingSellers, setPendingSellers] = useState<any[]>([]);
     const [subscriptions, setSubscriptions] = useState<any[]>([]);
     const [feedback, setFeedback] = useState<any[]>([]);
+    const [revenue, setRevenue] = useState<{ transactions: any[], totalVolume: number, totalCommission: number }>({
+        transactions: [],
+        totalVolume: 0,
+        totalCommission: 0
+    });
 
     useEffect(() => {
         fetchOpsData();
@@ -43,6 +48,18 @@ export default function OperationsAdminPage() {
             if (sellers) setPendingSellers(sellers);
             if (subs) setSubscriptions(subs);
             if (feed) setFeedback(feed);
+
+            // 4. Revenue Stats
+            const { data: txns } = await supabase
+                .from('sales_transactions')
+                .select('*, buyer:users!sales_transactions_buyer_id_fkey(email), seller:users!sales_transactions_seller_id_fkey(display_name)')
+                .order('created_at', { ascending: false });
+
+            if (txns) {
+                const totalVolume = txns.reduce((sum, t) => sum + Number(t.amount_total), 0);
+                const totalCommission = txns.reduce((sum, t) => sum + Number(t.amount_platform), 0);
+                setRevenue({ transactions: txns, totalVolume, totalCommission });
+            }
         } catch (e) {
             console.error(e);
         } finally {
@@ -85,6 +102,9 @@ export default function OperationsAdminPage() {
                     </TabsTrigger>
                     <TabsTrigger value="feedback" className="data-[state=active]:bg-[#FF6600] data-[state=active]:text-black text-zinc-400 uppercase font-black text-xs tracking-widest h-12 rounded-lg transition-all w-32">
                         Feedback
+                    </TabsTrigger>
+                    <TabsTrigger value="revenue" className="data-[state=active]:bg-[#FF6600] data-[state=active]:text-black text-zinc-400 uppercase font-black text-xs tracking-widest h-12 rounded-lg transition-all w-32">
+                        Revenue
                     </TabsTrigger>
                 </TabsList>
 
@@ -162,6 +182,57 @@ export default function OperationsAdminPage() {
                                     <p className="text-[10px] text-zinc-600 uppercase font-black mt-2">NPS: {item.nps_score}</p>
                                 </div>
                             ))}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* REVENUE TAB */}
+                <TabsContent value="revenue">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <Card className="bg-zinc-900/50 border-white/5">
+                            <CardContent className="pt-6">
+                                <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mb-1">Total Transaction Volume</p>
+                                <p className="text-3xl font-black text-white italic font-heading tracking-tighter">₦{revenue.totalVolume.toLocaleString()}</p>
+                            </CardContent>
+                        </Card>
+                        <Card className="bg-zinc-900/50 border-white/5">
+                            <CardContent className="pt-6">
+                                <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mb-1">Platform Commission (7%)</p>
+                                <p className="text-3xl font-black text-[#00FF85] italic font-heading tracking-tighter">₦{revenue.totalCommission.toLocaleString()}</p>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm">
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <CardTitle className="text-lg font-black uppercase italic tracking-widest text-[#FF6600]">Transaction Ledger</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-3">
+                                {revenue.transactions.map((txn) => (
+                                    <div key={txn.id} className="grid grid-cols-4 gap-4 bg-black/40 p-4 rounded-xl border border-white/5 items-center text-[10px] font-bold uppercase">
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-zinc-500">Reference</span>
+                                            <span className="text-white truncate">#{txn.paystack_reference}</span>
+                                        </div>
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-zinc-500">Seller</span>
+                                            <span className="text-white truncate">{txn.seller?.display_name || 'Dealer'}</span>
+                                        </div>
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-zinc-500">Value / Commission</span>
+                                            <span className="text-white">₦{txn.amount_total.toLocaleString()} / <span className="text-[#00FF85]">₦{txn.amount_platform.toLocaleString()}</span></span>
+                                        </div>
+                                        <div className="flex flex-col gap-1 items-end text-right">
+                                            <span className="text-zinc-500">Status</span>
+                                            <Badge className="bg-[#00FF85] text-black">SUCCESS</Badge>
+                                        </div>
+                                    </div>
+                                ))}
+                                {revenue.transactions.length === 0 && (
+                                    <p className="text-center text-zinc-500 italic py-8">No transaction data recorded in current phase.</p>
+                                )}
+                            </div>
                         </CardContent>
                     </Card>
                 </TabsContent>

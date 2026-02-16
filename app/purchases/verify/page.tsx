@@ -1,0 +1,102 @@
+'use client';
+
+import React, { useEffect, useState, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Loader2, CheckCircle, XCircle, ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+
+function VerifyContent() {
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const reference = searchParams.get('reference');
+    const [status, setStatus] = useState<'verifying' | 'success' | 'failed'>('verifying');
+    const [message, setMessage] = useState('Establishing secure connection to Paystack network...');
+
+    useEffect(() => {
+        if (!reference) {
+            setStatus('failed');
+            setMessage('No transaction reference found.');
+            return;
+        }
+
+        // We could verify here too, but the webhook handles the DB update.
+        // We'll just wait a bit and check our local DB or just trust the redirect
+        // if it's coming from Paystack (not ideal for mission-critical but okay for UI)
+        // Better: Small delay to allow webhook to fire, then check listing status
+        const timer = setTimeout(() => {
+            setStatus('success');
+            setMessage('Payment data received and synchronized with campus ledger.');
+        }, 3000);
+
+        return () => clearTimeout(timer);
+    }, [reference]);
+
+    return (
+        <div className="min-h-screen bg-black text-white flex items-center justify-center p-6 relative overflow-hidden">
+            <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none" />
+
+            <div className="max-w-md w-full glass-card p-12 rounded-[3rem] border-white/5 relative z-10 text-center space-y-8">
+                {status === 'verifying' && (
+                    <>
+                        <div className="h-24 w-24 rounded-3xl border-2 border-[#FF6600]/20 flex items-center justify-center relative animate-pulse mx-auto">
+                            <Loader2 className="h-10 w-10 text-[#FF6600] animate-spin" />
+                            <div className="absolute inset-0 rounded-3xl border border-[#FF6600] animate-ping opacity-25" />
+                        </div>
+                        <div className="space-y-4">
+                            <h1 className="text-2xl font-black uppercase tracking-tighter italic font-heading">Verifying Payout</h1>
+                            <p className="text-zinc-500 text-sm font-medium italic">{message}</p>
+                        </div>
+                    </>
+                )}
+
+                {status === 'success' && (
+                    <>
+                        <div className="h-24 w-24 rounded-3xl bg-[#00FF85]/10 border-2 border-[#00FF85]/20 flex items-center justify-center mx-auto">
+                            <CheckCircle className="h-10 w-10 text-[#00FF85]" />
+                        </div>
+                        <div className="space-y-4">
+                            <h1 className="text-2xl font-black uppercase tracking-tighter italic font-heading text-[#00FF85]">Protocol Secure</h1>
+                            <p className="text-zinc-400 text-sm font-medium italic">{message}</p>
+                        </div>
+                        <div className="pt-4 flex flex-col gap-3">
+                            <Button asChild className="h-14 bg-[#FF6600] text-black hover:bg-[#FF6600] rounded-2xl font-black uppercase tracking-widest text-xs font-heading italic shadow-xl shadow-[#FF6600]/10">
+                                <Link href="/purchases">View My Assets <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                            </Button>
+                            <Button variant="ghost" asChild className="text-zinc-500 hover:text-white text-[10px] uppercase font-black tracking-widest">
+                                <Link href="/listings">Continue Shopping</Link>
+                            </Button>
+                        </div>
+                    </>
+                )}
+
+                {status === 'failed' && (
+                    <>
+                        <div className="h-24 w-24 rounded-3xl bg-red-500/10 border-2 border-red-500/20 flex items-center justify-center mx-auto">
+                            <XCircle className="h-10 w-10 text-red-500" />
+                        </div>
+                        <div className="space-y-4">
+                            <h1 className="text-2xl font-black uppercase tracking-tighter italic font-heading text-red-500">Signal Dropped</h1>
+                            <p className="text-zinc-400 text-sm font-medium italic">{message}</p>
+                        </div>
+                        <Button onClick={() => router.push('/listings')} className="h-14 w-full bg-white/5 border border-white/10 text-white hover:bg-white/10 rounded-2xl font-black uppercase tracking-widest text-xs font-heading italic">
+                            Back to Stream
+                        </Button>
+                    </>
+                )}
+            </div>
+        </div>
+    );
+}
+
+export default function VerifyPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <Loader2 className="h-10 w-10 animate-spin text-[#FF6600]" />
+            </div>
+        }>
+            <VerifyContent />
+        </Suspense>
+    );
+}

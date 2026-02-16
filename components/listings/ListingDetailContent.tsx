@@ -14,8 +14,6 @@ import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { startConversation } from '@/lib/chat';
 import { ReviewsSection } from '@/components/ReviewsSection';
-import { usePaystackPayment } from 'react-paystack';
-import { PAYSTACK_PUBLIC_KEY_CLIENT } from '@/lib/payment/paystack-constants';
 import { cn } from '@/lib/utils';
 import { COMPREHENSIVE_MOCK_LISTINGS } from '@/lib/mockData';
 import {
@@ -234,16 +232,6 @@ export default function ListingDetailContent() {
         alert('Added to cart!');
     };
 
-    // Paystack Configuration
-    const paystackConfig = {
-        reference: (new Date()).getTime().toString(),
-        email: user?.email || '',
-        amount: (listing?.price || 0) * 100, // Paystack uses kobo
-        publicKey: PAYSTACK_PUBLIC_KEY_CLIENT,
-    };
-
-    const initializePaystack = usePaystackPayment(paystackConfig);
-
     const handlePlaceOrder = async () => {
         if (!user) {
             router.push('/login');
@@ -252,116 +240,28 @@ export default function ListingDetailContent() {
 
         if (!listing) return;
 
-        const isMock = listing.id.startsWith('mock-') || listing.dealer.id.startsWith('mock_');
-
         setActionLoading(true);
 
-        const txRef = `TX-${Date.now()}-${user.id.slice(0, 5)}`;
-
-        const onSuccess = async (response: any) => {
-            if (isMock) {
-                alert('Mock Payment Successful! (No funds deducted)');
-                router.push('/orders');
-                return;
-            }
-
-            try {
-                // Secure Verification: Call our API route
-                const verifyRes = await fetch('/api/verify-transaction', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        reference: response.reference,
-                        tx_ref: txRef
-                    })
-                });
-
-                const verifyData = await verifyRes.json();
-
-                if (!verifyRes.ok) {
-                    throw new Error(verifyData.error || 'Payment verification failed');
-                }
-
-                alert('Secure payment successful! Order confirmed.');
-                router.push('/orders');
-            } catch (err: unknown) {
-                console.error('Error verifying order:', err);
-                const message = err instanceof Error ? err.message : 'Payment successful but verification failed. Support has been notified.';
-                alert(message);
-            } finally {
-                setActionLoading(false);
-            }
-        };
-
-        const onCancel = () => {
-            setActionLoading(false);
-        };
-
         try {
-            // Calculate Commission
-            let commissionRate = 0.05;
-            const plan = listing.dealer.subscription_plan;
-            if (plan === 'enterprise') commissionRate = 0.01;
-            else if (plan === 'professional') commissionRate = 0.025;
+            // 1. Initialize Transaction on Server
+            const response = await fetch('/api/paystack/initialize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ listingId: listing.id })
+            });
 
-            const platformFee = listing.price * commissionRate;
-            const netAmount = listing.price - platformFee;
+            const data = await response.json();
 
-            // 1. Create pending order in database
-            if (!isMock) {
-                const { error: orderError } = await supabase
-                    .from('orders')
-                    .insert({
-                        buyer_id: user.id,
-                        seller_id: listing.dealer.id,
-                        listing_id: listing.id,
-                        amount: listing.price,
-                        platform_fee: platformFee,
-                        net_amount: netAmount,
-                        status: 'pending',
-                        transaction_ref: txRef,
-                        payment_provider: 'paystack'
-                    });
-
-                if (orderError) throw orderError;
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to initialize checkout');
             }
 
-            // 2. Launch Paystack
-            if (isMock) {
-                // For mock listings, just simulate success
-                onSuccess({ reference: 'MOCK_REF_' + txRef });
-            } else {
-                // Trigger Paystack (note: we use the reference we generated)
-                const config = {
-                    ...paystackConfig,
-                    reference: txRef,
-                    metadata: {
-                        listing_id: listing.id,
-                        buyer_id: user.id,
-                        custom_fields: [
-                            {
-                                display_name: "Item",
-                                variable_name: "item_title",
-                                value: listing.title
-                            }
-                        ]
-                    }
-                };
+            // 2. Redirect to Paystack
+            window.location.href = data.authorization_url;
 
-                // We use a separate trigger for the library
-                // However, since initializePaystack is a hook result, we call the returned function
-                // with the SUCCESS and CLOSE callbacks
-                const initializePayment = (config: any) => {
-                    // @ts-ignore - The types for react-paystack can be picky with dynamic refs
-                    initializePaystack(onSuccess, onCancel);
-                };
-
-                initializePayment(config);
-            }
-        } catch (err: unknown) {
-            console.error('Error initiating order:', err);
-            const message = err instanceof Error ? err.message : 'Failed to initialize order.';
-            alert(message);
+        } catch (err: any) {
+            console.error('Checkout Error:', err);
+            alert(err.message || 'Payment system offline. Please try again later.');
             setActionLoading(false);
         }
     };
