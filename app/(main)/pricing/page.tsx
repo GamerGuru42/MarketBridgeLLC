@@ -152,7 +152,7 @@ export default function PricingPage() {
                         <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Loading Plans...</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
+                    <div className="flex flex-wrap justify-center gap-8 mb-20">
                         {plans.map((plan, index) => {
                             const isCurrentPlan = currentPlan === plan.id;
                             const isFree = plan.id === 'free';
@@ -163,7 +163,7 @@ export default function PricingPage() {
                             return (
                                 <Card
                                     key={plan.id}
-                                    className={`relative overflow-hidden transition-all duration-500 ${isPro
+                                    className={`w-full max-w-sm relative overflow-hidden transition-all duration-500 ${isPro
                                         ? 'bg-gradient-to-b from-[#FF6600]/10 to-black border-[#FF6600]/30 scale-105 shadow-[0_0_50px_rgba(255,184,0,0.2)]'
                                         : 'bg-zinc-900/40 border-white/5 hover:border-[#FF6600]/20'
                                         } rounded-[2.5rem]`}
