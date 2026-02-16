@@ -128,19 +128,19 @@ export function VideoUpload({
                 {videos.length < maxVideos && (
                     <div
                         onClick={() => fileInputRef.current?.click()}
-                        className="aspect-video rounded-lg border-2 border-dashed border-muted-foreground/25 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
+                        className="aspect-video rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center cursor-pointer hover:bg-white/[0.03] hover:border-[#FF6600]/40 group transition-all"
                     >
                         {uploading ? (
-                            <div className="flex flex-col items-center">
-                                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground mb-2" />
-                                {uploadProgress > 0 && (
-                                    <span className="text-xs text-muted-foreground">{uploadProgress}%</span>
-                                )}
+                            <div className="flex flex-col items-center gap-2">
+                                <Loader2 className="h-8 w-8 animate-spin text-[#FF6600]" />
+                                <span className="text-[10px] uppercase font-black tracking-widest text-[#FF6600]">Streaming Data...</span>
                             </div>
                         ) : (
                             <>
-                                <VideoIcon className="h-8 w-8 text-muted-foreground mb-2" />
-                                <span className="text-xs text-muted-foreground font-medium">Upload Video</span>
+                                <div className="p-4 rounded-xl bg-white/[0.02] group-hover:bg-[#FF6600]/10 transition-colors mb-3">
+                                    <VideoIcon className="h-6 w-6 text-zinc-600 group-hover:text-[#FF6600] transition-colors" />
+                                </div>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-white transition-colors">Initialize Feed</span>
                             </>
                         )}
                     </div>

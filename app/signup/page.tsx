@@ -632,25 +632,30 @@ function SignupContent() {
                                         </div>
                                     )}
 
-                                    <div className="space-y-3 pt-4">
-                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2 block">Upload Student ID Card</label>
-                                        <div className="glass-card rounded-3xl border border-white/10 p-2 group hover:border-[#FF6600]/30 transition-colors">
-                                            {formData.studentIdUrl ? (
-                                                <div className="relative group overflow-hidden rounded-2xl">
-                                                    <img src={formData.studentIdUrl} alt="ID Card" className="h-40 w-full object-cover rounded-2xl" />
-                                                    <button type="button" onClick={() => setFormData({ ...formData, studentIdUrl: '' })} className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity font-black uppercase text-[10px]">Remove</button>
-                                                </div>
-                                            ) : (
-                                                <div className="h-32">
-                                                    <ImageUpload
-                                                        onImagesSelected={(urls: string[]) => {
-                                                            if (urls && urls.length > 0) setFormData({ ...formData, studentIdUrl: urls[0] });
-                                                        }}
-                                                        maxImages={1}
-                                                        bucketName="identity"
-                                                    />
-                                                </div>
+                                    <div className="space-y-4 pt-4">
+                                        <div className="flex items-center justify-between ml-2">
+                                            <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 block">Upload Student ID Card</label>
+                                            {formData.studentIdUrl && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, studentIdUrl: '' })}
+                                                    className="text-[8px] font-black text-red-500 uppercase tracking-widest hover:underline"
+                                                >
+                                                    Reset Upload
+                                                </button>
                                             )}
+                                        </div>
+
+                                        <div className="glass-card rounded-[2rem] border border-white/10 p-4 group hover:border-[#FF6600]/30 transition-colors bg-zinc-950/50">
+                                            <ImageUpload
+                                                onImagesSelected={(urls: string[]) => {
+                                                    if (urls && urls.length > 0) setFormData({ ...formData, studentIdUrl: urls[0] });
+                                                    else setFormData({ ...formData, studentIdUrl: '' });
+                                                }}
+                                                defaultImages={formData.studentIdUrl ? [formData.studentIdUrl] : []}
+                                                maxImages={1}
+                                                bucketName="identity"
+                                            />
                                         </div>
                                     </div>
                                 </div>

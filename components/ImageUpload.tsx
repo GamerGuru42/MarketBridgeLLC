@@ -4,6 +4,7 @@ import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabase';
 import { Loader2, Upload, X, Image as ImageIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
 interface ImageUploadProps {
@@ -105,9 +106,18 @@ export function ImageUpload({
 
     return (
         <div className="space-y-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className={cn(
+                "grid gap-4",
+                maxImages === 1 ? "grid-cols-1" : "grid-cols-2 md:grid-cols-4"
+            )}>
                 {images.map((url, index) => (
-                    <div key={index} className="relative aspect-square rounded-lg overflow-hidden border bg-muted group">
+                    <div
+                        key={index}
+                        className={cn(
+                            "relative rounded-xl overflow-hidden border bg-muted group transition-all",
+                            maxImages === 1 ? "h-40 w-full" : "aspect-square"
+                        )}
+                    >
                         <Image
                             src={url}
                             alt={`Uploaded image ${index + 1}`}
@@ -117,7 +127,7 @@ export function ImageUpload({
                         <button
                             type="button"
                             onClick={() => removeImage(index)}
-                            className="absolute top-2 right-2 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute top-2 right-2 p-1.5 bg-black/60 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md hover:bg-[#FF6600]"
                         >
                             <X className="h-4 w-4" />
                         </button>
@@ -135,24 +145,32 @@ export function ImageUpload({
                             e.preventDefault();
                             e.stopPropagation();
                             if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-                                // Create a synthetic event to reuse handleFileChange logic
                                 const syntheticEvent = {
                                     target: { files: e.dataTransfer.files }
                                 } as unknown as React.ChangeEvent<HTMLInputElement>;
-
                                 handleFileChange(syntheticEvent);
                             }
                         }}
-                        className="aspect-square rounded-lg border-2 border-dashed border-muted-foreground/25 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 hover:border-[#FF6600]/50 hover:text-[#FF6600] transition-all"
+                        className={cn(
+                            "rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center cursor-pointer hover:bg-white/[0.03] hover:border-[#FF6600]/40 hover:text-[#FF6600] transition-all group relative overflow-hidden",
+                            maxImages === 1 ? "h-32 w-full" : "aspect-square"
+                        )}
                     >
                         {uploading ? (
-                            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                            <div className="flex flex-col items-center gap-2">
+                                <Loader2 className="h-8 w-8 animate-spin text-[#FF6600]" />
+                                <span className="text-[10px] uppercase font-black tracking-widest text-[#FF6600]">Processing Stream...</span>
+                            </div>
                         ) : (
                             <>
-                                <Upload className="h-8 w-8 text-muted-foreground mb-2 group-hover:text-[#FF6600] transition-colors" />
-                                <span className="text-xs text-muted-foreground font-medium group-hover:text-[#FF6600] transition-colors">
-                                    Click or Drag Images
-                                </span>
+                                <div className="p-4 rounded-xl bg-white/[0.02] group-hover:bg-[#FF6600]/10 transition-colors mb-3">
+                                    <Upload className="h-6 w-6 text-zinc-600 group-hover:text-[#FF6600] transition-colors" />
+                                </div>
+                                <div className="text-center">
+                                    <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-white transition-colors">
+                                        Click or Drag Images
+                                    </span>
+                                </div>
                             </>
                         )}
                     </div>
