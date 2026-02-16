@@ -40,11 +40,22 @@ export const MobileBottomNav = () => {
             badge: itemCount,
         },
         {
-            href: (user?.role === 'ceo' || user?.role === 'cofounder')
-                ? '/admin'
-                : (['dealer', 'student_seller'].includes(user?.role as any) ? '/dealer/dashboard' : (user ? '/orders' : '/login')),
-            label: (user?.role === 'ceo' || user?.role === 'cofounder') ? 'Command' : (user ? 'Account' : 'Login'),
-            icon: (user?.role === 'ceo' || user?.role === 'cofounder') ? Crown : User,
+            href: (() => {
+                if (!user) return '/login';
+                const role = user.role;
+                if (role === 'ceo') return '/ceo';
+                if (role === 'cofounder') return '/cofounder';
+                if (role === 'cto') return '/cto';
+                if (role === 'coo') return '/coo';
+                if (role === 'marketing_admin') return '/admin/marketing';
+                if (['operations_admin', 'head_of_operations_admin'].includes(role)) return '/admin/operations';
+                if (role === 'technical_admin') return '/admin/technical';
+                if (['admin', 'super_admin'].includes(role)) return '/admin';
+                if (['dealer', 'student_seller'].includes(role)) return '/dealer/dashboard';
+                return '/orders';
+            })(),
+            label: (user && ['ceo', 'cofounder', 'cto', 'coo', 'admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'head_of_operations_admin', 'super_admin'].includes(user.role)) ? 'Command' : (user ? 'Account' : 'Login'),
+            icon: (user && ['ceo', 'cofounder', 'cto', 'coo', 'admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'head_of_operations_admin', 'super_admin'].includes(user.role)) ? Crown : User,
             show: true,
         },
     ];

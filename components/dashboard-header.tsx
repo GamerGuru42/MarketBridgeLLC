@@ -3,9 +3,16 @@
 import React from 'react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, User, Bell } from 'lucide-react';
+import { Menu, User, Bell, LogOut } from 'lucide-react';
 import { Sidebar, SidebarItem } from '@/components/sidebar';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import Link from 'next/link';
 
 interface DashboardHeaderProps {
     title: string;
@@ -13,7 +20,7 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
 
     return (
         <header className="sticky top-0 z-40 flex h-24 w-full items-center justify-between border-b border-white/5 bg-black/40 backdrop-blur-2xl px-6 md:px-12">
@@ -49,9 +56,32 @@ export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
                             {user?.role?.replace('_', ' ')} unit
                         </span>
                     </div>
-                    <div className="h-10 w-10 rounded-2xl glass-card border-none flex items-center justify-center text-[#FF6600] shadow-[0_0_15px_rgba(255,184,0,0.1)] group cursor-pointer hover:scale-105 transition-transform">
-                        <User className="h-5 w-5" />
-                    </div>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <div className="h-10 w-10 rounded-2xl glass-card border-none flex items-center justify-center text-[#FF6600] shadow-[0_0_15px_rgba(255,184,0,0.1)] group cursor-pointer hover:scale-105 transition-transform">
+                                <User className="h-5 w-5" />
+                            </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" sideOffset={15} className="w-64 bg-black border border-white/10 p-2 text-white z-[999] rounded-[2rem] shadow-2xl backdrop-blur-3xl">
+                            <div className="px-4 py-3 mb-2 border-b border-white/5">
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Protocol Holder</p>
+                                <p className="text-sm font-black truncate uppercase">{user?.displayName}</p>
+                            </div>
+                            <DropdownMenuItem asChild className="focus:bg-white/5 rounded-xl cursor-pointer py-3 group outline-none transition-colors border border-transparent focus:border-white/5">
+                                <Link href="/settings" className="flex items-center gap-4 w-full px-2">
+                                    <User className="h-4 w-4 text-zinc-500 group-hover:text-[#FF6600]" />
+                                    <span className="font-bold uppercase text-[10px] tracking-widest text-zinc-400 group-hover:text-white">Profile Node</span>
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => { logout(); window.location.href = '/'; }} className="focus:bg-red-500/10 text-red-500 rounded-xl cursor-pointer py-3 group outline-none border border-transparent focus:border-red-500/10">
+                                <span className="flex items-center gap-4 w-full px-2">
+                                    <LogOut className="h-4 w-4 text-red-500" />
+                                    <span className="font-bold uppercase text-[10px] tracking-widest">Disconnect</span>
+                                </span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             </div>
         </header>

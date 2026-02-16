@@ -28,9 +28,27 @@ export async function GET(request: Request) {
             // Determine redirect path
             let redirectPath = next // Default to 'next' param if available
             if (next === '/') { // Only override if default '/'
-                if (['dealer', 'student_seller'].includes(role)) redirectPath = '/dealer/dashboard'
-                else if (['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo'].includes(role)) redirectPath = '/admin'
-                else redirectPath = '/listings' // Customers go to marketplace
+                if (['dealer', 'student_seller'].includes(role)) {
+                    redirectPath = '/dealer/dashboard'
+                } else if (role === 'marketing_admin') {
+                    redirectPath = '/admin/marketing'
+                } else if (['operations_admin', 'head_of_operations_admin'].includes(role)) {
+                    redirectPath = '/admin/operations'
+                } else if (role === 'technical_admin') {
+                    redirectPath = '/admin/technical'
+                } else if (role === 'ceo') {
+                    redirectPath = '/ceo'
+                } else if (role === 'cofounder') {
+                    redirectPath = '/cofounder'
+                } else if (role === 'cto') {
+                    redirectPath = '/cto'
+                } else if (role === 'coo') {
+                    redirectPath = '/coo'
+                } else if (['admin', 'super_admin'].includes(role)) {
+                    redirectPath = '/admin'
+                } else {
+                    redirectPath = '/listings' // Customers go to marketplace
+                }
             }
 
             const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
