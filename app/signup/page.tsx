@@ -472,14 +472,14 @@ function SignupContent() {
                                 <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Full Name</label>
                                 <div className="relative group">
                                     <UserIcon className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
-                                    <input name="displayName" value={formData.displayName} onChange={handleChange} required placeholder="SAMUEL ADE" className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase transition-all" />
+                                    <input name="displayName" value={formData.displayName} onChange={handleChange} required placeholder="Samuel Ade" className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all" />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Email Identity</label>
                                 <div className="relative group">
                                     <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
-                                    <input name="email" type="email" value={formData.email} onChange={handleChange} required placeholder="FOUNDER@MARKET.IO" className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase transition-all" />
+                                    <input name="email" type="email" value={formData.email} onChange={handleChange} required placeholder="founder@market.io" className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all" />
                                 </div>
                             </div>
                         </div>
@@ -508,7 +508,7 @@ function SignupContent() {
                                 <Globe className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors z-10" />
                                 <select
                                     name="location"
-                                    className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase relative"
+                                    className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold relative"
                                     value={formData.location}
                                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                                         setFormData({ ...formData, location: e.target.value, university: '' });
@@ -532,8 +532,8 @@ function SignupContent() {
                                             name="businessName"
                                             value={formData.businessName}
                                             onChange={handleChange}
-                                            className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase transition-all"
-                                            placeholder="CAMPUS KICKS"
+                                            className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all"
+                                            placeholder="Campus Kicks"
                                         />
                                     </div>
                                 </div>
@@ -549,7 +549,7 @@ function SignupContent() {
                                                 onChange={handleChange}
                                                 required
                                                 onBlur={(e) => detectUniversity(e.target.value)}
-                                                className="w-full h-14 pl-14 pr-12 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase transition-all"
+                                                className="w-full h-14 pl-14 pr-12 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all"
                                                 placeholder="U/2024/..."
                                             />
                                             {isDetectingSchool && (
@@ -566,8 +566,8 @@ function SignupContent() {
                                                 name="department"
                                                 value={formData.department}
                                                 onChange={handleChange}
-                                                placeholder="COMPUTER SCIENCE"
-                                                className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase"
+                                                placeholder="Computer Science"
+                                                className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold"
                                             />
                                         </div>
                                     </div>
@@ -591,10 +591,10 @@ function SignupContent() {
                                                 <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
                                                 <input
                                                     type="text"
-                                                    placeholder="SEARCH YOUR INSTITUTION..."
+                                                    placeholder="Search your institution..."
                                                     value={uniSearch}
                                                     onChange={(e) => setUniSearch(e.target.value)}
-                                                    className="w-full h-14 pl-14 pr-10 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase text-xs"
+                                                    className="w-full h-14 pl-14 pr-10 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold text-xs"
                                                 />
                                             </div>
 
@@ -603,7 +603,7 @@ function SignupContent() {
                                                     name="university"
                                                     value={formData.university}
                                                     onChange={(e) => setFormData(p => ({ ...p, university: e.target.value }))}
-                                                    className="w-full h-14 pl-6 pr-10 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase appearance-none transition-all"
+                                                    className="w-full h-14 pl-6 pr-10 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold appearance-none transition-all"
                                                     required
                                                 >
                                                     <option value="" className="bg-zinc-900 font-medium">
@@ -625,8 +625,8 @@ function SignupContent() {
                                             <input
                                                 value={missingUniName}
                                                 onChange={(e) => setMissingUniName(e.target.value)}
-                                                placeholder="ENTER FULL UNIVERSITY NAME"
-                                                className="w-full h-14 bg-black border border-white/10 rounded-2xl px-6 text-white font-bold uppercase outline-none focus:border-[#FF6600]"
+                                                placeholder="Enter full university name"
+                                                className="w-full h-14 bg-black border border-white/10 rounded-2xl px-6 text-white font-bold outline-none focus:border-[#FF6600]"
                                             />
                                             <p className="text-[8px] text-zinc-600 italic">Admin will review and enable this node within 24 hours.</p>
                                         </div>
@@ -674,7 +674,7 @@ function SignupContent() {
                                         value={formData.phoneNumber}
                                         onChange={handleChange}
                                         placeholder="080..."
-                                        className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase text-xs"
+                                        className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold text-xs"
                                     />
                                 </div>
                             </div>
