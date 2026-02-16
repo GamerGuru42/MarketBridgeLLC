@@ -263,6 +263,8 @@ export class PaystackError extends Error {
 // WEBHOOK HANDLER
 // ============================================
 
+import { supabaseAdmin } from '@/lib/supabase/admin';
+
 export class PaystackWebhookHandler {
     /**
      * Handle incoming webhook events
@@ -287,66 +289,102 @@ export class PaystackWebhookHandler {
                 await this.handleSubscriptionDisable(event);
                 break;
 
-            case 'subscription.not_renew':
-                await this.handleSubscriptionNotRenew(event);
-                break;
-
-            case 'invoice.create':
-                await this.handleInvoiceCreate(event);
-                break;
-
-            case 'invoice.update':
-                await this.handleInvoiceUpdate(event);
-                break;
-
-            case 'invoice.payment_failed':
-                await this.handleInvoicePaymentFailed(event);
-                break;
-
-            case 'refund.processed':
-                await this.handleRefundProcessed(event);
-                break;
-
             default:
                 console.warn(`Unhandled Paystack event: ${event.event}`);
         }
     }
 
     private static async handleChargeSuccess(event: PaystackWebhookEvent): Promise<void> {
-        // Implementation will be in the API route
-        console.log('Charge successful:', event.data.reference);
+        const { reference, amount, customer, metadata, id } = event.data;
+        const normalizedAmount = amount / 100;
+
+        console.log(`Verifying charge: ${reference} (${normalizedAmount} NGN)`);
+
+        try {
+            // 1. Is it a subscription?
+            if (reference.startsWith('SUB-')) {
+                const planId = metadata?.plan_id;
+                const userId = metadata?.user_id;
+
+                if (!userId) {
+                    console.error('No user_id in subscription metadata');
+                    return;
+                }
+
+                // Activate Subscription
+                const { error: subError } = await supabaseAdmin
+                    .from('subscriptions')
+                    .update({
+                        status: 'active',
+                        current_period_start: new Date().toISOString(),
+                        metadata: {
+                            ...metadata,
+                            paystack_id: id,
+                            last_payment_ref: reference
+                        }
+                    })
+                    .eq('user_id', userId);
+
+                if (subError) console.error('Error updating subscription:', subError);
+
+                // Update User Profile
+                await supabaseAdmin
+                    .from('users')
+                    .update({
+                        subscription_status: 'active',
+                        subscription_plan_id: planId
+                    })
+                    .eq('id', userId);
+            }
+            // 2. Is it a product order?
+            else if (reference.startsWith('TX-')) {
+                const { error: orderError } = await supabaseAdmin
+                    .from('orders')
+                    .update({
+                        status: 'paid',
+                        payment_id: id.toString(),
+                        payment_metadata: event.data,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('transaction_ref', reference);
+
+                if (orderError) console.error('Error updating order:', orderError);
+            }
+
+            // 3. Record Payment
+            await supabaseAdmin
+                .from('payments')
+                .insert({
+                    processor: 'paystack',
+                    processor_reference: reference,
+                    amount: normalizedAmount,
+                    status: 'successful',
+                    processor_response: event.data,
+                    metadata: metadata
+                });
+
+        } catch (err) {
+            console.error('Critical error in Paystack Webhook Handler:', err);
+        }
     }
 
     private static async handleChargeFailed(event: PaystackWebhookEvent): Promise<void> {
-        console.log('Charge failed:', event.data.reference);
+        const { reference } = event.data;
+        console.warn('Payment failed:', reference);
+
+        await supabaseAdmin
+            .from('payments')
+            .update({ status: 'failed', processor_response: event.data })
+            .eq('processor_reference', reference);
     }
 
     private static async handleSubscriptionCreate(event: PaystackWebhookEvent): Promise<void> {
-        console.log('Subscription created');
+        console.log('Automated subscription record created on Paystack');
     }
 
     private static async handleSubscriptionDisable(event: PaystackWebhookEvent): Promise<void> {
-        console.log('Subscription disabled');
-    }
-
-    private static async handleSubscriptionNotRenew(event: PaystackWebhookEvent): Promise<void> {
-        console.log('Subscription will not renew');
-    }
-
-    private static async handleInvoiceCreate(event: PaystackWebhookEvent): Promise<void> {
-        console.log('Invoice created');
-    }
-
-    private static async handleInvoiceUpdate(event: PaystackWebhookEvent): Promise<void> {
-        console.log('Invoice updated');
-    }
-
-    private static async handleInvoicePaymentFailed(event: PaystackWebhookEvent): Promise<void> {
-        console.log('Invoice payment failed');
-    }
-
-    private static async handleRefundProcessed(event: PaystackWebhookEvent): Promise<void> {
-        console.log('Refund processed');
+        console.log('Subscription disabled on Paystack');
+        // Logic to deactivate user in Supabase
     }
 }
 

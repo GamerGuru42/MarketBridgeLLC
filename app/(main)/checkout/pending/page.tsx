@@ -46,7 +46,7 @@ export default function PaymentPendingPage() {
 
                     <p className="text-xs text-zinc-600 flex items-center justify-center gap-2">
                         <ShieldCheck className="h-3 w-3" />
-                        Secure Transaction via Moniepoint MFB
+                        Secure Transaction via MarketBridge
                     </p>
                 </div>
             </div>
