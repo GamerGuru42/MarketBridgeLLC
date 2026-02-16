@@ -580,9 +580,7 @@ function OrderCard({
                     <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-zinc-500">
                         <span className="flex items-center gap-1.5 lowercase font-medium italic"><span className="text-zinc-700 underline">buyer:</span> <span className="text-zinc-300 font-bold">{order.buyer?.display_name}</span></span>
                         <span className="flex items-center gap-1.5 lowercase font-medium italic"><span className="text-zinc-700 underline">value:</span> <span className="text-[#FF6600] font-black">₦{order.amount.toLocaleString()}</span></span>
-                        <Badge variant="outline" className="text-[9px] uppercase tracking-widest text-[#00C3F7] border-[#00C3F7]/20 bg-[#00C3F7]/5 h-5 px-1.5 rounded-[4px] font-black italic">
-                            Paystack Verified
-                        </Badge>
+                        <span className="flex items-center gap-1.5 lowercase font-medium italic"><span className="text-zinc-700 underline">date:</span> <span>{new Date(order.created_at).toLocaleDateString()}</span></span>
                     </div>
                 </div>
             </div>

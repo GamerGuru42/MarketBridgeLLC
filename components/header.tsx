@@ -78,7 +78,7 @@ export const Header = () => {
                     <Logo />
                     <div
                         className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full cursor-pointer hover:bg-white/10 hover:border-[#FF6600]/30 transition-all group"
-                        onClick={() => localStorage.removeItem('mb-preferred-node')}
+                        onClick={() => { localStorage.removeItem('mb-preferred-node'); window.location.reload(); }}
                     >
                         <div className="relative flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00FF85] opacity-75"></span>
@@ -101,6 +101,10 @@ export const Header = () => {
                     <Link href="/dealers" className={navLinkClass('/dealers')}>
                         Dealers
                         {isActive('/dealers') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6600] rounded-full" />}
+                    </Link>
+                    <Link href="/pricing" className={navLinkClass('/pricing')}>
+                        Pricing
+                        {isActive('/pricing') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6600] rounded-full" />}
                     </Link>
                     <Link href="/about" className={navLinkClass('/about')}>
                         About
@@ -233,6 +237,13 @@ export const Header = () => {
                                     className={cn("transition-all hover:translate-x-4", isActive('/dealers') ? "text-[#FF6600]" : "text-white/40 hover:text-white")}
                                 >
                                     Dealers
+                                </Link>
+                                <Link
+                                    href="/pricing"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className={cn("transition-all hover:translate-x-4", isActive('/pricing') ? "text-[#FF6600]" : "text-white/40 hover:text-white")}
+                                >
+                                    Pricing
                                 </Link>
                                 <Link
                                     href="/about"
