@@ -21,7 +21,7 @@ const outfit = Outfit({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_CLIENT_URL || 'https://marketbridge.page.gd';
+const siteUrl = process.env.NEXT_PUBLIC_CLIENT_URL || 'https://marketbridge.com.ng';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

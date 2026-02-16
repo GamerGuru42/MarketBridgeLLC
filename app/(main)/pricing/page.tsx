@@ -164,8 +164,8 @@ export default function PricingPage() {
                                 <Card
                                     key={plan.id}
                                     className={`w-full max-w-sm relative overflow-hidden transition-all duration-500 ${isPro
-                                        ? 'bg-gradient-to-b from-[#FF6600]/10 to-black border-[#FF6600]/30 scale-105 shadow-[0_0_50px_rgba(255,184,0,0.2)]'
-                                        : 'bg-zinc-900/40 border-white/5 hover:border-[#FF6600]/20'
+                                        ? 'bg-gradient-to-b from-[#FF6600]/10 to-black border-[#FF6600]/30 scale-105 shadow-[0_0_50px_rgba(255,184,0,0.2)] z-20'
+                                        : 'bg-zinc-900/40 border-white/5 hover:border-[#FF6600]/20 z-10'
                                         } rounded-[2.5rem]`}
                                 >
                                     {isPro && (
