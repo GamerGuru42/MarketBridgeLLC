@@ -162,14 +162,8 @@ export const Header = () => {
                                         <p className="text-sm font-black truncate text-white uppercase tracking-tight">{user.displayName || 'MarketBridge User'}</p>
                                         <p className="text-[10px] text-[#FF6600] font-bold truncate opacity-80">{user.email}</p>
                                     </div>
-                                    <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1 outline-none transition-colors border border-transparent focus:border-white/5">
-                                        <Link href="/settings" className="flex items-center gap-4 w-full px-2">
-                                            <div className="h-9 w-9 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center group-hover:border-[#FF6600]/50 transition-colors">
-                                                <User className="h-4 w-4 text-zinc-500 group-hover:text-[#FF6600]" />
-                                            </div>
-                                            <span className="font-bold uppercase text-[10px] tracking-widest text-zinc-400 group-hover:text-white transition-colors">Profile Node</span>
-                                        </Link>
-                                    </DropdownMenuItem>
+
+                                    {/* Primary Dealer Action */}
                                     {['dealer', 'student_seller'].includes(user.role) && (
                                         <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1 outline-none border border-transparent focus:border-white/5">
                                             <Link href="/dealer/dashboard" className="flex items-center gap-4 w-full px-2">
@@ -180,6 +174,15 @@ export const Header = () => {
                                             </Link>
                                         </DropdownMenuItem>
                                     )}
+
+                                    <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1 outline-none transition-colors border border-transparent focus:border-white/5">
+                                        <Link href="/settings" className="flex items-center gap-4 w-full px-2">
+                                            <div className="h-9 w-9 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center group-hover:border-[#FF6600]/50 transition-colors">
+                                                <User className="h-4 w-4 text-zinc-500 group-hover:text-[#FF6600]" />
+                                            </div>
+                                            <span className="font-bold uppercase text-[10px] tracking-widest text-zinc-400 group-hover:text-white transition-colors">Profile Node</span>
+                                        </Link>
+                                    </DropdownMenuItem>
                                     {['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'].includes(user.role) && (
                                         <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1 outline-none border border-transparent focus:border-white/5">
                                             <Link href="/admin" className="flex items-center gap-4 w-full px-2">
