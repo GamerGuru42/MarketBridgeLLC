@@ -105,11 +105,16 @@ export default function DealerDashboardPage() {
         fetchBanks();
     };
 
+    const [sessionLost, setSessionLost] = useState(false);
+
     useEffect(() => {
-        // 1. Unauthenticated Check
+        // 1. Unauthenticated Check (Soft)
         if (!authLoading && !sessionUser) {
-            router.push('/login');
+            console.warn("Dashboard: specific session unavailable, pausing interface.");
+            setSessionLost(true);
             return;
+        } else {
+            setSessionLost(false);
         }
 
         // 2. Role Check (only if profile 'user' is loaded)
@@ -121,7 +126,7 @@ export default function DealerDashboardPage() {
         let unsubscribe: (() => void) | undefined;
 
         // 3. Data Fetching (Require 'user' profile)
-        if (user) {
+        if (user && !sessionLost) {
             fetchOrders();
             fetchBankDetails();
             unsubscribe = subscribeToOrders();
@@ -131,7 +136,7 @@ export default function DealerDashboardPage() {
         return () => {
             if (unsubscribe) unsubscribe();
         };
-    }, [user, sessionUser, authLoading]);
+    }, [user, sessionUser, authLoading, setSessionLost]);
 
     const checkSubscriptionStatus = async () => {
         if (!user || !user.subscription_expires_at) return;
@@ -378,7 +383,7 @@ export default function DealerDashboardPage() {
         setMounted(true);
     }, []);
 
-    if (authLoading || loading || !mounted) {
+    if (authLoading || loading || (!mounted && !sessionLost)) {
         return (
             <div className="min-h-[80vh] flex items-center justify-center bg-black relative overflow-hidden text-white">
                 <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20 pointer-events-none" />
@@ -388,6 +393,25 @@ export default function DealerDashboardPage() {
                         <div className="absolute inset-0 rounded-2xl border border-[#FF6600] animate-ping opacity-25" />
                     </div>
                     <p className="mt-8 text-zinc-500 font-black uppercase tracking-[0.3em] text-xs font-heading">Syncing Terminal...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (sessionLost) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-black text-white p-6 relative overflow-hidden">
+                <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none" />
+                <div className="max-w-md w-full glass-card p-8 rounded-[2rem] text-center relative z-10 border border-white/10">
+                    <AlertCircle className="h-16 w-16 text-[#FF6600] mx-auto mb-6" />
+                    <h2 className="text-3xl font-black uppercase italic tracking-tighter mb-4">Signal Dropped</h2>
+                    <p className="text-zinc-500 font-medium mb-8">Secure connection to the terminal was interrupted. Please re-establish identity.</p>
+                    <Button onClick={() => window.location.reload()} className="w-full h-14 bg-[#FF6600] text-black font-black uppercase tracking-widest rounded-xl hover:bg-[#FF8533] transition-all">
+                        Reconnect Node
+                    </Button>
+                    <Button variant="ghost" onClick={() => router.push('/login')} className="w-full mt-4 text-zinc-500 hover:text-white font-black uppercase tracking-widest text-[10px]">
+                        Return to Gate
+                    </Button>
                 </div>
             </div>
         );
