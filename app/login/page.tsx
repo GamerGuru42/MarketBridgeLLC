@@ -65,15 +65,30 @@ export default function LoginPage() {
             if (signInError) throw signInError;
 
             if (data.user) {
-                await refreshUser(data.user.id);
+                // 1. Force a router refresh to update server-side session
+                router.refresh();
 
-                const { data: profile } = await supabase
-                    .from('users')
-                    .select('role')
-                    .eq('id', data.user.id)
-                    .single();
+                // 2. Refresh client-side context (non-blocking)
+                refreshUser(data.user.id).catch(err => console.error("Context refresh failed:", err));
 
-                const role = profile?.role || data.user.user_metadata?.role;
+                // 3. Determine Role (Try DB, fallback to metadata)
+                let role = data.user.user_metadata?.role;
+
+                try {
+                    const { data: profile } = await supabase
+                        .from('users')
+                        .select('role')
+                        .eq('id', data.user.id)
+                        .single();
+
+                    if (profile?.role) role = profile.role;
+                } catch (dbErr) {
+                    console.warn("Profile fetch failed, using metadata role:", dbErr);
+                }
+
+                // 4. Redirect based on Role
+                // Small delay to ensure cookies are set before navigation
+                await new Promise(resolve => setTimeout(resolve, 500));
 
                 if (['dealer', 'student_seller'].includes(role)) {
                     router.push('/dealer/dashboard');
@@ -88,6 +103,8 @@ export default function LoginPage() {
                 } else {
                     router.push('/listings');
                 }
+            } else {
+                throw new Error("No user session created.");
             }
         } catch (err: unknown) {
             console.error('Login Error:', err);
