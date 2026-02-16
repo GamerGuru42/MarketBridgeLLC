@@ -64,6 +64,8 @@ function SignupContent() {
     const [missingUni, setMissingUni] = useState(false);
     const [missingUniName, setMissingUniName] = useState('');
 
+    const [success, setSuccess] = useState(false);
+
     // AI-Simulated University Detection
     const detectUniversity = async (matric: string) => {
         if (!matric || matric.length < 3) return;
@@ -192,21 +194,12 @@ function SignupContent() {
 
         if (isMerchant) {
             if (verificationMethod === 'school_email') {
-                // Validation for school email
+                // Validation for school email (checking the PRIMARY email field)
                 const emailPattern = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\.)?edu(\.ng)?$/i;
-                if (!formData.schoolEmail || !emailPattern.test(formData.schoolEmail)) {
-                    setError("Please provide a valid school email address (.edu or .edu.ng).");
+                if (!formData.email || !emailPattern.test(formData.email)) {
+                    setError("Please provide a valid school email address (.edu or .edu.ng) in the 'School Email' field.");
                     setIsLoading(false);
                     return;
-                }
-
-                // If they used a personal email in step 1 on "Email Identity", but chose school email verification here,
-                // we should FORCE the account email to be the school email to ensure the verification link validates the right one.
-                if (formData.email !== formData.schoolEmail) {
-                    // Update the primary email to match the school email
-                    // We'll update the 'emailToUse' variable in createAccount, but let's warn user if it differs?
-                    // Actually, let's just use it transparently but maybe notify them.
-                    // For now, simpler is better: rely on the one they typed.
                 }
             } else {
                 if (!formData.studentIdUrl) {
@@ -222,13 +215,10 @@ function SignupContent() {
 
     const createAccount = async () => {
         try {
-            // Priority: if School Email verification is chosen, that becomes the account email.
+            // Priority: Use the main email input (which we enforced to be school email for School Email verification method)
             const isMerchant = ['student_seller', 'dealer'].includes(role);
             let emailToUse = normalizeIdentifier(formData.email);
-
-            if (isMerchant && verificationMethod === 'school_email') {
-                emailToUse = normalizeIdentifier(formData.schoolEmail);
-            }
+            // No conditional swap needed anymore as we enforced logic at input level
 
             const finalUniversity = missingUni ? missingUniName : formData.university;
 
@@ -311,13 +301,17 @@ function SignupContent() {
                 }
             }
 
-            await refreshUser(authData.user.id);
-
-            if (['student_seller', 'dealer'].includes(role)) {
-                // Future-proof: Redirect to a "verification pending" screen if needed
-                router.push('/dealer/dashboard');
+            if (authData.session) {
+                // Session is active (e.g. Google auth or auto-confirm enabled for dev)
+                await refreshUser(authData.user.id);
+                if (['student_seller', 'dealer'].includes(role)) {
+                    router.push('/dealer/dashboard');
+                } else {
+                    router.push('/listings');
+                }
             } else {
-                router.push('/listings');
+                // Email confirmation required - DO NOT redirect to login. Show specific instructions.
+                setSuccess(true);
             }
 
         } catch (err: unknown) {
@@ -444,6 +438,40 @@ function SignupContent() {
 
 
 
+    if (success) {
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4 bg-black">
+                <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF6600] to-transparent" />
+                    <CardHeader className="p-0 text-center mb-10">
+                        <div className="mx-auto h-24 w-24 rounded-full bg-[#FF6600]/10 flex items-center justify-center mb-6 relative">
+                            <Mail className="h-10 w-10 text-[#FF6600] animate-bounce" />
+                            <div className="absolute inset-0 rounded-full border border-[#FF6600]/30 animate-ping opacity-25" />
+                        </div>
+                        <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-4">Signal Transmitted</CardTitle>
+                        <CardDescription className="text-zinc-500 font-medium leading-relaxed">
+                            We have dispatched a verification link to <br /><span className="text-white font-bold">{formData.email}</span>.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-0 space-y-6 text-center">
+                        <div className="p-4 bg-zinc-900/50 rounded-2xl border border-white/5">
+                            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mb-1">Mission Directive</p>
+                            <p className="text-sm text-white font-medium">Please check your inbox (and spam) to activate your merchant node.</p>
+                        </div>
+
+                        <Button onClick={() => window.open('https://mail.google.com', '_blank')} className="w-full h-14 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-zinc-200 transition-all">
+                            Open Comms Channel
+                        </Button>
+
+                        <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest pt-4">
+                            Once verified, refresh this page to access dashboard.
+                        </p>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
     if (step === 'auth-method') {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-black">
@@ -513,10 +541,20 @@ function SignupContent() {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Email Identity</label>
+                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">
+                                    {['student_seller', 'dealer'].includes(role) ? "School Email (.edu.ng)" : "Email Identity"}
+                                </label>
                                 <div className="relative group">
                                     <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
-                                    <input name="email" type="email" value={formData.email} onChange={handleChange} required placeholder="founder@market.io" className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all" />
+                                    <input
+                                        name="email"
+                                        type="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        required
+                                        placeholder={['student_seller', 'dealer'].includes(role) ? "benny@uni.edu.ng" : "founder@market.io"}
+                                        className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -727,20 +765,11 @@ function SignupContent() {
                                                         Automatic Verification
                                                     </p>
                                                     <div className="space-y-2">
-                                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600">Enter School Email Address</label>
-                                                        <div className="relative group">
-                                                            <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
-                                                            <input
-                                                                name="schoolEmail"
-                                                                type="email"
-                                                                value={formData.schoolEmail}
-                                                                onChange={handleChange}
-                                                                placeholder="benny@uni.edu.ng"
-                                                                className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all"
-                                                            />
-                                                        </div>
-                                                        <p className="text-[8px] text-zinc-500 font-medium italic mt-2 ml-2">
-                                                            We will send a confirmation link to this email. Once confirmed, your seller account will be automatically verified.
+                                                        <p className="text-zinc-500 font-medium italic text-[10px]">
+                                                            We will verify your status via <span className="text-white font-bold">{formData.email || "your provided email"}</span>.
+                                                        </p>
+                                                        <p className="text-[8px] text-zinc-600 font-bold uppercase tracking-widest mt-2 ml-1">
+                                                            Check your inbox immediately after signup to activate your node.
                                                         </p>
                                                     </div>
                                                 </div>
