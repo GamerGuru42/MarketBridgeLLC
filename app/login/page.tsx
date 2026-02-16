@@ -86,22 +86,25 @@ export default function LoginPage() {
                     console.warn("Profile fetch failed, using metadata role:", dbErr);
                 }
 
-                // 4. Redirect based on Role
-                // Small delay to ensure cookies are set before navigation
+                // 4. Redirect based on Role (HARD LOCATION CHANGE)
+                // We use window.location.href instead of router.push to force a full document reload.
+                // This guarantees that Supabase cookies are sent fresh to the server,
+                // preventing middleware from seeing a stale "unauthenticated" state.
+
                 await new Promise(resolve => setTimeout(resolve, 500));
 
                 if (['dealer', 'student_seller'].includes(role)) {
-                    router.push('/dealer/dashboard');
+                    window.location.href = '/dealer/dashboard';
                 } else if (role === 'technical_admin') {
-                    router.push('/admin/technical');
+                    window.location.href = '/admin/technical';
                 } else if (role === 'operations_admin') {
-                    router.push('/admin/operations');
+                    window.location.href = '/admin/operations';
                 } else if (role === 'marketing_admin') {
-                    router.push('/admin/marketing');
+                    window.location.href = '/admin/marketing';
                 } else if (role === 'admin') {
-                    router.push('/admin');
+                    window.location.href = '/admin';
                 } else {
-                    router.push('/listings');
+                    window.location.href = '/listings';
                 }
             } else {
                 throw new Error("No user session created.");
