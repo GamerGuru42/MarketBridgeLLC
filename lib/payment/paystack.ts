@@ -14,13 +14,16 @@ import type {
 // CONFIGURATION
 // ============================================
 
+// CONFIGURATION
+// ============================================
+
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || '';
 const PAYSTACK_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '';
 const PAYSTACK_BASE_URL = 'https://api.paystack.co';
 
-if (!PAYSTACK_SECRET_KEY && process.env.NODE_ENV === 'production') {
-    console.warn('PAYSTACK_SECRET_KEY is missing. Paystack features will be disabled.');
-}
+// if (!PAYSTACK_SECRET_KEY && process.env.NODE_ENV === 'production') {
+//     console.warn('PAYSTACK_SECRET_KEY is missing. Paystack features will be disabled.');
+// }
 
 // ============================================
 // PAYSTACK CLIENT

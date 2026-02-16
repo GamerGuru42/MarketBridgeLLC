@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { PasswordInput } from '@/components/password-input';
 import { Label } from '@/components/ui/label';
@@ -16,7 +16,7 @@ import { useSearchParams } from 'next/navigation';
 
 const SECRET_KEY = process.env.NEXT_PUBLIC_ADMIN_SECRET || 'marketbridge2026';
 
-export default function AdminSignupPage() {
+function AdminSignupContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const dept = searchParams.get('dept');
@@ -304,5 +304,17 @@ export default function AdminSignupPage() {
                 </CardFooter>
             </Card>
         </div>
+    );
+}
+
+export default function AdminSignupPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <Loader2 className="h-10 w-10 animate-spin text-[#FF6600]" />
+            </div>
+        }>
+            <AdminSignupContent />
+        </Suspense>
     );
 }

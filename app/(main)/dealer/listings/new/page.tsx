@@ -72,8 +72,8 @@ export default function NewListingPage() {
             if (countError) throw countError;
 
             // user is our custom User type (mapped in AuthContext)
-            // If subscriptionPlan is undefined, default to 'starter'
-            const plan = (user as any).subscriptionPlan || (user as any).user_metadata?.subscription_plan || 'starter';
+            // Use the subscriptionPlan property directly
+            const plan = user.subscriptionPlan || 'starter';
 
             let limit = 5; // Starter limit
             if (plan === 'professional') limit = 50;

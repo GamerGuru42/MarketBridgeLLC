@@ -1,12 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ArrowRight, ShieldCheck } from 'lucide-react';
+import { CheckCircle, ArrowRight, ShieldCheck, Loader2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 
-export default function PaymentPendingPage() {
+function PaymentPendingContent() {
     const searchParams = useSearchParams();
     const ref = searchParams.get('ref');
 
@@ -51,5 +51,17 @@ export default function PaymentPendingPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function PaymentPendingPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <Loader2 className="h-10 w-10 animate-spin text-[#FF6600]" />
+            </div>
+        }>
+            <PaymentPendingContent />
+        </Suspense>
     );
 }

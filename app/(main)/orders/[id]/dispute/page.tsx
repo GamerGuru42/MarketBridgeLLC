@@ -58,7 +58,14 @@ export default function DisputePage() {
                 .single();
 
             if (error) throw error;
-            setOrder(data);
+
+            // Handle case where listing might be returned as an array or object
+            const transformedData = {
+                ...data,
+                listing: Array.isArray(data.listing) ? data.listing[0] : data.listing
+            };
+
+            setOrder(transformedData as any);
         } catch (err: unknown) {
             console.error('Fetch order error:', err);
             setError('Failed to load order details');

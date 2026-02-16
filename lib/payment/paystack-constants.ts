@@ -1,0 +1,1 @@
+export const PAYSTACK_PUBLIC_KEY_CLIENT = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '';

@@ -69,9 +69,9 @@ export default function DisputesPage() {
             return;
         }
 
-        // Admin Check using metadata or profile fallback (Supabase RLS handles data access anyway)
-        const role = user?.user_metadata?.role || '';
-        if (user && !['admin', 'operations_admin', 'ceo', 'cofounder'].includes(role)) {
+        // Admin Check using profile role
+        const role = user?.role || '';
+        if (user && !['admin', 'operations_admin', 'ceo', 'cofounder', 'super_admin', 'technical_admin'].includes(role)) {
             // Check fallback via DB if role missing in metadata handled by middleware, 
             // but double check here for Client Side
             // For now assume middleware protects route
