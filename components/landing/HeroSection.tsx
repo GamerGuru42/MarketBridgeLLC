@@ -112,7 +112,7 @@ export const HeroSection = () => {
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6600] opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#FF6600]"></span>
                         </span>
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-300">Beta Access Live</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-300">MarketBridge Campus Beta – Testing Phase</span>
                     </motion.div>
 
                     <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white leading-[0.9] lg:leading-[0.85] select-none">

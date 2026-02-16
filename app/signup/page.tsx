@@ -694,17 +694,17 @@ function SignupContent() {
                                 id="terms"
                                 checked={agreedToTerms}
                                 onChange={(e) => setAgreedToTerms(e.target.checked)}
-                                className="mt-1 md:mt-0 h-5 w-5 rounded-lg border-white/10 bg-zinc-950 checked:bg-[#FF6600] checked:text-black focus:ring-[#FF6600]/50 transition-all"
+                                className="mt-1 md:mt-0 h-5 w-5 rounded-lg border-white/10 bg-zinc-950 checked:bg-[#FF6600] checked:text-black focus:ring-[#FF6600]/50 transition-all cursor-pointer"
                             />
-                            <label htmlFor="terms" className="text-[11px] text-zinc-600 font-bold leading-tight">
-                                I verify compliance with the <Link href="/legal/terms" className="text-zinc-400 hover:text-white underline decoration-[#FF6600]/40 decoration-1 underline-offset-4 transition-colors">Terms of Engagement</Link> & <Link href="/legal/privacy" className="text-zinc-400 hover:text-white underline decoration-[#FF6600]/40 decoration-1 underline-offset-4 transition-colors">Global Privacy Protocol</Link> (NDPA 2023 Compliant).
+                            <label htmlFor="terms" className="text-[11px] text-zinc-500 font-bold leading-tight cursor-pointer">
+                                I verify compliance with the <Link href="/terms" target="_blank" className="text-zinc-300 hover:text-white underline decoration-[#FF6600]/40 decoration-1 underline-offset-4 transition-colors">Terms of Engagement</Link> & <Link href="/privacy" target="_blank" className="text-zinc-300 hover:text-white underline decoration-[#FF6600]/40 decoration-1 underline-offset-4 transition-colors">Privacy Protocol</Link> (NDPA 2023).
                             </label>
                         </div>
 
-                        <Button type="submit" className="w-full h-18 bg-gold-gradient text-black font-black uppercase tracking-widest rounded-[1.5rem] glow-on-hover border-none mt-4 text-xs group" disabled={isLoading}>
+                        <Button type="submit" className="w-full h-18 bg-[#FF6600] hover:bg-[#FF6600]/90 text-black font-black uppercase tracking-widest rounded-[1.5rem] shadow-[0_0_30px_rgba(255,102,0,0.3)] border-none mt-4 text-xs group transition-all" disabled={isLoading}>
                             {isLoading ? <Loader2 className="animate-spin h-6 w-6" /> : (
                                 <span className="flex items-center gap-3">
-                                    {['student_seller', 'dealer'].includes(role) ? 'Initialize Verification' : 'Establish Identity Node'}
+                                    {['student_seller', 'dealer'].includes(role) ? 'Initialize Beta Node' : 'Enter MarketBridge'}
                                     <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </span>
                             )}

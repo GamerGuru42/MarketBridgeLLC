@@ -11,26 +11,32 @@ export const Footer = () => {
                     <div className="space-y-6">
                         <Logo />
                         <p className="text-zinc-500 text-sm font-medium leading-relaxed">
-                            MarketBridge is Nigeria's trusted digital marketplace, connecting verified dealers with everyday customers through transparency and trust.
+                            MarketBridge is Nigeria's premier trustless marketplace for verified students.
+                            Currently in <strong>Live Campus Beta</strong>.
                         </p>
+                        <div className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest space-y-1">
+                            <p>RC: [PENDING-CAC]</p>
+                            <p>Wuse II, Abuja, FCT, Nigeria</p>
+                            <a href="mailto:hello@marketbridge.com.ng" className="hover:text-[#FF6600]">hello@marketbridge.com.ng</a>
+                        </div>
                     </div>
 
                     <div>
                         <h3 className="text-white font-black uppercase text-[10px] tracking-[0.2em] mb-8">Platform</h3>
                         <ul className="space-y-4 text-zinc-500 text-xs font-bold uppercase tracking-widest">
                             <li><Link href="/listings" className="hover:text-white transition-colors">Browse Listings</Link></li>
-                            <li><Link href="/dealers" className="hover:text-white transition-colors">Find Dealers</Link></li>
-                            <li><Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
+                            <li><Link href="/dealers" className="hover:text-white transition-colors">Founding Sellers</Link></li>
+                            <li><Link href="/pricing" className="hover:text-white transition-colors">Beta Access</Link></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h3 className="text-white font-black uppercase text-[10px] tracking-[0.2em] mb-8">Support</h3>
+                        <h3 className="text-white font-black uppercase text-[10px] tracking-[0.2em] mb-8">Legal (Beta)</h3>
                         <ul className="space-y-4 text-zinc-500 text-xs font-bold uppercase tracking-widest">
-                            <li><Link href="/faq" className="hover:text-white transition-colors">FAQ Terminal</Link></li>
-                            <li><Link href="/contact" className="hover:text-white transition-colors">Contact Support</Link></li>
                             <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
-                            <li><Link href="/privacy" className="hover:text-white transition-colors">Data Privacy</Link></li>
+                            <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy (NDPA)</Link></li>
+                            <li><Link href="/refund" className="hover:text-white transition-colors">Refund & Cancellation</Link></li>
+                            <li><Link href="/disclaimer" className="hover:text-white transition-colors">Beta Disclaimer</Link></li>
                         </ul>
                     </div>
 
@@ -51,10 +57,13 @@ export const Footer = () => {
                 </div>
 
                 <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-zinc-700 font-black uppercase tracking-[0.2em]">
-                    <p>&copy; {new Date().getFullYear()} MarketBridge Terminal. All rights reserved.</p>
+                    <p>&copy; {new Date().getFullYear()} MarketBridge Limited (Beta). All rights reserved.</p>
                     <div className="flex gap-8">
-                        <span className="text-zinc-800">Status: Operational</span>
-                        <span className="text-zinc-800">Version: 4.2.0-BETA</span>
+                        <span className="text-[#00FF85] flex items-center gap-2">
+                            <span className="h-1.5 w-1.5 rounded-full bg-[#00FF85] animate-pulse" />
+                            Systems Operational
+                        </span>
+                        <span className="text-zinc-600">v1.0.0-BETA.3</span>
                     </div>
                 </div>
             </div>

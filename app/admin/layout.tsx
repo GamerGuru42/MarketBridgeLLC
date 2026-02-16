@@ -69,7 +69,6 @@ export default function AdminLayout({
                 { label: 'Operations Hub', href: '/admin/operations', icon: Activity },
                 { label: 'Dispute Center', href: '/admin/disputes', icon: ShieldAlert },
                 { label: 'Users Manager', href: '/admin/users', icon: Users },
-                { label: 'Users Manager', href: '/admin/users', icon: Users },
                 { label: 'Listings Manager', href: '/admin/listings', icon: ShoppingBag },
                 { label: 'Order Verification', href: '/admin/orders', icon: ClipboardCheck },
                 { label: 'Seller Payouts', href: '/admin/payouts', icon: Banknote },

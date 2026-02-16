@@ -1,220 +1,171 @@
 'use client';
 
-import React from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Truck, ShieldCheck, AlertTriangle, Scale, History, Map, Activity, ShoppingBag, Users, Clock, Zap, ArrowRight, Wallet } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { formatCurrency } from '@/lib/utils'; // Make sure this util exists or simple helper
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Loader2, UserCheck, CreditCard, MessageCircle, AlertTriangle } from 'lucide-react';
 
 export default function OperationsAdminPage() {
-    const { user } = useAuth();
-    const [stats, setStats] = React.useState({
-        pendingVerifications: 0,
-        activeShipments: 0,
-        escrowVolume: 0,
-        disputeRate: 0,
-        recentActivity: [] as any[],
-        pendingSubscriptions: 0
-    });
+    const [loading, setLoading] = useState(true);
+    const [pendingSellers, setPendingSellers] = useState<any[]>([]);
+    const [subscriptions, setSubscriptions] = useState<any[]>([]);
+    const [feedback, setFeedback] = useState<any[]>([]);
 
-    React.useEffect(() => {
-        const fetchStats = async () => {
-            // 1. Pending Identity Verifications (Dealers)
-            const { count: pendingCount } = await supabase
-                .from('users')
-                .select('*', { count: 'exact', head: true })
-                .eq('role', 'dealer')
-                .eq('is_verified', false);
-
-            // 2. Pending Order Payments (Manual Receipts)
-            const { count: pendingOrdersCount } = await supabase
-                .from('orders')
-                .select('*', { count: 'exact', head: true })
-                .eq('status', 'pending_verification');
-
-            // 3. Pending Seller Payouts
-            const { count: pendingPayoutsCount } = await supabase
-                .from('orders')
-                .select('*', { count: 'exact', head: true })
-                .in('status', ['paid', 'processing', 'shipped', 'delivered'])
-                .eq('payout_status', 'pending');
-
-            // 4. Disputes
-            const { count: totalDisputes } = await supabase.from('disputes').select('*', { count: 'exact', head: true });
-
-            // 5. Recent Activity Feed
-            const { data: disputes } = await supabase
-                .from('disputes')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(3);
-
-            // ... (Keep existing feed logic or simplify)
-
-            setStats({
-                pendingVerifications: pendingCount || 0,
-                activeShipments: pendingPayoutsCount || 0, // Using this slot for Payouts temporarily or distinct
-                escrowVolume: pendingOrdersCount || 0, // Using this for Orders
-                disputeRate: 0, // Placeholder
-                recentActivity: [], // Simplified for now to avoid complex mapping errors in replace
-                pendingSubscriptions: 0
-            });
-        };
-        fetchStats();
+    useEffect(() => {
+        fetchOpsData();
     }, []);
 
-    const opsCards = [
-        {
-            title: 'Identity Queue',
-            value: stats.pendingVerifications,
-            label: 'Dealers Pending',
-            icon: Users,
-            color: 'text-[#FF6600]',
-            href: '/admin/users'
-        },
-        {
-            title: 'Payment Verifications',
-            value: stats.escrowVolume, // Pending Orders
-            label: 'Receipts to Review',
-            icon: Wallet,
-            color: 'text-[#00FF85]',
-            href: '/admin/orders'
-        },
-        {
-            title: 'Seller Payouts',
-            value: stats.activeShipments, // Pending Payouts
-            label: 'Transfers Pending',
-            icon: Truck, // Or Banknote if imported
-            color: 'text-blue-400',
-            href: '/admin/payouts'
-        },
-        {
-            title: 'Dispute Ratio',
-            value: 'Active',
-            label: 'Resolution Center',
-            icon: AlertTriangle,
-            color: 'text-red-500',
-            href: '/admin/disputes'
+    const fetchOpsData = async () => {
+        try {
+            // 1. Pending Sellers
+            const { data: sellers } = await supabase
+                .from('users')
+                .select('*')
+                .eq('role', 'dealer')
+                .eq('is_verified', false)
+                .order('created_at', { ascending: false });
+
+            // 2. Active Subscriptions
+            const { data: subs } = await supabase
+                .from('subscriptions')
+                .select('*, users(email)')
+                .eq('status', 'active');
+
+            // 3. Feedback
+            const { data: feed } = await supabase
+                .from('seller_feedback')
+                .select('*, users(email)')
+                .order('created_at', { ascending: false });
+
+            if (sellers) setPendingSellers(sellers);
+            if (subs) setSubscriptions(subs);
+            if (feed) setFeedback(feed);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
         }
-    ];
+    };
+
+    const handleVerify = async (userId: string) => {
+        // Implement verification logic (call API or update DB)
+        await supabase.from('users').update({ is_verified: true }).eq('id', userId);
+        fetchOpsData(); // Refresh
+    };
+
+    if (loading) return (
+        <div className="flex justify-center items-center h-screen bg-black text-white">
+            <Loader2 className="h-8 w-8 animate-spin text-[#FF6600]" />
+        </div>
+    );
 
     return (
-        <div className="min-h-screen bg-black text-white p-6 md:p-12 font-sans selection:bg-[#FF6600] selection:text-black">
-            {/* Background Grid */}
+        <div className="min-h-screen bg-black text-white p-8 space-y-8 relative">
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
-            <div className="max-w-7xl mx-auto relative z-10 space-y-12">
-                <div className="flex flex-col md:flex-row justify-between items-end border-b border-white/10 pb-6">
-                    <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <Activity className="h-5 w-5 text-[#FF6600]" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 font-heading">Central Command</span>
-                        </div>
-                        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading">
-                            Operations <span className="text-zinc-700">Deck</span>
-                        </h1>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {opsCards.map((card) => (
-                        <Link key={card.title} href={card.href} className="group">
-                            <div className="glass-card p-6 h-full border border-white/10 hover:border-[#FF6600]/50 transition-all bg-zinc-900/20 group-hover:bg-zinc-900/40">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className={`p-3 rounded-lg bg-black border border-white/10 ${card.color}`}>
-                                        <card.icon className="h-6 w-6" />
-                                    </div>
-                                    <ArrowRight className="h-4 w-4 text-zinc-600 group-hover:text-white transition-colors" />
-                                </div>
-                                <div>
-                                    <div className="text-3xl font-black text-white mb-1 font-heading">{card.value}</div>
-                                    <div className="text-[10px] uppercase font-bold text-zinc-500 tracking-widest">{card.title}</div>
-                                </div>
-                                <div className="mt-4 pt-4 border-t border-white/5 text-[10px] font-mono text-zinc-400">
-                                    {card.label}
-                                </div>
-                            </div>
-                        </Link>
-                    ))}
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Activity Feed */}
-                    <div className="lg:col-span-2 glass-card p-8 border border-white/10 rounded-2xl">
-                        <div className="flex items-center justify-between mb-8">
-                            <h3 className="text-xl font-black uppercase italic tracking-tighter font-heading">Live Feed</h3>
-                            <div className="flex items-center gap-2">
-                                <span className="h-2 w-2 rounded-full bg-[#00FF85] animate-pulse" />
-                                <span className="text-[10px] font-bold text-[#00FF85] uppercase tracking-widest">Real-time</span>
-                            </div>
-                        </div>
-
-                        <div className="space-y-4">
-                            {stats.recentActivity.length === 0 ? (
-                                <div className="text-zinc-500 font-mono text-xs text-center py-8">No recent network activity detected.</div>
-                            ) : (
-                                stats.recentActivity.map((activity, i) => (
-                                    <div key={i} className="flex items-center justify-between p-4 bg-black/40 border border-white/5 rounded-xl hover:border-white/10 transition-colors">
-                                        <div className="flex items-center gap-4">
-                                            <div className={`h-8 w-8 rounded-full flex items-center justify-center border ${activity.type === 'dispute' ? 'border-red-500/30 bg-red-500/10 text-red-500' : 'border-[#00FF85]/30 bg-[#00FF85]/10 text-[#00FF85]'}`}>
-                                                {activity.type === 'dispute' ? <AlertTriangle className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
-                                            </div>
-                                            <div>
-                                                <div className="text-sm font-bold text-white mb-0.5">{activity.message}</div>
-                                                <div className="text-[10px] text-zinc-500 font-mono uppercase">{new Date(activity.time).toLocaleString()}</div>
-                                            </div>
-                                        </div>
-                                        {activity.link && (
-                                            <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0 text-zinc-500 hover:text-white">
-                                                <Link href={activity.link}><ArrowRight className="h-4 w-4" /></Link>
-                                            </Button>
-                                        )}
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Escrow Vault Status */}
-                    <div className="glass-card p-8 border border-white/10 rounded-2xl bg-gradient-to-br from-zinc-900/50 to-black">
-                        <h3 className="text-xl font-black uppercase italic tracking-tighter font-heading mb-2 text-[#00FF85]">Vault Status</h3>
-                        <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest mb-8">Secure Holdings Ledger</p>
-
-                        <div className="flex items-baseline gap-1 mb-8">
-                            <span className="text-4xl font-black text-white tracking-tighter">₦{(stats.escrowVolume / 1000000).toFixed(2)}</span>
-                            <span className="text-sm font-bold text-zinc-500 uppercase">M</span>
-                        </div>
-
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-center text-xs">
-                                <span className="text-zinc-400 font-bold uppercase tracking-widest">Efficiency</span>
-                                <span className="text-[#00FF85] font-mono">98.2%</span>
-                            </div>
-                            <div className="h-1 w-full bg-zinc-800 rounded-full overflow-hidden">
-                                <div className="h-full bg-[#00FF85] w-[98.2%]" />
-                            </div>
-
-                            <div className="flex justify-between items-center text-xs mt-4">
-                                <span className="text-zinc-400 font-bold uppercase tracking-widest">Risk Factor</span>
-                                <span className="text-red-500 font-mono">1.2%</span>
-                            </div>
-                            <div className="h-1 w-full bg-zinc-800 rounded-full overflow-hidden">
-                                <div className="h-full bg-red-500 w-[1.2%]" />
-                            </div>
-                        </div>
-
-                        <div className="mt-8 pt-8 border-t border-white/10">
-                            <Button className="w-full bg-[#00FF85] hover:bg-[#00CC6A] text-black font-black uppercase tracking-widest text-xs h-12" asChild>
-                                <Link href="/admin/disputes">Manage Risks</Link>
-                            </Button>
-                        </div>
-                    </div>
-                </div>
+            <div className="relative z-10 space-y-2">
+                <h1 className="text-4xl font-black uppercase tracking-tighter italic">
+                    Operations <span className="text-[#FF6600]">Control</span>
+                </h1>
+                <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">
+                    Verification, Subscriptions & Compliance
+                </p>
             </div>
+
+            <Tabs defaultValue="sellers" className="space-y-8 relative z-10 w-full">
+                <TabsList className="bg-zinc-900/50 border border-white/5 rounded-xl p-1 h-14">
+                    <TabsTrigger value="sellers" className="data-[state=active]:bg-[#FF6600] data-[state=active]:text-black text-zinc-400 uppercase font-black text-xs tracking-widest h-12 rounded-lg transition-all w-32">
+                        Sellers ({pendingSellers.length})
+                    </TabsTrigger>
+                    <TabsTrigger value="subscriptions" className="data-[state=active]:bg-[#FF6600] data-[state=active]:text-black text-zinc-400 uppercase font-black text-xs tracking-widest h-12 rounded-lg transition-all w-32">
+                        Subs ({subscriptions.length})
+                    </TabsTrigger>
+                    <TabsTrigger value="feedback" className="data-[state=active]:bg-[#FF6600] data-[state=active]:text-black text-zinc-400 uppercase font-black text-xs tracking-widest h-12 rounded-lg transition-all w-32">
+                        Feedback
+                    </TabsTrigger>
+                </TabsList>
+
+                {/* SELLERS TAB */}
+                <TabsContent value="sellers">
+                    <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm">
+                        <CardHeader>
+                            <CardTitle className="text-lg font-black uppercase italic tracking-widest text-[#FF6600]">Pending Verifications</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {pendingSellers.map((seller) => (
+                                <div key={seller.id} className="flex items-center justify-between bg-black/40 p-4 rounded-xl border border-white/5">
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-10 w-10 bg-zinc-800 rounded-full flex items-center justify-center">
+                                            <UserCheck className="h-5 w-5 text-zinc-500" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-white">{seller.display_name || 'Unknown'}</p>
+                                            <p className="text-xs text-zinc-500">{seller.email}</p>
+                                            <p className="text-[10px] text-[#FF6600] uppercase font-black mt-1">{seller.university || 'No Uni'}</p>
+                                        </div>
+                                    </div>
+                                    <Button
+                                        onClick={() => handleVerify(seller.id)}
+                                        className="bg-[#00FF85]/10 text-[#00FF85] hover:bg-[#00FF85]/20 border border-[#00FF85]/20 font-black uppercase text-[10px] tracking-widest h-8"
+                                    >
+                                        Verify Node
+                                    </Button>
+                                </div>
+                            ))}
+                            {pendingSellers.length === 0 && (
+                                <p className="text-center text-zinc-500 italic py-8">All verification queues clear.</p>
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* SUBSCRIPTIONS TAB */}
+                <TabsContent value="subscriptions">
+                    <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm">
+                        <CardHeader>
+                            <CardTitle className="text-lg font-black uppercase italic tracking-widest text-[#FF6600]">Active Beta Founders</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {subscriptions.map((sub) => (
+                                <div key={sub.id} className="flex items-center justify-between bg-black/40 p-4 rounded-xl border border-white/5">
+                                    <div className="flex items-center gap-4">
+                                        <CreditCard className="h-5 w-5 text-zinc-500" />
+                                        <div>
+                                            <p className="text-sm font-bold text-white">{sub.users?.email}</p>
+                                            <p className="text-[10px] text-zinc-500 uppercase">Plan: {sub.plan_id}</p>
+                                        </div>
+                                    </div>
+                                    <Badge className="bg-[#00FF85] text-black font-black uppercase text-[10px]">Active</Badge>
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* FEEDBACK TAB */}
+                <TabsContent value="feedback">
+                    <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm">
+                        <CardHeader>
+                            <CardTitle className="text-lg font-black uppercase italic tracking-widest text-[#FF6600]">Feedback Loop</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {feedback.map((item) => (
+                                <div key={item.id} className="bg-black/40 p-4 rounded-xl border border-white/5 space-y-2">
+                                    <div className="flex justify-between items-start">
+                                        <p className="text-xs text-zinc-400 font-bold">{item.users?.email}</p>
+                                        <Badge variant="outline" className="text-yellow-500 border-yellow-500/20">{item.rating}/5 Stars</Badge>
+                                    </div>
+                                    <p className="text-sm text-white italic">"{item.comments}"</p>
+                                    <p className="text-[10px] text-zinc-600 uppercase font-black mt-2">NPS: {item.nps_score}</p>
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </Tabs>
         </div>
     );
 }

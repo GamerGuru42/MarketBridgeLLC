@@ -1,0 +1,92 @@
+'use client';
+
+import React from 'react';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+
+export default function PrivacyPage() {
+    return (
+        <div className="min-h-screen bg-black text-white selection:bg-[#FF6600] selection:text-black pt-28 pb-20">
+            <div className="container px-4 mx-auto max-w-4xl space-y-8">
+                <Button
+                    asChild
+                    variant="ghost"
+                    className="text-zinc-500 hover:text-white pl-0 gap-2 mb-8"
+                >
+                    <Link href="/">
+                        <ArrowLeft className="h-4 w-4" /> Back to MarketBridge
+                    </Link>
+                </Button>
+
+                <div className="space-y-4">
+                    <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic">
+                        Privacy <span className="text-[#FF6600]">Policy</span>
+                    </h1>
+                    <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs">
+                        Last Updated: February 16, 2026 | Version: 1.0 (NDPA Compliant)
+                    </p>
+                </div>
+
+                <div className="prose prose-invert prose-orange max-w-none space-y-8 text-zinc-300 font-medium">
+                    <section className="glass-card p-8 rounded-3xl border-white/5 bg-zinc-900/50">
+                        <h2 className="text-xl font-bold text-white uppercase tracking-widest mb-4">1. Data Collection Introduction</h2>
+                        <p>
+                            MarketBridge (Operating as a Live Beta) collects minimal personal data required to facilitate transactions
+                            and verify student identity, in strict accordance with the <strong>Nigeria Data Protection Act (NDPA) 2023</strong>.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-lg font-bold text-white uppercase tracking-widest mb-4">2. What We Collect</h2>
+                        <ul className="list-disc pl-5 space-y-2 mt-2">
+                            <li><strong>Identity Data:</strong> Name, University Email (.edu.ng), Verification Documents (NIN/Student ID).</li>
+                            <li><strong>Transaction Data:</strong> Payment references (via Paystack), Order history.</li>
+                            <li><strong>Device Data:</strong> IP Address, Location (for delivery radius), Device Type.</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h2 className="text-lg font-bold text-white uppercase tracking-widest mb-4">3. Data Usage Purpose</h2>
+                        <p>
+                            We use your data solely to:
+                        </p>
+                        <ul className="list-disc pl-5 space-y-2 mt-2">
+                            <li>Process secure escrow payments and payouts.</li>
+                            <li>Verify your standing as a legitimate student seller.</li>
+                            <li>Prevent fraud and resolve disputes.</li>
+                            <li>Comply with FCT/Federal legal requirements.</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h2 className="text-lg font-bold text-white uppercase tracking-widest mb-4">4. Data Retention Strategy</h2>
+                        <p>
+                            We retain transaction data for 7 years as required by financial regulations.
+                            Verification documents are encrypted at rest. You may request account deletion at any time via
+                            <a href="mailto:privacy@marketbridge.com.ng" className="text-[#FF6600] underline ml-1">privacy@marketbridge.com.ng</a>,
+                            subject to pending disputes.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-lg font-bold text-white uppercase tracking-widest mb-4">5. Third-Party Sharing</h2>
+                        <p>
+                            We do not sell your data. We share necessary data only with:
+                        </p>
+                        <ul className="list-disc pl-5 space-y-2 mt-2">
+                            <li><strong>Payment Processors:</strong> Paystack / Flutterwave (for financial execution).</li>
+                            <li><strong>University Authorities:</strong> Only upon formal request regarding criminal investigation.</li>
+                        </ul>
+                    </section>
+
+                    <section className="pt-8 border-t border-white/10">
+                        <p className="text-xs text-zinc-500 uppercase tracking-widest">
+                            Data Protection Officer: dpo@marketbridge.com.ng | Abuja, FCT
+                        </p>
+                    </section>
+                </div>
+            </div>
+        </div>
+    );
+}

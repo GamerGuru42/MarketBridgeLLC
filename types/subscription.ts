@@ -5,7 +5,7 @@
 // SUBSCRIPTION TYPES
 // ============================================
 
-export type SubscriptionPlanId = 'free' | 'campus_starter' | 'campus_pro' | 'enterprise';
+export type SubscriptionPlanId = 'free' | 'campus_starter' | 'campus_pro' | 'enterprise' | 'beta_campus_founder';
 
 export type SubscriptionStatus =
     | 'active'      // Subscription is active and paid
@@ -512,24 +512,4 @@ export interface BillingHistoryItem {
     payment_method: string;
 }
 
-// ============================================
-// EXPORT ALL TYPES
-// ============================================
 
-export type {
-    Subscription,
-    SubscriptionPlan,
-    SubscriptionLimits,
-    SubscriptionUsage,
-    Payment,
-    PaymentMethodRecord,
-    Invoice,
-    InvoiceLineItem,
-    PromoCode,
-    WebhookEvent,
-    CheckoutSession,
-    SubscriptionFeatures,
-    BillingHistoryItem,
-    SubscriptionMetrics,
-    PaymentMetrics,
-};

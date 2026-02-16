@@ -69,7 +69,7 @@ export default function PricingPage() {
         }
 
         if (planId === 'enterprise') {
-            window.location.href = 'mailto:enterprise@marketbridge.ng?subject=Enterprise Plan Inquiry';
+            window.location.href = 'mailto:enterprise@marketbridge.com.ng?subject=Enterprise Plan Inquiry';
             return;
         }
 
@@ -156,7 +156,7 @@ export default function PricingPage() {
                         {plans.map((plan, index) => {
                             const isCurrentPlan = currentPlan === plan.id;
                             const isFree = plan.id === 'free';
-                            const isPro = plan.id === 'campus_pro';
+                            const isPro = plan.id === 'campus_pro' || plan.id === 'beta_campus_founder';
                             const price = getPlanPrice(plan);
                             const savings = isAnnual ? getAnnualSavings(plan) : 0;
 
@@ -164,8 +164,8 @@ export default function PricingPage() {
                                 <Card
                                     key={plan.id}
                                     className={`relative overflow-hidden transition-all duration-500 ${isPro
-                                            ? 'bg-gradient-to-b from-[#FF6600]/10 to-black border-[#FF6600]/30 scale-105 shadow-[0_0_50px_rgba(255,184,0,0.2)]'
-                                            : 'bg-zinc-900/40 border-white/5 hover:border-[#FF6600]/20'
+                                        ? 'bg-gradient-to-b from-[#FF6600]/10 to-black border-[#FF6600]/30 scale-105 shadow-[0_0_50px_rgba(255,184,0,0.2)]'
+                                        : 'bg-zinc-900/40 border-white/5 hover:border-[#FF6600]/20'
                                         } rounded-[2.5rem]`}
                                 >
                                     {isPro && (
@@ -175,7 +175,7 @@ export default function PricingPage() {
                                     <CardHeader className="p-8 pb-4">
                                         {isPro && (
                                             <Badge className="bg-[#FF6600] text-black border-none text-[8px] font-black uppercase tracking-widest mb-4 w-fit">
-                                                Most Popular
+                                                Founding Member
                                             </Badge>
                                         )}
 
@@ -245,11 +245,11 @@ export default function PricingPage() {
                                             <Button
                                                 onClick={() => handleSelectPlan(plan.id)}
                                                 className={`w-full h-14 rounded-2xl font-black uppercase tracking-widest transition-all ${isPro
-                                                        ? 'bg-[#FF6600] text-black hover:bg-[#FF6600]'
-                                                        : 'bg-white/5 border border-white/10 hover:bg-[#FF6600] hover:text-black hover:border-[#FF6600]'
+                                                    ? 'bg-[#FF6600] text-black hover:bg-[#FF6600]'
+                                                    : 'bg-white/5 border border-white/10 hover:bg-[#FF6600] hover:text-black hover:border-[#FF6600]'
                                                     }`}
                                             >
-                                                {isFree ? 'Get Started' : plan.id === 'enterprise' ? 'Contact Sales' : 'Upgrade Now'}
+                                                {isFree ? 'Get Started' : plan.id === 'enterprise' ? 'Contact Sales' : 'Join Beta'}
                                             </Button>
                                         )}
                                     </CardFooter>
