@@ -54,10 +54,9 @@ const PLATFORM_KNOWLEDGE = {
         escrow: "Funds are held securely by the MarketBridge Escrow Bridge until you confirm delivery or the 24-hour inspection period passes."
     },
     pricing: {
-        free: "₦0/month - 5 Active Listings, Basic Support.",
-        starter: "₦2,500/month - 20 Active Listings, Verified Badge.",
-        pro: "₦5,000/month - Unlimited Listings, Priority Support, Featured Badge (Founding Member status).",
-        enterprise: "Custom pricing for large dealer groups and campus-wide collaborations."
+        free: "₦0/month - List up to 3 items, Basic chat support, Standard visibility.",
+        founding: "₦1,000/month - Founding Seller (Beta). Unlimited Listings, Beta Badge, Direct Ops Support, Priority Search Ranking.",
+        enterprise: "Custom - Solutions for organizations. Dedicated account manager, API access, White-label options."
     },
     verification: {
         requirements: ["NIN (National Identity Number)", "Student ID Card", "University Email (.edu.ng)"],
@@ -132,10 +131,9 @@ class AiBrain {
         // Pricing & Plans
         if (this.matchAny(lowerInput, ['plan', 'pricing', 'subscription', 'monthly', 'annual', 'cost', 'upgrade'])) {
             return {
-                content: `MarketBridge offers 4 tiers for student sellers:\n\n` +
-                    `• **Free**: ${PLATFORM_KNOWLEDGE.pricing.free}\n` +
-                    `• **Starter**: ${PLATFORM_KNOWLEDGE.pricing.starter}\n` +
-                    `• **Pro**: ${PLATFORM_KNOWLEDGE.pricing.pro}\n` +
+                content: `MarketBridge currently offers 3 tiers for student sellers:\n\n` +
+                    `• **Free Tier**: ${PLATFORM_KNOWLEDGE.pricing.free}\n` +
+                    `• **Founding Seller (Beta)**: ${PLATFORM_KNOWLEDGE.pricing.founding}\n` +
                     `• **Enterprise**: ${PLATFORM_KNOWLEDGE.pricing.enterprise}\n\n` +
                     `Would you like me to take you to the Pricing page?`
             };
