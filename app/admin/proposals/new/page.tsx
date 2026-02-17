@@ -48,11 +48,14 @@ export default function SubmitProposalPage() {
         setFormData({ ...formData, [e.target.id]: e.target.value });
     };
 
+    const [error, setError] = useState('');
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!user) return;
 
         setIsSubmitting(true);
+        setError('');
 
         try {
             await createProposal({
@@ -67,9 +70,22 @@ export default function SubmitProposalPage() {
 
             setSubmitted(true);
             setTimeout(() => router.push('/admin'), 3000);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error submitting proposal:", error);
-            alert("Failed to submit proposal. Database connection might be offline.");
+
+            let errorMessage = "Failed to submit proposal.";
+
+            if (error.message?.includes('relation "public.proposals" does not exist')) {
+                errorMessage = "Proposals table not found. Please run the database migration in Supabase SQL Editor.";
+            } else if (error.message?.includes('violates check constraint')) {
+                errorMessage = "Invalid category or priority selected. Please refresh the page and try again.";
+            } else if (error.message?.includes('permission denied')) {
+                errorMessage = "You don't have permission to create proposals.";
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+
+            setError(errorMessage);
         } finally {
             setIsSubmitting(false);
         }
@@ -116,6 +132,19 @@ export default function SubmitProposalPage() {
                                 <CardTitle>Proposal Details</CardTitle>
                                 <CardDescription>Be specific about technical requirements and projected impact.</CardDescription>
                             </CardHeader>
+
+                            {error && (
+                                <div className="mx-6 mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
+                                    <div className="flex items-start gap-3">
+                                        <ShieldAlert className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+                                        <div>
+                                            <p className="font-semibold text-red-500 text-sm">Submission Failed</p>
+                                            <p className="text-red-400 text-xs mt-1">{error}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             <CardContent className="space-y-6">
                                 <div className="space-y-2">
                                     <Label htmlFor="title">Proposal Title</Label>

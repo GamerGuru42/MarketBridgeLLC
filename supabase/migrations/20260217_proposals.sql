@@ -5,8 +5,8 @@ CREATE TABLE IF NOT EXISTS public.proposals (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
-    category TEXT NOT NULL CHECK (category IN ('operations', 'technical', 'marketing', 'financial', 'security')),
-    priority TEXT NOT NULL CHECK (priority IN ('low', 'medium', 'high', 'critical')),
+    category TEXT NOT NULL CHECK (category IN ('Infrastructure Upgrade', 'Policy/Operations Shift', 'Marketing Initiative', 'Financial/Escrow Change', 'Dealer Growth Strategy')),
+    priority TEXT NOT NULL CHECK (priority IN ('Low - Optimization', 'Medium - Routine Growth', 'High - Critical Scaling', 'Immediate - Urgent Fix')),
     status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'declined')),
     impact TEXT, -- Optional (e.g., "+15% growth")
     author_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
