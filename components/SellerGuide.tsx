@@ -16,12 +16,12 @@ import { Progress } from "@/components/ui/progress";
 const GUIDE_STEPS = [
     {
         title: "Welcome to MarketBridge",
-        description: "You've joined Nigeria's first trustless marketplace. As a verified dealer, you are the backbone of this ecosystem.",
+        description: "You've joined Nigeria's first trustless marketplace. As a verified seller, you are the backbone of this ecosystem.",
         icon: ShieldCheck
     },
     {
         title: "Create Your First Listing",
-        description: "Navigate to 'Deploy Asset' to list your vehicles. High-quality images and accurate descriptions are mandatory for the protocol.",
+        description: "Navigate to 'Deploy Asset' to list your items. High-quality images and accurate descriptions are mandatory for the protocol.",
         icon: Box
     },
     {
@@ -36,12 +36,12 @@ const GUIDE_STEPS = [
     }
 ];
 
-export function DealerGuide() {
+export function SellerGuide() {
     const [open, setOpen] = useState(false);
     const [step, setStep] = useState(0);
 
     useEffect(() => {
-        const hasSeenGuide = localStorage.getItem('marketbridge_dealer_guide_seen');
+        const hasSeenGuide = localStorage.getItem('marketbridge_seller_guide_seen');
         if (!hasSeenGuide) {
             setOpen(true);
         }
@@ -56,7 +56,7 @@ export function DealerGuide() {
     };
 
     const handleClose = () => {
-        localStorage.setItem('marketbridge_dealer_guide_seen', 'true');
+        localStorage.setItem('marketbridge_seller_guide_seen', 'true');
         setOpen(false);
     };
 

@@ -99,9 +99,9 @@ export const Header = () => {
                         Listings
                         {isActive('/listings') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6600] rounded-full" />}
                     </Link>
-                    <Link href="/dealers" className={navLinkClass('/dealers')}>
-                        Dealers
-                        {isActive('/dealers') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6600] rounded-full" />}
+                    <Link href="/sellers" className={navLinkClass('/sellers')}>
+                        Sellers
+                        {isActive('/sellers') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6600] rounded-full" />}
                     </Link>
                     <Link href="/pricing" className={navLinkClass('/pricing')}>
                         Pricing
@@ -165,10 +165,10 @@ export const Header = () => {
                                             <p className="text-[10px] text-[#FF6600] font-bold truncate opacity-80">{user.email}</p>
                                         </div>
 
-                                        {/* Primary Dealer Action */}
+                                        {/* Primary Seller Action */}
                                         {['dealer', 'student_seller'].includes(user.role) && (
                                             <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1 outline-none border border-transparent focus:border-white/5">
-                                                <Link href="/dealer/dashboard" className="flex items-center gap-4 w-full px-2">
+                                                <Link href="/seller/dashboard" className="flex items-center gap-4 w-full px-2">
                                                     <div className="h-9 w-9 rounded-xl bg-[#FF6600]/10 border border-[#FF6600]/20 flex items-center justify-center group-hover:bg-[#FF6600]/20 transition-all">
                                                         <LayoutDashboard className="h-4 w-4 text-[#FF6600]" />
                                                     </div>
@@ -238,11 +238,11 @@ export const Header = () => {
                                     Listings
                                 </Link>
                                 <Link
-                                    href="/dealers"
+                                    href="/sellers"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={cn("transition-all hover:translate-x-4", isActive('/dealers') ? "text-[#FF6600]" : "text-white/40 hover:text-white")}
+                                    className={cn("transition-all hover:translate-x-4", isActive('/sellers') ? "text-[#FF6600]" : "text-white/40 hover:text-white")}
                                 >
-                                    Dealers
+                                    Sellers
                                 </Link>
                                 <Link
                                     href="/pricing"

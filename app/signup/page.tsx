@@ -94,7 +94,7 @@ function SignupContent() {
             if (data.session) {
                 await refreshUser(data.user?.id);
                 if (['student_seller', 'dealer'].includes(role)) {
-                    router.push('/dealer/dashboard');
+                    router.push('/seller/dashboard');
                 } else if (role === 'ceo') {
                     router.push('/ceo');
                 } else {
@@ -424,7 +424,7 @@ function SignupContent() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 max-w-6xl mx-auto">
                         {[
                             { id: 'student_buyer', title: 'Buyer', icon: UserIcon, desc: 'Browse & Buy Assets', color: 'text-blue-400' },
-                            { id: 'student_seller', title: 'Merchant', icon: Briefcase, desc: 'Start your Campus Business', color: 'text-[#FF6600]' },
+                            { id: 'student_seller', title: 'Seller', icon: Briefcase, desc: 'Start your Campus Business', color: 'text-[#FF6600]' },
                             { id: 'admin', title: 'Team Admin', icon: ShieldCheck, desc: 'Operations Gateway', color: 'text-zinc-400' },
                             { id: 'ceo', title: 'CEO/Founder', icon: Lock, desc: 'Central Command', color: 'text-red-500' }
                         ].map(item => (
@@ -573,7 +573,7 @@ function SignupContent() {
                     <CardHeader className="p-0 text-center mb-10">
                         <Button variant="ghost" onClick={() => initialRole ? router.push('/') : setStep('role')} className="text-zinc-600 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> {initialRole ? 'Cancel' : 'Back'}</Button>
                         <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2">
-                            {['student_seller', 'dealer'].includes(role) ? 'Merchant Verification' : 'Verification Channel'}
+                            {['student_seller', 'dealer'].includes(role) ? 'Seller Verification' : 'Verification Channel'}
                         </CardTitle>
                         <CardDescription className="text-zinc-500 font-medium italic lowercase">
                             {['student_seller', 'dealer'].includes(role) ? 'establish your secure business path' : 'choose your identity entry point'}

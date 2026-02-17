@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { VerificationBadge } from '@/components/VerificationBadge';
 import { createClient } from '@/lib/supabase/client';
 
-interface DealerProfile {
+interface SellerProfile {
     id: string;
     display_name: string;
     business_name: string;
@@ -23,32 +23,32 @@ interface DealerProfile {
     created_at: string;
 }
 
-export default function DealerProfilePage() {
+export default function SellerProfilePage() {
     const params = useParams();
     const router = useRouter();
     const supabase = createClient();
-    const [dealer, setDealer] = useState<DealerProfile | null>(null);
+    const [seller, setSeller] = useState<SellerProfile | null>(null);
     const [listings, setListings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchDealerProfile();
+        fetchSellerProfile();
     }, [params.id]);
 
-    const fetchDealerProfile = async () => {
+    const fetchSellerProfile = async () => {
         try {
-            // Fetch dealer profile
-            const { data: dealerData, error: dealerError } = await supabase
+            // Fetch seller profile
+            const { data: sellerData, error: sellerError } = await supabase
                 .from('users')
                 .select('*')
                 .eq('id', params.id)
                 .in('role', ['dealer', 'student_seller'])
                 .single();
 
-            if (dealerError) throw dealerError;
-            setDealer(dealerData);
+            if (sellerError) throw sellerError;
+            setSeller(sellerData);
 
-            // Fetch dealer's listings
+            // Fetch seller's listings
             const { data: listingsData } = await supabase
                 .from('listings')
                 .select('*')
@@ -59,7 +59,7 @@ export default function DealerProfilePage() {
 
             setListings(listingsData || []);
         } catch (error) {
-            console.error('Error fetching dealer:', error);
+            console.error('Error fetching seller:', error);
         } finally {
             setLoading(false);
         }
@@ -79,21 +79,21 @@ export default function DealerProfilePage() {
             <div className="min-h-screen bg-black flex items-center justify-center">
                 <div className="text-center space-y-4">
                     <div className="h-12 w-12 border-4 border-[#FF6600] border-t-transparent rounded-full animate-spin mx-auto" />
-                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Loading Merchant Node...</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Loading Seller Node...</p>
                 </div>
             </div>
         );
     }
 
-    if (!dealer) {
+    if (!seller) {
         return (
             <div className="min-h-screen bg-black flex items-center justify-center">
                 <div className="text-center space-y-6 max-w-md">
                     <ShieldCheck className="h-16 w-16 text-zinc-800 mx-auto" />
-                    <h2 className="text-2xl font-black uppercase tracking-tighter text-zinc-500">Merchant Node Not Found</h2>
-                    <p className="text-zinc-600 text-sm">This dealer profile does not exist or has been deactivated.</p>
-                    <Button onClick={() => router.push('/dealers')} className="bg-[#FF6600] text-black font-black uppercase tracking-widest">
-                        Return to Dealers
+                    <h2 className="text-2xl font-black uppercase tracking-tighter text-zinc-500">Seller Node Not Found</h2>
+                    <p className="text-zinc-600 text-sm">This seller profile does not exist or has been deactivated.</p>
+                    <Button onClick={() => router.push('/sellers')} className="bg-[#FF6600] text-black font-black uppercase tracking-widest">
+                        Return to Sellers
                     </Button>
                 </div>
             </div>
@@ -108,56 +108,56 @@ export default function DealerProfilePage() {
                 {/* Header */}
                 <div className="mb-12">
                     <Link
-                        href="/dealers"
+                        href="/sellers"
                         className="inline-flex items-center text-[#FF6600] hover:text-[#FF6600] text-[10px] font-black uppercase tracking-[0.2em] mb-8 py-3"
                     >
-                        <ArrowLeft className="mr-2 h-4 w-4" /> Return to Dealers
+                        <ArrowLeft className="mr-2 h-4 w-4" /> Return to Sellers
                     </Link>
                 </div>
 
-                {/* Dealer Profile Card */}
+                {/* Seller Profile Card */}
                 <div className="glass-card p-12 rounded-[3.5rem] border-white/5 mb-12">
                     <div className="flex flex-col md:flex-row gap-12 items-start">
                         {/* Profile Image */}
                         <div className="h-32 w-32 rounded-[2rem] bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden flex-shrink-0">
-                            {dealer.photo_url ? (
-                                <img src={dealer.photo_url} alt={dealer.display_name} className="h-full w-full object-cover" />
+                            {seller.photo_url ? (
+                                <img src={seller.photo_url} alt={seller.display_name} className="h-full w-full object-cover" />
                             ) : (
                                 <Building className="h-12 w-12 text-zinc-700" />
                             )}
                         </div>
 
-                        {/* Dealer Info */}
+                        {/* Seller Info */}
                         <div className="flex-1 space-y-6">
                             <div>
                                 <div className="flex items-center gap-3 mb-2">
                                     <h1 className="text-4xl font-black uppercase tracking-tighter italic">
-                                        {dealer.business_name || dealer.display_name}
+                                        {seller.business_name || seller.display_name}
                                     </h1>
-                                    <VerificationBadge isVerified={dealer.is_verified} showText={false} />
+                                    <VerificationBadge isVerified={seller.is_verified} showText={false} />
                                 </div>
                                 <div className="flex items-center gap-4 text-zinc-500">
                                     <div className="flex items-center gap-2">
                                         <MapPin className="h-4 w-4 text-[#FF6600]" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest">{dealer.location}</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest">{seller.location}</span>
                                     </div>
                                     <span className="w-1 h-1 rounded-full bg-zinc-800" />
                                     <div className="flex items-center gap-2">
-                                        {getStoreIcon(dealer.store_type)}
-                                        <span className="text-[10px] font-black uppercase tracking-widest">{dealer.store_type || 'Digital'} Hub</span>
+                                        {getStoreIcon(seller.store_type)}
+                                        <span className="text-[10px] font-black uppercase tracking-widest">{seller.store_type || 'Digital'} Hub</span>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="flex flex-wrap gap-4">
-                                {dealer.phone_number && (
-                                    <a href={`tel:${dealer.phone_number}`} className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all">
+                                {seller.phone_number && (
+                                    <a href={`tel:${seller.phone_number}`} className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all">
                                         <Phone className="h-4 w-4 text-[#FF6600]" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest">{dealer.phone_number}</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest">{seller.phone_number}</span>
                                     </a>
                                 )}
-                                {dealer.email && (
-                                    <a href={`mailto:${dealer.email}`} className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all">
+                                {seller.email && (
+                                    <a href={`mailto:${seller.email}`} className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all">
                                         <Mail className="h-4 w-4 text-[#FF6600]" />
                                         <span className="text-[10px] font-black uppercase tracking-widest">Contact</span>
                                     </a>
@@ -174,12 +174,12 @@ export default function DealerProfilePage() {
                     </div>
                 </div>
 
-                {/* Dealer Stats */}
+                {/* Seller Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
                     {[
                         { label: 'Active Listings', value: listings.length, icon: Package },
-                        { label: 'Verified Node', value: dealer.is_verified ? 'YES' : 'PENDING', icon: ShieldCheck },
-                        { label: 'Member Since', value: new Date(dealer.created_at).getFullYear(), icon: Clock },
+                        { label: 'Verified Node', value: seller.is_verified ? 'YES' : 'PENDING', icon: ShieldCheck },
+                        { label: 'Member Since', value: new Date(seller.created_at).getFullYear(), icon: Clock },
                         { label: 'Response Time', value: '< 2H', icon: Zap }
                     ].map((stat, i) => (
                         <div key={i} className="glass-card p-6 rounded-2xl border-white/5">
@@ -192,7 +192,7 @@ export default function DealerProfilePage() {
                     ))}
                 </div>
 
-                {/* Dealer Listings */}
+                {/* Seller Listings */}
                 <div>
                     <h2 className="text-3xl font-black uppercase tracking-tighter italic mb-8">
                         Active <span className="text-zinc-500">Inventory</span>
@@ -228,7 +228,7 @@ export default function DealerProfilePage() {
                         <div className="glass-card p-20 rounded-[3rem] border-dashed border-white/5 text-center">
                             <Package className="h-16 w-16 text-zinc-800 mx-auto mb-6 opacity-20" />
                             <h3 className="text-xl font-black text-zinc-500 uppercase tracking-widest mb-2">No Active Listings</h3>
-                            <p className="text-zinc-600 text-sm">This merchant currently has no active inventory.</p>
+                            <p className="text-zinc-600 text-sm">This seller currently has no active inventory.</p>
                         </div>
                     )}
                 </div>

@@ -18,7 +18,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-interface Dealer {
+interface Seller {
     id: string;
     display_name: string;
     business_name: string;
@@ -29,20 +29,20 @@ interface Dealer {
     created_at: string;
 }
 
-export default function FindDealersPage() {
+export default function FindSellersPage() {
     const router = useRouter();
     const supabase = createClient();
     const [searchTerm, setSearchTerm] = useState('');
     const [locationFilter, setLocationFilter] = useState('');
     const [storeTypeFilter, setStoreTypeFilter] = useState('all');
-    const [dealers, setDealers] = useState<Dealer[]>([]);
+    const [sellers, setSellers] = useState<Seller[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchDealers();
+        fetchSellers();
     }, []);
 
-    const fetchDealers = async () => {
+    const fetchSellers = async () => {
         try {
             const { data, error } = await supabase
                 .from('users')
@@ -54,11 +54,11 @@ export default function FindDealersPage() {
             if (error) throw error;
 
             if (data && data.length > 0) {
-                setDealers(data);
+                setSellers(data);
             } else {
-                // Fallback to mock dealers
+                // Fallback to mock sellers
                 const { COMPREHENSIVE_MOCK_LISTINGS } = require('@/lib/mockData');
-                const uniqueDealers = Array.from(new Set(COMPREHENSIVE_MOCK_LISTINGS.map((l: any) => l.dealer._id)))
+                const uniqueSellers = Array.from(new Set(COMPREHENSIVE_MOCK_LISTINGS.map((l: any) => l.dealer._id)))
                     .map(id => {
                         const listing = COMPREHENSIVE_MOCK_LISTINGS.find((l: any) => l.dealer._id === id);
                         return {
@@ -72,20 +72,20 @@ export default function FindDealersPage() {
                             created_at: new Date().toISOString()
                         };
                     });
-                setDealers(uniqueDealers);
+                setSellers(uniqueSellers);
             }
         } catch (error) {
-            console.error('Error fetching dealers:', error);
+            console.error('Error fetching sellers:', error);
         } finally {
             setLoading(false);
         }
     };
 
-    const filteredDealers = dealers.filter(dealer => {
-        const matchesSearch = dealer.display_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            dealer.business_name?.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesLocation = dealer.location?.toLowerCase().includes(locationFilter.toLowerCase());
-        const matchesStoreType = storeTypeFilter === 'all' || dealer.store_type?.toLowerCase() === storeTypeFilter.toLowerCase();
+    const filteredSellers = sellers.filter(seller => {
+        const matchesSearch = seller.display_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            seller.business_name?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesLocation = seller.location?.toLowerCase().includes(locationFilter.toLowerCase());
+        const matchesStoreType = storeTypeFilter === 'all' || seller.store_type?.toLowerCase() === storeTypeFilter.toLowerCase();
 
         return matchesSearch && matchesLocation && matchesStoreType;
     });
@@ -100,7 +100,7 @@ export default function FindDealersPage() {
     };
 
     const getRoleLabel = (role: string) => {
-        return role === 'student_seller' ? 'Student Merchant' : 'Verified Dealer';
+        return role === 'student_seller' ? 'Student Merchant' : 'Verified Seller';
     };
 
     return (
@@ -119,10 +119,10 @@ export default function FindDealersPage() {
                             <ArrowLeft className="mr-2 h-4 w-4" /> Return to Core
                         </Link>
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading leading-none">
-                            Authorized <span className="text-zinc-500">Merchants.</span>
+                            Authorized <span className="text-zinc-500">Sellers.</span>
                         </h1>
                         <p className="text-zinc-400 text-lg font-medium leading-relaxed italic max-w-2xl">
-                            Connect with <span className="text-white">verified campus entrepreneurs and dealers</span> across the Abuja network. Trusted by the protocol.
+                            Connect with <span className="text-white">verified campus entrepreneurs and sellers</span> across the Abuja network. Trusted by the protocol.
                         </p>
                     </div>
 
@@ -164,39 +164,39 @@ export default function FindDealersPage() {
                 {loading && (
                     <div className="text-center py-48">
                         <Loader2 className="h-12 w-12 animate-spin text-[#FF6600] mx-auto mb-6" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Scanning Merchant Network...</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Scanning Seller Network...</p>
                     </div>
                 )}
 
-                {/* Dealers Grid */}
-                {!loading && filteredDealers.length > 0 && (
+                {/* Sellers Grid */}
+                {!loading && filteredSellers.length > 0 && (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {filteredDealers.map((dealer) => (
-                            <Card key={dealer.id} className="bg-zinc-900/40 border-white/5 rounded-[2.5rem] overflow-hidden group hover:border-[#FF6600]/20 transition-all duration-500 relative">
+                        {filteredSellers.map((seller) => (
+                            <Card key={seller.id} className="bg-zinc-900/40 border-white/5 rounded-[2.5rem] overflow-hidden group hover:border-[#FF6600]/20 transition-all duration-500 relative">
                                 <CardHeader className="p-8 pb-4">
                                     <div className="flex justify-between items-start mb-6">
                                         <div className="h-14 w-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-[#FF6600]/50 transition-colors">
                                             <Building className="h-6 w-6 text-zinc-500 group-hover:text-[#FF6600]" />
                                         </div>
                                         <div className="bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg flex items-center gap-2">
-                                            {getStoreIcon(dealer.store_type)}
-                                            <span className="text-[8px] font-black uppercase tracking-widest text-zinc-400">{dealer.store_type || 'Digital'}</span>
+                                            {getStoreIcon(seller.store_type)}
+                                            <span className="text-[8px] font-black uppercase tracking-widest text-zinc-400">{seller.store_type || 'Digital'}</span>
                                         </div>
                                     </div>
                                     <div className="space-y-2">
                                         <CardTitle className="text-xl font-black uppercase tracking-tighter italic font-heading flex items-center gap-2 text-white">
-                                            {dealer.business_name || dealer.display_name}
-                                            <VerificationBadge isVerified={dealer.is_verified} showText={false} size="sm" />
+                                            {seller.business_name || seller.display_name}
+                                            <VerificationBadge isVerified={seller.is_verified} showText={false} size="sm" />
                                         </CardTitle>
                                         <div className="flex items-center gap-2 text-[10px] font-black text-zinc-600 uppercase tracking-widest italic font-heading">
-                                            <MapPin className="h-3 w-3 text-[#FF6600]" /> {dealer.location || 'FCT - Abuja'}
+                                            <MapPin className="h-3 w-3 text-[#FF6600]" /> {seller.location || 'FCT - Abuja'}
                                         </div>
                                     </div>
                                 </CardHeader>
                                 <CardContent className="p-8 pt-0 space-y-6">
                                     <div className="flex gap-2">
                                         <Badge className="bg-[#FF6600]/10 text-[#FF6600] border-none text-[8px] font-black uppercase tracking-[0.15em] px-3 py-1 font-heading italic">
-                                            {getRoleLabel(dealer.role)}
+                                            {getRoleLabel(seller.role)}
                                         </Badge>
                                     </div>
                                     <div className="flex items-center justify-between pt-6 border-t border-white/5">
@@ -210,7 +210,7 @@ export default function FindDealersPage() {
                                 </CardContent>
                                 <CardFooter className="p-8 pt-0">
                                     <Button className="w-full h-14 bg-white/5 border border-white/10 hover:bg-[#FF6600] hover:text-black rounded-2xl uppercase text-[10px] font-black tracking-[0.2em] transition-all group/btn font-heading italic" asChild>
-                                        <Link href={`/dealer/${dealer.id}`} className="flex items-center justify-center gap-2">
+                                        <Link href={`/seller/${seller.id}`} className="flex items-center justify-center gap-2">
                                             Access Node <ArrowUpRight className="h-3 w-3 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                                         </Link>
                                     </Button>
@@ -220,7 +220,7 @@ export default function FindDealersPage() {
                     </div>
                 )}
 
-                {!loading && filteredDealers.length === 0 && (
+                {!loading && filteredSellers.length === 0 && (
                     <div className="text-center py-48 glass-card rounded-[3.5rem] border-dashed border-white/5">
                         <Search className="h-16 w-16 text-zinc-800 mx-auto mb-8 opacity-20" />
                         <h3 className="text-xl font-black text-zinc-500 uppercase tracking-[0.2em] font-heading mb-2">No Matching Nodes</h3>

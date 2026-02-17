@@ -41,7 +41,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { DealerGuide } from '@/components/DealerGuide';
+import { SellerGuide } from '@/components/SellerGuide';
 import { TrialBanner } from '@/components/subscription/TrialBanner';
 
 interface Order {
@@ -70,7 +70,7 @@ interface Stats {
     totalRevenue: number;
 }
 
-export default function DealerDashboardPage() {
+export default function SellerDashboardPage() {
     const { user, sessionUser, loading: authLoading } = useAuth();
     const router = useRouter();
     const supabase = createClient();
@@ -117,7 +117,7 @@ export default function DealerDashboardPage() {
         if (searchParams.get('subscription') === 'success') {
             alert("Subscription updated successfully! \n\nNeed help? Contact support@marketbridge.com.ng");
             // Optional: clear the param
-            router.replace('/dealer/dashboard');
+            router.replace('/seller/dashboard');
         }
     }, [searchParams, router]);
 
@@ -138,7 +138,7 @@ export default function DealerDashboardPage() {
         // 4. Access Control: Only redirect IF we have the user and the role is objectively wrong
         const validRoles = ['dealer', 'student_seller'];
         if (!validRoles.includes(user.role)) {
-            console.warn("Access Denied: Role mismatch for dealer dashboard", user.role);
+            console.warn("Access Denied: Role mismatch for seller dashboard", user.role);
             router.push('/');
             return;
         }
@@ -304,7 +304,7 @@ export default function DealerDashboardPage() {
         if (!user) return;
 
         const subscription = supabase
-            .channel('dealer_orders')
+            .channel('seller_orders')
             .on(
                 'postgres_changes',
                 {
@@ -498,7 +498,7 @@ export default function DealerDashboardPage() {
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
-            <DealerGuide />
+            <SellerGuide />
 
             <div className="container mx-auto py-12 px-6 relative z-10 space-y-12 pb-24">
                 {/* Header Section */}
@@ -510,7 +510,7 @@ export default function DealerDashboardPage() {
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading leading-tight">Live Operation Panel</span>
                         </div>
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
-                            Dealer <span className="text-[#FF6600]">Hub</span>
+                            Seller <span className="text-[#FF6600]">Hub</span>
                         </h1>
                         <p className="text-zinc-500 font-medium max-w-xl italic">
                             Command center for <span className="text-white font-bold">{user?.displayName}</span>.
@@ -568,8 +568,8 @@ export default function DealerDashboardPage() {
                 {/* Quick Directive Actions */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {[
-                        { label: "New Listing", desc: "Deploy new asset to marketplace", href: "/dealer/listings/new", icon: Package, primary: true },
-                        { label: "Inventory", desc: "Audit and verify live assets", href: "/dealer/listings", icon: Eye },
+                        { label: "New Listing", desc: "Deploy new asset to marketplace", href: "/seller/listings/new", icon: Package, primary: true },
+                        { label: "Inventory", desc: "Audit and verify live assets", href: "/seller/listings", icon: Eye },
                         { label: "Terminal", desc: "Check incoming communications", href: "/chats", icon: MessageCircle },
                     ].map((action, i) => (
                         <Link key={i} href={action.href} className="group h-full">

@@ -81,9 +81,9 @@ export default function SubscriptionCheckoutContent() {
             return;
         }
 
-        // Restriction: Only merchants/dealers can buy plans
+        // Restriction: Only sellers can buy plans
         if (user && user.role === 'student_buyer') {
-            toast('Access Restricted: These plans are for Merchants and Dealers only. Please update your profile to sell.', 'error');
+            toast('Access Restricted: These plans are for Sellers only. Please update your profile to sell.', 'error');
             router.push('/pricing');
             return;
         }

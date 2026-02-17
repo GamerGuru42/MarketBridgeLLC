@@ -96,7 +96,7 @@ export async function middleware(request: NextRequest) {
         if (role === 'ceo') {
             return NextResponse.redirect(new URL('/ceo', request.url))
         } else if (['dealer', 'student_seller'].includes(role)) {
-            return NextResponse.redirect(new URL('/dealer/dashboard', request.url))
+            return NextResponse.redirect(new URL('/seller/dashboard', request.url))
         } else if (['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'cto', 'coo', 'cofounder'].includes(role)) {
             return NextResponse.redirect(new URL('/admin', request.url))
         } else {
@@ -141,8 +141,8 @@ export async function middleware(request: NextRequest) {
         }
     }
 
-    // DEALER PROTECTION
-    if (pathname.startsWith('/dealer')) {
+    // SELLER PROTECTION
+    if (pathname.startsWith('/seller')) {
         if (!user || !['dealer', 'student_seller'].includes(role)) {
             return NextResponse.redirect(new URL('/login', request.url))
         }

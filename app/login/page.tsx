@@ -102,7 +102,7 @@ export default function LoginPage() {
 
                 // 4. Hard Redirect
                 if (['dealer', 'student_seller'].includes(userRole)) {
-                    window.location.href = '/dealer/dashboard';
+                    window.location.href = '/seller/dashboard';
                 } else if (userRole === 'ceo') {
                     window.location.href = '/ceo';
                 } else if (userRole === 'technical_admin') {

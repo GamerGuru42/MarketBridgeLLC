@@ -143,7 +143,7 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* 5. Dealers/CTA Section */}
+            {/* 5. Sellers/CTA Section */}
             <section className="py-32 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[#FF6600] clip-diagonal-section transform -skew-y-3 origin-bottom-right translate-y-12 opacity-5 pointer-events-none" />
                 <div className="container px-4 mx-auto relative z-10">
@@ -158,8 +158,8 @@ export default function HomePage() {
                         </p>
                         <div className="flex flex-col sm:flex-row gap-6 justify-center">
                             <Button size="lg" asChild className="bg-[#FF6600] text-black font-black uppercase tracking-widest px-12 h-16 rounded-full hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,102,0,0.3)]">
-                                <Link href={user ? (['dealer', 'student_seller'].includes(user.role) ? '/dealer/dashboard' : '/onboarding?role=student_seller') : '/signup?role=dealer'}>
-                                    {user && ['dealer', 'student_seller'].includes(user.role) ? 'MERCHANT TERMINAL' : 'BECOME A DEALER'}
+                                <Link href={user ? (['dealer', 'student_seller'].includes(user.role) ? '/seller/dashboard' : '/onboarding?role=student_seller') : '/signup?role=student_seller'}>
+                                    {user && ['dealer', 'student_seller'].includes(user.role) ? 'SELLER TERMINAL' : 'START SELLING'}
                                 </Link>
                             </Button>
                         </div>
