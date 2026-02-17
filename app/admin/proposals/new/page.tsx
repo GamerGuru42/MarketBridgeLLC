@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,32 +11,68 @@ import {
     Send,
     ShieldAlert,
     Zap,
-    Globe,
     ArrowLeft,
     CheckCircle2,
-    Briefcase,
-    FileText
+    FileText,
+    Loader2
 } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
+import { createProposal, fetchProposals, Proposal } from '@/lib/analytics';
 
 export default function SubmitProposalPage() {
     const { user } = useAuth();
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
+    const [myProposals, setMyProposals] = useState<Proposal[]>([]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const [formData, setFormData] = useState({
+        title: '',
+        category: 'Infrastructure Upgrade',
+        priority: 'Medium - Routine Growth',
+        description: '',
+        impact: ''
+    });
+
+    useEffect(() => {
+        if (user) {
+            fetchProposals().then(all => {
+                setMyProposals(all.filter(p => p.author_id === user.id).slice(0, 5));
+            });
+        }
+    }, [user]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        setFormData({ ...formData, [e.target.id]: e.target.value });
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!user) return;
+
         setIsSubmitting(true);
 
-        // Simulate API call
-        setTimeout(() => {
-            setIsSubmitting(false);
+        try {
+            await createProposal({
+                title: formData.title,
+                category: formData.category,
+                priority: formData.priority,
+                description: formData.description,
+                impact: formData.impact,
+                author_id: user.id,
+                admin_name: user.displayName || 'Admin'
+            });
+
             setSubmitted(true);
             setTimeout(() => router.push('/admin'), 3000);
-        }, 1500);
+        } catch (error) {
+            console.error("Error submitting proposal:", error);
+            alert("Failed to submit proposal. Database connection might be offline.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     if (submitted) {
@@ -83,13 +119,13 @@ export default function SubmitProposalPage() {
                             <CardContent className="space-y-6">
                                 <div className="space-y-2">
                                     <Label htmlFor="title">Proposal Title</Label>
-                                    <Input id="title" placeholder="e.g. Abuja Node Infrastructure Expansion" required />
+                                    <Input id="title" value={formData.title} onChange={handleChange} placeholder="e.g. Abuja Node Infrastructure Expansion" required />
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="category">Strategic Category</Label>
-                                        <select className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-primary">
+                                        <select id="category" value={formData.category} onChange={handleChange} className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-primary">
                                             <option>Infrastructure Upgrade</option>
                                             <option>Policy/Operations Shift</option>
                                             <option>Marketing Initiative</option>
@@ -99,7 +135,7 @@ export default function SubmitProposalPage() {
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="priority">Initial Priority</Label>
-                                        <select className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-primary">
+                                        <select id="priority" value={formData.priority} onChange={handleChange} className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-primary">
                                             <option>Low - Optimization</option>
                                             <option>Medium - Routine Growth</option>
                                             <option>High - Critical Scaling</option>
@@ -109,9 +145,11 @@ export default function SubmitProposalPage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="content">Executive Summary & Technical Breakdown</Label>
+                                    <Label htmlFor="description">Executive Summary & Technical Breakdown</Label>
                                     <Textarea
-                                        id="content"
+                                        id="description"
+                                        value={formData.description}
+                                        onChange={handleChange}
                                         placeholder="Describe the upgrade, required resources, and the expected outcome in the Abuja market..."
                                         className="min-h-[200px]"
                                         required
@@ -120,14 +158,17 @@ export default function SubmitProposalPage() {
 
                                 <div className="space-y-2">
                                     <Label htmlFor="impact">Projected Impact (Abuja Region)</Label>
-                                    <Input id="impact" placeholder="e.g. +15% conversion lift, -30% latency" />
+                                    <Input id="impact" value={formData.impact} onChange={handleChange} placeholder="e.g. +15% conversion lift, -30% latency" />
                                 </div>
                             </CardContent>
                             <CardFooter className="bg-muted/30 border-t flex justify-between p-6">
                                 <Button type="button" variant="ghost">Save Draft</Button>
                                 <Button type="submit" disabled={isSubmitting} className="bg-primary hover:bg-primary/90">
                                     {isSubmitting ? (
-                                        <>Submitting Memo...</>
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Submitting Memo...
+                                        </>
                                     ) : (
                                         <>
                                             <Send className="h-4 w-4 mr-2" />
@@ -168,20 +209,19 @@ export default function SubmitProposalPage() {
                             <CardTitle className="text-xs font-bold uppercase text-muted-foreground">Your Recent Proposals</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-3">
-                            <div className="flex items-center justify-between p-2 border rounded-md">
-                                <div className="flex items-center gap-2 overflow-hidden">
-                                    <FileText className="h-3 w-3 text-primary shrink-0" />
-                                    <span className="text-[10px] font-medium truncate">Maitama Node Auth Fix</span>
-                                </div>
-                                <Badge className="bg-green-500 text-[8px] h-4">APPROVED</Badge>
-                            </div>
-                            <div className="flex items-center justify-between p-2 border rounded-md opacity-60">
-                                <div className="flex items-center gap-2 overflow-hidden">
-                                    <Zap className="h-3 w-3 text-purple-500 shrink-0" />
-                                    <span className="text-[10px] font-medium truncate">Abuja SEO Dominance</span>
-                                </div>
-                                <Badge variant="outline" className="text-[8px] h-4">PENDING</Badge>
-                            </div>
+                            {myProposals.length === 0 ? (
+                                <p className="text-xs text-muted-foreground italic">No proposals found.</p>
+                            ) : (
+                                myProposals.map(prop => (
+                                    <div key={prop.id} className="flex items-center justify-between p-2 border rounded-md">
+                                        <div className="flex items-center gap-2 overflow-hidden">
+                                            <FileText className="h-3 w-3 text-primary shrink-0" />
+                                            <span className="text-[10px] font-medium truncate max-w-[120px]">{prop.title}</span>
+                                        </div>
+                                        <Badge variant="outline" className={`text-[8px] h-4 ${prop.status === 'approved' ? 'bg-green-100 text-green-800' : 'text-zinc-500'}`}>{prop.status.toUpperCase()}</Badge>
+                                    </div>
+                                ))
+                            )}
                         </CardContent>
                     </Card>
                 </div>

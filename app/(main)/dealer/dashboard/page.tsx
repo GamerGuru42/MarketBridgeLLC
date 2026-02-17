@@ -246,25 +246,7 @@ export default function DealerDashboardPage() {
         }
     };
 
-    const [nodeMetrics, setNodeMetrics] = useState({
-        activeBuyers: 1420,
-        demandLevel: 'High',
-        popularCategory: 'Electronics',
-        growthIndex: '+12.4%'
-    });
 
-    useEffect(() => {
-        // Sync with active node for market data
-        const savedNode = localStorage.getItem('mb-preferred-node');
-        if (savedNode === 'FCT - Abuja') {
-            setNodeMetrics({
-                activeBuyers: 2840,
-                demandLevel: 'Apex',
-                popularCategory: 'Automotive',
-                growthIndex: '+18.2%'
-            });
-        }
-    }, []);
 
     const fetchOrders = async () => {
         if (!user) return;

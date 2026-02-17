@@ -72,12 +72,15 @@ export default function AdminPage() {
             const { count: pendingOrders } = await supabase.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'pending');
 
             // Marketing: Total Users
-            const { count: totalUsers } = await supabase.from('users').select('*', { count: 'exact', head: true });
+            const { count: totalUsers, error: userError } = await supabase.from('users').select('*', { count: 'exact', head: true });
+
+            // Tech Health: Simple DB Connectivity Check
+            const dbStatus = userError ? 0 : 100;
 
             setDashboardStats({
                 pendingOps: (pendingVerifications || 0) + (pendingOrders || 0),
                 marketingGrowth: totalUsers || 0,
-                techHealth: 99.9 // Static for now unless we sniff API
+                techHealth: dbStatus
             });
         };
         fetchGlobalStats();
