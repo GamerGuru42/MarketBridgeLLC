@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return () => subscription.unsubscribe();
     }, []);
 
-    const fetchUserProfile = async (userId: string) => {
+    const fetchUserProfile = async (userId: string, retryCount = 0) => {
         try {
             const { data, error } = await supabase
                 .from('users')
@@ -59,14 +59,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 .single();
 
             if (error) {
+                // If record not found and we have retries left, wait and retry
+                // PGRST116 is Supabase/PostgREST code for "No rows found"
+                if (error.code === 'PGRST116' && retryCount < 3) {
+                    console.log(`Profile search retry ${retryCount + 1}...`);
+                    await new Promise(resolve => setTimeout(resolve, 1500)); // Wait 1.5s
+                    return fetchUserProfile(userId, retryCount + 1);
+                }
+
                 console.error('Error fetching user profile:', error);
-                // Fallback: If profile doesn't exist, we still need to stop loading
                 setUser(null);
             } else {
                 // Map Supabase user to our User type (include both id and _id for compatibility)
                 const mappedUser = {
                     ...data,
-                    _id: data.id, // Map id to _id for backwards compatibility
+                    _id: data.id,
                     displayName: data.display_name,
                     phone_number: data.phone_number,
                     photoURL: data.photo_url,
@@ -88,7 +95,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (error) {
             console.error('Unexpected error fetching profile:', error);
         } finally {
-            setLoading(false);
+            if (retryCount === 0 || user) {
+                setLoading(false);
+            }
         }
     };
 

@@ -19,7 +19,7 @@ function OnboardingContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const forcedRole = searchParams.get('role');
-    const { user, loading: authLoading, refreshUser } = useAuth();
+    const { user, sessionUser, loading: authLoading, refreshUser } = useAuth();
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
@@ -34,7 +34,7 @@ function OnboardingContent() {
     });
 
     useEffect(() => {
-        if (!authLoading && !user) {
+        if (!authLoading && !user && !sessionUser) {
             router.push('/login');
             return;
         }

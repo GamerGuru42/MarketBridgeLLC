@@ -253,8 +253,9 @@ function SignupContent() {
         if (isMerchant) {
             if (verificationMethod === 'school_email') {
                 const emailPattern = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\.)?edu(\.ng)?$/i;
-                if (!formData.email || !emailPattern.test(formData.email)) {
-                    setError("Please provide a valid school email address (.edu or .edu.ng) in the 'School Email' field.");
+                const isPhone = !formData.email.includes('@');
+                if (!formData.email || (!isPhone && !emailPattern.test(formData.email))) {
+                    setError("Please provide a valid school email address (.edu.ng) or phone number for verification.");
                     setIsLoading(false);
                     return;
                 }
@@ -621,17 +622,17 @@ function SignupContent() {
                             </div>
                             <div className="space-y-2">
                                 <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">
-                                    {['student_seller', 'dealer'].includes(role) ? "School Email (.edu.ng)" : "Email Identity"}
+                                    {['student_seller', 'dealer'].includes(role) ? "School Email / Phone" : "Email / Phone Identity"}
                                 </label>
                                 <div className="relative group">
                                     <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
                                     <input
                                         name="email"
-                                        type="email"
+                                        type="text"
                                         value={formData.email}
                                         onChange={handleChange}
                                         required
-                                        placeholder={['student_seller', 'dealer'].includes(role) ? "benny@uni.edu.ng" : "founder@market.io"}
+                                        placeholder={['student_seller', 'dealer'].includes(role) ? "benny@uni.edu.ng or 080..." : "email or phone number"}
                                         className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all"
                                     />
                                 </div>

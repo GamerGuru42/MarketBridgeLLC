@@ -261,11 +261,11 @@ export default function LoginPage() {
                                 <User className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-600" />
                                 <input
                                     name="email"
-                                    type="email"
+                                    type="text"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
-                                    placeholder={role === 'admin' ? "admin@marketbridge.io" : "user@example.com"}
+                                    placeholder={role === 'admin' ? "admin@marketbridge.io" : "user@example.com / phone"}
                                     className="w-full h-16 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6600]/50 transition-all font-medium"
                                 />
                             </div>
