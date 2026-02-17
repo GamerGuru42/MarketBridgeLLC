@@ -275,8 +275,14 @@ export function AiAssistant() {
                                                                 Status: <strong>ESCALATED</strong> - An agent will contact you shortly.
                                                             </p>
                                                             <Badge variant="secondary" className="text-xs mt-2">
-                                                                {msg.supportTicket.department === 'technical' ? '🔧 Technical Team' : '📦 Operations Team'}
+                                                                {msg.supportTicket.department === 'technical' ? '🔴 Technical Team' : '🟢 Operations Team'}
                                                             </Badge>
+                                                            <a
+                                                                href={`mailto:${msg.supportTicket.department === 'technical' ? 'support@marketbridge.com.ng' : 'ops-support@marketbridge.com.ng'}?subject=Ticket%20${msg.supportTicket.ticketId}`}
+                                                                className="block mt-2 text-xs text-primary hover:underline font-semibold"
+                                                            >
+                                                                → Email {msg.supportTicket.department === 'technical' ? 'support@marketbridge.com.ng' : 'ops-support@marketbridge.com.ng'}
+                                                            </a>
                                                         </div>
                                                     </div>
                                                 </div>

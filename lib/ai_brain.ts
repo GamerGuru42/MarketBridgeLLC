@@ -70,6 +70,18 @@ const PLATFORM_KNOWLEDGE = {
         ceo: "Central Command (CEO) has absolute oversight. Access via the 'CEO' terminal on the login page.",
         admin: "Sector Admins (Tech, Ops, Marketing) manage specific nodes. Requires secure access codes.",
         dealer: "Merchants/Dealers are the heartbeat of the platform. Verified students selling goods."
+    },
+    support: {
+        tech: {
+            email: "support@marketbridge.com.ng",
+            for: ["App bugs", "Login issues", "Errors", "Loading problems", "Technical features"],
+            description: "Technical support for app bugs, login issues, and system errors"
+        },
+        ops: {
+            email: "ops-support@marketbridge.com.ng",
+            for: ["Refunds", "Subscriptions", "Seller questions", "Payments", "Account help", "General assistance"],
+            description: "Operations support for refunds, subscriptions, seller questions, and account help"
+        }
     }
 };
 
@@ -224,18 +236,36 @@ class AiBrain {
             };
         }
 
-        // 7. Support Escalation
-        if (this.matchAny(lowerInput, ['help', 'issue', 'problem', 'broken', 'error', 'bug', 'scam', 'shame'])) {
+        // 7. Support Escalation with Dual Channels
+        if (this.matchAny(lowerInput, ['help', 'support', 'contact', 'email', 'reach'])) {
             return {
-                content: "I'm detecting a friction point. Is this a **Technical** system error or an **Order/Escrow** dispute with a dealer?",
+                content: `MarketBridge has two support channels:\n\n🔴 **Tech Support** (${PLATFORM_KNOWLEDGE.support.tech.email}):\n${PLATFORM_KNOWLEDGE.support.tech.for.join(', ')}\n\n🟢 **Ops Support** (${PLATFORM_KNOWLEDGE.support.ops.email}):\n${PLATFORM_KNOWLEDGE.support.ops.for.join(', ')}\n\nWhat kind of help do you need?`,
                 action: 'none'
             };
         }
-        if (lowerInput.includes('technical') || lowerInput.includes('tech') || lowerInput.includes('glitch')) {
-            return { content: "Technical uplink established. I'm escalating this to our development node for immediate patching.", action: 'escalate_tech' };
+
+        // Technical Issues
+        if (this.matchAny(lowerInput, ['bug', 'error', 'broken', 'crash', 'glitch', 'technical', 'tech', 'login', 'loading', 'not working'])) {
+            return {
+                content: `🔴 **Technical Issue Detected**\n\nI'm escalating this to our Tech Support team. They'll investigate immediately.\n\nFor urgent tech issues, email: ${PLATFORM_KNOWLEDGE.support.tech.email}\n\nTicket created and logged.`,
+                action: 'escalate_tech'
+            };
         }
-        if (lowerInput.includes('order') || lowerInput.includes('dispute') || lowerInput.includes('escrow') || lowerInput.includes('delivery')) {
-            return { content: "Operations node notified. An admin will review the escrow manifest and contact you shortly.", action: 'escalate_ops' };
+
+        // Operations Issues
+        if (this.matchAny(lowerInput, ['refund', 'payment', 'subscription', 'dealer', 'seller', 'order', 'dispute', 'escrow', 'delivery', 'cancel', 'account'])) {
+            return {
+                content: `🟢 **Operations Request Logged**\n\nI'm connecting you with our Ops Support team. They handle refunds, subscriptions, and seller matters.\n\nFor faster resolution, email: ${PLATFORM_KNOWLEDGE.support.ops.email}\n\nYour request has been escalated.`,
+                action: 'escalate_ops'
+            };
+        }
+
+        // General catch-all for issues
+        if (this.matchAny(lowerInput, ['issue', 'problem', 'scam', 'shame'])) {
+            return {
+                content: `I'm here to help! Is this a **Technical** issue (app bugs, login, errors) or an **Operations** matter (refunds, payments, seller questions)?\n\n🔴 Tech: ${PLATFORM_KNOWLEDGE.support.tech.email}\n🟢 Ops: ${PLATFORM_KNOWLEDGE.support.ops.email}`,
+                action: 'none'
+            };
         }
 
         // 7. Identity & Name
