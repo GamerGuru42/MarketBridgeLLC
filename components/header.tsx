@@ -140,7 +140,7 @@ export const Header = () => {
                                 <span>Logout</span>
                             </Button>
 
-                            <DropdownMenu>
+                            <DropdownMenu modal={false}>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" className="h-11 w-11 rounded-full p-0 border border-white/10 bg-white/5 hover:bg-white/10 ring-offset-black transition-all hover:scale-105 active:scale-95">
                                         <div className="relative">
