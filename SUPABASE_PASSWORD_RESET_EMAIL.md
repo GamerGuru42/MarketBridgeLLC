@@ -1,147 +1,76 @@
-📧 PASSWORD RESET EMAIL TEMPLATE
+📧 PASSWORD RESET EMAIL TEMPLATE - TROUBLESHOOTING
 
-**IMPORTANT**: Supabase blocks certain CSS/HTML keywords. This template is simplified to pass validation.
+## ⚠️ ISSUE: Supabase keeps blocking the template
 
-## 🔧 How to Configure:
-
-1. **Go to Supabase Dashboard** → Your Project
-2. **Navigate to**: Authentication → Email Templates
-3. **Select**: "Reset Password" template
-4. **Replace ENTIRE template with the HTML below**:
+**Let's try a different approach:**
 
 ---
+
+## 🔍 **STEP 1: Check Default Template First**
+
+1. In Supabase Dashboard → Authentication → Email Templates → Reset Password
+2. Look for a **"Reset to default"** or **"View default"** button
+3. Copy the DEFAULT template that Supabase provides
+4. Save it somewhere as backup
+5. **Send me a screenshot or copy of that default template**
+
+Then we can modify THAT template (which we know works) instead of creating from scratch.
+
+---
+
+## 🔧 **STEP 2: If No Default Available, Try This BARE MINIMUM:**
+
+Copy this EXACT code (it's as simple as possible):
 
 ```html
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Your Password</title>
-</head>
-<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 40px 20px;">
-        <tr>
-            <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 8px; max-width: 600px; width: 100%;">
-                    
-                    <!-- Header -->
-                    <tr>
-                        <td style="padding: 40px; text-align: center; background-color: #1a1a1a; border-radius: 8px 8px 0 0;">
-                            <div style="width: 64px; height: 64px; margin: 0 auto 20px; background-color: #FF6600; border-radius: 12px; text-align: center; line-height: 64px; font-size: 32px;">
-                                🔐
-                            </div>
-                            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: bold;">
-                                Reset Your Password
-                            </h1>
-                        </td>
-                    </tr>
+<h2>Reset Your Password</h2>
 
-                    <!-- Body Content -->
-                    <tr>
-                        <td style="padding: 40px;">
-                            <p style="margin: 0 0 20px; color: #1a1a1a; font-size: 16px;">
-                                Hello,
-                            </p>
-                            <p style="margin: 0 0 24px; color: #4a4a4a; font-size: 15px; line-height: 1.6;">
-                                We received a request to reset the password for your MarketBridge account. Click the button below to create a new password:
-                            </p>
+<p>Hello,</p>
 
-                            <!-- Button -->
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 30px 0;">
-                                <tr>
-                                    <td align="center">
-                                        <a href="{{ .ConfirmationURL }}" style="display: inline-block; padding: 16px 48px; background-color: #FF6600; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 15px;">Reset My Password</a>
-                                    </td>
-                                </tr>
-                            </table>
+<p>Click the link below to reset your password for MarketBridge:</p>
 
-                            <p style="margin: 24px 0 16px; color: #6b6b6b; font-size: 13px;">
-                                Or copy and paste this link into your browser:
-                            </p>
-                            <p style="margin: 0 0 30px; padding: 12px; background-color: #f8f8f8; border: 1px solid #e5e5e5; border-radius: 4px; color: #FF6600; font-size: 12px; word-break: break-all;">
-                                {{ .ConfirmationURL }}
-                            </p>
+<p><a href="{{ .ConfirmationURL }}">Reset Password</a></p>
 
-                            <!-- Security Info Box -->
-                            <table width="100%" cellpadding="20" cellspacing="0" border="0" style="margin: 30px 0 0; background-color: #fffbf0; border-left: 4px solid #FF6600; border-radius: 4px;">
-                                <tr>
-                                    <td>
-                                        <p style="margin: 0 0 10px; color: #1a1a1a; font-size: 13px; font-weight: bold;">
-                                            🔒 Security Information
-                                        </p>
-                                        <p style="margin: 0; color: #4a4a4a; font-size: 13px; line-height: 1.6;">
-                                            • This link will expire in 60 minutes<br>
-                                            • If you didn't request this, ignore this email<br>
-                                            • Your password won't change until you create a new one
-                                        </p>
-                                    </td>
-                                </tr>
-                            </table>
+<p>This link will expire in 60 minutes.</p>
 
-                            <p style="margin: 30px 0 0; color: #6b6b6b; font-size: 14px;">
-                                Need help? Contact us at <a href="mailto:support@marketbridge.com.ng" style="color: #FF6600; text-decoration: none;">support@marketbridge.com.ng</a>
-                            </p>
-                        </td>
-                    </tr>
+<p>If you did not request this, please ignore this email.</p>
 
-                    <!-- Footer -->
-                    <tr>
-                        <td style="padding: 30px; background-color: #fafafa; text-align: center; border-top: 1px solid #e5e5e5; border-radius: 0 0 8px 8px;">
-                            <p style="margin: 0 0 8px; color: #1a1a1a; font-size: 13px; font-weight: bold;">
-                                MarketBridge
-                            </p>
-                            <p style="margin: 0 0 4px; color: #6b6b6b; font-size: 12px;">
-                                Nigeria's Most Trusted Campus Marketplace
-                            </p>
-                            <p style="margin: 0; color: #9b9b9b; font-size: 11px;">
-                                © 2026 MarketBridge LLC
-                            </p>
-                        </td>
-                    </tr>
-                </table>
+<hr>
 
-                <!-- Bottom Disclaimer -->
-                <table width="600" cellpadding="0" cellspacing="0" border="0" style="margin: 20px auto 0; max-width: 600px;">
-                    <tr>
-                        <td style="text-align: center; padding: 0 20px;">
-                            <p style="margin: 0; color: #9b9b9b; font-size: 11px; line-height: 1.5;">
-                                This email was sent from MarketBridge. If you have questions, contact support.
-                            </p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-</body>
-</html>
+<p>MarketBridge - Nigeria's Most Trusted Campus Marketplace</p>
 ```
+
+**NOTE**: This is EXTREMELY basic (no styling) but it should work to test if the issue is with CSS or the template variable itself.
 
 ---
 
-## ✅ What Changed:
+## 🔍 **STEP 3: Alternative - Check Error Details**
 
-**Removed (Supabase blocks these)**:
-- ❌ `linear-gradient()` - replaced with solid colors
-- ❌ `role="presentation"` - removed
-- ❌ Complex CSS positioning
-- ❌ Advanced flexbox/display properties
-- ❌ `transition` and animation properties
+Can you:
+1. **Take a screenshot** of the FULL error message in Supabase
+2. Or **copy the exact error text** - it might tell us which specific keyword is blocked
 
-**Kept (Still looks professional)**:
-- ✅ Clean white card design
-- ✅ Dark header with orange branding
-- ✅ Professional button styling
-- ✅ Security information box
-- ✅ Mobile-responsive layout
-- ✅ Support contact info
+The error might say something like "Blocked keyword: XYZ" which would help us identify the issue.
 
-## 🚀 This Will Work!
+---
 
-The template is now **simplified but still professional** - just like emails from major companies. It will pass Supabase's validation.
+## 💡 **Possible Issues:**
 
-Click **"Save changes"** in Supabase and it should work!
+The error could be caused by:
+1. ❌ Wrong template variable syntax (maybe it's `{{.ConfirmationURL}}` without space, or `{{ .SiteURL }}`)
+2. ❌ Supabase version-specific restrictions
+3. ❌ Project-specific security settings
+4. ❌ SMTP configuration issues (not template)
+
+---
+
+## 🚀 **Next Steps:**
+
+Please try **BARE MINIMUM template above** first and let me know:
+- ✅ Does it save successfully?
+- ❌ Still blocked? What's the exact error?
+
+Then we can build up from there!
 
 ---
 

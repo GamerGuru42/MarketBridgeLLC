@@ -1,69 +1,47 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url)
     const code = searchParams.get('code')
-    // if "next" is in search params, use it as the redirection URL
+    // if "next" is in param, use it as the redirect URL
     const next = searchParams.get('next') ?? '/'
 
     if (code) {
-        const supabase = await createClient()
+        console.log('Auth Callback: Code detected, initiating exchange...');
+        const cookieStore = cookies()
+        const supabase = createServerClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            {
+                cookies: {
+                    getAll() {
+                        return cookieStore.getAll()
+                    },
+                    setAll(cookiesToSet) {
+                        try {
+                            cookiesToSet.forEach(({ name, value, options }) =>
+                                cookieStore.set(name, value, options)
+                            )
+                        } catch {
+                            // Handled in middleware
+                        }
+                    },
+                },
+            }
+        )
         const { error } = await supabase.auth.exchangeCodeForSession(code)
+
         if (!error) {
-            // Fetch user role for smart redirection
-            const { data: { user } } = await supabase.auth.getUser()
-            let role = user?.user_metadata?.role
-
-            // Fallback: check profile if role is missing in metadata
-            if (user && !role) {
-                const { data: profile } = await supabase
-                    .from('users')
-                    .select('role')
-                    .eq('id', user.id)
-                    .single()
-                role = profile?.role
-            }
-
-            // Determine redirect path
-            let redirectPath = next // Default to 'next' param if available
-            if (next === '/') { // Only override if default '/'
-                if (['dealer', 'student_seller'].includes(role)) {
-                    redirectPath = '/dealer/dashboard'
-                } else if (role === 'marketing_admin') {
-                    redirectPath = '/admin/marketing'
-                } else if (['operations_admin', 'head_of_operations_admin'].includes(role)) {
-                    redirectPath = '/admin/operations'
-                } else if (role === 'technical_admin') {
-                    redirectPath = '/admin/technical'
-                } else if (role === 'ceo') {
-                    redirectPath = '/ceo'
-                } else if (role === 'cofounder') {
-                    redirectPath = '/cofounder'
-                } else if (role === 'cto') {
-                    redirectPath = '/cto'
-                } else if (role === 'coo') {
-                    redirectPath = '/coo'
-                } else if (['admin', 'super_admin'].includes(role)) {
-                    redirectPath = '/admin'
-                } else {
-                    redirectPath = '/listings' // Customers go to marketplace
-                }
-            }
-
-            const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
-            const isLocalEnv = process.env.NODE_ENV === 'development'
-
-            if (isLocalEnv) {
-                return NextResponse.redirect(`${origin}${redirectPath}`)
-            } else if (forwardedHost) {
-                return NextResponse.redirect(`https://${forwardedHost}${redirectPath}`)
-            } else {
-                return NextResponse.redirect(`${origin}${redirectPath}`)
-            }
+            console.log('Auth Callback: Exchange successful. Redirecting to:', next);
+            return NextResponse.redirect(new URL(next, origin))
+        } else {
+            console.error('Auth Callback: Exchange failed:', error.message);
         }
     }
 
-    // return the user to an error page with instructions
-    return NextResponse.redirect(`${origin}/login?error=Could not authenticate user`)
+    const errorMsg = searchParams.get('error_description') || 'Authentication handshake failed'
+    console.warn('Auth Callback: Redirecting to login due to error:', errorMsg);
+    return NextResponse.redirect(new URL(`/login?error=${encodeURIComponent(errorMsg)}`, origin))
 }

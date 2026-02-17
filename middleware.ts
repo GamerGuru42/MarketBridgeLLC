@@ -35,11 +35,17 @@ export async function middleware(request: NextRequest) {
         },
     })
 
+    const pathname = request.nextUrl.pathname
+
+    // BYPASS PROTECTION FOR AUTH HANDSHAKE
+    if (pathname.startsWith('/auth/') || pathname === '/reset-password') {
+        return supabaseResponse
+    }
+
     // refreshing the auth token (authoritative check)
     const { data: { user } } = await supabase.auth.getUser()
 
     let role = user?.user_metadata?.role
-    const pathname = request.nextUrl.pathname
 
     // CRITICAL FIX: Database Fallback for stale metadata
     if (user && (!role || role === 'customer')) {
