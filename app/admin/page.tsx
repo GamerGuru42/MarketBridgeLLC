@@ -87,7 +87,16 @@ export default function AdminPage() {
     }, []);
 
     const operationalNodes = [
-        { title: "Technical", href: "/admin/technical", icon: Cpu, color: "text-blue-400", label: "Infrastructure", status: "Status: Optimal", health: dashboardStats.techHealth },
+        {
+            title: "Technical",
+            label: "System Health & Logs",
+            href: "/admin/technical",
+            icon: Activity,
+            color: "text-purple-500",
+            status: dashboardStats.techHealth === 100 ? "Status: Optimal" : "Status: Issues Detected",
+            health: dashboardStats.techHealth,
+            isNew: dashboardStats.techHealth < 100
+        },
         { title: "Operations", href: "/admin/operations", icon: Activity, color: "text-[#FF6600]", label: "Exchange Flux", status: `${dashboardStats.pendingOps} Pending Actions`, health: 85 },
         { title: "Marketing", href: "/admin/marketing", icon: Globe, color: "text-emerald-400", label: "Growth Vector", status: `${dashboardStats.marketingGrowth.toLocaleString()} Active Users`, health: 92 },
         { title: "Revenue", href: "/admin/revenue", icon: TrendingUp, color: "text-green-400", label: "Fee Analytics", status: "5% Commission Active", health: 100 },
