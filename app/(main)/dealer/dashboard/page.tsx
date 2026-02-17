@@ -480,7 +480,7 @@ export default function DealerDashboardPage() {
                     )}
 
                     <div className="mt-12 pt-8 border-t border-white/5">
-                        <Button variant="ghost" onClick={() => router.push('/')} className="text-zinc-500 hover:text-white font-black uppercase tracking-widest text-[10px]">
+                        <Button variant="ghost" onClick={() => router.push('/listings')} className="text-zinc-500 hover:text-white font-black uppercase tracking-widest text-[10px]">
                             Return to Base
                         </Button>
                     </div>

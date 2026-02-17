@@ -1,0 +1,33 @@
+🚨 CRITICAL: Database Fix Required for Signup to Work
+
+You are still getting "database error" because you have NOT YET run the SQL fix.
+
+📋 STEPS TO FIX THE DATABASE ERROR:
+
+1. Open your Supabase Dashboard (https://supabase.com/dashboard)
+2. Select your MarketBridge project
+3. Go to SQL Editor (left sidebar)
+4. Open the file `supabase_final_fix.sql` from your project root
+5. Copy the ENTIRE contents
+6. Paste into the SQL Editor
+7. Click "Run" button
+8. Wait for "Success" message
+
+🎯 WHAT THIS SQL SCRIPT DOES:
+- Adds missing columns (phone_number, business_name, matric_number, etc.) to the `public.users` table
+- Creates a robust database trigger that handles signup data automatically
+- Adds error protection so signup NEVER fails even if something goes wrong
+- Sets up proper permissions and security policies
+
+⚠️ UNTIL YOU RUN THIS SCRIPT:
+- ALL signups will fail with "database error saving new user"
+- School email verification will NOT work
+- ID card verification will NOT work  
+- Users cannot be created
+
+✅ AFTER RUNNING THIS SCRIPT:
+- Signups will work perfectly
+- The trigger will automatically populate user profiles
+- Error-free onboarding experience
+
+👉 This is the FINAL step to fix everything!
