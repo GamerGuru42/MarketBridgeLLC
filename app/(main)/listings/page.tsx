@@ -14,7 +14,7 @@ import { CATEGORIES } from '@/lib/categories';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { intelligentSearch, trackSearch } from '@/lib/ai-search';
-import { COMPREHENSIVE_MOCK_LISTINGS } from '@/lib/mockData';
+
 
 interface Listing {
     id: string;
@@ -138,42 +138,7 @@ function ListingsContent() {
                 resultData = data || [];
             }
 
-            // Fallback to mock data ONLY if no search query provided (demo mode) or if DB is empty
-            if ((!resultData || resultData.length === 0) && !search) {
-                // Filter mock data based on active filters
-                let filteredMock = COMPREHENSIVE_MOCK_LISTINGS;
-
-                if (category && category !== 'All Categories') {
-                    filteredMock = filteredMock.filter(item => item.category === category);
-                }
-
-                if (location && location !== 'All Locations') {
-                    filteredMock = filteredMock.filter(item => item.location.includes(location));
-                }
-
-                const mockListings: Listing[] = filteredMock.map(item => ({
-                    id: item._id,
-                    title: item.title,
-                    description: item.description,
-                    price: item.price,
-                    category: item.category,
-                    location: item.location,
-                    status: 'active',
-                    dealer_id: item.dealer._id,
-                    created_at: new Date().toISOString(),
-                    images: item.images,
-                    is_verified_listing: Math.random() > 0.7,
-                    dealer: {
-                        id: item.dealer._id,
-                        display_name: item.dealer.displayName,
-                        is_verified: item.dealer.isVerified,
-                        store_type: item.dealer.shopType
-                    }
-                }));
-                setListings(mockListings);
-            } else {
-                setListings(resultData);
-            }
+            setListings(resultData);
         } catch (err: unknown) {
             console.error('Error fetching listings:', err);
             setError('Failed to load listings. Please try again.');

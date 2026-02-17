@@ -13,7 +13,7 @@ export default function MainLayout({
     children: React.ReactNode;
 }) {
     const pathname = usePathname();
-    const isDashboard = pathname?.startsWith('/dealer');
+    const isDashboard = pathname?.startsWith('/dealer') || pathname?.startsWith('/settings');
 
     return (
         <>

@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, CheckCircle, User, Building, Shield, Bell, MapPin, Phone, Mail, Banknote, Landmark } from 'lucide-react';
+import { Loader2, CheckCircle, User, Building, Shield, Bell, MapPin, Phone, Mail, Banknote, Landmark, ArrowLeft } from 'lucide-react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NIGERIAN_STATES } from '@/lib/constants';
 
@@ -166,6 +166,19 @@ export default function SettingsPage() {
                         <p className="text-zinc-500 mt-2 font-medium">
                             Operational status: {user.isVerified ? 'Verified Hub' : 'Pending Sync'}
                         </p>
+                        <Button
+                            variant="ghost"
+                            className="text-zinc-500 hover:text-white mt-4 p-0 h-auto font-mono text-xs uppercase tracking-widest flex items-center gap-2"
+                            onClick={() => {
+                                if (user.role === 'ceo') window.location.href = '/ceo';
+                                else if (user.role === 'admin' || user.role.includes('_admin')) window.location.href = '/admin';
+                                else if (user.role === 'dealer') window.location.href = '/dealer/dashboard';
+                                else window.location.href = '/';
+                            }}
+                        >
+                            <ArrowLeft className="h-3 w-3" />
+                            Return to Interface
+                        </Button>
                     </div>
                     {successMessage && (
                         <div className="bg-[#00FF85]/10 border border-[#00FF85]/20 text-[#00FF85] px-6 py-3 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 backdrop-blur-md">
