@@ -221,7 +221,7 @@ export function AiAssistant() {
                                                                 <Search className="h-3 w-3 mr-1" /> {msg.productDetail.location}
                                                             </div>
                                                         </div>
-                                                        <Button className="w-full font-bold uppercase tracking-widest bg-[#FF6600] text-black hover:bg-[#FF6600]" asChild>
+                                                        <Button className="w-full font-bold uppercase tracking-widest bg-[#FF6600] text-black hover:bg-[#CC5200] transition-colors" asChild>
                                                             <Link href={`/listings/${msg.productDetail.id}`}>
                                                                 View Full Listing
                                                             </Link>
@@ -271,6 +271,9 @@ export function AiAssistant() {
                                                             <p className="text-xs text-muted-foreground mt-1">
                                                                 Ticket ID: {msg.supportTicket.ticketId}
                                                             </p>
+                                                            <p className="text-xs text-muted-foreground mt-1">
+                                                                Status: <strong>ESCALATED</strong> - An agent will contact you shortly.
+                                                            </p>
                                                             <Badge variant="secondary" className="text-xs mt-2">
                                                                 {msg.supportTicket.department === 'technical' ? '🔧 Technical Team' : '📦 Operations Team'}
                                                             </Badge>
@@ -301,7 +304,7 @@ export function AiAssistant() {
                     </CardContent>
 
                     <div className="px-4 py-2 border-t border-white/5 bg-zinc-950/50">
-                        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide overscroll-contain" style={{ overscrollBehaviorX: 'contain' }}>
                             {['Find Textbooks', 'Cheap Laptops', 'Wigs for Sale', 'Food Delivery', 'Sell Item'].map((chip) => (
                                 <button
                                     key={chip}
