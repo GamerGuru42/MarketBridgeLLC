@@ -17,7 +17,7 @@ export const Footer = () => {
                         <div className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest space-y-1">
                             <p>RC: [PENDING-CAC]</p>
                             <p>Wuse II, Abuja, FCT, Nigeria</p>
-                            <a href="mailto:hello@marketbridge.com.ng" className="hover:text-[#FF6600]">hello@marketbridge.com.ng</a>
+                            <a href="mailto:support@marketbridge.com.ng" className="hover:text-[#FF6600]">support@marketbridge.com.ng</a>
                         </div>
                     </div>
 

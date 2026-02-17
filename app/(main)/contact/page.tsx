@@ -83,7 +83,7 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <h3 className="font-semibold mb-1">Email</h3>
-                                        <p className="text-sm text-muted-foreground">support@marketbridge.ng</p>
+                                        <p className="text-sm text-muted-foreground">support@marketbridge.com.ng</p>
                                     </div>
                                 </div>
                             </CardContent>
