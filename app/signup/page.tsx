@@ -657,23 +657,61 @@ function SignupContent() {
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Operational Region</label>
-                            <div className="relative group">
-                                <Globe className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors z-10" />
-                                <select
-                                    name="location"
-                                    className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold relative"
-                                    value={formData.location}
-                                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                                        setFormData({ ...formData, location: e.target.value, university: '' });
-                                        setUniSearch('');
-                                    }}
-                                    required
-                                >
-                                    <option value="" className="bg-zinc-900">Select Node State</option>
-                                    {NIGERIAN_STATES.map(s => <option key={s} value={s} className="bg-zinc-900">{s}</option>)}
-                                </select>
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Operational Region</label>
+                                <div className="relative group">
+                                    <Globe className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors z-10" />
+                                    <select
+                                        name="location"
+                                        className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold relative appearance-none"
+                                        value={formData.location}
+                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                                            setFormData({ ...formData, location: e.target.value, university: '' });
+                                            setUniSearch('');
+                                        }}
+                                        required
+                                    >
+                                        <option value="" className="bg-zinc-900">Select Node State</option>
+                                        {NIGERIAN_STATES.map(s => <option key={s} value={s} className="bg-zinc-900">{s}</option>)}
+                                    </select>
+                                    <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-600 group-focus-within:text-[#FF6600]">
+                                        <ArrowRight className="h-4 w-4 rotate-90" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Jurisdiction</label>
+                                    <div className="relative group">
+                                        <div className="absolute left-6 top-1/2 -translate-y-1/2 text-lg">🇳🇬</div>
+                                        <select className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-black text-[10px] uppercase tracking-widest appearance-none transition-all cursor-pointer">
+                                            <option>Nigeria</option>
+                                        </select>
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
+                                            <ArrowRight className="h-3 w-3 rotate-90" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="md:col-span-2 space-y-2">
+                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Mobile Comms</label>
+                                    <div className="relative group">
+                                        <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center gap-2 pr-3 border-r border-white/10">
+                                            <Zap className="h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                            <span className="text-zinc-500 font-black text-[10px] tracking-widest">+234</span>
+                                        </div>
+                                        <input
+                                            name="phoneNumber"
+                                            type="tel"
+                                            value={formData.phoneNumber}
+                                            onChange={handleChange}
+                                            required
+                                            placeholder="803 000 0000"
+                                            className="w-full h-14 pl-24 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold text-xs transition-all"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -860,22 +898,7 @@ function SignupContent() {
                             </div>
                         )}
 
-                        {!['student_seller', 'dealer', 'ceo'].includes(role) && (
-                            <div className="space-y-2 animate-in fade-in slide-in-from-top-4 duration-500">
-                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Mobile Comms </label>
-                                <div className="relative group">
-                                    <Zap className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
-                                    <input
-                                        name="phoneNumber"
-                                        type="tel"
-                                        value={formData.phoneNumber}
-                                        onChange={handleChange}
-                                        placeholder="080..."
-                                        className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold text-xs"
-                                    />
-                                </div>
-                            </div>
-                        )}
+
 
                         {['student_seller', 'dealer'].includes(role) && (
                             <div className="space-y-6 pt-6 border-t border-white/5 animate-in fade-in duration-700 delay-100">
