@@ -60,11 +60,16 @@ const PLATFORM_KNOWLEDGE = {
     },
     verification: {
         requirements: ["NIN (National Identity Number)", "Student ID Card", "University Email (.edu.ng)"],
-        process: "Upload your documents in the Settings > Verification tab. Our admin node reviews and approves within 12-24 hours."
+        process: "Upload your documents in the Settings > Verification tab. Student Email verification is **INSTANT**. Manual ID reviews take 12-24 hours."
     },
     location: {
         hq: "Wuse II, Abuja, FCT",
         nodes: "Currently operational across major Abuja institutions (UniAbuja, Baze, Nile, Veritas, Bingham, and more)."
+    },
+    roles: {
+        ceo: "Central Command (CEO) has absolute oversight. Access via the 'CEO' terminal on the login page.",
+        admin: "Sector Admins (Tech, Ops, Marketing) manage specific nodes. Requires secure access codes.",
+        dealer: "Merchants/Dealers are the heartbeat of the platform. Verified students selling goods."
     }
 };
 
@@ -204,15 +209,30 @@ class AiBrain {
             return { content: "I couldn't locate any active listings for that right now. Try searching for broader terms like 'phones', 'hair', or 'macbook'." };
         }
 
-        // 6. Support Escalation
+        // 6. Roles & Login Assistance
+        if (this.matchAny(lowerInput, ['ceo', 'founder', 'boss', 'owner', 'benny'])) {
+            return {
+                content: `**Benny** is the CEO & Founder.\nTo access the Executive Dashboard, use the **Secure Gate** on the login page with your biometric key.`,
+                action: 'none'
+            };
+        }
+
+        if (this.matchAny(lowerInput, ['login', 'sign in', 'access', 'cant login', 'password', 'reset'])) {
+            return {
+                content: "Having trouble accessing the terminal? Go to the Login page and select your role (Buyer, Merchant, or Admin). Use 'Forgot Password' to reset your security key.",
+                action: 'none'
+            };
+        }
+
+        // 7. Support Escalation
         if (this.matchAny(lowerInput, ['help', 'issue', 'problem', 'broken', 'error', 'bug', 'scam', 'shame'])) {
             return {
                 content: "I'm detecting a friction point. Is this a **Technical** system error or an **Order/Escrow** dispute with a dealer?",
                 action: 'none'
             };
         }
-        if (lowerInput.includes('technical') || lowerInput.includes('tech')) {
-            return { content: "Technical uplink established. I'm escalating this to our development node.", action: 'escalate_tech' };
+        if (lowerInput.includes('technical') || lowerInput.includes('tech') || lowerInput.includes('glitch')) {
+            return { content: "Technical uplink established. I'm escalating this to our development node for immediate patching.", action: 'escalate_tech' };
         }
         if (lowerInput.includes('order') || lowerInput.includes('dispute') || lowerInput.includes('escrow') || lowerInput.includes('delivery')) {
             return { content: "Operations node notified. An admin will review the escrow manifest and contact you shortly.", action: 'escalate_ops' };

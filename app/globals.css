@@ -89,14 +89,32 @@
     letter-spacing: -0.02em;
   }
 
+  html {
+    @apply scroll-smooth;
+    overflow-x: hidden;
+  }
+
   body {
-    scrollbar-gutter: stable;
     @apply bg-background text-foreground font-sans antialiased;
+    /* Prevent mobile horizontal wobbling */
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
+    overscroll-behavior-y: none;
+    /* Prevents "bounce" refresh effect */
+
     background-image:
       linear-gradient(to right, hsla(0, 0%, 100%, 0.03) 1px, transparent 1px),
       linear-gradient(to bottom, hsla(0, 0%, 100%, 0.03) 1px, transparent 1px);
     background-size: 50px 50px;
     background-attachment: fixed;
+  }
+
+  /* Only reserve scrollbar space on desktop to prevent layout shift */
+  @media (min-width: 768px) {
+    body {
+      scrollbar-gutter: stable;
+    }
   }
 }
 
