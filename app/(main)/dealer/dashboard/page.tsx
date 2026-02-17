@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { createClient } from '@/lib/supabase/client';
 import { startConversation } from '@/lib/chat';
@@ -30,7 +31,7 @@ import {
     RefreshCw
 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+
 import Image from 'next/image';
 import {
     Select,
@@ -109,6 +110,16 @@ export default function DealerDashboardPage() {
     };
 
     const [sessionLost, setSessionLost] = useState(false);
+
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        if (searchParams.get('subscription') === 'success') {
+            alert("Subscription updated successfully! \n\nNeed help? Contact support@marketbridge.com.ng");
+            // Optional: clear the param
+            router.replace('/dealer/dashboard');
+        }
+    }, [searchParams, router]);
 
     useEffect(() => {
         // 1. Loading Guard: Don't make any decisions while auth/profile is loading
