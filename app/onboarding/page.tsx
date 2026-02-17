@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Loader2, CheckCircle, ArrowLeft, AlertCircle, Zap, ShieldCheck } from 'lucide-react';
+import { Check, Zap, Crown, Rocket, ArrowLeft, Sparkles, Shield, TrendingUp, Loader2, ShieldCheck, CheckCircle, AlertCircle } from 'lucide-react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { cn } from '@/lib/utils';
 
@@ -88,6 +88,13 @@ function OnboardingContent() {
                 updateData.subscription_status = 'pending_verification';
             }
 
+            // Authoritative Role and Metadata Update
+            const { error: authUpdateError } = await supabase.auth.updateUser({
+                data: { role: formData.role }
+            });
+
+            if (authUpdateError) console.warn('Auth metadata update failed, but proceeding with profile update.');
+
             const { error } = await supabase
                 .from('users')
                 .update(updateData)
@@ -97,13 +104,10 @@ function OnboardingContent() {
 
             await refreshUser();
 
-            // Redirect based on role
+            // Direct Redirect Logic
             if (formData.role === 'student_seller' || formData.role === 'dealer') {
                 if (selectedPlan) {
-                    // Direct to checkout if a plan was already picked
                     router.push(`/checkout/subscription?plan=${selectedPlan}&cycle=${selectedCycle}`);
-                } else if (user.subscriptionStatus === 'active') {
-                    router.push('/seller/dashboard');
                 } else {
                     router.push('/pricing');
                 }

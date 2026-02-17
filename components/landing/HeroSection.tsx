@@ -149,8 +149,8 @@ export const HeroSection = () => {
                             </Link>
                         </Button>
                         <Button size="lg" variant="outline" asChild className="h-14 md:h-16 px-8 md:px-10 border-white/20 text-white font-bold uppercase tracking-widest hover:bg-white hover:text-black hover:border-transparent transition-all rounded-[2rem] bg-transparent backdrop-blur-sm w-full sm:w-auto">
-                            <Link href={user ? '/dealer/dashboard' : '/signup?role=dealer'}>
-                                Become a Seller
+                            <Link href={user ? (['student_seller', 'dealer'].includes(user.role) ? '/seller/dashboard' : '/onboarding?role=student_seller') : '/signup?role=student_seller'}>
+                                {user && ['student_seller', 'dealer'].includes(user.role) ? 'Seller Terminal' : 'Become a Seller'}
                             </Link>
                         </Button>
                     </motion.div>

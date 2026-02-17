@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Check, Zap, Crown, Rocket, ArrowLeft, Sparkles, Shield, TrendingUp, Loader2 } from 'lucide-react';
+import { Check, Zap, Crown, Rocket, ArrowLeft, Sparkles, Shield, TrendingUp, Loader2, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -153,10 +153,17 @@ export default function PricingPage() {
                             )}
                         </div>
 
-                        <div className="flex items-center gap-2 px-6 py-2 bg-[#FF6600]/10 border border-[#FF6600]/20 rounded-full animate-pulse">
-                            <Shield className="h-3 w-3 text-[#FF6600]" />
-                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[#FF6600]">Merchant Exclusive: Plans for Sellers only</span>
-                        </div>
+                        {['student_seller', 'dealer'].includes(user?.role || '') ? (
+                            <div className="flex items-center gap-2 px-6 py-2 bg-[#00FF85]/10 border border-[#00FF85]/20 rounded-full animate-in fade-in zoom-in duration-500">
+                                <ShieldCheck className="h-3 w-3 text-[#00FF85]" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00FF85]">Merchant Status Verified: Terminal Unlocked</span>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-2 px-6 py-2 bg-[#FF6600]/10 border border-[#FF6600]/20 rounded-full animate-pulse">
+                                <Shield className="h-3 w-3 text-[#FF6600]" />
+                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[#FF6600]">Merchant Exclusive: Plans for Sellers only</span>
+                            </div>
+                        )}
                     </div>
                 </div>
 
