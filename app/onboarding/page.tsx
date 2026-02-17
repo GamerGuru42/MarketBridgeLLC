@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Loader2, CheckCircle } from 'lucide-react';
+import { Loader2, CheckCircle, ArrowLeft, AlertCircle } from 'lucide-react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { cn } from '@/lib/utils';
 
@@ -22,6 +22,7 @@ function OnboardingContent() {
     const { user, sessionUser, loading: authLoading, refreshUser } = useAuth();
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState(1);
+    const [showConfirmSwitch, setShowConfirmSwitch] = useState(false);
     const [formData, setFormData] = useState({
         displayName: '',
         location: '',
@@ -57,9 +58,15 @@ function OnboardingContent() {
         }
     }, [user, authLoading]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
         if (!user) return;
+
+        // If user is switching from buyer to seller, show confirmation first
+        if (user.role === 'student_buyer' && (formData.role === 'student_seller' || formData.role === 'dealer') && !showConfirmSwitch) {
+            setShowConfirmSwitch(true);
+            return;
+        }
 
         setLoading(true);
         try {
@@ -89,7 +96,12 @@ function OnboardingContent() {
 
             // Redirect based on role
             if (formData.role === 'student_seller' || formData.role === 'dealer') {
-                router.push('/dealer/dashboard');
+                // Determine if they need to pay for a plan
+                if (user.subscriptionStatus === 'active') {
+                    router.push('/seller/dashboard');
+                } else {
+                    router.push('/pricing');
+                }
             } else {
                 router.push('/');
             }
@@ -128,6 +140,17 @@ function OnboardingContent() {
                     <p className="text-zinc-500 font-medium italic">
                         Initialize your operational parameters for the Abuja Pilot Phase.
                     </p>
+                </div>
+
+                <div className="flex justify-start">
+                    <Button
+                        variant="ghost"
+                        onClick={() => router.push('/')}
+                        className="text-zinc-500 hover:text-white flex items-center gap-2 px-0"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                        <span className="text-[10px] font-black uppercase tracking-widest">Return to Home</span>
+                    </Button>
                 </div>
 
                 <Card className="glass-card border-none rounded-[3rem] p-10 overflow-hidden relative">
@@ -284,6 +307,45 @@ function OnboardingContent() {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Confirmation Dialog for Role Switch */}
+            {showConfirmSwitch && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm animate-in fade-in duration-300">
+                    <Card className="glass-card border-[#FF6600]/20 max-w-md w-full p-8 rounded-[2.5rem] space-y-8 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-[#FF6600]" />
+                        <div className="flex flex-col items-center text-center space-y-4">
+                            <div className="h-16 w-16 rounded-2xl bg-[#FF6600]/10 border border-[#FF6600]/20 flex items-center justify-center mb-2">
+                                <AlertCircle className="h-8 w-8 text-[#FF6600]" />
+                            </div>
+                            <h2 className="text-3xl font-black uppercase tracking-tighter italic italic">Protocol <span className="text-[#FF6600]">Shift</span></h2>
+                            <p className="text-zinc-400 text-sm leading-relaxed">
+                                You are about to upgrade your profile to <span className="text-white font-bold">STUDENT MERCHANT</span>.
+                                This will grant you access to listing assets and managing orders.
+                            </p>
+                            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl w-full">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-[#FF6600] mb-1">Authorization Required</p>
+                                <p className="text-xs text-zinc-500">You may be required to choose a subscription plan to activate your terminal.</p>
+                            </div>
+                        </div>
+                        <div className="flex flex-col gap-3">
+                            <Button
+                                onClick={() => handleSubmit()}
+                                disabled={loading}
+                                className="w-full h-14 bg-[#FF6600] text-black font-black uppercase tracking-widest rounded-xl hover:bg-[#FF8533]"
+                            >
+                                {loading ? 'UPDATING...' : 'CONFIRM UPGRADE'}
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                onClick={() => setShowConfirmSwitch(false)}
+                                className="w-full h-14 text-zinc-500 hover:text-white font-black uppercase tracking-widest rounded-xl"
+                            >
+                                ABORT
+                            </Button>
+                        </div>
+                    </Card>
+                </div>
+            )}
         </div>
     );
 }
