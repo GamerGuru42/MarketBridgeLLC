@@ -198,12 +198,12 @@ function SignupContent() {
 
     const handleAdminCodeSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const validCodes = ['1029384756', 'MB-FOUNDER-99', 'MB-TECH-2024', 'MB-OPS-2024', 'MB-MKT-2024'];
+        const validCodes = ['marketbridge2026', '1029384756', 'MB-FOUNDER-99', 'MB-TECH-2024', 'MB-OPS-2024', 'MB-MKT-2024'];
         if (validCodes.includes(adminCode)) {
             setStep('admin-dept');
             setError('');
         } else {
-            setError('INVALID ACCESS CREDENTIALS');
+            setError('Access Denied: Invalid Security Signature');
         }
     };
 
@@ -265,6 +265,19 @@ function SignupContent() {
                     setIsLoading(false);
                     return;
                 }
+            }
+        }
+
+        if (role === 'admin') {
+            const adminEmails = [
+                'operations@marketbridge.com.ng',
+                'technical@marketbridge.com.ng',
+                'marketing@marketbridge.com.ng'
+            ];
+            if (!adminEmails.includes(formData.email.toLowerCase())) {
+                setError("Admin access restricted to official @marketbridge.com.ng emails.");
+                setIsLoading(false);
+                return;
             }
         }
 

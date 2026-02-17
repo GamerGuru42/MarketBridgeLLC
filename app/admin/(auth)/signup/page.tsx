@@ -44,14 +44,27 @@ function AdminSignupContent() {
         const identifier = normalizeIdentifier(formData.email);
 
         // Enforce Secret Key Protection
-        if (formData.secretKey !== SECRET_KEY) {
-            setError('INVALID PROVISIONING KEY. Access Denied.');
+        if (formData.secretKey !== 'marketbridge2026') {
+            setError('Access Denied: Invalid Security Signature');
+            setIsLoading(false);
+            return;
+        }
+
+        // Enforce Allowed Admin Emails
+        const allowedAdminEmails = [
+            'operations@marketbridge.com.ng',
+            'technical@marketbridge.com.ng',
+            'marketing@marketbridge.com.ng'
+        ];
+
+        if (!allowedAdminEmails.includes(identifier.toLowerCase())) {
+            setError('Restriction: Official @marketbridge.com.ng email required');
             setIsLoading(false);
             return;
         }
 
         if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
+            setError('Passwords mismatch');
             setIsLoading(false);
             return;
         }

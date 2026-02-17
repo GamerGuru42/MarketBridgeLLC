@@ -10,11 +10,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { createClient } from '@/lib/supabase/client';
+import { useToast } from '@/contexts/ToastContext';
 import type { SubscriptionPlan } from '@/types/subscription';
 
 export default function PricingPage() {
     const router = useRouter();
     const { user } = useAuth();
+    const { toast } = useToast();
     const supabase = createClient();
     const [isAnnual, setIsAnnual] = useState(false);
     const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
@@ -65,6 +67,12 @@ export default function PricingPage() {
     const handleSelectPlan = (planId: string) => {
         if (!user) {
             router.push(`/signup?plan=${planId}`);
+            return;
+        }
+
+        // Restriction: Buyers cannot purchase merchant plans
+        if (user.role === 'student_buyer') {
+            toast('Access Restricted: Merchant plans are for sellers and dealers only. Update your profile to start selling.', 'error');
             return;
         }
 
@@ -124,24 +132,31 @@ export default function PricingPage() {
                         </p>
                     </div>
 
-                    {/* Annual/Monthly Toggle */}
-                    <div className="flex items-center justify-center gap-4 glass-card p-4 rounded-3xl border-white/5 inline-flex">
-                        <span className={`text-sm font-black uppercase tracking-widest transition-colors ${!isAnnual ? 'text-white' : 'text-zinc-600'}`}>
-                            Monthly
-                        </span>
-                        <Switch
-                            checked={isAnnual}
-                            onCheckedChange={setIsAnnual}
-                            className="data-[state=checked]:bg-[#FF6600]"
-                        />
-                        <span className={`text-sm font-black uppercase tracking-widest transition-colors ${isAnnual ? 'text-white' : 'text-zinc-600'}`}>
-                            Annual
-                        </span>
-                        {isAnnual && (
-                            <Badge className="bg-[#00FF85]/10 text-[#00FF85] border-[#00FF85]/20 text-[8px] font-black uppercase tracking-widest">
-                                Save 10%
-                            </Badge>
-                        )}
+                    {/* Annual/Monthly Toggle & Merchant Note */}
+                    <div className="flex flex-col items-center gap-6">
+                        <div className="flex items-center justify-center gap-4 glass-card p-4 rounded-3xl border-white/5 inline-flex">
+                            <span className={`text-sm font-black uppercase tracking-widest transition-colors ${!isAnnual ? 'text-white' : 'text-zinc-600'}`}>
+                                Monthly
+                            </span>
+                            <Switch
+                                checked={isAnnual}
+                                onCheckedChange={setIsAnnual}
+                                className="data-[state=checked]:bg-[#FF6600]"
+                            />
+                            <span className={`text-sm font-black uppercase tracking-widest transition-colors ${isAnnual ? 'text-white' : 'text-zinc-600'}`}>
+                                Annual
+                            </span>
+                            {isAnnual && (
+                                <Badge className="bg-[#00FF85]/10 text-[#00FF85] border-[#00FF85]/20 text-[8px] font-black uppercase tracking-widest">
+                                    Save 10%
+                                </Badge>
+                            )}
+                        </div>
+
+                        <div className="flex items-center gap-2 px-6 py-2 bg-[#FF6600]/10 border border-[#FF6600]/20 rounded-full animate-pulse">
+                            <Shield className="h-3 w-3 text-[#FF6600]" />
+                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[#FF6600]">Merchant Exclusive: Plans for Sellers & dealers only</span>
+                        </div>
                     </div>
                 </div>
 

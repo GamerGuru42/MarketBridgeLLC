@@ -41,11 +41,13 @@ CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
--- Ensure school emails are auto-verified if using edu.ng
+-- Ensure school emails and official admin emails are auto-verified
 CREATE OR REPLACE FUNCTION public.auto_verify_edu_ng()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF NEW.email ~* '^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\.)?edu(\.ng)?$' THEN
+    -- Auto-verify .edu.ng emails OR official @marketbridge.com.ng emails
+    IF NEW.email ~* '^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\.)?edu(\.ng)?$' OR 
+       NEW.email ILIKE '%@marketbridge.com.ng' THEN
         UPDATE public.users 
         SET is_verified = TRUE, beta_status = 'approved'
         WHERE id = NEW.id;

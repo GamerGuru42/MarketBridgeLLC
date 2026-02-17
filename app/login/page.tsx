@@ -41,15 +41,14 @@ export default function LoginPage() {
 
     const handleAdminCodeSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // PRO TIP: In a real prod env, these would be checked against the DB 
-        // For the beta, we match against our Executive Protocol in executive-credentials.ts
-        const validCodes = ['1029384756', 'MB-FOUNDER-99', 'MB-TECH-2024', 'MB-OPS-2024', 'MB-MKT-2024'];
+        // Updated secure signature
+        const validCodes = ['marketbridge2026', '1029384756', 'MB-FOUNDER-99', 'MB-TECH-2024', 'MB-OPS-2024', 'MB-MKT-2024'];
 
         if (validCodes.includes(accessCode)) {
             setStep('login');
             setError('');
         } else {
-            setError('INVALID ACCESS CREDENTIALS');
+            setError('Access Denied: Invalid Security Signature');
         }
     };
 
