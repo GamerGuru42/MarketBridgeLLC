@@ -70,9 +70,9 @@ export default function PricingPage() {
             return;
         }
 
-        // Restriction: Buyers cannot purchase merchant plans
+        // If user is a buyer, redirect them to onboarding to become a seller first
         if (user.role === 'student_buyer') {
-            toast('Access Restricted: Merchant plans are for sellers only. Update your profile to start selling.', 'error');
+            router.push(`/onboarding?role=student_seller&plan=${planId}&cycle=${isAnnual ? 'annual' : 'monthly'}`);
             return;
         }
 
