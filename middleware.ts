@@ -2,6 +2,15 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
 export async function middleware(request: NextRequest) {
+    const pathname = request.nextUrl.pathname
+    const host = request.headers.get('host')
+
+    // DOMAIN ENFORCEMENT: Redirect Vercel internal URLs to custom domain
+    // This ensures location permissions and Auth branding always show 'marketbridge.com.ng'
+    if (process.env.NODE_ENV === 'production' && host && host.includes('vercel.app')) {
+        return NextResponse.redirect(`https://marketbridge.com.ng${pathname}${request.nextUrl.search}`, 301)
+    }
+
     // Standard Supabase Next.js Middleware pattern
     let supabaseResponse = NextResponse.next({
         request,
@@ -34,8 +43,6 @@ export async function middleware(request: NextRequest) {
             },
         },
     })
-
-    const pathname = request.nextUrl.pathname
 
     // BYPASS PROTECTION FOR AUTH HANDSHAKE
     if (pathname.startsWith('/auth/') || pathname === '/reset-password') {
