@@ -45,10 +45,30 @@ export default function CEOPage() {
                 const { count: lagosCount } = await supabase.from('users').select('*', { count: 'exact', head: true }).ilike('location', '%Lagos%');
                 setRegionalStats({ abuja: abujaCount || 0, lagos: lagosCount || 0 });
 
-                // 4. Fetch Executive Chat (Simulated via 'messages' table check or fallback)
-                // If table 'messages' exists, fetch recent. If not, show empty.
-                const { data: recentMsgs } = await supabase.from('messages').select('*').order('created_at', { ascending: false }).limit(5);
-                setMessages(recentMsgs || []);
+                // 4. Fetch Executive Chat (Live Comms)
+                // Default to 'gen' channel or just most recent system-wide
+                try {
+                    const { data: recentMsgs, error: chatError } = await supabase
+                        .from('admin_channel_messages')
+                        .select('*, sender:users!sender_id(display_name)')
+                        .order('created_at', { ascending: false })
+                        .limit(5);
+
+                    if (chatError) throw chatError;
+
+                    // Map for display
+                    const mappedMsgs = (recentMsgs || []).map((m: any) => ({
+                        id: m.id,
+                        sender_name: m.sender?.display_name || 'System',
+                        content: m.content,
+                        created_at: m.created_at
+                    }));
+                    setMessages(mappedMsgs);
+                } catch (chatError) {
+                    console.warn('Chat fetch fallback:', chatError);
+                    // Fallback to empty if table doesn't exist yet
+                    setMessages([]);
+                }
 
             } catch (error) {
                 console.error("Dashboard Load Error:", error);

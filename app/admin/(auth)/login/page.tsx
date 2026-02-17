@@ -202,10 +202,10 @@ export default function AdminLoginPage() {
                     </div>
                     <div>
                         <CardTitle className="text-3xl font-black tracking-[0.3em] text-white uppercase italic">
-                            Mission Control
+                            Admin Login
                         </CardTitle>
                         <CardDescription className="text-zinc-500 font-medium italic text-sm mt-2 lowercase">
-                            secure gateway | administrative terminal node
+                            secure area | authorized personnel only
                         </CardDescription>
                     </div>
                 </CardHeader>
@@ -213,7 +213,7 @@ export default function AdminLoginPage() {
                 <CardContent className="px-12">
                     <form onSubmit={handleSubmit} className="space-y-8">
                         <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Administrator ID</Label>
+                            <Label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Email Address</Label>
                             <div className="relative group/input">
                                 <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-700 group-focus-within/input:text-[#FF6600] transition-colors" />
                                 <input
@@ -229,7 +229,7 @@ export default function AdminLoginPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Signature Key</Label>
+                            <Label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Password</Label>
                             <div className="relative group/input">
                                 <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-700 group-focus-within/input:text-[#FF6600] transition-colors" />
                                 <input
@@ -260,7 +260,7 @@ export default function AdminLoginPage() {
                                 <Loader2 className="h-6 w-6 animate-spin" />
                             ) : (
                                 <div className="flex items-center gap-3">
-                                    Verify Credentials
+                                    Sign In
                                     <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </div>
                             )}
@@ -270,9 +270,9 @@ export default function AdminLoginPage() {
 
                 <CardFooter className="flex flex-col items-center gap-6 py-12 relative z-10">
                     <div className="flex items-center gap-8">
-                        <Link href="/login" className="text-[9px] font-bold text-zinc-600 hover:text-white uppercase tracking-widest transition-colors">Standard Gateway</Link>
-                        <Link href="/admin/signup" className="text-[9px] font-bold text-zinc-600 hover:text-[#FF6600] uppercase tracking-widest transition-colors underline">Request Access</Link>
-                        <Link href="/" className="text-[9px] font-bold text-zinc-600 hover:text-white uppercase tracking-widest transition-colors">Public Portal</Link>
+                        <Link href="/login" className="text-[9px] font-bold text-zinc-600 hover:text-white uppercase tracking-widest transition-colors">Staff Login</Link>
+                        <Link href="/admin/signup" className="text-[9px] font-bold text-zinc-600 hover:text-[#FF6600] uppercase tracking-widest transition-colors underline">Create Account</Link>
+                        <Link href="/" className="text-[9px] font-bold text-zinc-600 hover:text-white uppercase tracking-widest transition-colors">Public Home</Link>
                     </div>
                 </CardFooter>
             </Card>

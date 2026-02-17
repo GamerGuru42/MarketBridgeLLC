@@ -41,7 +41,21 @@ export function Sidebar({ items, title, className }: SidebarProps) {
 
                     <div className="space-y-2">
                         {items.map((item) => {
-                            const isActive = pathname === item.href;
+                            // Smart Active Logic:
+                            // 1. Exact match takes precedence
+                            // 2. If no exact match, check checking for sub-paths (e.g. /admin/users/123 matches /admin/users)
+                            // 3. Prevent root path '/' or '/admin' from matching everything unless exactly on it
+
+                            const isExact = pathname === item.href;
+                            const isSubPath = pathname?.startsWith(item.href) && item.href !== '/' && item.href !== '/admin' && item.href !== '/ceo' && item.href !== '/dealer/dashboard';
+
+                            // To prevent multiple highlights, we prioritize exact matches.
+                            // If we are on a subpath, we ensure we don't highlight the parent dashboard if a more specific link exists?
+                            // Actually, with the exclusion list above (admin, ceo, dealer/dashboard), we prevent the "Overview" links from lighting up on subpages.
+                            // This assumes "Overview" links are the "roots" of those sections.
+
+                            const isActive = isExact || isSubPath;
+
                             return (
                                 <Link
                                     key={item.href}

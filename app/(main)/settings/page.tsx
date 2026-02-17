@@ -158,13 +158,13 @@ export default function SettingsPage() {
                     <div>
                         <div className="flex items-center gap-2 text-[#FF6600] mb-2">
                             <Shield className="h-4 w-4" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Secure Terminal</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Secure Area</span>
                         </div>
                         <h1 className="text-4xl font-black uppercase tracking-tighter italic">
-                            Profile <span className="text-[#FF6600]">Command</span>
+                            Profile <span className="text-[#FF6600]">Settings</span>
                         </h1>
                         <p className="text-zinc-500 mt-2 font-medium">
-                            Operational status: {user.isVerified ? 'Verified Hub' : 'Pending Sync'}
+                            Account status: {user.isVerified ? 'Verified' : 'Pending Verification'}
                         </p>
                         <Button
                             variant="ghost"
@@ -192,7 +192,7 @@ export default function SettingsPage() {
                     <TabsList className="bg-white/5 border border-white/10 p-1 lg:w-auto w-full flex overflow-x-auto no-scrollbar rounded-2xl h-14">
                         <TabsTrigger value="profile" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FF6600] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
                             <User className="h-3.5 w-3.5" />
-                            Identity
+                            Profile
                         </TabsTrigger>
                         {['dealer', 'student_seller'].includes(user.role) && (
                             <>
@@ -202,7 +202,7 @@ export default function SettingsPage() {
                                 </TabsTrigger>
                                 <TabsTrigger value="financials" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FF6600] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
                                     <Banknote className="h-3.5 w-3.5" />
-                                    Payouts
+                                    Payments
                                 </TabsTrigger>
                             </>
                         )}
@@ -212,7 +212,7 @@ export default function SettingsPage() {
                         </TabsTrigger>
                         <TabsTrigger value="notifications" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FF6600] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
                             <Bell className="h-3.5 w-3.5" />
-                            Comms
+                            Notifications
                         </TabsTrigger>
                     </TabsList>
 
@@ -220,13 +220,13 @@ export default function SettingsPage() {
                     <TabsContent value="profile" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
                             <CardHeader className="p-8 pb-4">
-                                <CardTitle className="text-xl font-black uppercase tracking-tight">Identity Parameters</CardTitle>
-                                <CardDescription className="text-zinc-500 uppercase text-[9px] font-bold tracking-widest">Update your public network signature</CardDescription>
+                                <CardTitle className="text-xl font-black uppercase tracking-tight">Personal Information</CardTitle>
+                                <CardDescription className="text-zinc-500 uppercase text-[9px] font-bold tracking-widest">Update your public profile details</CardDescription>
                             </CardHeader>
                             <CardContent className="p-8 space-y-8">
                                 <div className="flex flex-col md:flex-row gap-12 items-start">
                                     <div className="space-y-4">
-                                        <Label className="text-[10px] uppercase font-black tracking-widest text-zinc-600">Avatar Port</Label>
+                                        <Label className="text-[10px] uppercase font-black tracking-widest text-zinc-600">Profile Picture</Label>
                                         <div className="w-40 h-40 relative group">
                                             <div className="absolute inset-0 bg-gold-gradient rounded-3xl blur opacity-20 group-hover:opacity-40 transition-opacity" />
                                             <div className="relative h-full w-full rounded-3xl overflow-hidden border border-white/10 bg-black">
@@ -242,7 +242,7 @@ export default function SettingsPage() {
 
                                     <div className="flex-1 grid gap-8 w-full">
                                         <div className="grid gap-3">
-                                            <Label htmlFor="displayName" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Alias / Name</Label>
+                                            <Label htmlFor="displayName" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Full Name</Label>
                                             <div className="relative group">
                                                 <User className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6600] transition-colors" />
                                                 <Input
@@ -256,7 +256,7 @@ export default function SettingsPage() {
 
                                         <div className="grid md:grid-cols-2 gap-8">
                                             <div className="grid gap-3">
-                                                <Label htmlFor="phone" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Comm Line</Label>
+                                                <Label htmlFor="phone" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Phone Number</Label>
                                                 <div className="relative group">
                                                     <Phone className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6600] transition-colors" />
                                                     <Input
@@ -268,7 +268,7 @@ export default function SettingsPage() {
                                                 </div>
                                             </div>
                                             <div className="grid gap-3">
-                                                <Label htmlFor="location" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Operational Node</Label>
+                                                <Label htmlFor="location" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Location / State</Label>
                                                 <div className="relative group">
                                                     <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6600] transition-colors z-10" />
                                                     <select
@@ -277,9 +277,9 @@ export default function SettingsPage() {
                                                         value={formData.location}
                                                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                                                     >
-                                                        <option value="" className="bg-zinc-900">SELECT NODE</option>
+                                                        <option value="" className="bg-zinc-900">Select Location</option>
                                                         {NIGERIAN_STATES.map((state: string) => (
-                                                            <option key={state} value={state} className="bg-zinc-900">{state === 'FCT - Abuja' ? 'FCT (ABUJA) HUB' : state.toUpperCase()}</option>
+                                                            <option key={state} value={state} className="bg-zinc-900">{state === 'FCT - Abuja' ? 'FCT (Abuja)' : state}</option>
                                                         ))}
                                                     </select>
                                                 </div>
@@ -291,7 +291,7 @@ export default function SettingsPage() {
                             <CardFooter className="bg-white/5 border-t border-white/10 p-8 flex justify-end">
                                 <Button onClick={handleUpdateProfile} disabled={updating} className="h-14 px-10 bg-[#FF6600] hover:bg-[#FF6600] text-black font-black uppercase tracking-widest rounded-2xl border-none">
                                     {updating ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <CheckCircle className="mr-3 h-5 w-5" />}
-                                    Sync Parameters
+                                    Save Changes
                                 </Button>
                             </CardFooter>
                         </Card>
@@ -302,13 +302,13 @@ export default function SettingsPage() {
                         <TabsContent value="business" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
                                 <CardHeader className="p-8 pb-4">
-                                    <CardTitle className="text-xl font-black uppercase tracking-tight">Business Protocols</CardTitle>
-                                    <CardDescription className="text-zinc-500 uppercase text-[9px] font-bold tracking-widest">Configure your commercial sector presence</CardDescription>
+                                    <CardTitle className="text-xl font-black uppercase tracking-tight">Business Details</CardTitle>
+                                    <CardDescription className="text-zinc-500 uppercase text-[9px] font-bold tracking-widest">Update your business information</CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-8 space-y-8">
                                     <div className="grid md:grid-cols-2 gap-8">
                                         <div className="grid gap-3">
-                                            <Label htmlFor="businessName" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Vessel / Brand Name</Label>
+                                            <Label htmlFor="businessName" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Business Name</Label>
                                             <div className="relative group">
                                                 <Building className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6600] transition-colors" />
                                                 <Input
@@ -320,16 +320,16 @@ export default function SettingsPage() {
                                             </div>
                                         </div>
                                         <div className="grid gap-3">
-                                            <Label htmlFor="storeType" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Terminal Class</Label>
+                                            <Label htmlFor="storeType" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Store Type</Label>
                                             <select
                                                 id="storeType"
                                                 className="w-full h-14 px-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase appearance-none"
                                                 value={formData.storeType}
                                                 onChange={(e) => setFormData({ ...formData, storeType: e.target.value })}
                                             >
-                                                <option value="online" className="bg-zinc-900">Digital Node</option>
-                                                <option value="physical" className="bg-zinc-900">Physical Hub</option>
-                                                <option value="both" className="bg-zinc-900">Hybrid Grid</option>
+                                                <option value="online" className="bg-zinc-900">Online Store</option>
+                                                <option value="physical" className="bg-zinc-900">Physical Store</option>
+                                                <option value="both" className="bg-zinc-900">Both</option>
                                             </select>
                                         </div>
                                     </div>
@@ -337,7 +337,7 @@ export default function SettingsPage() {
                                 <CardFooter className="bg-white/5 border-t border-white/10 p-8 flex justify-end">
                                     <Button onClick={handleUpdateProfile} disabled={updating} className="h-14 px-10 bg-[#FF6600] hover:bg-[#FF6600] text-black font-black uppercase tracking-widest rounded-2xl border-none">
                                         {updating ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <CheckCircle className="mr-3 h-5 w-5" />}
-                                        Sync Assets
+                                        Update Business
                                     </Button>
                                 </CardFooter>
                             </Card>
@@ -349,8 +349,8 @@ export default function SettingsPage() {
                         <TabsContent value="financials" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
                                 <CardHeader className="p-8 pb-4">
-                                    <CardTitle className="text-xl font-black uppercase tracking-tight">Payout Matrix</CardTitle>
-                                    <CardDescription className="text-zinc-500 uppercase text-[9px] font-bold tracking-widest">Designated transfer coordinates for revenue</CardDescription>
+                                    <CardTitle className="text-xl font-black uppercase tracking-tight">Bank Details</CardTitle>
+                                    <CardDescription className="text-zinc-500 uppercase text-[9px] font-bold tracking-widest">Where you want to receive payments</CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-8 space-y-8">
                                     <div className="grid md:grid-cols-2 gap-8">
@@ -398,7 +398,7 @@ export default function SettingsPage() {
                                 <CardFooter className="bg-white/5 border-t border-white/10 p-8 flex justify-end">
                                     <Button onClick={handleUpdateBank} disabled={updating} className="h-14 px-10 bg-[#FF6600] hover:bg-[#FF6600] text-black font-black uppercase tracking-widest rounded-2xl border-none">
                                         {updating ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <CheckCircle className="mr-3 h-5 w-5" />}
-                                        Save Credentials
+                                        Save Details
                                     </Button>
                                 </CardFooter>
                             </Card>
@@ -410,22 +410,22 @@ export default function SettingsPage() {
                         <div className="grid gap-8">
                             <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
                                 <CardHeader className="p-8">
-                                    <CardTitle className="text-xl font-black uppercase tracking-tight">Security Clearances</CardTitle>
-                                    <CardDescription className="text-zinc-500 uppercase text-[9px] font-bold tracking-widest">Operational role and verification status</CardDescription>
+                                    <CardTitle className="text-xl font-black uppercase tracking-tight">Account Security</CardTitle>
+                                    <CardDescription className="text-zinc-500 uppercase text-[9px] font-bold tracking-widest">Status and access control</CardDescription>
                                 </CardHeader>
                                 <CardContent className="px-8 pb-8 space-y-6">
                                     <div className="flex items-center justify-between p-6 bg-black border border-white/5 rounded-2xl">
                                         <div className="space-y-1">
-                                            <p className="text-[10px] uppercase font-black text-zinc-600 tracking-[0.2em]">Assigned Role</p>
+                                            <p className="text-[10px] uppercase font-black text-zinc-600 tracking-[0.2em]">Current Role</p>
                                             <p className="font-bold text-white uppercase tracking-wider">{user.role}</p>
                                         </div>
                                         <Shield className="h-6 w-6 text-[#FF6600] opacity-50" />
                                     </div>
                                     <div className="flex items-center justify-between p-6 bg-black border border-white/5 rounded-2xl">
                                         <div className="space-y-1">
-                                            <p className="text-[10px] uppercase font-black text-zinc-600 tracking-[0.2em]">Sync Status</p>
+                                            <p className="text-[10px] uppercase font-black text-zinc-600 tracking-[0.2em]">Verification Status</p>
                                             <p className={`font-black uppercase tracking-wider ${user.isVerified ? 'text-[#00FF85]' : 'text-zinc-500'}`}>
-                                                {user.isVerified ? 'Verified Hub' : 'Pending Verification'}
+                                                {user.isVerified ? 'Verified' : 'Pending'}
                                             </p>
                                         </div>
                                         <CheckCircle className={`h-6 w-6 ${user.isVerified ? 'text-[#00FF85]' : 'text-zinc-700'}`} />
@@ -435,12 +435,12 @@ export default function SettingsPage() {
 
                             <Card className="border border-red-500/20 rounded-[2rem] overflow-hidden bg-red-500/5">
                                 <CardHeader className="p-8 pb-4">
-                                    <CardTitle className="text-xl font-black uppercase tracking-tight text-red-500">Self-Destruct</CardTitle>
-                                    <CardDescription className="text-red-500/40 uppercase text-[9px] font-bold tracking-widest">Permanent account termination protocol</CardDescription>
+                                    <CardTitle className="text-xl font-black uppercase tracking-tight text-red-500">Danger Zone</CardTitle>
+                                    <CardDescription className="text-red-500/40 uppercase text-[9px] font-bold tracking-widest">Permanent actions</CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-8">
                                     <Button variant="outline" className="border-red-500/50 text-red-500 hover:bg-red-500 hover:text-black font-bold uppercase tracking-widest rounded-xl transition-all h-12">
-                                        Terminate Account Session
+                                        Delete Account
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -451,24 +451,24 @@ export default function SettingsPage() {
                     <TabsContent value="notifications" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
                             <CardHeader className="p-8">
-                                <CardTitle className="text-xl font-black uppercase tracking-tight">Comms Frequency</CardTitle>
-                                <CardDescription className="text-zinc-500 uppercase text-[9px] font-bold tracking-widest">Transmission alert protocols</CardDescription>
+                                <CardTitle className="text-xl font-black uppercase tracking-tight">Notifications</CardTitle>
+                                <CardDescription className="text-zinc-500 uppercase text-[9px] font-bold tracking-widest">Manage how we contact you</CardDescription>
                             </CardHeader>
                             <CardContent className="px-8 pb-8 space-y-4">
                                 <div className="flex items-center justify-between p-6 bg-black border border-white/5 rounded-2xl">
                                     <div className="space-y-1">
-                                        <p className="font-bold text-white uppercase tracking-wider">Operational Intel</p>
-                                        <p className="text-xs text-zinc-500 font-medium">Order status and hub updates</p>
+                                        <p className="font-bold text-white uppercase tracking-wider">Order Updates</p>
+                                        <p className="text-xs text-zinc-500 font-medium">Order status and essential updates</p>
                                     </div>
-                                    <div className="px-3 py-1 bg-[#00FF85]/10 text-[#00FF85] text-[9px] font-black uppercase rounded-full border border-[#00FF85]/20 tracking-tighter">Essential</div>
+                                    <div className="px-3 py-1 bg-[#00FF85]/10 text-[#00FF85] text-[9px] font-black uppercase rounded-full border border-[#00FF85]/20 tracking-tighter">On</div>
                                 </div>
                                 <div className="border-t border-zinc-800 my-2" />
                                 <div className="flex items-center justify-between p-6 bg-white/5 border border-white/5 rounded-2xl opacity-40">
                                     <div className="space-y-1">
-                                        <p className="font-bold text-zinc-500 uppercase tracking-wider">Sector Broadcasts</p>
-                                        <p className="text-xs text-zinc-700 font-medium">Promotions and network news</p>
+                                        <p className="font-bold text-zinc-500 uppercase tracking-wider">Marketing Emails</p>
+                                        <p className="text-xs text-zinc-700 font-medium">Promotions and news</p>
                                     </div>
-                                    <div className="px-3 py-1 bg-zinc-800 text-zinc-600 text-[9px] font-black uppercase rounded-full border border-white/5 tracking-tighter">Inactive</div>
+                                    <div className="px-3 py-1 bg-zinc-800 text-zinc-600 text-[9px] font-black uppercase rounded-full border border-white/5 tracking-tighter">Off</div>
                                 </div>
                             </CardContent>
                         </Card>

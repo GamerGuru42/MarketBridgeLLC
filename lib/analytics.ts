@@ -94,12 +94,17 @@ export async function fetchProposals(): Promise<Proposal[]> {
     return data as Proposal[];
 }
 
-export async function createProposal(proposal: Omit<Proposal, 'id' | 'created_at' | 'status'>) {
+export async function createProposal(proposalData: Omit<Proposal, 'id' | 'created_at' | 'status'>) {
     const supabase = createClient();
+
+    // admin_name is for UI only, remove it before DB insert
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { admin_name, ...dbPayload } = proposalData;
+
     const { data, error } = await supabase
         .from('proposals')
         .insert([{
-            ...proposal,
+            ...dbPayload,
             status: 'pending'
         }])
         .select()

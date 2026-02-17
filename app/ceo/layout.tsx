@@ -5,10 +5,10 @@ import { Sidebar } from '@/components/sidebar';
 import { TrendingUp, LayoutDashboard, MessageSquare, Zap } from 'lucide-react';
 
 const ceoItems = [
-    { label: 'Strategic Overview', href: '/ceo', icon: LayoutDashboard },
-    { label: 'Market Intelligence', href: '/ceo/growth', icon: TrendingUp },
-    { label: 'Proposals', href: '/ceo', icon: Zap },
-    { label: 'Vision Command', href: '/admin/executive-chat', icon: MessageSquare },
+    { label: 'Overview', href: '/ceo', icon: LayoutDashboard },
+    { label: 'Growth', href: '/ceo/growth', icon: TrendingUp },
+    // { label: 'Proposals', href: '/ceo#proposals', icon: Zap }, // Removing duplicate link entirely as it's on the main dashboard
+    { label: 'Executive Chat', href: '/admin/executive-chat', icon: MessageSquare },
 ];
 
 import { useAuth } from '@/contexts/AuthContext';

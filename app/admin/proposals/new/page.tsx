@@ -167,12 +167,12 @@ export default function SubmitProposalPage() {
                                     {isSubmitting ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Submitting Memo...
+                                            {user?.role === 'ceo' ? 'Logging Directive...' : 'Submitting Memo...'}
                                         </>
                                     ) : (
                                         <>
                                             <Send className="h-4 w-4 mr-2" />
-                                            Submit to CEO
+                                            {user?.role === 'ceo' ? 'Log Strategic Directive' : 'Submit to CEO'}
                                         </>
                                     )}
                                 </Button>
@@ -186,12 +186,21 @@ export default function SubmitProposalPage() {
                         <CardHeader>
                             <CardTitle className="text-sm flex items-center gap-2">
                                 <ShieldAlert className="h-4 w-4 text-orange-400" />
-                                Submission Integrity
+                                {user?.role === 'ceo' ? 'Directive Integrity' : 'Submission Integrity'}
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="text-xs space-y-4 text-slate-300 leading-relaxed">
-                            <p>Proposals submitted through this terminal are logged with high-integrity audit trails.</p>
-                            <p>The CEO will receive an immediate notification in their <span className="text-primary font-bold">Vision Command Queue</span>.</p>
+                            {user?.role === 'ceo' ? (
+                                <>
+                                    <p>Directives logged here are immediately broadcast to the relevant department queues for execution.</p>
+                                    <p>Your command will be tracked in the <span className="text-primary font-bold">Executive Registry</span>.</p>
+                                </>
+                            ) : (
+                                <>
+                                    <p>Proposals submitted through this terminal are logged with high-integrity audit trails.</p>
+                                    <p>The CEO will receive an immediate notification in their <span className="text-primary font-bold">Vision Command Queue</span>.</p>
+                                </>
+                            )}
                             <div className="p-3 bg-slate-800 rounded-lg border border-slate-700">
                                 <p className="font-bold text-white mb-1">Status Tracking:</p>
                                 <ul className="space-y-1 list-disc pl-4">
