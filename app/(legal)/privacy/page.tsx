@@ -40,7 +40,7 @@ export default function PrivacyPage() {
                     <section>
                         <h2 className="text-lg font-bold text-white uppercase tracking-widest mb-4">2. What We Collect</h2>
                         <ul className="list-disc pl-5 space-y-2 mt-2">
-                            <li><strong>Identity Data:</strong> Name, University Email (.edu.ng), Verification Documents (NIN/Student ID).</li>
+                            <li><strong>Identity Data:</strong> Name, Verification Documents (NIN/Student ID).</li>
                             <li><strong>Transaction Data:</strong> Payment references (via Paystack), Order history.</li>
                             <li><strong>Device Data:</strong> IP Address, Location (for delivery radius), Device Type.</li>
                         </ul>

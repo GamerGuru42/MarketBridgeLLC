@@ -59,8 +59,8 @@ const PLATFORM_KNOWLEDGE = {
         enterprise: "Custom - Solutions for organizations. Dedicated account manager, API access, White-label options."
     },
     verification: {
-        requirements: ["NIN (National Identity Number)", "Student ID Card", "University Email (.edu.ng)"],
-        process: "Upload your documents in the Settings > Verification tab. Student Email verification is **INSTANT**. Manual ID reviews take 12-24 hours."
+        requirements: ["NIN (National Identity Number)", "Student ID Card"],
+        process: "Upload your documents in the Settings > Verification tab. ID reviews take 12-24 hours."
     },
     location: {
         hq: "Wuse II, Abuja, FCT",

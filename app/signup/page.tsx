@@ -40,7 +40,7 @@ function SignupContent() {
     const [adminCode, setAdminCode] = useState('');
     const [adminDept, setAdminDept] = useState<'technical' | 'operations' | 'marketing' | 'ceo' | null>(null);
 
-    const [verificationMethod, setVerificationMethod] = useState<'id_card' | 'school_email'>('id_card');
+
 
     // Form
     const [formData, setFormData] = useState({
@@ -251,20 +251,11 @@ function SignupContent() {
         }
 
         if (isMerchant) {
-            if (verificationMethod === 'school_email') {
-                const emailPattern = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\.)?edu(\.ng)?$/i;
-                const isPhone = !formData.email.includes('@');
-                if (!formData.email || (!isPhone && !emailPattern.test(formData.email))) {
-                    setError("Please provide a valid school email address (.edu.ng) or phone number for verification.");
-                    setIsLoading(false);
-                    return;
-                }
-            } else {
-                if (!formData.studentIdUrl) {
-                    setError("Please upload your student ID card for verification.");
-                    setIsLoading(false);
-                    return;
-                }
+            // Require student ID upload
+            if (!formData.studentIdUrl) {
+                setError("Please upload your Student ID Card for verification.");
+                setIsLoading(false);
+                return;
             }
         }
 
@@ -310,8 +301,8 @@ function SignupContent() {
                             phone_number: formData.phoneNumber,
                             business_name: isMerchant ? formData.businessName : null,
                             department: formData.department,
-                            verification_method: isMerchant ? verificationMethod : 'none',
-                            student_id_url: isMerchant && verificationMethod === 'id_card' ? formData.studentIdUrl : null,
+                            verification_method: isMerchant ? 'id_card' : 'none',
+                            student_id_url: isMerchant ? formData.studentIdUrl : null,
                             is_manual_override: missingUni
                         },
                     },
@@ -337,8 +328,8 @@ function SignupContent() {
                         is_verified: false,
                         metadata: {
                             department: formData.department,
-                            student_id_url: isMerchant && verificationMethod === 'id_card' ? formData.studentIdUrl : null,
-                            verification_method: isMerchant ? verificationMethod : 'none',
+                            student_id_url: isMerchant ? formData.studentIdUrl : null,
+                            verification_method: isMerchant ? 'id_card' : 'none',
                             is_manual_override: missingUni
                         }
                     });
@@ -585,7 +576,7 @@ function SignupContent() {
                                 <Globe className="mr-3 h-5 w-5 text-blue-500 group-hover:scale-110 transition-transform" /> Google Identity Hub
                             </Button>
                             {['student_seller', 'dealer'].includes(role) && (
-                                <p className="text-[8px] text-zinc-500 text-center font-bold uppercase">Sellers must select School Email account</p>
+                                <p className="text-[8px] text-zinc-500 text-center font-bold uppercase">Sellers must upload ID for verification</p>
                             )}
                         </div>
 
@@ -635,7 +626,7 @@ function SignupContent() {
                             </div>
                             <div className="space-y-2">
                                 <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">
-                                    {['student_seller', 'dealer'].includes(role) ? "School Email / Phone" : "Email / Phone Identity"}
+                                    {['student_seller', 'dealer'].includes(role) ? "Email / Phone Identity" : "Email / Phone Identity"}
                                 </label>
                                 <div className="relative group">
                                     <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
@@ -645,7 +636,7 @@ function SignupContent() {
                                         value={formData.email}
                                         onChange={handleChange}
                                         required
-                                        placeholder={['student_seller', 'dealer'].includes(role) ? "benny@uni.edu.ng or 080..." : "email or phone number"}
+                                        placeholder={['student_seller', 'dealer'].includes(role) ? "benny@university.edu.ng or 080..." : "email or phone number"}
                                         className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all"
                                     />
                                 </div>
@@ -843,69 +834,33 @@ function SignupContent() {
                                             <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 block">Verification Method</label>
                                         </div>
 
-                                        <div className="flex bg-white/5 p-1 rounded-2xl mb-6">
-                                            <button
-                                                type="button"
-                                                onClick={() => setVerificationMethod('id_card')}
-                                                className={`flex-1 h-10 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${verificationMethod === 'id_card' ? 'bg-[#FF6600] text-black shadow-lg' : 'text-zinc-500 hover:text-white'}`}
-                                            >
-                                                Upload ID Card
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setVerificationMethod('school_email')}
-                                                className={`flex-1 h-10 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${verificationMethod === 'school_email' ? 'bg-[#FF6600] text-black shadow-lg' : 'text-zinc-500 hover:text-white'}`}
-                                            >
-                                                School Email
-                                            </button>
+                                        <div className="animate-in fade-in duration-300">
+                                            <div className="flex items-center justify-between ml-2">
+                                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 block">Upload Student ID Card</label>
+                                                {formData.studentIdUrl && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setFormData({ ...formData, studentIdUrl: '' })}
+                                                        className="text-[8px] font-black text-red-500 uppercase tracking-widest hover:underline"
+                                                    >
+                                                        Reset Upload
+                                                    </button>
+                                                )}
+                                            </div>
+
+                                            <div className="glass-card rounded-[2rem] border border-white/10 p-4 group hover:border-[#FF6600]/30 transition-colors bg-zinc-950/50 mt-2">
+                                                <ImageUpload
+                                                    onImagesSelected={(urls: string[]) => {
+                                                        if (urls && urls.length > 0) setFormData({ ...formData, studentIdUrl: urls[0] });
+                                                        else setFormData({ ...formData, studentIdUrl: '' });
+                                                    }}
+                                                    defaultImages={formData.studentIdUrl ? [formData.studentIdUrl] : []}
+                                                    maxImages={1}
+                                                    bucketName="identity"
+                                                    isIDCard={true}
+                                                />
+                                            </div>
                                         </div>
-
-                                        {verificationMethod === 'id_card' ? (
-                                            <div className="animate-in fade-in slide-in-from-left-4 duration-300">
-                                                <div className="flex items-center justify-between ml-2">
-                                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 block">Upload Student ID Card</label>
-                                                    {formData.studentIdUrl && (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setFormData({ ...formData, studentIdUrl: '' })}
-                                                            className="text-[8px] font-black text-red-500 uppercase tracking-widest hover:underline"
-                                                        >
-                                                            Reset Upload
-                                                        </button>
-                                                    )}
-                                                </div>
-
-                                                <div className="glass-card rounded-[2rem] border border-white/10 p-4 group hover:border-[#FF6600]/30 transition-colors bg-zinc-950/50 mt-2">
-                                                    <ImageUpload
-                                                        onImagesSelected={(urls: string[]) => {
-                                                            if (urls && urls.length > 0) setFormData({ ...formData, studentIdUrl: urls[0] });
-                                                            else setFormData({ ...formData, studentIdUrl: '' });
-                                                        }}
-                                                        defaultImages={formData.studentIdUrl ? [formData.studentIdUrl] : []}
-                                                        maxImages={1}
-                                                        bucketName="identity"
-                                                        isIDCard={true}
-                                                    />
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-                                                <div className="p-6 bg-[#FF6600]/5 border border-[#FF6600]/20 rounded-2xl">
-                                                    <p className="text-[10px] text-[#FF6600] font-bold uppercase leading-relaxed mb-4">
-                                                        <ShieldCheck className="h-4 w-4 inline-block mr-1 mb-0.5" />
-                                                        Automatic Verification
-                                                    </p>
-                                                    <div className="space-y-2">
-                                                        <p className="text-zinc-500 font-medium italic text-[10px]">
-                                                            We will verify your status via <span className="text-white font-bold">{formData.email || "your provided email"}</span>.
-                                                        </p>
-                                                        <p className="text-[8px] text-zinc-600 font-bold uppercase tracking-widest mt-2 ml-1">
-                                                            Check your inbox immediately after signup to activate your node.
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -920,9 +875,7 @@ function SignupContent() {
                                     <Sparkles className="h-6 w-6 text-[#FF6600] mx-auto mb-4" />
                                     <p className="text-[10px] uppercase font-black text-[#FF6600] mb-2 tracking-[0.2em]">Verification Protocol</p>
                                     <p className="text-zinc-500 text-[9px] font-bold uppercase leading-relaxed">
-                                        {verificationMethod === 'school_email'
-                                            ? "A verification link will be sent to your school email. Click it to activate your dealership instantly."
-                                            : "Your account will enter a PENDING status for admin security oversight. Once your ID is verified, your dealership node will be activated."}
+                                        Your account will enter a PENDING status for admin security oversight. Once your ID is verified, your dealership node will be activated.
                                     </p>
                                 </div>
                             </div>
