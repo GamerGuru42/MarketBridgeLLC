@@ -86,9 +86,11 @@ export async function middleware(request: NextRequest) {
 
     // AUTH ENTROPY PREVENTION: Redirect logged-in users away from auth pages
     if (user && (pathname === '/login' || pathname === '/signup' || pathname === '/forgot-password')) {
-        if (['dealer', 'student_seller'].includes(role)) {
+        if (role === 'ceo') {
+            return NextResponse.redirect(new URL('/ceo', request.url))
+        } else if (['dealer', 'student_seller'].includes(role)) {
             return NextResponse.redirect(new URL('/dealer/dashboard', request.url))
-        } else if (['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cto', 'coo', 'cofounder'].includes(role)) {
+        } else if (['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'cto', 'coo', 'cofounder'].includes(role)) {
             return NextResponse.redirect(new URL('/admin', request.url))
         } else {
             return NextResponse.redirect(new URL('/listings', request.url))
@@ -102,6 +104,7 @@ export async function middleware(request: NextRequest) {
         if (pathname === '/admin/login' || pathname === '/admin/signup') {
             if (user && isAdmin) {
                 // Redirect to specific dashboard based on role to avoid confusion
+                if (role === 'ceo') return NextResponse.redirect(new URL('/ceo', request.url))
                 if (role === 'marketing_admin') return NextResponse.redirect(new URL('/admin/marketing', request.url))
                 if (role === 'operations_admin') return NextResponse.redirect(new URL('/admin/operations', request.url))
                 if (role === 'technical_admin') return NextResponse.redirect(new URL('/admin/technical', request.url))

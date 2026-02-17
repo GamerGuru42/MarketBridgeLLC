@@ -60,8 +60,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             if (error) {
                 console.error('Error fetching user profile:', error);
-                // If profile doesn't exist yet (e.g. just signed up), we might want to create it or wait
-                // For now, we'll just set loading to false
+                // Fallback: If profile doesn't exist, we still need to stop loading
+                setUser(null);
             } else {
                 // Map Supabase user to our User type (include both id and _id for compatibility)
                 const mappedUser = {

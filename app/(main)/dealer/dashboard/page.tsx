@@ -111,35 +111,38 @@ export default function DealerDashboardPage() {
     const [sessionLost, setSessionLost] = useState(false);
 
     useEffect(() => {
-        // 1. Unauthenticated Check (Soft)
-        if (!authLoading && !sessionUser) {
-            console.warn("Dashboard: specific session unavailable, pausing interface.");
+        // 1. Loading Guard: Don't make any decisions while auth/profile is loading
+        if (authLoading) return;
+
+        // 2. Auth Guard: If no session exists after loading, they must login
+        if (!sessionUser) {
             setSessionLost(true);
+            router.push('/login'); // Force redirect to login if session is truly missing
             return;
-        } else {
-            setSessionLost(false);
         }
 
-        // 2. Role Check (only if profile 'user' is loaded)
-        if (user && !['dealer', 'student_seller'].includes(user.role)) {
+        // 3. Profile Guard: Wait for the user profile to be fully loaded
+        if (!user) return;
+
+        // 4. Access Control: Only redirect IF we have the user and the role is objectively wrong
+        const validRoles = ['dealer', 'student_seller'];
+        if (!validRoles.includes(user.role)) {
+            console.warn("Access Denied: Role mismatch for dealer dashboard", user.role);
             router.push('/');
             return;
         }
 
-        let unsubscribe: (() => void) | undefined;
-
-        // 3. Data Fetching (Require 'user' profile)
-        if (user && !sessionLost) {
-            fetchOrders();
-            fetchBankDetails();
-            unsubscribe = subscribeToOrders();
-            checkSubscriptionStatus();
-        }
+        // 5. Success: Session is active and role is correct
+        setSessionLost(false);
+        fetchOrders();
+        fetchBankDetails();
+        const unsubscribe = subscribeToOrders();
+        checkSubscriptionStatus();
 
         return () => {
             if (unsubscribe) unsubscribe();
         };
-    }, [user, sessionUser, authLoading, setSessionLost]);
+    }, [user, sessionUser, authLoading, router]);
 
     const checkSubscriptionStatus = async () => {
         if (!user || !user.subscription_expires_at) return;

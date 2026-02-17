@@ -17,7 +17,7 @@ import { CATEGORIES } from '@/lib/categories';
 
 export default function NewListingPage() {
     const router = useRouter();
-    const { user, loading: authLoading } = useAuth();
+    const { user, sessionUser, loading: authLoading } = useAuth();
     const [loading, setLoading] = useState(false);
     const [imageUrls, setImageUrls] = useState<string[]>(['']);
     const [videoUrls, setVideoUrls] = useState<string[]>([]);
@@ -30,22 +30,27 @@ export default function NewListingPage() {
     });
 
     useEffect(() => {
-        if (!authLoading && !user) {
+        if (authLoading) return;
+
+        if (!sessionUser) {
             router.push('/login');
             return;
         }
 
-        if (user && !['dealer', 'student_seller'].includes(user.role)) {
+        if (!user) return;
+
+        const allowedRoles = ['dealer', 'student_seller', 'ceo', 'admin', 'technical_admin'];
+        if (!allowedRoles.includes(user.role)) {
+            console.warn("Access Denied: Role mismatch for listing deployment", user.role);
             router.push('/');
             return;
         }
 
-        const isPending = user?.subscriptionStatus === 'pending_verification';
+        const isPending = user.subscriptionStatus === 'pending_verification';
         if (isPending) {
-            // Optional: You could show a specialized toast or banner here
-            console.log("Dealer is pending verification");
+            console.log("Dealer is pending verification - allowing deployment with security overview");
         }
-    }, [user, authLoading]);
+    }, [user, authLoading, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

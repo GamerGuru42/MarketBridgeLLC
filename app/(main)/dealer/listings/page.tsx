@@ -34,7 +34,7 @@ interface Listing {
 }
 
 export default function DealerListingsPage() {
-    const { user, loading: authLoading } = useAuth();
+    const { user, sessionUser, loading: authLoading } = useAuth();
     const router = useRouter();
     const [listings, setListings] = useState<Listing[]>([]);
     const [loading, setLoading] = useState(true);
@@ -43,21 +43,28 @@ export default function DealerListingsPage() {
     const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
 
     useEffect(() => {
-        if (!authLoading && !user) {
+        if (authLoading) return;
+
+        if (!sessionUser) {
             router.push('/login');
             return;
         }
 
-        if (user && user.role !== 'dealer') {
+        if (!user) return;
+
+        const allowedRoles = ['dealer', 'student_seller', 'ceo', 'admin', 'technical_admin'];
+        if (!allowedRoles.includes(user.role)) {
             router.push('/');
             return;
         }
 
-        if (user) {
-            fetchListings();
-            subscribeToListings();
-        }
-    }, [user, authLoading]);
+        fetchListings();
+        const unsubscribe = subscribeToListings();
+
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
+    }, [user, sessionUser, authLoading, router]);
 
     const fetchListings = async () => {
         if (!user) return;

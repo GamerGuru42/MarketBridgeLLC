@@ -18,7 +18,7 @@ export default function LoginPage() {
 
     // State
     const [step, setStep] = useState<'role' | 'login' | 'admin-code'>('role');
-    const [role, setRole] = useState<'student_buyer' | 'student_seller' | 'admin' | 'customer' | 'dealer'>('student_buyer');
+    const [role, setRole] = useState<'student_buyer' | 'student_seller' | 'admin' | 'customer' | 'dealer' | 'ceo'>('student_buyer');
     const [accessCode, setAccessCode] = useState('');
 
     const [formData, setFormData] = useState({
@@ -29,10 +29,10 @@ export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const handleRoleSelect = (selectedRole: 'student_buyer' | 'student_seller' | 'admin') => {
+    const handleRoleSelect = (selectedRole: 'student_buyer' | 'student_seller' | 'admin' | 'ceo') => {
         setRole(selectedRole);
         setError('');
-        if (selectedRole === 'admin') {
+        if (selectedRole === 'admin' || selectedRole === 'ceo') {
             setStep('admin-code');
         } else {
             setStep('login');
@@ -41,7 +41,11 @@ export default function LoginPage() {
 
     const handleAdminCodeSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (accessCode === '1029384756') {
+        // PRO TIP: In a real prod env, these would be checked against the DB 
+        // For the beta, we match against our Executive Protocol in executive-credentials.ts
+        const validCodes = ['1029384756', 'MB-FOUNDER-99', 'MB-TECH-2024', 'MB-OPS-2024', 'MB-MKT-2024'];
+
+        if (validCodes.includes(accessCode)) {
             setStep('login');
             setError('');
         } else {
@@ -57,22 +61,33 @@ export default function LoginPage() {
         try {
             const emailToUse = normalizeIdentifier(formData.email);
 
-            const { data, error: signInError } = await supabase.auth.signInWithPassword({
+            // 1. Race execution against a 15-second timeout
+            const loginPromise = supabase.auth.signInWithPassword({
                 email: emailToUse,
                 password: formData.password,
             });
 
+            const timeoutPromise = new Promise<{ data: { user: null; session: null }; error: any }>((_, reject) =>
+                setTimeout(() => reject(new Error("Connection timed out. Please check your network.")), 15000)
+            );
+
+            const { data, error: signInError } = await Promise.race([loginPromise, timeoutPromise]);
+
             if (signInError) throw signInError;
 
-            if (data.user) {
-                // 1. Force a router refresh to update server-side session
-                router.refresh();
+            if (data?.user) {
+                // 2. Successful Auth - Keep loading true while we redirect
+                // Don't setIsLoading(false) here to prevent UI flicker
 
-                // 2. Refresh client-side context (non-blocking)
-                refreshUser(data.user.id).catch(err => console.error("Context refresh failed:", err));
+                // Refresh context
+                try {
+                    await refreshUser(data.user.id);
+                } catch (err) {
+                    console.warn("Context refresh warning:", err); // Non-fatal
+                }
 
-                // 3. Determine Role (Try DB, fallback to metadata)
-                let role = data.user.user_metadata?.role;
+                // 3. Determine Role with Database Fallback
+                let userRole = data.user.user_metadata?.role;
 
                 try {
                     const { data: profile } = await supabase
@@ -81,39 +96,43 @@ export default function LoginPage() {
                         .eq('id', data.user.id)
                         .single();
 
-                    if (profile?.role) role = profile.role;
-                } catch (dbErr) {
-                    console.warn("Profile fetch failed, using metadata role:", dbErr);
+                    if (profile?.role) userRole = profile.role;
+                } catch {
+                    // Fallback to metadata if DB read fails
                 }
 
-                // 4. Redirect based on Role (HARD LOCATION CHANGE)
-                // We use window.location.href instead of router.push to force a full document reload.
-                // This guarantees that Supabase cookies are sent fresh to the server,
-                // preventing middleware from seeing a stale "unauthenticated" state.
-
-                await new Promise(resolve => setTimeout(resolve, 500));
-
-                if (['dealer', 'student_seller'].includes(role)) {
+                // 4. Hard Redirect
+                if (['dealer', 'student_seller'].includes(userRole)) {
                     window.location.href = '/dealer/dashboard';
-                } else if (role === 'technical_admin') {
+                } else if (userRole === 'ceo') {
+                    window.location.href = '/ceo';
+                } else if (userRole === 'technical_admin') {
                     window.location.href = '/admin/technical';
-                } else if (role === 'operations_admin') {
+                } else if (userRole === 'operations_admin') {
                     window.location.href = '/admin/operations';
-                } else if (role === 'marketing_admin') {
+                } else if (userRole === 'marketing_admin') {
                     window.location.href = '/admin/marketing';
-                } else if (role === 'admin') {
+                } else if (userRole === 'admin') {
                     window.location.href = '/admin';
                 } else {
                     window.location.href = '/listings';
                 }
+
+                // Return here so we don't trigger the "finally" block that stops loading
+                return;
             } else {
                 throw new Error("No user session created.");
             }
         } catch (err: unknown) {
             console.error('Login Error:', err);
-            const message = err instanceof Error ? err.message : 'Login failed. Check credentials.';
+            let message = 'Login failed. Check credentials.';
+            if (err instanceof Error) {
+                if (err.message.includes("Invalid login credentials")) message = "Incorrect credentials. Please try again.";
+                else if (err.message.includes("timeout")) message = "Network timeout. Slow connection detected.";
+                else message = err.message;
+            }
             setError(message);
-            setIsLoading(false);
+            setIsLoading(false); // Only stop loading on error
         }
     };
 
@@ -151,18 +170,19 @@ export default function LoginPage() {
                         <p className="text-zinc-500 font-medium lowercase italic">select your terminal to continue</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 max-w-4xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 max-w-6xl mx-auto">
                         {[
-                            { id: 'student_buyer', title: 'Student Buyer', icon: User, desc: 'Personal Account', color: 'text-blue-400' },
-                            { id: 'student_seller', title: 'Student Seller', icon: Briefcase, desc: 'Business Terminal', color: 'text-[#FF6600]' },
-                            { id: 'admin', title: 'Admin', icon: ShieldCheck, desc: 'Secure Gateway', color: 'text-red-400' }
+                            { id: 'student_buyer', title: 'Buyer', icon: User, desc: 'Personal Account', color: 'text-blue-400' },
+                            { id: 'student_seller', title: 'Merchant', icon: Briefcase, desc: 'Business Terminal', color: 'text-[#FF6600]' },
+                            { id: 'admin', title: 'Team Admin', icon: ShieldCheck, desc: 'Sector Gateway', color: 'text-zinc-400' },
+                            { id: 'ceo', title: 'CEO', icon: Lock, desc: 'Central Command', color: 'text-red-500' }
                         ].map(item => (
                             <Card
                                 key={item.id}
-                                className="glass-card border-white/5 rounded-[2rem] p-8 text-center group cursor-pointer hover:bg-white/[0.08] hover:translate-y-[-8px] transition-all duration-500"
+                                className={`glass-card border-white/5 rounded-[2rem] p-8 text-center group cursor-pointer hover:bg-white/[0.08] hover:translate-y-[-8px] transition-all duration-500 ${item.id === 'ceo' ? 'border-red-500/20' : ''}`}
                                 onClick={() => handleRoleSelect(item.id as any)}
                             >
-                                <div className="h-16 w-16 glass-card rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                                <div className={`h-16 w-16 glass-card rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform ${item.id === 'ceo' ? 'bg-red-500/10' : ''}`}>
                                     <item.icon className={`h-8 w-8 ${item.color}`} />
                                 </div>
                                 <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2 italic">{item.title}</h3>

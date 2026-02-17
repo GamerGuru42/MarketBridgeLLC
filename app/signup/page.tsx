@@ -15,31 +15,30 @@ import { NIGERIAN_STATES, NIGERIAN_UNIVERSITIES, UNIVERSITIES_BY_STATE } from '@
 import { ImageUpload } from '@/components/ImageUpload';
 import { School, Search } from 'lucide-react';
 
-
-
 function SignupContent() {
     const router = useRouter();
     const { refreshUser, signInWithGoogle } = useAuth();
 
     const searchParams = useSearchParams();
-    const initialRole = searchParams.get('role') as 'customer' | 'dealer' | 'admin' | 'student_buyer' | 'student_seller' | null;
+    const initialRole = searchParams.get('role') as 'customer' | 'dealer' | 'admin' | 'student_buyer' | 'student_seller' | 'ceo' | null;
 
     // Steps
     const [step, setStep] = useState<'role' | 'details' | 'auth-method' | 'admin-code' | 'admin-dept'>(() => {
         if (initialRole === 'dealer' || initialRole === 'customer') return 'auth-method';
-        if (initialRole === 'admin') return 'admin-code';
+        if (initialRole === 'admin' || initialRole === 'ceo') return 'admin-code';
         return 'role';
     });
 
-    const [role, setRole] = useState<'student_buyer' | 'student_seller' | 'admin' | 'customer' | 'dealer'>(() => {
+    const [role, setRole] = useState<'student_buyer' | 'student_seller' | 'admin' | 'customer' | 'dealer' | 'ceo'>(() => {
         if (initialRole === 'dealer' || initialRole === 'student_seller') return 'student_seller';
         if (initialRole === 'admin') return 'admin';
+        if (initialRole === 'ceo') return 'ceo';
         return 'student_buyer';
     });
 
     // Admin Flow
     const [adminCode, setAdminCode] = useState('');
-    const [adminDept, setAdminDept] = useState<'technical' | 'operations' | 'marketing' | null>(null);
+    const [adminDept, setAdminDept] = useState<'technical' | 'operations' | 'marketing' | 'ceo' | null>(null);
 
     const [verificationMethod, setVerificationMethod] = useState<'id_card' | 'school_email'>('id_card');
 
@@ -67,6 +66,8 @@ function SignupContent() {
     const [success, setSuccess] = useState(false);
     const [otpCode, setOtpCode] = useState('');
     const [isVerifying, setIsVerifying] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
 
     const handleVerification = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -74,25 +75,39 @@ function SignupContent() {
         setError('');
 
         try {
-            const { data, error } = await supabase.auth.verifyOtp({
-                email: normalizeIdentifier(formData.email),
-                token: otpCode,
-                type: 'signup'
-            });
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error("Network Timeout: Verification took too long.")), 20000)
+            );
 
-            if (error) throw error;
+            const verifyPromise = (async () => {
+                const { data, error } = await supabase.auth.verifyOtp({
+                    email: normalizeIdentifier(formData.email),
+                    token: otpCode,
+                    type: 'signup'
+                });
+                if (error) throw error;
+                return data;
+            })();
+
+            const data = await Promise.race([verifyPromise, timeoutPromise]) as any;
 
             if (data.session) {
                 await refreshUser(data.user?.id);
                 if (['student_seller', 'dealer'].includes(role)) {
                     router.push('/dealer/dashboard');
+                } else if (role === 'ceo') {
+                    router.push('/ceo');
                 } else {
                     router.push('/listings');
                 }
+            } else {
+                throw new Error("Verification successful but session not created. Please log in.");
             }
         } catch (err: any) {
             console.error("Verification failed:", err);
-            setError(err.message || 'Verification failed. Invalid code.');
+            let message = 'Verification failed. Invalid code.';
+            if (err.message && err.message.includes("Timeout")) message = "Network too slow. Please resend code.";
+            setError(message);
             setIsVerifying(false);
         }
     };
@@ -119,7 +134,6 @@ function SignupContent() {
         if (!matric || matric.length < 3) return;
 
         setIsDetectingSchool(true);
-        // Simulate API/AI delay
         await new Promise(r => setTimeout(r, 1200));
 
         const upper = matric.toUpperCase();
@@ -133,11 +147,6 @@ function SignupContent() {
         else if (upper.includes('BAZE')) detected = 'Baze University';
         else if (upper.includes('NILE')) detected = 'Nile University';
         else if (upper.includes('VERITAS')) detected = 'Veritas University';
-        // Generic patterns
-        else if (upper.startsWith('19/') || upper.startsWith('20/') || upper.startsWith('21/') || upper.startsWith('22/')) {
-            // Very weak heuristic for modern private unis in Abuja, acting as a "guess"
-            // Don't auto-fill if unsure to avoid annoyance
-        }
 
         if (detected) {
             setFormData(prev => ({ ...prev, university: detected }));
@@ -145,18 +154,14 @@ function SignupContent() {
         setIsDetectingSchool(false);
     };
 
-
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState('');
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
-    const handleRoleSelect = (selectedRole: 'student_buyer' | 'student_seller' | 'admin') => {
+    const handleRoleSelect = (selectedRole: 'student_buyer' | 'student_seller' | 'admin' | 'ceo') => {
         setRole(selectedRole);
         if (['student_seller', 'dealer', 'student_buyer', 'customer'].includes(selectedRole)) setStep('auth-method');
-        else if (selectedRole === 'admin') setStep('admin-code');
+        else if (selectedRole === 'admin' || selectedRole === 'ceo') setStep('admin-code');
     };
 
     const [uniSearch, setUniSearch] = useState('');
@@ -169,9 +174,8 @@ function SignupContent() {
     const StepProgress = ({ currentStep, role }: { currentStep: string, role: string }) => {
         const steps = ['student_seller', 'dealer'].includes(role)
             ? ['Access', 'Identity', 'Verification']
-            : (role === 'admin' ? ['Access', 'Sector', 'Identity'] : ['Access', 'Identity']);
+            : (role === 'admin' || role === 'ceo' ? ['Access', 'Sector', 'Identity'] : ['Access', 'Identity']);
 
-        // Simplified mapping for the UI
         let activeIdx = 0;
         if (currentStep === 'role' || currentStep === 'admin-code' || currentStep === 'auth-method') activeIdx = 0;
         else if (currentStep === 'details') activeIdx = 1;
@@ -194,7 +198,8 @@ function SignupContent() {
 
     const handleAdminCodeSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (adminCode === '1029384756') {
+        const validCodes = ['1029384756', 'MB-FOUNDER-99', 'MB-TECH-2024', 'MB-OPS-2024', 'MB-MKT-2024'];
+        if (validCodes.includes(adminCode)) {
             setStep('admin-dept');
             setError('');
         } else {
@@ -202,9 +207,14 @@ function SignupContent() {
         }
     };
 
-    const handleDeptSelect = (dept: 'technical' | 'operations' | 'marketing') => {
+    const handleDeptSelect = (dept: 'technical' | 'operations' | 'marketing' | 'ceo') => {
         setAdminDept(dept);
-        router.push(`/admin/signup?dept=${dept}`);
+        if (dept === 'ceo') {
+            setRole('ceo');
+            setStep('details');
+        } else {
+            router.push(`/admin/signup?dept=${dept}`);
+        }
     };
 
     const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -242,7 +252,6 @@ function SignupContent() {
 
         if (isMerchant) {
             if (verificationMethod === 'school_email') {
-                // Validation for school email (checking the PRIMARY email field)
                 const emailPattern = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\.)?edu(\.ng)?$/i;
                 if (!formData.email || !emailPattern.test(formData.email)) {
                     setError("Please provide a valid school email address (.edu or .edu.ng) in the 'School Email' field.");
@@ -267,99 +276,120 @@ function SignupContent() {
             const emailToUse = normalizeIdentifier(formData.email);
             const finalUniversity = missingUni ? missingUniName : formData.university;
 
-            // 1. Auth Sign Up with ENHANCED METADATA for Trigger
-            const { data: authData, error: signUpError } = await supabase.auth.signUp({
-                email: emailToUse,
-                password: formData.password,
-                options: {
-                    data: {
+            // 1. Timeout Promise for Network Safety
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error("Network Timeout: Account creation took too long. Please try again.")), 20000)
+            );
+
+            // 2. The Core Signup Logic
+            const signupLogicPromise = (async () => {
+                const { data: authData, error: signUpError } = await supabase.auth.signUp({
+                    email: emailToUse,
+                    password: formData.password,
+                    options: {
+                        data: {
+                            display_name: formData.displayName,
+                            role: role,
+                            location: formData.location,
+                            university: finalUniversity,
+                            matric_number: formData.matricNumber,
+                            phone_number: formData.phoneNumber,
+                            business_name: isMerchant ? formData.businessName : null,
+                            department: formData.department,
+                            verification_method: isMerchant ? verificationMethod : 'none',
+                            student_id_url: isMerchant && verificationMethod === 'id_card' ? formData.studentIdUrl : null,
+                            is_manual_override: missingUni
+                        },
+                    },
+                });
+
+                if (signUpError) throw signUpError;
+                if (!authData.user) throw new Error("Account creation protocol failed - No User Returned");
+
+                // 3. Database Sync (Profile)
+                const { error: profileError } = await supabase
+                    .from('users')
+                    .upsert({
+                        id: authData.user.id,
+                        email: emailToUse,
                         display_name: formData.displayName,
                         role: role,
                         location: formData.location,
-                        university: finalUniversity,
-                        matric_number: formData.matricNumber,
                         phone_number: formData.phoneNumber,
                         business_name: isMerchant ? formData.businessName : null,
-                        department: formData.department,
-                        verification_method: isMerchant ? verificationMethod : 'none',
-                        student_id_url: isMerchant && verificationMethod === 'id_card' ? formData.studentIdUrl : null,
-                        is_manual_override: missingUni
-                    },
-                },
-            });
-
-            if (signUpError) throw signUpError;
-            if (!authData.user) throw new Error("Account creation protocol failed.");
-
-            // 2. Profile Upsert (Robust Redundancy)
-            const { error: profileError } = await supabase
-                .from('users')
-                .upsert({
-                    id: authData.user.id,
-                    email: emailToUse,
-                    display_name: formData.displayName,
-                    role: role,
-                    location: formData.location,
-                    phone_number: formData.phoneNumber,
-                    business_name: isMerchant ? formData.businessName : null,
-                    university: finalUniversity,
-                    matric_number: isMerchant ? formData.matricNumber : null,
-                    subscription_status: isMerchant ? 'pending_verification' : 'active',
-                    is_verified: false,
-                    metadata: {
-                        department: formData.department,
-                        student_id_url: isMerchant && verificationMethod === 'id_card' ? formData.studentIdUrl : null,
-                        verification_method: isMerchant ? verificationMethod : 'none',
-                        is_manual_override: missingUni
-                    }
-                });
-
-            if (profileError) console.error("Profile establishing error:", profileError);
-
-            // 3. Beta Founding Subscription (Optional)
-            if (isMerchant) {
-                const trialEndDate = new Date();
-                trialEndDate.setDate(trialEndDate.getDate() + 14);
-
-                const { error: subscriptionError } = await supabase
-                    .from('subscriptions')
-                    .insert({
-                        user_id: authData.user.id,
-                        plan_id: 'beta_campus_founder',
-                        status: 'trialing',
-                        current_period_start: new Date().toISOString(),
-                        current_period_end: trialEndDate.toISOString(),
-                        trial_end: trialEndDate.toISOString(),
+                        university: finalUniversity,
+                        matric_number: isMerchant ? formData.matricNumber : null,
+                        subscription_status: isMerchant ? 'pending_verification' : 'active',
+                        is_verified: false,
                         metadata: {
-                            trial_started_at: new Date().toISOString(),
-                            auto_created: true
+                            department: formData.department,
+                            student_id_url: isMerchant && verificationMethod === 'id_card' ? formData.studentIdUrl : null,
+                            verification_method: isMerchant ? verificationMethod : 'none',
+                            is_manual_override: missingUni
                         }
                     });
 
-                if (subscriptionError) {
-                    console.error("Trial subscription error:", subscriptionError);
+                if (profileError) console.error("Profile establishing error (Non-fatal):", profileError);
+
+                // 4. Subscription Setup (If Merchant)
+                if (isMerchant) {
+                    const trialEndDate = new Date();
+                    trialEndDate.setDate(trialEndDate.getDate() + 14);
+
+                    const { error: subscriptionError } = await supabase
+                        .from('subscriptions')
+                        .insert({
+                            user_id: authData.user.id,
+                            plan_id: 'beta_campus_founder',
+                            status: 'trialing',
+                            current_period_start: new Date().toISOString(),
+                            current_period_end: trialEndDate.toISOString(),
+                            trial_end: trialEndDate.toISOString(),
+                            metadata: {
+                                trial_started_at: new Date().toISOString(),
+                                auto_created: true
+                            }
+                        });
+
+                    if (subscriptionError) console.error("Trial subscription error (Non-fatal):", subscriptionError);
                 }
-            }
+
+                return authData;
+            })();
+
+            // Race the signup against the timeout
+            const authData = await Promise.race([signupLogicPromise, timeoutPromise]) as any;
 
             if (authData.session) {
+                // Auto-login scenario
                 await refreshUser(authData.user.id);
                 if (isMerchant) {
                     router.push('/dealer/dashboard');
+                } else if (role === 'ceo') {
+                    router.push('/ceo');
                 } else {
                     router.push('/listings');
                 }
             } else {
+                // Email confirmation required scenario
                 setSuccess(true);
             }
 
-        } catch (err: unknown) {
-            const message = err instanceof Error ? err.message : "Protocol establishing failed.";
+        } catch (err: any) {
+            console.error("Signup Global Error:", err);
+            let message = "Protocol establishing failed.";
+
+            if (err.message) {
+                if (err.message.includes("User already registered")) message = "This email is already in use. Please log in.";
+                else if (err.message.includes("Network Timeout")) message = "Connection is too slow. Please check your internet.";
+                else message = err.message;
+            }
+
             setError(message);
-            setIsLoading(false);
+            setIsLoading(false); // CRITICAL: Stop loading on error
         }
     };
 
-    // UI Renders
     if (step === 'role') {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-black overflow-hidden relative">
@@ -377,18 +407,19 @@ function SignupContent() {
                         <p className="text-zinc-500 font-medium lowercase italic">select your status to begin identity establishment</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 max-w-4xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 max-w-6xl mx-auto">
                         {[
-                            { id: 'student_buyer', title: 'Student Buyer', icon: UserIcon, desc: 'Browse & Buy Assets', color: 'text-blue-400' },
-                            { id: 'student_seller', title: 'Student Merchant', icon: Briefcase, desc: 'Start your Campus Business', color: 'text-[#FF6600]' },
-                            { id: 'admin', title: 'Admin', icon: ShieldCheck, desc: 'Operations Gateway', color: 'text-red-400' }
+                            { id: 'student_buyer', title: 'Buyer', icon: UserIcon, desc: 'Browse & Buy Assets', color: 'text-blue-400' },
+                            { id: 'student_seller', title: 'Merchant', icon: Briefcase, desc: 'Start your Campus Business', color: 'text-[#FF6600]' },
+                            { id: 'admin', title: 'Team Admin', icon: ShieldCheck, desc: 'Operations Gateway', color: 'text-zinc-400' },
+                            { id: 'ceo', title: 'CEO/Founder', icon: Lock, desc: 'Central Command', color: 'text-red-500' }
                         ].map(item => (
                             <Card
                                 key={item.id}
-                                className="glass-card border-white/5 rounded-[2rem] p-8 text-center group cursor-pointer hover:bg-white/[0.08] hover:translate-y-[-8px] transition-all duration-500"
+                                className={`glass-card border-white/5 rounded-[2rem] p-8 text-center group cursor-pointer hover:bg-white/[0.08] hover:translate-y-[-8px] transition-all duration-500 ${item.id === 'ceo' ? 'border-red-500/20 shadow-[0_0_30px_rgba(239,68,68,0.1)]' : ''}`}
                                 onClick={() => handleRoleSelect(item.id as any)}
                             >
-                                <div className="h-16 w-16 glass-card rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                                <div className={`h-16 w-16 glass-card rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform ${item.id === 'ceo' ? 'bg-red-500/10' : ''}`}>
                                     <item.icon className={`h-8 w-8 ${item.color}`} />
                                 </div>
                                 <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2 italic">{item.title}</h3>
@@ -400,10 +431,6 @@ function SignupContent() {
             </div>
         );
     }
-
-
-
-
 
     if (step === 'admin-code') {
         return (
@@ -443,28 +470,29 @@ function SignupContent() {
     if (step === 'admin-dept') {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-black">
-                <Card className="w-full max-w-2xl glass-card border-none rounded-[3rem] p-12 text-white">
+                <Card className="w-full max-w-3xl glass-card border-none rounded-[3rem] p-12 text-white">
                     <CardHeader className="p-0 text-center mb-12">
                         <CardTitle className="text-4xl font-black uppercase italic tracking-tighter mb-2">Select Sector</CardTitle>
                         <CardDescription className="text-zinc-500 font-medium italic lowercase">Define your administrative jurisdiction</CardDescription>
                     </CardHeader>
-                    <CardContent className="p-0 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <CardContent className="p-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[
                             { id: 'marketing', title: 'Marketing', icon: Zap, color: 'text-orange-400' },
                             { id: 'operations', title: 'Operations', icon: Briefcase, desc: 'Ops & Escrow', color: 'text-red-400' },
-                            { id: 'technical', title: 'Technical', icon: Loader2, desc: 'System Core', color: 'text-blue-400' }
+                            { id: 'technical', title: 'Technical', icon: Loader2, desc: 'System Core', color: 'text-blue-400' },
+                            { id: 'ceo', title: 'Central', icon: Lock, desc: 'CEO Command', color: 'text-red-500' }
                         ].map(dept => (
                             <button
                                 key={dept.id}
                                 onClick={() => handleDeptSelect(dept.id as any)}
-                                className="glass-card p-8 rounded-3xl border-white/5 hover:bg-white/5 transition-all group flex flex-col items-center gap-4 text-center"
+                                className={`glass-card p-8 rounded-3xl border-white/5 hover:bg-white/5 transition-all group flex flex-col items-center gap-4 text-center ${dept.id === 'ceo' ? 'border-red-500/20' : ''}`}
                             >
-                                <div className="h-14 w-14 rounded-xl bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <div className={`h-14 w-14 rounded-xl bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform ${dept.id === 'ceo' ? 'bg-red-500/10' : ''}`}>
                                     <dept.icon className={`h-7 w-7 ${dept.color}`} />
                                 </div>
                                 <div>
                                     <h4 className="font-black uppercase italic tracking-tight">{dept.title}</h4>
-                                    <p className="text-[10px] text-zinc-600 font-bold uppercase mt-1">Management</p>
+                                    <p className="text-[10px] text-zinc-600 font-bold uppercase mt-1">{dept.id === 'ceo' ? 'Command' : 'Management'}</p>
                                 </div>
                             </button>
                         ))}
@@ -473,8 +501,6 @@ function SignupContent() {
             </div>
         );
     }
-
-
 
     if (success) {
         return (
@@ -833,9 +859,9 @@ function SignupContent() {
                             </div>
                         )}
 
-                        {!['student_seller', 'dealer'].includes(role) && (
+                        {!['student_seller', 'dealer', 'ceo'].includes(role) && (
                             <div className="space-y-2 animate-in fade-in slide-in-from-top-4 duration-500">
-                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Mobile Comms</label>
+                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Mobile Comms </label>
                                 <div className="relative group">
                                     <Zap className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
                                     <input
@@ -881,7 +907,7 @@ function SignupContent() {
                         <Button type="submit" className="w-full h-18 bg-[#FF6600] hover:bg-[#FF6600]/90 text-black font-black uppercase tracking-widest rounded-[1.5rem] shadow-[0_0_30px_rgba(255,102,0,0.3)] border-none mt-4 text-xs group transition-all" disabled={isLoading}>
                             {isLoading ? <Loader2 className="animate-spin h-6 w-6" /> : (
                                 <span className="flex items-center gap-3">
-                                    {['student_seller', 'dealer'].includes(role) ? 'Initialize Beta Node' : 'Enter MarketBridge'}
+                                    {['student_seller', 'dealer'].includes(role) ? 'Initialize Beta Node' : role === 'ceo' ? 'Establish Command' : 'Enter MarketBridge'}
                                     <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </span>
                             )}
