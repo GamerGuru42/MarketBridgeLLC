@@ -324,6 +324,12 @@ export default function LoginPage() {
                     <p className="text-center text-zinc-500 text-xs font-bold uppercase tracking-widest">
                         Unauthorized? <Link href="/signup" className="text-[#FF6600] hover:opacity-80 transition-opacity italic ml-1 underline decoration-dotted">Register Identity</Link>
                     </p>
+
+                    <div className="mt-8 pt-6 border-t border-white/5 text-center">
+                        <p className="text-[10px] text-zinc-600 font-medium">
+                            This is a Beta version – for support or questions, email <a href="mailto:support@marketbridge.com.ng" className="text-[#FF6600] hover:underline">support@marketbridge.com.ng</a>
+                        </p>
+                    </div>
                 </CardContent>
             </Card>
         </div>

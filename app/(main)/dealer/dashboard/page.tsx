@@ -462,7 +462,15 @@ export default function DealerDashboardPage() {
                     <p className="text-zinc-500 font-medium mb-10 leading-relaxed max-w-sm mx-auto">
                         {isEmailMethod
                             ? <span>We have transmitted a secure link to <span className="text-white font-bold">{user.email}</span>. Please authorize this node to activate your dashboard.</span>
-                            : "Your merchant credentials are under review by central command. Access will be granted upon successful ID verification."
+                            : (
+                                <>
+                                    Your merchant credentials are under review by central command. Access will be granted upon successful ID verification.
+                                    <br /><br />
+                                    <span className="text-[10px] uppercase font-bold text-zinc-600">
+                                        For questions, email <a href="mailto:support@marketbridge.com.ng" className="text-[#FF6600] hover:underline">support@marketbridge.com.ng</a>
+                                    </span>
+                                </>
+                            )
                         }
                     </p>
 
@@ -524,6 +532,12 @@ export default function DealerDashboardPage() {
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#00FF85]" /> Connected
                             </span>
                         </div>
+                        <a
+                            href={`mailto:support@marketbridge.com.ng?subject=Seller Support – ${user?.displayName || 'Merchant'} / ${user?.university || 'Node'}`}
+                            className="hidden md:flex h-16 px-6 items-center justify-center bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-white font-black uppercase tracking-widest text-[10px] transition-all font-heading"
+                        >
+                            Need Help?
+                        </a>
                         <Button onClick={fetchOrders} className="h-16 px-8 bg-[#FF6600] text-black hover:bg-[#FF6600] rounded-2xl font-black uppercase tracking-widest transition-all font-heading">
                             Sync Data
                         </Button>
@@ -718,6 +732,12 @@ export default function DealerDashboardPage() {
                             </div>
                         </TabsContent>
                     </Tabs>
+                </div>
+
+                <div className="border-t border-white/5 pt-8 text-center pb-8">
+                    <p className="text-[10px] text-zinc-600 font-medium">
+                        This is a Beta version – for support or questions, email <a href="mailto:support@marketbridge.com.ng" className="text-[#FF6600] hover:underline">support@marketbridge.com.ng</a>
+                    </p>
                 </div>
             </div>
         </div>

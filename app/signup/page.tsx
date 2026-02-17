@@ -913,6 +913,12 @@ function SignupContent() {
                             )}
                         </Button>
                     </form>
+
+                    <div className="mt-8 pt-6 border-t border-white/5 text-center">
+                        <p className="text-[10px] text-zinc-600 font-medium">
+                            This is a Beta version – for support or questions, email <a href="mailto:support@marketbridge.com.ng" className="text-[#FF6600] hover:underline">support@marketbridge.com.ng</a>
+                        </p>
+                    </div>
                 </CardContent>
             </Card>
         </div>

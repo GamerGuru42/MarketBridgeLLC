@@ -10,15 +10,16 @@ export const Footer = () => {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-20">
                     <div className="space-y-6">
                         <Logo />
-                        <p className="text-zinc-500 text-sm font-medium leading-relaxed">
-                            MarketBridge is Nigeria's premier trustless marketplace for verified students.
-                            Currently in <strong>Live Campus Beta</strong>.
+                        <p className="text-zinc-500 text-xs font-medium leading-relaxed">
+                            <strong>MarketBridge Campus Beta – Testing Phase</strong><br />
+                            <a href="mailto:support@marketbridge.com.ng?subject=Help%20Request" className="hover:text-[#FF6600] transition-colors">
+                                Support Email: support@marketbridge.com.ng
+                            </a><br />
+                            Website: https://marketbridge.com.ng<br />
+                            <span className="text-[10px] text-zinc-600 mt-2 block">
+                                <Link href="/terms" className="hover:text-white">Terms</Link> | <Link href="/privacy" className="hover:text-white">Privacy</Link> | <Link href="/refund" className="hover:text-white">Refund</Link> | <Link href="/disclaimer" className="hover:text-white">Disclaimer</Link>
+                            </span>
                         </p>
-                        <div className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest space-y-1">
-                            <p>RC: [PENDING-CAC]</p>
-                            <p>Wuse II, Abuja, FCT, Nigeria</p>
-                            <a href="mailto:support@marketbridge.com.ng" className="hover:text-[#FF6600]">support@marketbridge.com.ng</a>
-                        </div>
                     </div>
 
                     <div>

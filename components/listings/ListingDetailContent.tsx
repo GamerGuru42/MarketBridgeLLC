@@ -466,13 +466,19 @@ export default function ListingDetailContent() {
                                             </Button>
                                         </div>
 
-                                        <div className="pt-4 text-center">
+                                        <div className="pt-4 text-center space-y-3">
                                             <button
                                                 onClick={() => setIsReportOpen(true)}
                                                 className="text-[9px] uppercase font-bold tracking-widest text-red-500/50 hover:text-red-500 transition-colors flex items-center justify-center w-full gap-2"
                                             >
                                                 <AlertTriangle className="h-3 w-3" /> Report Suspicious Activity
                                             </button>
+                                            <a
+                                                href="mailto:support@marketbridge.com.ng?subject=Buyer Help Request"
+                                                className="block text-[9px] uppercase font-bold tracking-widest text-zinc-600 hover:text-zinc-400 transition-colors"
+                                            >
+                                                Need Platform Help?
+                                            </a>
                                         </div>
                                     </div>
                                 ) : (
