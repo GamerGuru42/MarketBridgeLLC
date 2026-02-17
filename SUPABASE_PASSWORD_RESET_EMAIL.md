@@ -1,13 +1,13 @@
-📧 SUPABASE EMAIL TEMPLATE FOR PASSWORD RESET
+📧 PASSWORD RESET EMAIL TEMPLATE
 
-You need to configure the Password Reset email template in Supabase for the password reset feature to work properly.
+You need to configure the Password Reset email template in Supabase to make it look professional and 100% MarketBridge branded (no Supabase mentions).
 
 ## 🔧 How to Configure:
 
 1. **Go to Supabase Dashboard** → Your Project
 2. **Navigate to**: Authentication → Email Templates
 3. **Select**: "Reset Password" template
-4. **Replace with the following HTML**:
+4. **Replace ENTIRE template with the following HTML**:
 
 ---
 
@@ -19,98 +19,98 @@ You need to configure the Password Reset email template in Supabase for the pass
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Your Password - MarketBridge</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f5;">
-    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f4f4f5;">
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f5f5f5;">
         <tr>
             <td style="padding: 40px 20px;">
-                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; margin: 0 auto; background: #18181b; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
                     
-                    <!-- Orange accent bar -->
+                    <!-- Header with Logo Area -->
                     <tr>
-                        <td style="height: 6px; background: linear-gradient(90deg, #FF6600 0%, #FF8A00 100%);"></td>
-                    </tr>
-
-                    <!-- Header -->
-                    <tr>
-                        <td style="padding: 48px 40px 32px; text-align: center; background: #18181b;">
-                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                                <tr>
-                                    <td style="text-align: center;">
-                                        <div style="width: 80px; height: 80px; margin: 0 auto 24px; background: rgba(255,102,0,0.15); border: 2px solid rgba(255,102,0,0.3); border-radius: 20px; line-height: 76px; text-align: center;">
-                                            <span style="font-size: 40px; vertical-align: middle;">🔐</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                            <h1 style="margin: 0 0 12px; color: #ffffff; font-size: 28px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px;">
-                                Password Reset
+                        <td style="padding: 40px 40px 30px; text-align: center; background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);">
+                            <div style="width: 64px; height: 64px; margin: 0 auto 20px; background: #FF6600; border-radius: 16px; display: inline-block; line-height: 64px;">
+                                <span style="font-size: 32px; vertical-align: middle;">🔐</span>
+                            </div>
+                            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">
+                                Reset Your Password
                             </h1>
-                            <p style="margin: 0; color: #a1a1aa; font-size: 14px; font-weight: 500;">
-                                Secure credential update protocol
-                            </p>
                         </td>
                     </tr>
 
                     <!-- Body -->
                     <tr>
-                        <td style="padding: 40px; background: #18181b;">
-                            <p style="margin: 0 0 28px; color: #d4d4d8; font-size: 15px; line-height: 1.7; font-weight: 400;">
-                                We received a request to reset your MarketBridge password. Click the button below to establish new credentials:
+                        <td style="padding: 40px;">
+                            <p style="margin: 0 0 20px; color: #1a1a1a; font-size: 16px; line-height: 1.6;">
+                                Hello,
+                            </p>
+                            <p style="margin: 0 0 24px; color: #4a4a4a; font-size: 15px; line-height: 1.6;">
+                                We received a request to reset the password for your MarketBridge account. Click the button below to create a new password:
                             </p>
 
                             <!-- CTA Button -->
-                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: 32px 0;">
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: 30px 0;">
                                 <tr>
-                                    <td style="text-align: center; padding: 0;">
+                                    <td style="text-align: center;">
                                         <a href="{{ .ConfirmationURL }}" 
                                            target="_blank" 
-                                           style="display: inline-block; padding: 18px 40px; background: #FF6600; color: #000000; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px;">
-                                            Reset Password →
+                                           style="display: inline-block; padding: 16px 48px; background: #FF6600; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px;">
+                                            Reset My Password
                                         </a>
                                     </td>
                                 </tr>
                             </table>
 
-                            <p style="margin: 28px 0 12px; color: #a1a1aa; font-size: 13px; line-height: 1.6;">
-                                Or copy and paste this URL into your browser:
+                            <p style="margin: 24px 0 16px; color: #6b6b6b; font-size: 13px; line-height: 1.5;">
+                                Or copy and paste this link into your browser:
                             </p>
-                            <p style="margin: 0 0 32px; padding: 14px; background: #27272a; border: 1px solid #3f3f46; border-radius: 10px; color: #FF6600; font-size: 11px; word-break: break-all; font-family: 'Courier New', monospace; line-height: 1.5;">
+                            <p style="margin: 0 0 30px; padding: 12px; background: #f8f8f8; border: 1px solid #e5e5e5; border-radius: 6px; color: #FF6600; font-size: 12px; word-break: break-all; font-family: 'Courier New', monospace; line-height: 1.4;">
                                 {{ .ConfirmationURL }}
                             </p>
 
-                            <!-- Security Notice -->
-                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: 32px 0 0;">
+                            <!-- Security Info -->
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: 30px 0 0;">
                                 <tr>
-                                    <td style="padding: 20px; background: rgba(255,102,0,0.08); border: 1px solid rgba(255,102,0,0.2); border-radius: 12px;">
-                                        <p style="margin: 0 0 12px; color: #FF6600; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px;">
-                                            ⚠️ Security Notice
+                                    <td style="padding: 20px; background: #fffbf0; border-left: 4px solid #FF6600; border-radius: 4px;">
+                                        <p style="margin: 0 0 10px; color: #1a1a1a; font-size: 13px; font-weight: 600;">
+                                            🔒 Security Information
                                         </p>
-                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0">
-                                            <tr>
-                                                <td style="padding: 4px 0; color: #d4d4d8; font-size: 13px; line-height: 1.6;">
-                                                    • This link expires in <strong style="color: #ffffff;">60 minutes</strong><br>
-                                                    • If you didn't request this, ignore this email<br>
-                                                    • Never share this link with anyone
-                                                </td>
-                                            </tr>
-                                        </table>
+                                        <p style="margin: 0; color: #4a4a4a; font-size: 13px; line-height: 1.6;">
+                                            • This link will expire in <strong>60 minutes</strong><br>
+                                            • If you didn't request this password reset, you can safely ignore this email<br>
+                                            • Your password won't change until you create a new one
+                                        </p>
                                     </td>
                                 </tr>
                             </table>
+
+                            <p style="margin: 30px 0 0; color: #6b6b6b; font-size: 14px; line-height: 1.6;">
+                                Need help? Contact our support team at <a href="mailto:support@marketbridge.com.ng" style="color: #FF6600; text-decoration: none;">support@marketbridge.com.ng</a>
+                            </p>
                         </td>
                     </tr>
 
                     <!-- Footer -->
                     <tr>
-                        <td style="padding: 32px 40px; background: #0a0a0a; text-align: center; border-top: 1px solid #27272a;">
-                            <p style="margin: 0 0 6px; color: #71717a; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;">
+                        <td style="padding: 30px 40px; background: #fafafa; text-align: center; border-top: 1px solid #e5e5e5;">
+                            <p style="margin: 0 0 8px; color: #1a1a1a; font-size: 13px; font-weight: 600;">
                                 MarketBridge
                             </p>
-                            <p style="margin: 0; color: #52525b; font-size: 10px;">
+                            <p style="margin: 0 0 4px; color: #6b6b6b; font-size: 12px;">
                                 Nigeria's Most Trusted Campus Marketplace
                             </p>
-                            <p style="margin: 12px 0 0; color: #3f3f46; font-size: 9px;">
+                            <p style="margin: 0; color: #9b9b9b; font-size: 11px;">
                                 © 2026 MarketBridge LLC. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+                
+                <!-- Small disclaimer at the very bottom -->
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; margin: 20px auto 0;">
+                    <tr>
+                        <td style="text-align: center; padding: 0 20px;">
+                            <p style="margin: 0; color: #9b9b9b; font-size: 11px; line-height: 1.5;">
+                                This email was sent from MarketBridge. If you have any questions about your account, please visit our help center or contact support.
                             </p>
                         </td>
                     </tr>
@@ -127,25 +127,24 @@ You need to configure the Password Reset email template in Supabase for the pass
 ## ✅ After Setting the Template:
 
 1. Click **Save** in Supabase
-2. The password reset flow will now work:
-   - User clicks "Reset Key" on login page
-   - Enters their email
-   - Receives beautiful branded email
-   - Clicks link to reset password
-   - Sets new password
-   - Redirected to login
+2. **IMPORTANT**: Also disable the default Supabase footer in Settings if available
 
-## 🎯 Features:
-- ✅ Beautiful MarketBridge branding
-- ✅ Mobile-responsive design
-- ✅ Security warnings included
-- ✅ Expires in 60 minutes
-- ✅ Dark theme matching the app
-- ✅ Professional and secure
+The email will now look 100% professional, like it's from MarketBridge directly (no Supabase branding).
 
-## 🔗 Flow Summary:
-1. `/login` → Click "Reset Key"
-2. `/forgot-password` → Enter email
-3. Receive email with reset link
-4. `/reset-password` → Set new password
-5. Auto-redirect to `/login`
+## 🎯 Key Improvements:
+- ✅ Professional design (like Google, Twitter, LinkedIn emails)
+- ✅ Clean white background with dark header
+- ✅ 100% MarketBridge branded - NO Supabase mentions
+- ✅ Mobile-responsive
+- ✅ Clear call-to-action button
+- ✅ Security information in highlighted box
+- ✅ Support contact information
+- ✅ Professional footer
+
+## 🔗 Flow:
+1. User clicks "Reset Key" on login
+2. Enters email
+3. Receives professional MarketBridge email
+4. Clicks "Reset My Password" button
+5. Sets new password
+6. Auto-redirected to login
