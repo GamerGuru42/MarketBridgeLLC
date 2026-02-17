@@ -169,8 +169,8 @@ export default function AdminUsersPage() {
                                     size="sm"
                                     onClick={() => setFilterRole(role === 'All' ? null : role.toLowerCase())}
                                     className={`text-[10px] font-black uppercase tracking-widest h-10 ${filterRole === (role === 'All' ? null : role.toLowerCase())
-                                            ? 'bg-[#FF6600] text-black hover:bg-[#FF6600]/90'
-                                            : 'border-white/10 text-zinc-400 hover:text-white hover:bg-white/5'
+                                        ? 'bg-[#FF6600] text-black hover:bg-[#FF6600]/90'
+                                        : 'border-white/10 text-zinc-400 hover:text-white hover:bg-white/5'
                                         }`}
                                 >
                                     {role}s
@@ -241,38 +241,53 @@ export default function AdminUsersPage() {
                                                 </span>
                                             </TableCell>
                                             <TableCell className="text-right px-6">
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-500 hover:text-white hover:bg-white/10">
-                                                            <MoreVertical className="h-4 w-4" />
+                                                <div className="flex items-center justify-end gap-2">
+                                                    {/* Quick Action: Verify/Unverify Button */}
+                                                    {!user.is_verified && (
+                                                        <Button
+                                                            onClick={() => handleAction(user.id, 'verify')}
+                                                            size="sm"
+                                                            className="h-7 px-3 bg-[#00FF85]/10 text-[#00FF85] border border-[#00FF85]/20 hover:bg-[#00FF85]/20 text-[9px] font-black uppercase tracking-wider"
+                                                        >
+                                                            <ShieldCheck className="h-3 w-3 mr-1" />
+                                                            Verify
                                                         </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end" className="w-56 bg-zinc-950 border-white/10 text-zinc-300">
-                                                        <DropdownMenuLabel className="text-[10px] font-black uppercase text-zinc-600 font-heading">Entity Control</DropdownMenuLabel>
+                                                    )}
 
-                                                        {user.is_verified ? (
-                                                            <DropdownMenuItem onClick={() => handleAction(user.id, 'unverify')} className="gap-2 cursor-pointer focus:bg-red-500/10 focus:text-red-500">
-                                                                <ShieldAlert className="h-4 w-4" /> Revoke Verification
+                                                    {/* Dropdown Menu */}
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-500 hover:text-white hover:bg-white/10">
+                                                                <MoreVertical className="h-4 w-4" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end" className="w-56 bg-zinc-950 border-white/10 text-zinc-300">
+                                                            <DropdownMenuLabel className="text-[10px] font-black uppercase text-zinc-600 font-heading">Entity Control</DropdownMenuLabel>
+
+                                                            {user.is_verified ? (
+                                                                <DropdownMenuItem onClick={() => handleAction(user.id, 'unverify')} className="gap-2 cursor-pointer focus:bg-red-500/10 focus:text-red-500">
+                                                                    <ShieldAlert className="h-4 w-4" /> Revoke Verification
+                                                                </DropdownMenuItem>
+                                                            ) : (
+                                                                <DropdownMenuItem onClick={() => handleAction(user.id, 'verify')} className="gap-2 cursor-pointer focus:bg-[#00FF85]/10 focus:text-[#00FF85]">
+                                                                    <ShieldCheck className="h-4 w-4" /> Verify Identity
+                                                                </DropdownMenuItem>
+                                                            )}
+
+                                                            {user.role !== 'dealer' && user.role !== 'admin' && (
+                                                                <DropdownMenuItem onClick={() => handleAction(user.id, 'make_dealer')} className="gap-2 cursor-pointer focus:bg-[#FF6600]/10 focus:text-[#FF6600]">
+                                                                    <Briefcase className="h-4 w-4" /> Grant Dealer License
+                                                                </DropdownMenuItem>
+                                                            )}
+
+                                                            <DropdownMenuSeparator className="bg-white/10" />
+
+                                                            <DropdownMenuItem className="gap-2 cursor-pointer focus:bg-white/10">
+                                                                <Mail className="h-4 w-4" /> Send Transmission
                                                             </DropdownMenuItem>
-                                                        ) : (
-                                                            <DropdownMenuItem onClick={() => handleAction(user.id, 'verify')} className="gap-2 cursor-pointer focus:bg-[#00FF85]/10 focus:text-[#00FF85]">
-                                                                <ShieldCheck className="h-4 w-4" /> Verify Identity
-                                                            </DropdownMenuItem>
-                                                        )}
-
-                                                        {user.role !== 'dealer' && user.role !== 'admin' && (
-                                                            <DropdownMenuItem onClick={() => handleAction(user.id, 'make_dealer')} className="gap-2 cursor-pointer focus:bg-[#FF6600]/10 focus:text-[#FF6600]">
-                                                                <Briefcase className="h-4 w-4" /> Grant Dealer License
-                                                            </DropdownMenuItem>
-                                                        )}
-
-                                                        <DropdownMenuSeparator className="bg-white/10" />
-
-                                                        <DropdownMenuItem className="gap-2 cursor-pointer focus:bg-white/10">
-                                                            <Mail className="h-4 w-4" /> Send Transmission
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </div>
                                             </TableCell>
                                         </TableRow>
                                     ))
