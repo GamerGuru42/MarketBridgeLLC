@@ -83,6 +83,17 @@ export default function AdminLayout({
             ];
         }
 
+        if (role === 'ceo') {
+            return [
+                { label: 'Mission Control', href: '/admin', icon: LayoutDashboard },
+                { label: 'Strategic Proposal', href: '/admin/proposals/new', icon: Zap },
+                { label: 'Executive Chat', href: '/admin/executive-chat', icon: MessageSquare },
+                { label: 'Marketing Growth', href: '/admin/marketing', icon: BarChart3 },
+                { label: 'Listings Manager', href: '/admin/listings', icon: ShoppingBag },
+                { label: 'Users Manager', href: '/admin/users', icon: Users },
+            ];
+        }
+
         // Super Admin (or fallback) gets everything
         return [
             { label: 'Mission Control', href: '/admin', icon: LayoutDashboard },
@@ -110,7 +121,7 @@ export default function AdminLayout({
                 {/* Global Background Blobs */}
                 <div className="fixed top-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#FF6600]/5 blur-[120px] rounded-full pointer-events-none" />
 
-                <DashboardHeader title="MISSION CONTROL" sidebarItems={filteredItems} />
+                <DashboardHeader title="VISION COMMAND" sidebarItems={filteredItems} />
                 <main className="flex-1 p-6 md:p-10 relative z-10">
                     {children}
                 </main>

@@ -7,7 +7,7 @@ import { TrendingUp, LayoutDashboard, MessageSquare, Zap } from 'lucide-react';
 const ceoItems = [
     { label: 'Strategic Overview', href: '/ceo', icon: LayoutDashboard },
     { label: 'Market Intelligence', href: '/ceo/growth', icon: TrendingUp },
-    { label: 'Proposals Queue', href: '/ceo', icon: Zap },
+    { label: 'Proposals', href: '/ceo', icon: Zap },
     { label: 'Vision Command', href: '/admin/executive-chat', icon: MessageSquare },
 ];
 
