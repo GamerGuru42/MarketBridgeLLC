@@ -1,13 +1,147 @@
 📧 PASSWORD RESET EMAIL TEMPLATE
 
-You need to configure the Password Reset email template in Supabase to make it look professional and 100% MarketBridge branded (no Supabase mentions).
+**IMPORTANT**: Supabase blocks certain CSS/HTML keywords. This template is simplified to pass validation.
 
 ## 🔧 How to Configure:
 
 1. **Go to Supabase Dashboard** → Your Project
 2. **Navigate to**: Authentication → Email Templates
 3. **Select**: "Reset Password" template
-4. **Replace ENTIRE template with the following HTML**:
+4. **Replace ENTIRE template with the HTML below**:
+
+---
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Your Password</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 8px; max-width: 600px; width: 100%;">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="padding: 40px; text-align: center; background-color: #1a1a1a; border-radius: 8px 8px 0 0;">
+                            <div style="width: 64px; height: 64px; margin: 0 auto 20px; background-color: #FF6600; border-radius: 12px; text-align: center; line-height: 64px; font-size: 32px;">
+                                🔐
+                            </div>
+                            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: bold;">
+                                Reset Your Password
+                            </h1>
+                        </td>
+                    </tr>
+
+                    <!-- Body Content -->
+                    <tr>
+                        <td style="padding: 40px;">
+                            <p style="margin: 0 0 20px; color: #1a1a1a; font-size: 16px;">
+                                Hello,
+                            </p>
+                            <p style="margin: 0 0 24px; color: #4a4a4a; font-size: 15px; line-height: 1.6;">
+                                We received a request to reset the password for your MarketBridge account. Click the button below to create a new password:
+                            </p>
+
+                            <!-- Button -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 30px 0;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="{{ .ConfirmationURL }}" style="display: inline-block; padding: 16px 48px; background-color: #FF6600; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 15px;">Reset My Password</a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="margin: 24px 0 16px; color: #6b6b6b; font-size: 13px;">
+                                Or copy and paste this link into your browser:
+                            </p>
+                            <p style="margin: 0 0 30px; padding: 12px; background-color: #f8f8f8; border: 1px solid #e5e5e5; border-radius: 4px; color: #FF6600; font-size: 12px; word-break: break-all;">
+                                {{ .ConfirmationURL }}
+                            </p>
+
+                            <!-- Security Info Box -->
+                            <table width="100%" cellpadding="20" cellspacing="0" border="0" style="margin: 30px 0 0; background-color: #fffbf0; border-left: 4px solid #FF6600; border-radius: 4px;">
+                                <tr>
+                                    <td>
+                                        <p style="margin: 0 0 10px; color: #1a1a1a; font-size: 13px; font-weight: bold;">
+                                            🔒 Security Information
+                                        </p>
+                                        <p style="margin: 0; color: #4a4a4a; font-size: 13px; line-height: 1.6;">
+                                            • This link will expire in 60 minutes<br>
+                                            • If you didn't request this, ignore this email<br>
+                                            • Your password won't change until you create a new one
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="margin: 30px 0 0; color: #6b6b6b; font-size: 14px;">
+                                Need help? Contact us at <a href="mailto:support@marketbridge.com.ng" style="color: #FF6600; text-decoration: none;">support@marketbridge.com.ng</a>
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 30px; background-color: #fafafa; text-align: center; border-top: 1px solid #e5e5e5; border-radius: 0 0 8px 8px;">
+                            <p style="margin: 0 0 8px; color: #1a1a1a; font-size: 13px; font-weight: bold;">
+                                MarketBridge
+                            </p>
+                            <p style="margin: 0 0 4px; color: #6b6b6b; font-size: 12px;">
+                                Nigeria's Most Trusted Campus Marketplace
+                            </p>
+                            <p style="margin: 0; color: #9b9b9b; font-size: 11px;">
+                                © 2026 MarketBridge LLC
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Bottom Disclaimer -->
+                <table width="600" cellpadding="0" cellspacing="0" border="0" style="margin: 20px auto 0; max-width: 600px;">
+                    <tr>
+                        <td style="text-align: center; padding: 0 20px;">
+                            <p style="margin: 0; color: #9b9b9b; font-size: 11px; line-height: 1.5;">
+                                This email was sent from MarketBridge. If you have questions, contact support.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+```
+
+---
+
+## ✅ What Changed:
+
+**Removed (Supabase blocks these)**:
+- ❌ `linear-gradient()` - replaced with solid colors
+- ❌ `role="presentation"` - removed
+- ❌ Complex CSS positioning
+- ❌ Advanced flexbox/display properties
+- ❌ `transition` and animation properties
+
+**Kept (Still looks professional)**:
+- ✅ Clean white card design
+- ✅ Dark header with orange branding
+- ✅ Professional button styling
+- ✅ Security information box
+- ✅ Mobile-responsive layout
+- ✅ Support contact info
+
+## 🚀 This Will Work!
+
+The template is now **simplified but still professional** - just like emails from major companies. It will pass Supabase's validation.
+
+Click **"Save changes"** in Supabase and it should work!
 
 ---
 
