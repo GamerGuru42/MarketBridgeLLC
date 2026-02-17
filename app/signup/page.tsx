@@ -952,8 +952,9 @@ function SignupContent() {
                     </form>
 
                     <div className="mt-8 pt-6 border-t border-white/5 text-center">
-                        <p className="text-[10px] text-zinc-600 font-medium">
-                            This is a Beta version – for support or questions, email <a href="mailto:support@marketbridge.com.ng" className="text-[#FF6600] hover:underline">support@marketbridge.com.ng</a>
+                        <p className="text-[10px] text-zinc-600 font-medium leading-relaxed">
+                            Beta platform – technical problems? Email <a href="mailto:support@marketbridge.com.ng?subject=Tech%20Support" className="text-[#FF6600] hover:underline">support@marketbridge.com.ng</a><br />
+                            Refunds, subscriptions or seller questions? Email <a href="mailto:ops-support@marketbridge.com.ng?subject=Ops%20Support" className="text-[#00FF85] hover:underline">ops-support@marketbridge.com.ng</a>
                         </p>
                     </div>
                 </CardContent>

@@ -115,7 +115,7 @@ export default function SellerDashboardPage() {
 
     useEffect(() => {
         if (searchParams.get('subscription') === 'success') {
-            alert("Subscription updated successfully! \n\nNeed help? Contact support@marketbridge.com.ng");
+            alert("Subscription updated successfully! \n\nNeed help with your subscription? Contact ops-support@marketbridge.com.ng");
             // Optional: clear the param
             router.replace('/seller/dashboard');
         }
@@ -460,7 +460,7 @@ export default function SellerDashboardPage() {
                                     Your merchant credentials are under review by central command. Access will be granted upon successful ID verification.
                                     <br /><br />
                                     <span className="text-[10px] uppercase font-bold text-zinc-600">
-                                        For questions, email <a href="mailto:support@marketbridge.com.ng" className="text-[#FF6600] hover:underline">support@marketbridge.com.ng</a>
+                                        For verification questions, email <a href="mailto:ops-support@marketbridge.com.ng?subject=Account%20Verification" className="text-[#00FF85] hover:underline">ops-support@marketbridge.com.ng</a>
                                     </span>
                                 </>
                             )
@@ -525,12 +525,20 @@ export default function SellerDashboardPage() {
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#00FF85]" /> Connected
                             </span>
                         </div>
-                        <a
-                            href={`mailto:support@marketbridge.com.ng?subject=Seller Support – ${user?.displayName || 'Merchant'} / ${user?.university || 'Node'}`}
-                            className="hidden md:flex h-16 px-6 items-center justify-center bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-white font-black uppercase tracking-widest text-[10px] transition-all font-heading"
-                        >
-                            Need Help?
-                        </a>
+                        <div className="hidden md:flex gap-3">
+                            <a
+                                href={`mailto:support@marketbridge.com.ng?subject=Tech%20Support%20%E2%80%93%20${user?.displayName || 'Merchant'}`}
+                                className="h-16 px-6 flex items-center justify-center bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-2xl text-red-500 font-black uppercase tracking-widest text-[10px] transition-all font-heading"
+                            >
+                                Report Bug / Tech Issue
+                            </a>
+                            <a
+                                href={`mailto:ops-support@marketbridge.com.ng?subject=Seller%20Support%20%E2%80%93%20${user?.displayName || 'Merchant'}`}
+                                className="h-16 px-6 flex items-center justify-center bg-[#00FF85]/10 hover:bg-[#00FF85]/20 border border-[#00FF85]/20 rounded-2xl text-[#00FF85] font-black uppercase tracking-widest text-[10px] transition-all font-heading"
+                            >
+                                Refund / Payment / Seller Help
+                            </a>
+                        </div>
                         <Button onClick={fetchOrders} className="h-16 px-8 bg-[#FF6600] text-black hover:bg-[#FF6600] rounded-2xl font-black uppercase tracking-widest transition-all font-heading">
                             Sync Data
                         </Button>
@@ -728,8 +736,9 @@ export default function SellerDashboardPage() {
                 </div>
 
                 <div className="border-t border-white/5 pt-8 text-center pb-8">
-                    <p className="text-[10px] text-zinc-600 font-medium">
-                        This is a Beta version – for support or questions, email <a href="mailto:support@marketbridge.com.ng" className="text-[#FF6600] hover:underline">support@marketbridge.com.ng</a>
+                    <p className="text-[10px] text-zinc-600 font-medium leading-relaxed">
+                        Beta platform – technical problems? Email <a href="mailto:support@marketbridge.com.ng?subject=Tech%20Support" className="text-[#FF6600] hover:underline">support@marketbridge.com.ng</a><br />
+                        Refunds, subscriptions or seller questions? Email <a href="mailto:ops-support@marketbridge.com.ng?subject=Ops%20Support" className="text-[#00FF85] hover:underline">ops-support@marketbridge.com.ng</a>
                     </p>
                 </div>
             </div>

@@ -77,7 +77,7 @@ export default function PricingPage() {
         }
 
         if (planId === 'enterprise') {
-            window.location.href = 'mailto:support@marketbridge.com.ng?subject=Enterprise Plan Inquiry';
+            window.location.href = 'mailto:ops-support@marketbridge.com.ng?subject=Enterprise%20Plan%20Inquiry';
             return;
         }
 

@@ -11,11 +11,14 @@ export const Footer = () => {
                     <div className="space-y-6">
                         <Logo />
                         <p className="text-zinc-500 text-xs font-medium leading-relaxed">
-                            <strong>MarketBridge Campus Beta – Testing Phase</strong><br />
-                            <a href="mailto:support@marketbridge.com.ng?subject=Help%20Request" className="hover:text-[#FF6600] transition-colors">
-                                Support Email: support@marketbridge.com.ng
+                            <strong>MarketBridge Campus Beta</strong><br />
+                            <a href="mailto:support@marketbridge.com.ng?subject=Tech%20Support" className="hover:text-[#FF6600] transition-colors">
+                                Tech Support: support@marketbridge.com.ng
                             </a><br />
-                            Website: https://marketbridge.com.ng<br />
+                            <a href="mailto:ops-support@marketbridge.com.ng?subject=Ops%20Support" className="hover:text-[#FF6600] transition-colors">
+                                Ops / Refunds / Account Help: ops-support@marketbridge.com.ng
+                            </a><br />
+                            Website: <a href="https://marketbridge.com.ng" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">https://marketbridge.com.ng</a><br />
                             <span className="text-[10px] text-zinc-600 mt-2 block">
                                 <Link href="/terms" className="hover:text-white">Terms</Link> | <Link href="/privacy" className="hover:text-white">Privacy</Link> | <Link href="/refund" className="hover:text-white">Refund</Link> | <Link href="/disclaimer" className="hover:text-white">Disclaimer</Link>
                             </span>

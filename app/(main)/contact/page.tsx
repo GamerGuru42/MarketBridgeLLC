@@ -78,12 +78,28 @@ export default function ContactPage() {
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center text-primary flex-shrink-0">
+                                    <div className="h-10 w-10 bg-red-500/10 rounded-full flex items-center justify-center text-red-500 flex-shrink-0">
                                         <Mail className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold mb-1">Email</h3>
+                                        <h3 className="font-semibold mb-1">Tech Support</h3>
                                         <p className="text-sm text-muted-foreground">support@marketbridge.com.ng</p>
+                                        <p className="text-[10px] text-zinc-600 mt-1">App bugs, login issues, errors</p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardContent className="pt-6">
+                                <div className="flex items-start gap-4">
+                                    <div className="h-10 w-10 bg-[#00FF85]/10 rounded-full flex items-center justify-center text-[#00FF85] flex-shrink-0">
+                                        <Mail className="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-semibold mb-1">Ops Support</h3>
+                                        <p className="text-sm text-muted-foreground">ops-support@marketbridge.com.ng</p>
+                                        <p className="text-[10px] text-zinc-600 mt-1">Refunds, payments, seller questions</p>
                                     </div>
                                 </div>
                             </CardContent>
