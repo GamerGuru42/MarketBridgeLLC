@@ -22,18 +22,42 @@ export default function MarketingAdminPage() {
 
     const fetchMarketingData = async () => {
         try {
-            // Fetch referrals with counts
-            const { data, error } = await supabase
-                .rpc('get_referral_leaderboard'); // Need to create this RPC or do client-side agg
-
-            // Fallback client-side aggregation if RPC doesn't exist yet
-            // Assuming we fetch all referrals for now (scale warning)
-            const { data: allReferrals } = await supabase
+            // Fetch all referrals
+            const { data: referrals } = await supabase
                 .from('referrals')
                 .select('referrer_id');
 
-            // Basic aggregation logic...
-            // Implementation simplified for Beta speed
+            let leaderData: any[] = [];
+
+            if (referrals && referrals.length > 0) {
+                // Group by referrer_id
+                const counts: Record<string, number> = {};
+                referrals.forEach((r: any) => {
+                    if (r.referrer_id) counts[r.referrer_id] = (counts[r.referrer_id] || 0) + 1;
+                });
+
+                // Top 5
+                const board = Object.entries(counts)
+                    .map(([id, count]) => ({ id, count }))
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, 5);
+
+                if (board.length > 0) {
+                    // Fetch names
+                    const { data: users } = await supabase
+                        .from('users')
+                        .select('id, display_name')
+                        .in('id', board.map(b => b.id));
+
+                    leaderData = board.map(b => ({
+                        name: users?.find(u => u.id === b.id)?.display_name || 'Unknown Agent',
+                        refCount: b.count,
+                        tier: b.count >= 15 ? 'Gold' : b.count >= 5 ? 'Silver' : 'Bronze'
+                    }));
+                }
+            }
+
+            setLeaderboard(leaderData);
 
             // Fetch Total stats
             const { count: totalReferrals } = await supabase.from('referrals').select('*', { count: 'exact', head: true });
@@ -42,19 +66,8 @@ export default function MarketingAdminPage() {
             setStats({
                 totalReferrals: totalReferrals || 0,
                 activeSellers: activeSellers || 0,
-                conversionRate: '12.5%' // Mock until enough data
+                conversionRate: 'N/A'
             });
-
-            // Mock Leaderboard if no data
-            if (!data || data.length === 0) {
-                setLeaderboard([
-                    { name: 'Chinedu O.', refCount: 15, tier: 'Gold' },
-                    { name: 'Sarah A.', refCount: 8, tier: 'Silver' },
-                    { name: 'Tunde B.', refCount: 3, tier: 'Bronze' }
-                ]);
-            } else {
-                setLeaderboard(data);
-            }
 
         } catch (e) {
             console.error(e);
@@ -136,8 +149,8 @@ export default function MarketingAdminPage() {
                                     <TableCell className="text-emerald-400 font-black">{user.refCount}</TableCell>
                                     <TableCell>
                                         <Badge className={`uppercase text-[8px] font-black tracking-widest border-none ${user.tier === 'Gold' ? 'bg-yellow-500/20 text-yellow-500' :
-                                                user.tier === 'Silver' ? 'bg-zinc-400/20 text-zinc-400' :
-                                                    'bg-[#CD7F32]/20 text-[#CD7F32]'
+                                            user.tier === 'Silver' ? 'bg-zinc-400/20 text-zinc-400' :
+                                                'bg-[#CD7F32]/20 text-[#CD7F32]'
                                             }`}>
                                             {user.tier}
                                         </Badge>
