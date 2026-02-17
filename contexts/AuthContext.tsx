@@ -10,7 +10,7 @@ interface AuthContextType {
     user: User | null; // My application user
     sessionUser: SupabaseUser | null; // Supabase auth user
     loading: boolean;
-    signInWithGoogle: () => Promise<void>;
+    signInWithGoogle: (redirectTo?: string) => Promise<void>;
     signInWithFacebook: () => Promise<void>;
     logout: () => Promise<void>; // Renamed from signOut to match existing usage
     refreshUser: (userId?: string) => Promise<void>;
@@ -101,11 +101,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const signInWithGoogle = async () => {
+    const signInWithGoogle = async (redirectTo?: string) => {
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
+                redirectTo: redirectTo || `${window.location.origin}/auth/callback`,
                 queryParams: {
                     access_type: 'offline',
                     prompt: 'consent',

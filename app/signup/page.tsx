@@ -17,7 +17,7 @@ import { School, Search } from 'lucide-react';
 
 function SignupContent() {
     const router = useRouter();
-    const { refreshUser, signInWithGoogle } = useAuth();
+    const { refreshUser, signInWithGoogle, user, sessionUser, loading: authLoading } = useAuth();
 
     const searchParams = useSearchParams();
     const initialRole = searchParams.get('role') as 'customer' | 'dealer' | 'admin' | 'student_buyer' | 'student_seller' | 'ceo' | null;
@@ -40,8 +40,6 @@ function SignupContent() {
     const [adminCode, setAdminCode] = useState('');
     const [adminDept, setAdminDept] = useState<'technical' | 'operations' | 'marketing' | 'ceo' | null>(null);
 
-
-
     // Form
     const [formData, setFormData] = useState({
         displayName: '',
@@ -57,8 +55,32 @@ function SignupContent() {
         phoneNumber: '',
         studentIdUrl: '',
     });
-    const [showPassword, setShowPassword] = useState(false);
 
+    // Detect if user came back from Google and needs to finish profile
+    // Detect if user is already logged in and has a profile
+    useEffect(() => {
+        if (!authLoading && sessionUser && user) {
+            if (['student_seller', 'dealer'].includes(user.role)) {
+                router.push('/dealer/dashboard');
+            } else if (user.role === 'ceo') {
+                router.push('/ceo');
+            } else {
+                router.push('/listings');
+            }
+        }
+
+        // Detect if user came back from Google and needs to finish profile
+        if (!authLoading && sessionUser && !user) {
+            setFormData(prev => ({
+                ...prev,
+                email: sessionUser.email || '',
+                displayName: sessionUser.user_metadata?.full_name || sessionUser.user_metadata?.name || '',
+            }));
+            setStep('details');
+        }
+    }, [sessionUser, user, authLoading, router]);
+
+    const [showPassword, setShowPassword] = useState(false);
     const [isDetectingSchool, setIsDetectingSchool] = useState(false);
     const [missingUni, setMissingUni] = useState(false);
     const [missingUniName, setMissingUniName] = useState('');
@@ -288,34 +310,43 @@ function SignupContent() {
 
             // 2. The Core Signup Logic
             const signupLogicPromise = (async () => {
-                const { data: authData, error: signUpError } = await supabase.auth.signUp({
-                    email: emailToUse,
-                    password: formData.password,
-                    options: {
-                        data: {
-                            display_name: formData.displayName,
-                            role: role,
-                            location: formData.location,
-                            university: finalUniversity,
-                            matric_number: formData.matricNumber,
-                            phone_number: formData.phoneNumber,
-                            business_name: isMerchant ? formData.businessName : null,
-                            department: formData.department,
-                            verification_method: isMerchant ? 'id_card' : 'none',
-                            student_id_url: isMerchant ? formData.studentIdUrl : null,
-                            is_manual_override: missingUni
-                        },
-                    },
-                });
+                let authData;
 
-                if (signUpError) throw signUpError;
-                if (!authData.user) throw new Error("Account creation protocol failed - No User Returned");
+                if (sessionUser) {
+                    // Scenario A: User is already authenticated via Google
+                    authData = { user: sessionUser, session: null };
+                } else {
+                    // Scenario B: Traditional Email/Password Signup
+                    const { data, error: signUpError } = await supabase.auth.signUp({
+                        email: emailToUse,
+                        password: formData.password,
+                        options: {
+                            data: {
+                                display_name: formData.displayName,
+                                role: role,
+                                location: formData.location,
+                                university: finalUniversity,
+                                matric_number: formData.matricNumber,
+                                phone_number: formData.phoneNumber,
+                                business_name: isMerchant ? formData.businessName : null,
+                                department: formData.department,
+                                verification_method: isMerchant ? 'id_card' : 'none',
+                                student_id_url: isMerchant ? formData.studentIdUrl : null,
+                                is_manual_override: missingUni
+                            },
+                        },
+                    });
+
+                    if (signUpError) throw signUpError;
+                    if (!data.user) throw new Error("Account creation protocol failed - No User Returned");
+                    authData = data;
+                }
 
                 // 3. Database Sync (Profile)
                 const { error: profileError } = await supabase
                     .from('users')
                     .upsert({
-                        id: authData.user.id,
+                        id: authData.user!.id,
                         email: emailToUse,
                         display_name: formData.displayName,
                         role: role,
@@ -344,7 +375,7 @@ function SignupContent() {
                     const { error: subscriptionError } = await supabase
                         .from('subscriptions')
                         .insert({
-                            user_id: authData.user.id,
+                            user_id: authData.user!.id,
                             plan_id: 'beta_campus_founder',
                             status: 'trialing',
                             current_period_start: new Date().toISOString(),
@@ -365,8 +396,8 @@ function SignupContent() {
             // Race the signup against the timeout
             const authData = await Promise.race([signupLogicPromise, timeoutPromise]) as any;
 
-            if (authData.session) {
-                // Auto-login scenario
+            if (authData.session || sessionUser) {
+                // Auto-login or already logged in scenario
                 await refreshUser(authData.user.id);
                 if (isMerchant) {
                     router.push('/dealer/dashboard');
@@ -572,7 +603,11 @@ function SignupContent() {
                     </CardHeader>
                     <CardContent className="p-0 space-y-6 pb-8">
                         <div className="space-y-2">
-                            <Button variant="outline" className="w-full h-16 rounded-[1.5rem] border-white/10 hover:bg-white/5 text-white font-bold uppercase tracking-widest group transition-all" onClick={signInWithGoogle}>
+                            <Button
+                                variant="outline"
+                                className="w-full h-16 rounded-[1.5rem] border-white/10 hover:bg-white/5 text-white font-bold uppercase tracking-widest group transition-all"
+                                onClick={() => signInWithGoogle(`${window.location.origin}/auth/callback?next=/signup`)}
+                            >
                                 <Globe className="mr-3 h-5 w-5 text-blue-500 group-hover:scale-110 transition-transform" /> Google Identity Hub
                             </Button>
                             {['student_seller', 'dealer'].includes(role) && (
@@ -621,13 +656,28 @@ function SignupContent() {
                                 <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Full Name</label>
                                 <div className="relative group">
                                     <UserIcon className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
-                                    <input name="displayName" value={formData.displayName} onChange={handleChange} required placeholder="Samuel Ade" className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all" />
+                                    <input
+                                        name="displayName"
+                                        value={formData.displayName}
+                                        onChange={handleChange}
+                                        required
+                                        readOnly={!!sessionUser}
+                                        placeholder="Samuel Ade"
+                                        className={`w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all ${sessionUser ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                    />
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">
-                                    {['student_seller', 'dealer'].includes(role) ? "Email / Phone Identity" : "Email / Phone Identity"}
-                                </label>
+                                <div className="flex justify-between items-center ml-2">
+                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600">
+                                        {['student_seller', 'dealer'].includes(role) ? "Email / Phone Identity" : "Email / Phone Identity"}
+                                    </label>
+                                    {sessionUser && (
+                                        <span className="text-[8px] font-black text-[#FF6600] uppercase tracking-widest bg-[#FF6600]/10 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                            <Globe className="h-2 w-2" /> Linked Google Hub
+                                        </span>
+                                    )}
+                                </div>
                                 <div className="relative group">
                                     <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
                                     <input
@@ -636,30 +686,33 @@ function SignupContent() {
                                         value={formData.email}
                                         onChange={handleChange}
                                         required
+                                        readOnly={!!sessionUser}
                                         placeholder={['student_seller', 'dealer'].includes(role) ? "benny@university.edu.ng or 080..." : "email or phone number"}
-                                        className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all"
+                                        className={`w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all ${sessionUser ? 'opacity-70 cursor-not-allowed' : ''}`}
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Secure Key</label>
-                                <div className="relative group">
-                                    <Lock className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
-                                    <input name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleChange} required className="w-full h-14 pl-14 pr-14 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold" />
-                                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-800 hover:text-[#FF6600]">{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
+                        {!sessionUser && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in duration-500">
+                                <div className="space-y-2">
+                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Secure Key</label>
+                                    <div className="relative group">
+                                        <Lock className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                        <input name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleChange} required={!sessionUser} className="w-full h-14 pl-14 pr-14 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold" />
+                                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-800 hover:text-[#FF6600]">{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Confirm Key</label>
+                                    <div className="relative group">
+                                        <ShieldCheck className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                        <input name="confirmPassword" type={showPassword ? 'text' : 'password'} value={formData.confirmPassword} onChange={handleChange} required={!sessionUser} className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold" />
+                                    </div>
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Confirm Key</label>
-                                <div className="relative group">
-                                    <ShieldCheck className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
-                                    <input name="confirmPassword" type={showPassword ? 'text' : 'password'} value={formData.confirmPassword} onChange={handleChange} required className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold" />
-                                </div>
-                            </div>
-                        </div>
+                        )}
 
                         <div className="space-y-6">
                             <div className="space-y-2">
