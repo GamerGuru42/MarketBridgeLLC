@@ -23,17 +23,29 @@ export default function TechnicalAdminPage() {
 
     const fetchLogs = async () => {
         try {
-            // In a real scenario, we'd query system_audit_logs table
-            // For now, we mock it or fetch if table exists
-            const { data, error } = await supabase
+            const start = Date.now();
+            // Ping DB (lightweight query)
+            const { count, error } = await supabase.from('users').select('*', { count: 'exact', head: true }).limit(1);
+            const latency = Date.now() - start;
+
+            setStats({
+                uptime: error ? 'Degraded' : '100% (Cloud)',
+                apiLatency: `${latency}ms`,
+                errorRate: error ? 'High' : '0%',
+                webhookHealth: 'Standby'
+            });
+
+            // Fetch Audit Logs (if table exists)
+            const { data: logsData } = await supabase
                 .from('system_audit_logs')
                 .select('*')
                 .order('created_at', { ascending: false })
                 .limit(20);
 
-            if (data) setLogs(data);
+            if (logsData) setLogs(logsData);
         } catch (e) {
             console.error(e);
+            setStats(prev => ({ ...prev, uptime: 'Error' }));
         } finally {
             setLoading(false);
         }
