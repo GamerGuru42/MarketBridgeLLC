@@ -447,8 +447,8 @@ function SignupContent() {
                         {[
                             { id: 'student_buyer', title: 'Buyer', icon: UserIcon, desc: 'Browse & Buy Assets', color: 'text-blue-400' },
                             { id: 'student_seller', title: 'Seller', icon: Briefcase, desc: 'Start your Campus Business', color: 'text-[#FF6600]' },
-                            { id: 'admin', title: 'Team Admin', icon: ShieldCheck, desc: 'Operations Gateway', color: 'text-zinc-400' },
-                            { id: 'ceo', title: 'CEO/Founder', icon: Lock, desc: 'Central Command', color: 'text-red-500' }
+                            { id: 'admin', title: 'Team Admin', icon: ShieldCheck, desc: 'Admin Team', color: 'text-zinc-400' },
+                            { id: 'ceo', title: 'CEO/Founder', icon: Lock, desc: 'Founder', color: 'text-red-500' }
                         ].map(item => (
                             <Card
                                 key={item.id}
@@ -479,7 +479,7 @@ function SignupContent() {
                             <Lock className="h-8 w-8 text-red-500" />
                         </div>
                         <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2 text-red-500">Restricted</CardTitle>
-                        <CardDescription className="text-zinc-500 font-medium italic lowercase">enter administrative access key</CardDescription>
+                        <CardDescription className="text-zinc-500 font-medium italic lowercase">enter access code</CardDescription>
                     </CardHeader>
                     <CardContent className="p-0 space-y-6 pb-8">
                         {error && <div className="bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-red-500/20">{error}</div>}
@@ -494,7 +494,7 @@ function SignupContent() {
                                 required
                             />
                             <Button type="submit" className="w-full h-16 rounded-2xl bg-red-600 text-white font-black uppercase tracking-widest hover:bg-red-700 shadow-[0_0_30px_rgba(220,38,38,0.3)]">
-                                Authorize
+                                Unlock
                             </Button>
                         </form>
                     </CardContent>
@@ -508,15 +508,15 @@ function SignupContent() {
             <div className="min-h-screen flex items-center justify-center p-4 bg-black">
                 <Card className="w-full max-w-3xl glass-card border-none rounded-[3rem] p-12 text-white">
                     <CardHeader className="p-0 text-center mb-12">
-                        <CardTitle className="text-4xl font-black uppercase italic tracking-tighter mb-2">Select Sector</CardTitle>
-                        <CardDescription className="text-zinc-500 font-medium italic lowercase">Define your administrative jurisdiction</CardDescription>
+                        <CardTitle className="text-4xl font-black uppercase italic tracking-tighter mb-2">Admin Duty</CardTitle>
+                        <CardDescription className="text-zinc-500 font-medium italic lowercase">Choose your department</CardDescription>
                     </CardHeader>
                     <CardContent className="p-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[
                             { id: 'marketing', title: 'Marketing', icon: Zap, color: 'text-orange-400' },
-                            { id: 'operations', title: 'Operations', icon: Briefcase, desc: 'Ops & Escrow', color: 'text-red-400' },
-                            { id: 'technical', title: 'Technical', icon: Loader2, desc: 'System Core', color: 'text-blue-400' },
-                            { id: 'ceo', title: 'Central', icon: Lock, desc: 'CEO Command', color: 'text-red-500' }
+                            { id: 'operations', title: 'Operations', icon: Briefcase, desc: 'Escrow Team', color: 'text-red-400' },
+                            { id: 'technical', title: 'Technical', icon: Loader2, desc: 'Development', color: 'text-blue-400' },
+                            { id: 'ceo', title: 'Central', icon: Lock, desc: 'Main', color: 'text-red-500' }
                         ].map(dept => (
                             <button
                                 key={dept.id}
@@ -548,14 +548,14 @@ function SignupContent() {
                             <Lock className="h-10 w-10 text-[#FF6600] animate-bounce" />
                             <div className="absolute inset-0 rounded-full border border-[#FF6600]/30 animate-ping opacity-25" />
                         </div>
-                        <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-4">Signal Transmitted</CardTitle>
+                        <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-4">Code Sent</CardTitle>
                         <CardDescription className="text-zinc-500 font-medium leading-relaxed">
-                            We have dispatched a verification code to <br /><span className="text-white font-bold">{formData.email}</span>.
+                            We have sent a verification code to <br /><span className="text-white font-bold">{formData.email}</span>.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="p-0 space-y-6 text-center">
                         <div className="p-4 bg-zinc-900/50 rounded-2xl border border-white/5">
-                            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mb-1">Secure Protocol</p>
+                            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mb-1">Verification</p>
                             <p className="text-sm text-white font-medium">Please enter the code sent to your inbox.</p>
                         </div>
 
@@ -563,7 +563,7 @@ function SignupContent() {
 
                         <form onSubmit={handleVerification} className="space-y-6">
                             <div className="space-y-2">
-                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600">Activation Code</label>
+                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600">Verification Code</label>
                                 <input
                                     value={otpCode}
                                     onChange={(e) => setOtpCode(e.target.value)}
@@ -574,7 +574,7 @@ function SignupContent() {
                             </div>
 
                             <Button type="submit" className="w-full h-14 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-zinc-200 transition-all" disabled={isVerifying}>
-                                {isVerifying ? <Loader2 className="animate-spin h-5 w-5" /> : "Initialize Node"}
+                                {isVerifying ? <Loader2 className="animate-spin h-5 w-5" /> : "Finalize Signup"}
                             </Button>
                         </form>
 
@@ -595,10 +595,10 @@ function SignupContent() {
                     <CardHeader className="p-0 text-center mb-10">
                         <Button variant="ghost" onClick={() => initialRole ? router.push('/') : setStep('role')} className="text-zinc-600 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> {initialRole ? 'Cancel' : 'Back'}</Button>
                         <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2">
-                            {['student_seller', 'dealer'].includes(role) ? 'Seller Verification' : 'Verification Channel'}
+                            {['student_seller', 'dealer'].includes(role) ? 'Become a Seller' : 'How to Join'}
                         </CardTitle>
                         <CardDescription className="text-zinc-500 font-medium italic lowercase">
-                            {['student_seller', 'dealer'].includes(role) ? 'establish your secure business path' : 'choose your identity entry point'}
+                            {['student_seller', 'dealer'].includes(role) ? 'set up your account safely' : 'choose how to sign up'}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="p-0 space-y-6 pb-8">
@@ -609,20 +609,20 @@ function SignupContent() {
                                     className="w-full h-16 rounded-[1.5rem] border-white/10 hover:bg-white/5 text-white font-bold uppercase tracking-widest group transition-all"
                                     onClick={() => signInWithGoogle(`${window.location.origin}/auth/callback?next=/signup`)}
                                 >
-                                    <Globe className="mr-3 h-5 w-5 text-blue-500 group-hover:scale-110 transition-transform" /> Google Identity Hub
+                                    <Globe className="mr-3 h-5 w-5 text-blue-500 group-hover:scale-110 transition-transform" /> Sign up with Google
                                 </Button>
                             )}
                             {['student_seller', 'dealer'].includes(role) && (
-                                <p className="text-[10px] text-zinc-500 text-center font-bold uppercase py-4">Sellers must use the direct email path for verification</p>
+                                <p className="text-[10px] text-zinc-500 text-center font-bold uppercase py-4">Sellers should use email and password to stay safe</p>
                             )}
                         </div>
 
                         <div className="relative flex items-center justify-center py-4">
                             <div className="absolute inset-x-0 h-px bg-white/5"></div>
-                            <span className="relative bg-black px-4 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-800">Protocol Selection</span>
+                            <span className="relative bg-black px-4 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-800">Or</span>
                         </div>
                         <Button className="w-full h-16 rounded-[1.5rem] bg-white border border-white/10 text-black font-black uppercase tracking-widest hover:scale-[1.02] transition-all" onClick={() => setStep('details')}>
-                            <Mail className="mr-3 h-5 w-5" /> Direct Email Path
+                            <Mail className="mr-3 h-5 w-5" /> Use Email & Password
                         </Button>
                     </CardContent>
                 </Card>
@@ -637,15 +637,15 @@ function SignupContent() {
             <Card className="w-full max-w-xl glass-card border-none rounded-[3rem] p-12 text-white relative z-10 shadow-2xl">
                 <CardHeader className="p-0 mb-8 text-left">
                     <div className="flex justify-between items-start mb-6">
-                        <Button variant="ghost" onClick={() => setStep('auth-method')} className="text-zinc-600 hover:text-white p-0 h-auto text-[10px] font-black uppercase tracking-widest"><ArrowLeft className="mr-2 h-3 w-3" /> Secure Gate</Button>
+                        <Button variant="ghost" onClick={() => setStep('auth-method')} className="text-zinc-600 hover:text-white p-0 h-auto text-[10px] font-black uppercase tracking-widest"><ArrowLeft className="mr-2 h-3 w-3" /> Back</Button>
                         <Logo showText={false} className="opacity-50" />
                     </div>
 
                     <StepProgress currentStep={step} role={role} />
 
-                    <CardTitle className="text-4xl font-black uppercase italic tracking-tighter mb-2">Establish Identity</CardTitle>
+                    <CardTitle className="text-4xl font-black uppercase italic tracking-tighter mb-2">Join MarketBridge</CardTitle>
                     <CardDescription className="text-zinc-500 font-medium italic lowercase">
-                        {['student_seller', 'dealer'].includes(role) ? `Establishing verified merchant node` : "Please define your global attributes"}
+                        {['student_seller', 'dealer'].includes(role) ? `Setting up your seller account` : "Please fill in your details"}
                     </CardDescription>
                 </CardHeader>
 
@@ -676,7 +676,7 @@ function SignupContent() {
                                     </label>
                                     {sessionUser && (
                                         <span className="text-[8px] font-black text-[#FF6600] uppercase tracking-widest bg-[#FF6600]/10 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                            <Globe className="h-2 w-2" /> Linked Google Hub
+                                            <Globe className="h-2 w-2" /> Connected to Google
                                         </span>
                                     )}
                                 </div>
