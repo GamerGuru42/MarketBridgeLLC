@@ -20,7 +20,7 @@ function OnboardingContent() {
     const searchParams = useSearchParams();
     const forcedRole = searchParams.get('role');
     const selectedPlan = searchParams.get('plan');
-    const selectedCycle = searchParams.get('cycle') || 'monthly';
+    const selectedCycle = searchParams.get('billing') || 'monthly';
     const { user, sessionUser, loading: authLoading, refreshUser } = useAuth();
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState(1);
@@ -107,7 +107,7 @@ function OnboardingContent() {
             // Direct Redirect Logic
             if (formData.role === 'student_seller' || formData.role === 'dealer') {
                 if (selectedPlan) {
-                    router.push(`/checkout/subscription?plan=${selectedPlan}&cycle=${selectedCycle}`);
+                    router.push(`/checkout/subscription?plan=${selectedPlan}&billing=${selectedCycle}`);
                 } else {
                     router.push('/pricing');
                 }

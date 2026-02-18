@@ -68,7 +68,7 @@ export default function AdminPage() {
     useEffect(() => {
         const fetchGlobalStats = async () => {
             // Operstions: Pending Verifications + Pending Orders
-            const { count: pendingVerifications } = await supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'dealer').eq('is_verified', false);
+            const { count: pendingVerifications } = await supabase.from('users').select('*', { count: 'exact', head: true }).in('role', ['dealer', 'student_seller']).eq('is_verified', false);
             const { count: pendingOrders } = await supabase.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'pending');
 
             // Marketing: Total Users

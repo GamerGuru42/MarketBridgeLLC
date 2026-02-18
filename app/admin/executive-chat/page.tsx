@@ -22,19 +22,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 
 // Executive Chat connected to Supabase
-const CHANNELS = [
-    { id: 'gen', name: 'general-ops', type: 'public' },
-    { id: 'strat', name: 'ceo-strategy', type: 'private' },
-    { id: 'tech', name: 'tech-signals', type: 'public' },
-    { id: 'abj', name: 'ops-abuja', type: 'public' },
-    { id: 'ceo-direct', name: 'ceo-direct', type: 'private', isDM: true, label: 'CEO (Admin)' },
-    { id: 'cto-hub', name: 'cto-hub', type: 'private', isDM: true, label: 'CTO Hub' },
-] as const;
-
 import { supabase } from '@/lib/supabase';
-
-// Helper Type
-type ChannelId = typeof CHANNELS[number]['id'];
 type DbMessage = {
     id: string;
     channel_id: string;
@@ -49,12 +37,38 @@ type DbMessage = {
 }
 
 export default function ExecutiveChatPage() {
-    const { user, loading } = useAuth();
-    const [messages, setMessages] = useState<any[]>([]); // Use 'any' or proper type
+    const { user, loading: authLoading } = useAuth();
+    const [messages, setMessages] = useState<any[]>([]);
+    const [channels, setChannels] = useState<any[]>([]);
     const [newMessage, setNewMessage] = useState('');
-    const [activeChannel, setActiveChannel] = useState<typeof CHANNELS[number]>(CHANNELS[0]);
+    const [activeChannel, setActiveChannel] = useState<any>(null);
+    const [loadingMessages, setLoadingMessages] = useState(false);
     const chatEndRef = useRef<HTMLDivElement>(null);
     const [error, setError] = useState<string | null>(null);
+
+    // 1. Fetch Channels
+    useEffect(() => {
+        const fetchChannels = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('admin_channels')
+                    .select('*')
+                    .order('is_dm', { ascending: true })
+                    .order('name', { ascending: true });
+
+                if (error) throw error;
+                setChannels(data || []);
+                if (data && data.length > 0) {
+                    setActiveChannel(data[0]);
+                }
+            } catch (err) {
+                console.error('Failed to fetch channels:', err);
+                setError('Failed to load command channels.');
+            }
+        };
+
+        if (user) fetchChannels();
+    }, [user]);
 
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -62,11 +76,12 @@ export default function ExecutiveChatPage() {
 
     // Load and Subscribe
     useEffect(() => {
-        if (!user) return;
+        if (!user || !activeChannel) return;
 
         // 1. Fetch existing messages for channel
         const loadMessages = async () => {
             setError(null);
+            setLoadingMessages(true);
             try {
                 const { data, error } = await supabase
                     .from('admin_channel_messages')
@@ -105,7 +120,8 @@ export default function ExecutiveChatPage() {
                 setMessages(mapped);
             } catch (err) {
                 console.error('Chat Load Error:', err);
-                // Fallback to empty if critical failure, user will see empty state
+            } finally {
+                setLoadingMessages(false);
             }
         };
 
@@ -176,7 +192,19 @@ export default function ExecutiveChatPage() {
         }
     };
 
-    if (loading) return <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>;
+    if (authLoading) return <div className="flex h-[calc(100vh-140px)] items-center justify-center bg-slate-950 rounded-xl border border-slate-800"><Loader2 className="animate-spin text-primary" /></div>;
+
+    if (!activeChannel && !loadingMessages) {
+        return (
+            <div className="flex h-[calc(100vh-140px)] flex-col items-center justify-center bg-slate-950 rounded-xl border border-slate-800 text-center p-8">
+                <MessageSquare className="h-12 w-12 text-slate-800 mb-4" />
+                <h3 className="text-xl font-bold text-white mb-2">No Comm Channels Found</h3>
+                <p className="text-slate-500 max-w-md">Initialize the admin infrastructure using the provided SQL script to activate executive communication.</p>
+            </div>
+        );
+    }
+
+    if (!activeChannel) return <div className="flex h-[calc(100vh-140px)] items-center justify-center bg-slate-950 rounded-xl border border-slate-800"><Loader2 className="animate-spin text-primary" /></div>;
 
     // Filter logic not needed on client side as we fetch per channel
     // but we reuse the variable for render
@@ -204,7 +232,7 @@ export default function ExecutiveChatPage() {
 
                     <div className="space-y-1 px-2">
                         <p className="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Channels</p>
-                        {CHANNELS.filter(ch => !('isDM' in ch)).map(ch => (
+                        {channels.filter(ch => !ch.is_dm).map(ch => (
                             <button
                                 key={ch.id}
                                 onClick={() => setActiveChannel(ch)}
@@ -218,7 +246,7 @@ export default function ExecutiveChatPage() {
 
                     <div className="mt-8 space-y-1 px-2">
                         <p className="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Direct Messages</p>
-                        {CHANNELS.filter(ch => 'isDM' in ch).map((ch: any) => (
+                        {channels.filter(ch => ch.is_dm).map((ch: any) => (
                             <button
                                 key={ch.id}
                                 onClick={() => setActiveChannel(ch)}
@@ -266,12 +294,16 @@ export default function ExecutiveChatPage() {
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide">
-                    {filteredMessages.length === 0 && !error && (
+                    {loadingMessages ? (
+                        <div className="h-full flex items-center justify-center">
+                            <Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" />
+                        </div>
+                    ) : filteredMessages.length === 0 && !error ? (
                         <div className="h-full flex flex-col items-center justify-center opacity-20">
                             <MessageSquare className="h-12 w-12 mb-2" />
                             <p className="text-sm font-medium">No intelligence reports in this channel yet.</p>
                         </div>
-                    )}
+                    ) : null}
                     {filteredMessages.map((msg) => (
                         <div key={msg.id} className={`flex gap-4 group ${msg.author === (user?.displayName || 'Unknown') ? 'flex-row-reverse' : ''}`}>
                             <Avatar className="h-9 w-9 shrink-0 ring-2 ring-slate-800 group-hover:ring-primary/40 transition-all">

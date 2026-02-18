@@ -64,7 +64,7 @@ export default function PricingPage() {
         }
     };
 
-    const handleSelectPlan = (planId: string) => {
+    const handleSelectPlan = async (planId: string) => {
         if (!user) {
             router.push(`/signup?plan=${planId}`);
             return;
@@ -81,7 +81,40 @@ export default function PricingPage() {
             return;
         }
 
-        router.push(`/checkout/subscription?plan=${planId}&cycle=${isAnnual ? 'annual' : 'monthly'}`);
+        if (planId === 'free') {
+            setLoading(true);
+            try {
+                // Activate free plan
+                const { error: subError } = await supabase
+                    .from('subscriptions')
+                    .upsert({
+                        user_id: user.id,
+                        plan_id: 'free',
+                        status: 'active',
+                        current_period_start: new Date().toISOString(),
+                        current_period_end: new Date(new Date().setFullYear(new Date().getFullYear() + 10)).toISOString() // Permanent-ish
+                    }, { onConflict: 'user_id' });
+
+                if (subError) throw subError;
+
+                // Mark onboarding as complete and update profile
+                await supabase.from('users').update({
+                    subscription_status: 'active',
+                    subscription_plan_id: 'free'
+                }).eq('id', user.id);
+
+                toast('Free Terminal Activated. Trade freely.', 'success');
+                router.push('/seller/dashboard');
+            } catch (err) {
+                console.error('Activation failed:', err);
+                toast('Network Error: Manual activation required.', 'error');
+            } finally {
+                setLoading(false);
+            }
+            return;
+        }
+
+        router.push(`/checkout/subscription?plan=${planId}&billing=${isAnnual ? 'annual' : 'monthly'}`);
     };
 
     const getPlanIcon = (planId: string) => {

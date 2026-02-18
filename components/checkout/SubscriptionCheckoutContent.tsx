@@ -5,10 +5,8 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Check, Copy, ShieldCheck, University, Loader2, AlertCircle, ArrowRight, Zap, ArrowLeft } from 'lucide-react';
+import { ShieldCheck, Loader2, AlertCircle, Zap, ArrowLeft } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { useToast } from '@/contexts/ToastContext';
 import { usePaystackPayment } from 'react-paystack';
@@ -95,6 +93,7 @@ export default function SubscriptionCheckoutContent() {
         }
     }, [user, authLoading, planId]);
 
+
     const fetchPlanDetails = async () => {
         try {
             const { data, error } = await supabase
@@ -158,7 +157,6 @@ export default function SubscriptionCheckoutContent() {
                         </Alert>
                     )}
 
-                    {/* Paystack Automated Payment */}
                     <div className="space-y-6">
                         <Button
                             onClick={() => {
@@ -188,11 +186,11 @@ export default function SubscriptionCheckoutContent() {
                                 <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Instant Activation</span>
                             </div>
                         </div>
-
-                        <p className="text-[10px] text-zinc-600 text-center font-bold uppercase tracking-widest">
-                            By clicking launch, you agree to the subscription terms of service.
-                        </p>
                     </div>
+
+                    <p className="text-[10px] text-zinc-600 text-center font-bold uppercase tracking-widest mt-8">
+                        By proceeding, you agree to the MarketBridge subscription protocols.
+                    </p>
                 </div>
 
                 <div className="mt-12 text-center">
@@ -201,7 +199,7 @@ export default function SubscriptionCheckoutContent() {
                         onClick={() => router.back()}
                         className="text-zinc-500 hover:text-white font-black uppercase tracking-widest text-[10px]"
                     >
-                        <ArrowLeft className="mr-2 h-3 w-3" /> Cancel & Return
+                        <ArrowLeft className="mr-2 h-3 w-3" /> Abort Session
                     </Button>
                 </div>
             </div>

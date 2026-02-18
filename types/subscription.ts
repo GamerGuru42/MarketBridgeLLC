@@ -11,9 +11,14 @@ export type SubscriptionStatus =
     | 'active'      // Subscription is active and paid
     | 'cancelled'   // Subscription cancelled, access until period end
     | 'past_due'    // Payment failed, grace period
-    | 'trialing'    // In trial period
+    | 'trialing'    // In trial period (Automated system)
+    | 'trial'       // In trial period (Legacy/Manual)
     | 'paused'      // Temporarily paused by user
-    | 'pending';    // Awaiting first payment
+    | 'expired'     // Subscription has expired
+    | 'inactive'    // Subscription is inactive
+    | 'pending'     // Awaiting first payment
+    | 'pending_payment' // Awaiting payment
+    | 'pending_verification'; // Awaiting verification
 
 export type BillingCycle = 'monthly' | 'annual';
 

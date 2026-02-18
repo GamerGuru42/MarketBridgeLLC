@@ -33,7 +33,7 @@ interface Listing {
     created_at: string;
 }
 
-export default function DealerListingsPage() {
+export default function SellerListingsPage() {
     const { user, sessionUser, loading: authLoading } = useAuth();
     const router = useRouter();
     const [listings, setListings] = useState<Listing[]>([]);
@@ -176,7 +176,7 @@ export default function DealerListingsPage() {
                     <p className="text-muted-foreground mt-2">Manage your marketplace assets and deployment status.</p>
                 </div>
                 <Button asChild className="font-black uppercase tracking-widest italic shadow-xl shadow-primary/20">
-                    <Link href="/dealer/listings/new">
+                    <Link href="/seller/listings/new">
                         <Plus className="mr-2 h-4 w-4" />
                         Deploy New Asset
                     </Link>
@@ -192,7 +192,7 @@ export default function DealerListingsPage() {
                         <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-2">Zero Inventory Detected</h3>
                         <p className="text-muted-foreground mb-8 text-sm italic">You haven't deployed any assets to the marketplace yet.</p>
                         <Button asChild className="px-10 h-12 font-bold uppercase tracking-widest text-xs">
-                            <Link href="/dealer/listings/new">
+                            <Link href="/seller/listings/new">
                                 <Plus className="mr-2 h-4 w-4" />
                                 Create First Listing
                             </Link>
@@ -244,7 +244,7 @@ export default function DealerListingsPage() {
                                         </Link>
                                     </Button>
                                     <Button asChild variant="outline" size="sm" className="font-bold border-slate-200 dark:border-slate-800 hover:bg-primary/5">
-                                        <Link href={`/dealer/listings/${listing.id}/edit`}>
+                                        <Link href={`/seller/listings/${listing.id}/edit`}>
                                             <Edit className="mr-2 h-3.5 w-3.5" />
                                             MODIFY
                                         </Link>

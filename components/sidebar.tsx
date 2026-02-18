@@ -47,7 +47,7 @@ export function Sidebar({ items, title, className }: SidebarProps) {
                             // 3. Prevent root path '/' or '/admin' from matching everything unless exactly on it
 
                             const isExact = pathname === item.href;
-                            const isSubPath = pathname?.startsWith(item.href) && item.href !== '/' && item.href !== '/admin' && item.href !== '/ceo' && item.href !== '/dealer/dashboard';
+                            const isSubPath = pathname?.startsWith(item.href) && item.href !== '/' && item.href !== '/admin' && item.href !== '/ceo' && item.href !== '/seller/dashboard';
 
                             // To prevent multiple highlights, we prioritize exact matches.
                             // If we are on a subpath, we ensure we don't highlight the parent dashboard if a more specific link exists?

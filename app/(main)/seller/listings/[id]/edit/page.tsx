@@ -51,7 +51,7 @@ export default function EditListingPage() {
             return;
         }
 
-        if (user && user.role !== 'dealer') {
+        if (user && !['dealer', 'student_seller', 'ceo', 'admin'].includes(user.role)) {
             router.push('/');
             return;
         }
@@ -76,7 +76,7 @@ export default function EditListingPage() {
 
             if (!data) {
                 alert('Asset signal lost or unauthorized access.');
-                router.push('/dealer/listings');
+                router.push('/seller/listings');
                 return;
             }
 
@@ -93,7 +93,7 @@ export default function EditListingPage() {
         } catch (err: unknown) {
             console.error('Failed to fetch listing:', err);
             alert('Failed to synchronize asset data.');
-            router.push('/dealer/listings');
+            router.push('/seller/listings');
         } finally {
             setLoading(false);
         }
@@ -128,7 +128,7 @@ export default function EditListingPage() {
 
             if (error) throw error;
 
-            router.push('/dealer/listings');
+            router.push('/seller/listings');
         } catch (err: unknown) {
             console.error('Failed to update listing:', err);
             const message = err instanceof Error ? err.message : 'Protocol synchronization failed';
@@ -157,7 +157,7 @@ export default function EditListingPage() {
                     <Activity className="h-12 w-12 text-red-500 mx-auto mb-6" />
                     <p className="text-red-400 font-black uppercase tracking-widest text-xs mb-8">Asset Signal Not Found</p>
                     <Button asChild className="bg-white/10 text-white hover:bg-white/20 rounded-2xl h-14 px-10 font-black uppercase tracking-widest text-[10px] italic">
-                        <Link href="/dealer/listings"><ArrowLeft className="mr-2 h-4 w-4" /> Return to Terminal</Link>
+                        <Link href="/seller/listings"><ArrowLeft className="mr-2 h-4 w-4" /> Return to Terminal</Link>
                     </Button>
                 </div>
             </div>
@@ -171,7 +171,7 @@ export default function EditListingPage() {
             <div className="container px-6 mx-auto relative z-10 max-w-4xl space-y-12">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/5 pb-10">
                     <div className="space-y-4">
-                        <Link href="/dealer/listings" className="inline-flex items-center text-zinc-500 hover:text-[#FF6600] transition-colors text-[10px] font-black uppercase tracking-widest font-heading mb-4">
+                        <Link href="/seller/listings" className="inline-flex items-center text-zinc-500 hover:text-[#FF6600] transition-colors text-[10px] font-black uppercase tracking-widest font-heading mb-4">
                             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Inventory
                         </Link>
                         <div className="flex items-center gap-3">
@@ -317,7 +317,7 @@ export default function EditListingPage() {
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={() => router.push('/dealer/listings')}
+                                onClick={() => router.push('/seller/listings')}
                                 disabled={saving}
                                 className="h-20 px-12 rounded-[1.5rem] bg-transparent border-white/10 text-white font-black uppercase tracking-[0.3em] text-[10px] font-heading hover:bg-white/5 transition-all"
                             >

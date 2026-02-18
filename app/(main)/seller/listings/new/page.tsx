@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { ImageUpload } from '@/components/ImageUpload';
 import { VideoUpload } from '@/components/VideoUpload';
 import { CATEGORIES } from '@/lib/categories';
+import { canCreateListing } from '@/lib/subscription/utils';
 
 export default function NewListingPage() {
     const router = useRouter();
@@ -67,25 +68,10 @@ export default function NewListingPage() {
             }
 
             // ENFORCE PLAN LIMITS
-            const { count: listingCount, error: countError } = await supabase
-                .from('listings')
-                .select('id', { count: 'exact', head: true })
-                .eq('dealer_id', user.id);
+            const { allowed, reason } = await canCreateListing(user.id);
 
-            if (countError) throw countError;
-
-            if (countError) throw countError;
-
-            // user is our custom User type (mapped in AuthContext)
-            // Use the subscriptionPlan property directly
-            const plan = user.subscriptionPlan || 'starter';
-
-            let limit = 5; // Starter limit
-            if (plan === 'professional') limit = 50;
-            if (plan === 'enterprise') limit = 999999; // Unlimited
-
-            if ((listingCount || 0) >= limit) {
-                alert(`You have reached the listing limit for your ${plan.toUpperCase()} plan (${limit} listings). Please upgrade to add more.`);
+            if (!allowed) {
+                alert(reason || 'Listing limit reached.');
                 setLoading(false);
                 return;
             }
@@ -108,7 +94,7 @@ export default function NewListingPage() {
 
             if (error) throw error;
 
-            router.push('/dealer/listings');
+            router.push('/seller/listings');
         } catch (err: unknown) {
             console.error('Failed to create listing:', err);
             const message = err instanceof Error ? err.message : 'Failed to create listing';
@@ -136,7 +122,7 @@ export default function NewListingPage() {
                 {/* Header section with back button */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/5 pb-10">
                     <div className="space-y-4">
-                        <Link href="/dealer/dashboard" className="inline-flex items-center text-zinc-500 hover:text-[#FF6600] transition-colors text-[10px] font-black uppercase tracking-widest font-heading mb-4">
+                        <Link href="/seller/dashboard" className="inline-flex items-center text-zinc-500 hover:text-[#FF6600] transition-colors text-[10px] font-black uppercase tracking-widest font-heading mb-4">
                             <ArrowLeft className="mr-2 h-4 w-4" /> Return to Terminal
                         </Link>
                         <div className="flex items-center gap-3">
@@ -291,7 +277,7 @@ export default function NewListingPage() {
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={() => router.push('/dealer/dashboard')}
+                                onClick={() => router.push('/seller/dashboard')}
                                 disabled={loading}
                                 className="h-20 px-12 rounded-[1.5rem] bg-transparent border-white/10 text-white font-black uppercase tracking-[0.3em] text-[10px] font-heading hover:bg-white/5 transition-all"
                             >

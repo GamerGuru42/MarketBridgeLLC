@@ -172,7 +172,7 @@ export default function SettingsPage() {
                             onClick={() => {
                                 if (user.role === 'ceo') window.location.href = '/ceo';
                                 else if (user.role === 'admin' || user.role.includes('_admin')) window.location.href = '/admin';
-                                else if (user.role === 'dealer') window.location.href = '/dealer/dashboard';
+                                else if (user.role === 'dealer') window.location.href = '/seller/dashboard';
                                 else window.location.href = '/';
                             }}
                         >

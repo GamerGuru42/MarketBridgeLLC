@@ -5,7 +5,7 @@
 -- 0. Extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- 1. Initialize Essential Admin Tables (If missing)
+-- 1. Initialize/Fix Essential Admin Tables
 CREATE TABLE IF NOT EXISTS public.admin_channels (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
@@ -13,11 +13,24 @@ CREATE TABLE IF NOT EXISTS public.admin_channels (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ADD MISSING COLUMNS to admin_channels if they don't exist
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='admin_channels' AND column_name='label') THEN
+        ALTER TABLE public.admin_channels ADD COLUMN label TEXT;
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='admin_channels' AND column_name='is_dm') THEN
+        ALTER TABLE public.admin_channels ADD COLUMN is_dm BOOLEAN DEFAULT FALSE;
+    END IF;
+END $$;
+
 CREATE TABLE IF NOT EXISTS public.admin_channel_messages (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     channel_id TEXT REFERENCES public.admin_channels(id) ON DELETE CASCADE,
     sender_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
     content TEXT NOT NULL,
+    role TEXT, -- Cached role for performance
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -104,7 +117,7 @@ WHERE role IN ('ceo', 'admin', 'technical_admin', 'operations_admin', 'marketing
 AND is_verified = FALSE;
 
 -- ========================================
--- PART 4: Proposals/Memos System
+-- PART 4: Proposals/Memos System (Secure)
 -- ========================================
 
 CREATE TABLE IF NOT EXISTS public.proposals (
@@ -125,26 +138,56 @@ CREATE INDEX IF NOT EXISTS idx_proposals_created ON public.proposals(created_at 
 
 ALTER TABLE public.proposals ENABLE ROW LEVEL SECURITY;
 
+-- Drop standard policies
 DROP POLICY IF EXISTS "Admins can view all proposals" ON public.proposals;
 DROP POLICY IF EXISTS "Admins can create proposals" ON public.proposals;
 DROP POLICY IF EXISTS "Admins can update proposals" ON public.proposals;
+DROP POLICY IF EXISTS "Admins/CEO can view all proposals" ON public.proposals;
+DROP POLICY IF EXISTS "Admins/CEO can create proposals" ON public.proposals;
+DROP POLICY IF EXISTS "Admins/CEO can update proposals" ON public.proposals;
 
-CREATE POLICY "Admins can view all proposals" ON public.proposals FOR SELECT USING (auth.role() = 'authenticated');
-CREATE POLICY "Admins can create proposals" ON public.proposals FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-CREATE POLICY "Admins can update proposals" ON public.proposals FOR UPDATE USING (auth.role() = 'authenticated');
+-- NEW: Tie Proposals to Admin/CEO roles specifically
+CREATE POLICY "Admins/CEO can view all proposals" ON public.proposals 
+    FOR SELECT USING (
+        EXISTS (
+            SELECT 1 FROM users 
+            WHERE users.id = auth.uid() 
+            AND users.role IN ('admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'cto', 'coo', 'ceo', 'cofounder')
+        )
+    );
+
+CREATE POLICY "Admins/CEO can create proposals" ON public.proposals 
+    FOR INSERT WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM users 
+            WHERE users.id = auth.uid() 
+            AND users.role IN ('admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'cto', 'coo', 'ceo', 'cofounder')
+        )
+    );
+
+CREATE POLICY "Admins/CEO can update proposals" ON public.proposals 
+    FOR UPDATE USING (
+        EXISTS (
+            SELECT 1 FROM users 
+            WHERE users.id = auth.uid() 
+            AND users.role IN ('admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'cto', 'coo', 'ceo', 'cofounder')
+        )
+    );
 
 -- ========================================
 -- PART 5: Initialize Admin Channels & Realtime
 -- ========================================
 
-INSERT INTO public.admin_channels (id, name, type) VALUES
-('gen', 'general-ops', 'public'),
-('strat', 'ceo-strategy', 'private'),
-('tech', 'tech-signals', 'public'),
-('abj', 'ops-abuja', 'public'),
-('ceo-direct', 'ceo-direct', 'private'),
-('cto-hub', 'cto-hub', 'private')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.admin_channels (id, name, label, type, is_dm) VALUES
+('gen', 'general-ops', 'General Ops', 'public', FALSE),
+('strat', 'ceo-strategy', 'CEO Strategy', 'private', FALSE),
+('tech', 'tech-signals', 'Tech Signals', 'public', FALSE),
+('abj', 'ops-abuja', 'Abuja Node', 'public', FALSE),
+('ceo-direct', 'ceo-direct', 'CEO Direct', 'private', TRUE),
+('cto-hub', 'cto-hub', 'CTO Hub', 'private', TRUE)
+ON CONFLICT (id) DO UPDATE SET 
+    label = EXCLUDED.label,
+    is_dm = EXCLUDED.is_dm;
 
 -- Enable Realtime
 DO $$
@@ -154,7 +197,6 @@ BEGIN
     END IF;
     
     -- Add tables to the publication
-    -- We use separate BEGIN blocks to ignore errors if a table is already in the publication
     BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE admin_channel_messages; EXCEPTION WHEN others THEN NULL; END;
     BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE admin_channels; EXCEPTION WHEN others THEN NULL; END;
     BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE messages; EXCEPTION WHEN others THEN NULL; END;

@@ -35,7 +35,7 @@ export default function LoginPage() {
             // Check if user is trying to login to a different role than they have
             // Or just redirect them to their dashboard
             if (['dealer', 'student_seller'].includes(user.role)) {
-                router.push('/dealer/dashboard');
+                router.push('/seller/dashboard');
             } else if (user.role === 'ceo') {
                 router.push('/ceo');
             } else if (user.role === 'technical_admin') {

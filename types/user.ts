@@ -1,5 +1,4 @@
-export type SubscriptionPlan = 'starter' | 'professional' | 'enterprise';
-export type SubscriptionStatus = 'active' | 'inactive' | 'trial' | 'expired' | 'pending_payment' | 'pending_verification';
+import { SubscriptionPlanId, SubscriptionStatus } from './subscription';
 
 export interface User {
     id: string; // Supabase UUID
@@ -15,7 +14,7 @@ export interface User {
     businessName?: string;
     cacNumber?: string;
     wishlist?: string[];
-    subscriptionPlan?: SubscriptionPlan;
+    subscriptionPlan?: SubscriptionPlanId;
     subscriptionStatus?: SubscriptionStatus;
     subscriptionStartDate?: string;
     subscriptionEndDate?: string;
@@ -42,7 +41,7 @@ export interface FirestoreUser {
     googleId: string | null;
     wishlist: string[];
     createdAt: string;
-    subscriptionPlan: SubscriptionPlan;
+    subscriptionPlan: SubscriptionPlanId;
     subscriptionStatus: SubscriptionStatus;
     subscriptionStartDate: string | null;
     subscriptionEndDate: string | null;

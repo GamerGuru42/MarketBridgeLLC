@@ -61,7 +61,7 @@ function SignupContent() {
     useEffect(() => {
         if (!authLoading && sessionUser && user) {
             if (['student_seller', 'dealer'].includes(user.role)) {
-                router.push('/dealer/dashboard');
+                router.push('/seller/dashboard');
             } else if (user.role === 'ceo') {
                 router.push('/ceo');
             } else {
@@ -400,7 +400,7 @@ function SignupContent() {
                 // Auto-login or already logged in scenario
                 await refreshUser(authData.user.id);
                 if (isMerchant) {
-                    router.push('/dealer/dashboard');
+                    router.push('/seller/dashboard');
                 } else if (role === 'ceo') {
                     router.push('/ceo');
                 } else {

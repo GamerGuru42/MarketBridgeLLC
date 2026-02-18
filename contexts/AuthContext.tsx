@@ -80,7 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     isVerified: data.is_verified,
                     storeType: data.store_type,
                     businessName: data.business_name,
-                    subscriptionPlan: data.subscription_plan,
+                    subscriptionPlan: data.subscription_plan_id,
                     subscriptionStatus: data.subscription_status,
                     subscriptionStartDate: data.subscription_start_date,
                     subscriptionEndDate: data.subscription_end_date,

@@ -14,7 +14,7 @@ export const MobileBottomNav = () => {
     const { itemCount } = useCart();
 
     // Don't show on certain pages
-    const isProtectedPath = pathname?.startsWith('/admin') || pathname?.startsWith('/dealer');
+    const isProtectedPath = pathname?.startsWith('/admin') || pathname?.startsWith('/seller');
     if (isProtectedPath) {
         return null;
     }
@@ -51,7 +51,7 @@ export const MobileBottomNav = () => {
                 if (['operations_admin', 'head_of_operations_admin'].includes(role)) return '/admin/operations';
                 if (role === 'technical_admin') return '/admin/technical';
                 if (['admin', 'super_admin'].includes(role)) return '/admin';
-                if (['dealer', 'student_seller'].includes(role)) return '/dealer/dashboard';
+                if (['dealer', 'student_seller'].includes(role)) return '/seller/dashboard';
                 return '/orders';
             })(),
             label: (user && ['ceo', 'cofounder', 'cto', 'coo', 'admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'head_of_operations_admin', 'super_admin'].includes(user.role)) ? 'Command' : (user ? 'Account' : 'Login'),

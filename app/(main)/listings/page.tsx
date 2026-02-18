@@ -70,6 +70,29 @@ function ListingsContent() {
 
     useEffect(() => {
         fetchListings();
+
+        // Real-time subscription for new listings
+        const channel = supabase
+            .channel('public:listings')
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'listings',
+                    filter: 'status=eq.active'
+                },
+                (payload) => {
+                    console.log('New listing detected:', payload);
+                    // Refresh listings to get joined dealer data properly
+                    fetchListings();
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
     }, [category, condition, location, search]);
 
     const fetchListings = async () => {
@@ -184,11 +207,11 @@ function ListingsContent() {
                         </Button>
                     </div>
 
-                    {/* Teaser Background (Blurred Listings) */}
-                    <div className="absolute inset-x-0 bottom-0 h-64 opacity-50 mask-linear-fade pointer-events-none -z-10 overflow-hidden">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 filter blur-sm transform translate-y-10">
-                            {COMPREHENSIVE_MOCK_LISTINGS.slice(0, 4).map((item, i) => (
-                                <div key={i} className="bg-zinc-900/50 rounded-xl h-48 border border-white/5 mx-2"></div>
+                    {/* Teaser Background (Blurred Listings) - Real but hidden */}
+                    <div className="absolute inset-x-0 bottom-0 h-64 opacity-30 mask-linear-fade pointer-events-none -z-10 overflow-hidden">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 filter blur-xl transform translate-y-10">
+                            {[1, 2, 3, 4].map((item) => (
+                                <div key={item} className="bg-zinc-900/50 rounded-xl h-48 border border-white/5 mx-2"></div>
                             ))}
                         </div>
                     </div>

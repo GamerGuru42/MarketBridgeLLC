@@ -43,6 +43,7 @@ import {
 import { cn } from '@/lib/utils';
 import { SellerGuide } from '@/components/SellerGuide';
 import { TrialBanner } from '@/components/subscription/TrialBanner';
+import { checkAndHandleExpiredTrial } from '@/lib/subscription/utils';
 
 interface Order {
     id: string;
@@ -156,23 +157,17 @@ export default function SellerDashboardPage() {
     }, [user, sessionUser, authLoading, router]);
 
     const checkSubscriptionStatus = async () => {
-        if (!user || !user.subscription_expires_at) return;
+        if (!user) return;
 
-        const now = new Date();
-        const expiryDate = new Date(user.subscription_expires_at);
-
-        if (now > expiryDate && (user.subscriptionStatus === 'trial' || user.subscriptionStatus === 'active')) {
-            await supabase
-                .from('users')
-                .update({
-                    subscription_plan: 'starter',
-                    subscription_status: 'inactive',
-                    listing_limit: 5
-                })
-                .eq('id', user.id);
-
-            // Refresh data without page reload
-            fetchOrders();
+        try {
+            const hasExpired = await checkAndHandleExpiredTrial(user.id);
+            if (hasExpired) {
+                // If trial was handled, we might want to refresh user data or show a message
+                console.log('Trial expiration handled');
+                fetchOrders();
+            }
+        } catch (err) {
+            console.error('Failed to check subscription status:', err);
         }
     };
 
