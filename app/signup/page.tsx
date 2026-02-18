@@ -603,15 +603,17 @@ function SignupContent() {
                     </CardHeader>
                     <CardContent className="p-0 space-y-6 pb-8">
                         <div className="space-y-2">
-                            <Button
-                                variant="outline"
-                                className="w-full h-16 rounded-[1.5rem] border-white/10 hover:bg-white/5 text-white font-bold uppercase tracking-widest group transition-all"
-                                onClick={() => signInWithGoogle(`${window.location.origin}/auth/callback?next=/signup`)}
-                            >
-                                <Globe className="mr-3 h-5 w-5 text-blue-500 group-hover:scale-110 transition-transform" /> Google Identity Hub
-                            </Button>
+                            {!['student_seller', 'dealer'].includes(role) && (
+                                <Button
+                                    variant="outline"
+                                    className="w-full h-16 rounded-[1.5rem] border-white/10 hover:bg-white/5 text-white font-bold uppercase tracking-widest group transition-all"
+                                    onClick={() => signInWithGoogle(`${window.location.origin}/auth/callback?next=/signup`)}
+                                >
+                                    <Globe className="mr-3 h-5 w-5 text-blue-500 group-hover:scale-110 transition-transform" /> Google Identity Hub
+                                </Button>
+                            )}
                             {['student_seller', 'dealer'].includes(role) && (
-                                <p className="text-[8px] text-zinc-500 text-center font-bold uppercase">Sellers must upload ID for verification</p>
+                                <p className="text-[10px] text-zinc-500 text-center font-bold uppercase py-4">Sellers must use the direct email path for verification</p>
                             )}
                         </div>
 
