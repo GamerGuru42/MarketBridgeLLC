@@ -165,6 +165,7 @@ CREATE POLICY "Admins can create proposals" ON public.proposals
 CREATE POLICY "Admins can update proposals" ON public.proposals
     FOR UPDATE USING (
         auth.role() = 'authenticated'
+    );
 
 -- ========================================
 -- PART 5: Initialize Admin Channels & Realtime
