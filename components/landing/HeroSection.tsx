@@ -148,11 +148,6 @@ export const HeroSection = () => {
                                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                             </Link>
                         </Button>
-                        <Button size="lg" variant="outline" asChild className="h-14 md:h-16 px-8 md:px-10 border-white/20 text-white font-bold uppercase tracking-widest hover:bg-white hover:text-black hover:border-transparent transition-all rounded-[2rem] bg-transparent backdrop-blur-sm w-full sm:w-auto">
-                            <Link href={user ? (['student_seller', 'dealer'].includes(user.role) ? '/seller/dashboard' : '/onboarding?role=student_seller') : '/signup?role=student_seller'}>
-                                {user && ['student_seller', 'dealer'].includes(user.role) ? 'Seller Terminal' : 'Become a Seller'}
-                            </Link>
-                        </Button>
                     </motion.div>
                 </motion.div>
 

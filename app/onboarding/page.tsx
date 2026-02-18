@@ -151,56 +151,87 @@ function OnboardingContent() {
                             </Button>
                         </div>
 
-                        <div className="text-center space-y-8">
-                            <div className="flex items-center justify-center gap-3">
-                                <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#FF6600]" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#FF6600] font-heading drop-shadow-[0_0_10px_rgba(255,102,0,0.5)]">Protocol Shift Initiated</span>
-                                <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#FF6600]" />
-                            </div>
-                            <h1 className="text-7xl md:text-9xl font-black uppercase tracking-tighter italic font-heading leading-none">
-                                Start <span className="text-[#FF6600] drop-shadow-[0_0_30px_rgba(255,102,0,0.3)]">Selling.</span>
-                            </h1>
-                            <p className="text-zinc-400 text-lg max-w-lg mx-auto leading-relaxed italic border-x border-white/5 px-8">
-                                You are about to upgrade your profile to <span className="text-white font-bold underline decoration-[#FF6600] decoration-2 underline-offset-4">STUDENT MERCHANT</span>. Unlock the terminal and claim your campus node.
-                            </p>
-                        </div>
-
-                        <div className="glass-card p-12 rounded-[3.5rem] border border-white/10 space-y-10 bg-gradient-to-br from-zinc-900 to-black relative overflow-hidden group">
-                            <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#FF6600]/10 rounded-full blur-3xl group-hover:bg-[#FF6600]/20 transition-all duration-1000" />
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
-                                <div className="space-y-3 p-6 bg-white/5 rounded-[2rem] border border-white/5 hover:border-[#FF6600]/30 transition-all">
-                                    <div className="h-10 w-10 rounded-xl bg-[#FF6600]/10 flex items-center justify-center">
-                                        <Zap className="h-5 w-5 text-[#FF6600]" />
-                                    </div>
-                                    <h4 className="text-xs font-black uppercase tracking-widest text-white">Merchant Tools</h4>
-                                    <p className="text-[10px] text-zinc-500 leading-relaxed uppercase tracking-wider font-bold">Inventory command & analytics terminal.</p>
+                        {user?.role === 'student_buyer' ? (
+                            <div className="text-center space-y-8 py-20 glass-card rounded-[3.5rem] border border-[#FF6600]/20 bg-[#FF6600]/5">
+                                <div className="mx-auto h-20 w-20 rounded-full bg-[#FF6600]/10 flex items-center justify-center mb-6">
+                                    <ShieldCheck className="h-10 w-10 text-[#FF6600]" />
                                 </div>
-                                <div className="space-y-3 p-6 bg-white/5 rounded-[2rem] border border-white/5 hover:border-[#FF6600]/30 transition-all">
-                                    <div className="h-10 w-10 rounded-xl bg-[#FF6600]/10 flex items-center justify-center">
-                                        <ShieldCheck className="h-5 w-5 text-[#FF6600]" />
+                                <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic">
+                                    Account <span className="text-[#FF6600]">Separation</span>
+                                </h1>
+                                <p className="text-zinc-400 text-lg max-w-lg mx-auto leading-relaxed px-8">
+                                    To maintain protocol security, <span className="text-white font-bold">Buyer Accounts</span> cannot be transitioned into Merchant accounts.
+                                </p>
+                                <div className="space-y-4 pt-6">
+                                    <p className="text-xs text-[#FF6600] font-black uppercase tracking-widest">Action Required:</p>
+                                    <p className="text-sm text-zinc-500 max-w-sm mx-auto">Please logout and create a <span className="text-white">New Seller Account</span> using your student merchant credentials.</p>
+                                    <div className="pt-8">
+                                        <Button
+                                            onClick={async () => {
+                                                await supabase.auth.signOut();
+                                                router.push('/signup?role=student_seller');
+                                            }}
+                                            className="h-14 px-8 bg-white text-black font-black uppercase tracking-widest rounded-xl hover:bg-zinc-200"
+                                        >
+                                            Logout & Create Seller Account
+                                        </Button>
                                     </div>
-                                    <h4 className="text-xs font-black uppercase tracking-widest text-white">Trust Protocol</h4>
-                                    <p className="text-[10px] text-zinc-500 leading-relaxed uppercase tracking-wider font-bold">Verified merchant badge encryption.</p>
                                 </div>
                             </div>
-
-                            <div className="pt-4 relative z-10">
-                                <Button
-                                    onClick={() => setConfirmedUpgrade(true)}
-                                    className="w-full h-20 bg-[#FF6600] text-black font-black uppercase tracking-[0.25em] rounded-[2rem] hover:scale-[1.02] transition-all shadow-[0_20px_60px_rgba(255,102,0,0.25)] border-none text-xs"
-                                >
-                                    Confirm Upgrade & Proceed
-                                </Button>
-                                <div className="flex items-center justify-center gap-4 mt-8">
-                                    <div className="h-[1px] flex-1 bg-white/5" />
-                                    <p className="text-[8px] text-zinc-600 uppercase tracking-widest font-black italic">
-                                        Merchant Code of Conduct Applies
+                        ) : (
+                            <>
+                                <div className="text-center space-y-8">
+                                    <div className="flex items-center justify-center gap-3">
+                                        <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#FF6600]" />
+                                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#FF6600] font-heading drop-shadow-[0_0_10px_rgba(255,102,0,0.5)]">Protocol Shift Initiated</span>
+                                        <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#FF6600]" />
+                                    </div>
+                                    <h1 className="text-7xl md:text-9xl font-black uppercase tracking-tighter italic font-heading leading-none">
+                                        Start <span className="text-[#FF6600] drop-shadow-[0_0_30px_rgba(255,102,0,0.3)]">Selling.</span>
+                                    </h1>
+                                    <p className="text-zinc-400 text-lg max-w-lg mx-auto leading-relaxed italic border-x border-white/5 px-8">
+                                        You are about to upgrade your profile to <span className="text-white font-bold underline decoration-[#FF6600] decoration-2 underline-offset-4">STUDENT MERCHANT</span>. Unlock the terminal and claim your campus node.
                                     </p>
-                                    <div className="h-[1px] flex-1 bg-white/5" />
                                 </div>
-                            </div>
-                        </div>
+
+                                <div className="glass-card p-12 rounded-[3.5rem] border border-white/10 space-y-10 bg-gradient-to-br from-zinc-900 to-black relative overflow-hidden group">
+                                    <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#FF6600]/10 rounded-full blur-3xl group-hover:bg-[#FF6600]/20 transition-all duration-1000" />
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+                                        <div className="space-y-3 p-6 bg-white/5 rounded-[2rem] border border-white/5 hover:border-[#FF6600]/30 transition-all">
+                                            <div className="h-10 w-10 rounded-xl bg-[#FF6600]/10 flex items-center justify-center">
+                                                <Zap className="h-5 w-5 text-[#FF6600]" />
+                                            </div>
+                                            <h4 className="text-xs font-black uppercase tracking-widest text-white">Merchant Tools</h4>
+                                            <p className="text-[10px] text-zinc-500 leading-relaxed uppercase tracking-wider font-bold">Inventory command & analytics terminal.</p>
+                                        </div>
+                                        <div className="space-y-3 p-6 bg-white/5 rounded-[2rem] border border-white/5 hover:border-[#FF6600]/30 transition-all">
+                                            <div className="h-10 w-10 rounded-xl bg-[#FF6600]/10 flex items-center justify-center">
+                                                <ShieldCheck className="h-5 w-5 text-[#FF6600]" />
+                                            </div>
+                                            <h4 className="text-xs font-black uppercase tracking-widest text-white">Trust Protocol</h4>
+                                            <p className="text-[10px] text-zinc-500 leading-relaxed uppercase tracking-wider font-bold">Verified merchant badge encryption.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-4 relative z-10">
+                                        <Button
+                                            onClick={() => setConfirmedUpgrade(true)}
+                                            className="w-full h-20 bg-[#FF6600] text-black font-black uppercase tracking-[0.25em] rounded-[2rem] hover:scale-[1.02] transition-all shadow-[0_20px_60px_rgba(255,102,0,0.25)] border-none text-xs"
+                                        >
+                                            Confirm Upgrade & Proceed
+                                        </Button>
+                                        <div className="flex items-center justify-center gap-4 mt-8">
+                                            <div className="h-[1px] flex-1 bg-white/5" />
+                                            <p className="text-[8px] text-zinc-600 uppercase tracking-widest font-black italic">
+                                                Merchant Code of Conduct Applies
+                                            </p>
+                                            <div className="h-[1px] flex-1 bg-white/5" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        )}
                     </div>
                 ) : (
                     <>

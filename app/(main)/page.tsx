@@ -143,29 +143,6 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* 5. Sellers/CTA Section */}
-            <section className="py-32 relative overflow-hidden">
-                <div className="absolute inset-0 bg-[#FF6600] clip-diagonal-section transform -skew-y-3 origin-bottom-right translate-y-12 opacity-5 pointer-events-none" />
-                <div className="container px-4 mx-auto relative z-10">
-                    <div className="bg-gradient-to-br from-zinc-900 to-black border border-white/10 rounded-[3rem] p-8 md:p-20 text-center relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF6600] to-transparent opacity-50" />
-                        <h2 className="text-4xl md:text-7xl font-black text-white uppercase tracking-tighter mb-8 leading-[0.9]">
-                            Ready to <br />
-                            <span className="text-[#FF6600] italic">Hustle?</span>
-                        </h2>
-                        <p className="text-zinc-400 max-w-xl mx-auto mb-12 text-lg font-medium">
-                            Join the fastest growing network of student entrepreneurs. Start your business journey today.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                            <Button size="lg" asChild className="bg-[#FF6600] text-black font-black uppercase tracking-widest px-12 h-16 rounded-full hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,102,0,0.3)]">
-                                <Link href={user ? (['dealer', 'student_seller'].includes(user.role) ? '/seller/dashboard' : '/onboarding?role=student_seller') : '/signup?role=student_seller'}>
-                                    {user && ['dealer', 'student_seller'].includes(user.role) ? 'SELLER TERMINAL' : 'START SELLING'}
-                                </Link>
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             {/* Waitlist Dialog */}
             <Dialog open={!!comingSoonCategory} onOpenChange={(open) => {
