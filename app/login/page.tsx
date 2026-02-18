@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Eye, EyeOff, Loader2, ChevronRight, Lock, User, Globe, ArrowLeft, Briefcase, ShieldCheck } from 'lucide-react';
@@ -13,7 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Logo } from '@/components/logo';
 
 export default function LoginPage() {
-    const { signInWithGoogle, refreshUser } = useAuth();
+    const { signInWithGoogle, refreshUser, user, sessionUser, loading } = useAuth();
     const router = useRouter();
 
     // State
@@ -28,6 +28,29 @@ export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+
+    // Auto-redirect if already logged in (handles Google Auth return)
+    useEffect(() => {
+        if (!loading && sessionUser && user) {
+            // Check if user is trying to login to a different role than they have
+            // Or just redirect them to their dashboard
+            if (['dealer', 'student_seller'].includes(user.role)) {
+                router.push('/dealer/dashboard');
+            } else if (user.role === 'ceo') {
+                router.push('/ceo');
+            } else if (user.role === 'technical_admin') {
+                router.push('/admin/technical');
+            } else if (user.role === 'operations_admin') {
+                router.push('/admin/operations');
+            } else if (user.role === 'marketing_admin') {
+                router.push('/admin/marketing');
+            } else if (user.role === 'admin') {
+                router.push('/admin');
+            } else {
+                router.push('/listings');
+            }
+        }
+    }, [user, sessionUser, loading, router]);
 
     const handleRoleSelect = (selectedRole: 'student_buyer' | 'student_seller' | 'admin' | 'ceo') => {
         setRole(selectedRole);
@@ -146,7 +169,8 @@ export default function LoginPage() {
         setIsLoading(true);
         setError('');
         try {
-            await signInWithGoogle();
+            // Redirect back to login page to trigger the new auto-redirect logic
+            await signInWithGoogle(`${window.location.origin}/auth/callback?next=/login`);
         } catch (err: unknown) {
             console.error(err);
             setError('Google sign-in failed.');
