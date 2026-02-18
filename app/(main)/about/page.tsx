@@ -35,7 +35,7 @@ export default function AboutPage() {
                                 <span className="h-0.5 w-12 bg-[#FF6600]" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#FF6600]">The Architecture of Trust</span>
                             </div>
-                            <h1 className="text-7xl md:text-9xl lg:text-[12rem] font-black uppercase tracking-tight italic font-heading leading-[0.8] whitespace-pre-line">
+                            <h1 className="text-6xl md:text-8xl lg:text-[9rem] font-black uppercase tracking-tight italic font-heading leading-[0.8] whitespace-pre-line">
                                 Protocol <br />
                                 <span className="text-zinc-500">Intelligence.</span>
                             </h1>
