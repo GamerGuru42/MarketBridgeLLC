@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
-import { Loader2, MapPin, MessageCircle, ShoppingCart, ArrowLeft, ShieldCheck, Phone, CreditCard, Zap, AlertTriangle, Box, Activity, Store, Star } from 'lucide-react';
+import { Loader2, MapPin, MessageCircle, ShoppingCart, ArrowLeft, ShieldCheck, Phone, CreditCard, Zap, AlertTriangle, Box, Activity, Store, Star, Clock } from 'lucide-react';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { startConversation } from '@/lib/chat';
@@ -61,6 +61,8 @@ interface Listing {
     is_verified_listing?: boolean;
     verification_status?: 'pending' | 'verified' | 'rejected';
     inspection_report_url?: string;
+    current_offered_price?: number | null;
+    original_price?: number;
 }
 
 export default function ListingDetailContent() {
@@ -78,11 +80,88 @@ export default function ListingDetailContent() {
     const [reportReason, setReportReason] = useState('');
     const [reportDetails, setReportDetails] = useState('');
 
+    // Negotiation State
+    const [isOfferOpen, setIsOfferOpen] = useState(false);
+    const [offerPrice, setOfferPrice] = useState('');
+    const [offerMessage, setOfferMessage] = useState('');
+    const [isSubmittingOffer, setIsSubmittingOffer] = useState(false);
+    const [activeOffer, setActiveOffer] = useState<any>(null);
+
     useEffect(() => {
         if (params.id) {
             fetchListing();
+            const unsubListing = subscribeToListing();
+
+            let unsubOffer: (() => void) | undefined;
+            if (user) {
+                fetchActiveOffer();
+                unsubOffer = subscribeToOwnOffers();
+            }
+
+            return () => {
+                if (unsubListing) unsubListing();
+                if (unsubOffer) unsubOffer();
+            };
         }
-    }, [params.id]);
+    }, [params.id, user]);
+
+    const fetchActiveOffer = async () => {
+        if (!user || !params.id) return;
+        const listingId = Array.isArray(params.id) ? params.id[0] : params.id;
+        const { data } = await supabase
+            .from('offers')
+            .select('*')
+            .eq('listing_id', listingId)
+            .eq('buyer_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+        setActiveOffer(data || null);
+    };
+
+    const subscribeToOwnOffers = () => {
+        if (!user || !params.id) return;
+        const listingId = Array.isArray(params.id) ? params.id[0] : params.id;
+        const channel = supabase
+            .channel(`own_offers_${listingId}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'offers',
+                    filter: `buyer_id=eq.${user.id}`
+                },
+                () => {
+                    fetchActiveOffer();
+                }
+            )
+            .subscribe();
+
+        return () => supabase.removeChannel(channel);
+    };
+
+    const subscribeToListing = () => {
+        const listingId = Array.isArray(params.id) ? params.id[0] : params.id;
+        const channel = supabase
+            .channel(`listing_updates_${listingId}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'listings',
+                    filter: `id=eq.${listingId}`
+                },
+                (payload) => {
+                    setListing(prev => prev ? { ...prev, ...payload.new } : null);
+                }
+            )
+            .subscribe();
+
+        return () => supabase.removeChannel(channel);
+    };
 
     const fetchListing = async () => {
         setLoading(true);
@@ -207,7 +286,51 @@ export default function ListingDetailContent() {
         const cleanPhone = phone.replace(/\D/g, '');
         const finalPhone = cleanPhone.startsWith('0') ? '234' + cleanPhone.substring(1) : cleanPhone;
         const message = encodeURIComponent(`Hello, I saw your ${listing.title} on MarketBridge. Is it still available?`);
-        window.open(`https://wa.me/${finalPhone}?text=${message}`, '_blank');
+
+        // Safety Warning before redirect
+        const proceed = confirm("Safety Alert: Negotiating on WhatsApp? \n\nPlease return here to update the price and pay securely in-app. This protects both buyer and seller and ensures platform protocol applies.\n\nProceed to WhatsApp?");
+        if (proceed) {
+            window.open(`https://wa.me/${finalPhone}?text=${message}`, '_blank');
+        }
+    };
+
+    const handleMakeOffer = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!user) {
+            router.push('/login');
+            return;
+        }
+        if (!listing) return;
+
+        const price = parseFloat(offerPrice);
+        if (isNaN(price) || price <= 0) {
+            alert("Please enter a valid price identifier.");
+            return;
+        }
+
+        setIsSubmittingOffer(true);
+        try {
+            const { error: offerError } = await supabase
+                .from('offers')
+                .insert({
+                    listing_id: listing.id,
+                    buyer_id: user.id,
+                    seller_id: listing.dealer.id,
+                    offered_price: price,
+                    message: offerMessage,
+                    status: 'pending'
+                });
+
+            if (offerError) throw offerError;
+
+            alert("Offer Transmitted: Waiting for seller response on the secure channel.");
+            setIsOfferOpen(false);
+        } catch (err: any) {
+            console.error("Offer Error:", err);
+            alert(err.message || "Signal transmission failed. Please try again.");
+        } finally {
+            setIsSubmittingOffer(false);
+        }
     };
 
     const handleCallDealer = () => {
@@ -247,7 +370,10 @@ export default function ListingDetailContent() {
             const response = await fetch('/api/paystack/initialize', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ listingId: listing.id })
+                body: JSON.stringify({
+                    listingId: listing.id,
+                    amount: listing.current_offered_price || listing.price // Use negotiated price
+                })
             });
 
             const data = await response.json();
@@ -432,8 +558,16 @@ export default function ListingDetailContent() {
 
                             <div className="relative z-10">
                                 <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] font-heading mb-2">Market Valuation</p>
-                                <div className="text-6xl font-black text-white italic font-heading tracking-tighter mb-6">
-                                    ₦{listing.price.toLocaleString()}
+                                <div className="space-y-1 mb-6">
+                                    <div className="text-6xl font-black text-white italic font-heading tracking-tighter">
+                                        ₦{(listing.current_offered_price || listing.price).toLocaleString()}
+                                    </div>
+                                    {listing.current_offered_price && listing.current_offered_price !== listing.price && (
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm text-zinc-500 line-through font-bold">₦{listing.price.toLocaleString()}</span>
+                                            <Badge className="bg-[#00FF85]/10 text-[#00FF85] border-none text-[8px] font-black uppercase tracking-widest">Negotiated Rate</Badge>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {user && user.id !== listing.dealer.id ? (
@@ -458,11 +592,20 @@ export default function ListingDetailContent() {
 
                                         {/* Contact Grid */}
                                         <div className="grid grid-cols-2 gap-3 pt-4 border-t border-white/5">
+                                            {activeOffer && activeOffer.status === 'pending' ? (
+                                                <Button disabled className="h-12 rounded-xl border-[#FF6600]/20 bg-[#FF6600]/5 text-[#FF6600] text-[10px] uppercase font-bold tracking-widest opacity-80 cursor-default">
+                                                    <Clock className="mr-2 h-3 w-3 animate-pulse" /> Offer Transmission Pending
+                                                </Button>
+                                            ) : (
+                                                <Button onClick={() => setIsOfferOpen(true)} variant="outline" className="h-12 rounded-xl border-[#FF6600]/20 bg-[#FF6600]/5 text-[#FF6600] hover:bg-[#FF6600]/10 text-[10px] uppercase font-bold tracking-widest">
+                                                    <Zap className="mr-2 h-3 w-3" /> {activeOffer?.status === 'rejected' ? 'Re-Negotiate' : 'Make Offer'}
+                                                </Button>
+                                            )}
                                             <Button onClick={handleContactDealer} variant="outline" className="h-12 rounded-xl border-white/10 bg-transparent text-zinc-400 hover:text-white hover:bg-white/5 text-[10px] uppercase font-bold tracking-widest">
                                                 <MessageCircle className="mr-2 h-3 w-3" /> Secure Chat
                                             </Button>
-                                            <Button onClick={handleWhatsAppDealer} variant="outline" className="h-12 rounded-xl border-green-500/20 bg-green-500/5 text-green-500 hover:bg-green-500/10 text-[10px] uppercase font-bold tracking-widest">
-                                                <Phone className="mr-2 h-3 w-3" /> Direct Uplink
+                                            <Button onClick={handleWhatsAppDealer} variant="outline" className="h-12 rounded-xl border-green-500/20 bg-green-500/5 text-green-500 hover:bg-green-500/10 text-[10px] uppercase font-bold tracking-widest col-span-2">
+                                                <Phone className="mr-2 h-3 w-3" /> WhatsApp Fallback (Pay In-App)
                                             </Button>
                                         </div>
 
@@ -557,6 +700,59 @@ export default function ListingDetailContent() {
                     </div>
                 </div>
             </div>
+
+            {/* Offer Dialog */}
+            <Dialog open={isOfferOpen} onOpenChange={setIsOfferOpen}>
+                <DialogContent className="bg-zinc-950 border-white/10 text-white sm:max-w-md">
+                    <form onSubmit={handleMakeOffer}>
+                        <DialogHeader>
+                            <DialogTitle className="text-[#FF6600] uppercase font-black tracking-widest flex items-center gap-2">
+                                <Zap className="h-5 w-5" /> Negotiate Asset Price
+                            </DialogTitle>
+                            <DialogDescription className="text-zinc-400 text-xs">
+                                Submit your preferred valuation identifier. Secure payment remains mandatory through the platform.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                            <div className="space-y-2">
+                                <Label className="text-xs uppercase font-bold text-zinc-500">Proposed Valuation (₦)</Label>
+                                <input
+                                    type="number"
+                                    value={offerPrice}
+                                    onChange={(e) => setOfferPrice(e.target.value)}
+                                    placeholder={listing.price.toString()}
+                                    className="w-full h-12 px-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-1 focus:ring-[#FF6600]"
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-xs uppercase font-bold text-zinc-500">Transmission Message (Optional)</Label>
+                                <Textarea
+                                    value={offerMessage}
+                                    onChange={(e) => setOfferMessage(e.target.value)}
+                                    placeholder="Brief reason for your offer..."
+                                    className="bg-black/50 border-white/10 text-xs min-h-[100px] rounded-xl"
+                                />
+                            </div>
+                            <div className="bg-[#FF6600]/5 border border-[#FF6600]/20 p-4 rounded-xl">
+                                <p className="text-[10px] text-[#FF6600] font-black uppercase leading-relaxed text-center">
+                                    Keep negotiations in-app for security. Hand-to-hand or off-platform payments are not protected.
+                                </p>
+                            </div>
+                        </div>
+                        <DialogFooter className="flex-col sm:flex-row gap-2">
+                            <Button type="button" variant="ghost" onClick={() => setIsOfferOpen(false)} className="text-zinc-400 hover:text-white flex-1">Cancel</Button>
+                            <Button
+                                type="submit"
+                                disabled={isSubmittingOffer}
+                                className="bg-[#FF6600] text-black hover:bg-[#FF8533] font-black uppercase tracking-widest text-xs flex-1"
+                            >
+                                {isSubmittingOffer ? <Loader2 className="h-4 w-4 animate-spin" /> : "Dispatch Offer"}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
 
             {/* Report Dialog */}
             <Dialog open={isReportOpen} onOpenChange={setIsReportOpen}>

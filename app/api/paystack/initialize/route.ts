@@ -39,7 +39,8 @@ export async function POST(req: Request) {
 
         // 2. Calculate Commission & Split
         const commissionPercentage = 7; // Default 7%
-        const amountKobo = Math.round(listing.price * 100);
+        const finalPrice = listing.current_offered_price || listing.price;
+        const amountKobo = Math.round(finalPrice * 100);
 
         // Generate a unique reference for this transaction
         const reference = `TXNL-${Date.now()}-${listingId.slice(0, 8)}`;

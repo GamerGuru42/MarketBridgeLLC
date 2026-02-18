@@ -437,6 +437,21 @@ export class PaystackWebhookHandler {
                         });
 
                     if (transError) console.error('Error recording sales transaction:', transError);
+
+                    // 3. Reset Negotiation System for this listing
+                    await supabaseAdmin
+                        .from('listings')
+                        .update({ current_offered_price: null })
+                        .eq('id', listingId);
+
+                    if (buyerId) {
+                        await supabaseAdmin
+                            .from('offers')
+                            .update({ status: 'completed' })
+                            .eq('listing_id', listingId)
+                            .eq('buyer_id', buyerId)
+                            .eq('status', 'accepted');
+                    }
                 }
             }
             // 3. Record General Payment

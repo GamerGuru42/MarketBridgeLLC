@@ -28,7 +28,8 @@ import {
     Loader2,
     Mail,
     ShieldAlert,
-    RefreshCw
+    RefreshCw,
+    User
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -64,11 +65,35 @@ interface Order {
     };
 }
 
+interface Offer {
+    id: string;
+    listing_id: string;
+    buyer_id: string;
+    seller_id: string;
+    offered_price: number;
+    status: 'pending' | 'accepted' | 'rejected' | 'withdrawn' | 'completed';
+    message: string | null;
+    created_at: string;
+    buyer?: {
+        display_name: string;
+        photo_url: string | null;
+        email?: string;
+    };
+    listing?: {
+        title: string;
+        price: number;
+    };
+}
+
 interface Stats {
     totalOrders: number;
     pendingOrders: number;
     completedOrders: number;
     totalRevenue: number;
+}
+
+interface OfferStats {
+    totalPending: number;
 }
 
 export default function SellerDashboardPage() {
@@ -90,6 +115,9 @@ export default function SellerDashboardPage() {
         accountNumber: '',
         accountName: ''
     });
+    const [offers, setOffers] = useState<Offer[]>([]);
+    const [offerStats, setOfferStats] = useState<OfferStats>({ totalPending: 0 });
+    const [processingOffer, setProcessingOffer] = useState<string | null>(null);
 
     const fetchBankDetails = async () => {
         if (!user) return;
@@ -148,11 +176,14 @@ export default function SellerDashboardPage() {
         setSessionLost(false);
         fetchOrders();
         fetchBankDetails();
-        const unsubscribe = subscribeToOrders();
+        fetchOffers();
+        const unsubscribeOrders = subscribeToOrders();
+        const unsubscribeOffers = subscribeToOffers();
         checkSubscriptionStatus();
 
         return () => {
-            if (unsubscribe) unsubscribe();
+            if (unsubscribeOrders) unsubscribeOrders();
+            if (unsubscribeOffers) unsubscribeOffers();
         };
     }, [user, sessionUser, authLoading, router]);
 
@@ -317,6 +348,101 @@ export default function SellerDashboardPage() {
         return () => {
             subscription.unsubscribe();
         };
+    };
+
+    const fetchOffers = async () => {
+        if (!user) return;
+        try {
+            const { data, error } = await supabase
+                .from('offers')
+                .select(`
+                    *,
+                    buyer:users(display_name, photo_url, email),
+                    listing:listings(title, price)
+                `)
+                .eq('seller_id', user.id)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            setOffers(data || []);
+            setOfferStats({
+                totalPending: data?.filter(o => o.status === 'pending').length || 0
+            });
+        } catch (err) {
+            console.error('Failed to fetch offers:', err);
+        }
+    };
+
+    const subscribeToOffers = () => {
+        if (!user) return;
+        const subscription = supabase
+            .channel('seller_offers')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'offers',
+                    filter: `seller_id=eq.${user.id}`,
+                },
+                () => fetchOffers()
+            )
+            .subscribe();
+
+        return () => subscription.unsubscribe();
+    };
+
+    const handleOfferAction = async (offer: Offer, action: 'accept' | 'reject') => {
+        setProcessingOffer(offer.id);
+        try {
+            if (action === 'accept') {
+                // 1. Update listing price
+                const { error: listError } = await supabase
+                    .from('listings')
+                    .update({
+                        current_offered_price: offer.offered_price
+                    })
+                    .eq('id', offer.listing_id);
+
+                if (listError) throw listError;
+
+                // 2. Update offer status
+                const { error: offerError } = await supabase
+                    .from('offers')
+                    .update({ status: 'accepted' })
+                    .eq('id', offer.id);
+
+                if (offerError) throw offerError;
+
+                // 3. Notify buyer via chat (Optional but good)
+                try {
+                    const conversationId = await startConversation(user!.id, offer.buyer_id, offer.listing_id);
+                    await supabase.from('messages').insert({
+                        conversation_id: conversationId,
+                        sender_id: user!.id,
+                        content: `✅ I've accepted your offer of ₦${offer.offered_price.toLocaleString()} for "${offer.listing?.title}". You can now proceed to Buy Now at this rate!`,
+                    });
+                } catch (e) {
+                    console.error("Chat notification failed:", e);
+                }
+
+                alert("Offer accepted and listing price updated.");
+            } else {
+                const { error: offerError } = await supabase
+                    .from('offers')
+                    .update({ status: 'rejected' })
+                    .eq('id', offer.id);
+
+                if (offerError) throw offerError;
+                alert("Offer rejected.");
+            }
+            fetchOffers();
+        } catch (err: any) {
+            console.error("Offer action failed:", err);
+            alert(err.message || "Action failed");
+        } finally {
+            setProcessingOffer(null);
+        }
     };
 
     const updateOrderStatus = async (orderId: string, newStatus: 'pending' | 'confirmed' | 'completed' | 'cancelled') => {
@@ -606,6 +732,14 @@ export default function SellerDashboardPage() {
                             <div className="flex bg-black/40 p-1.5 rounded-2xl border border-white/10">
                                 <TabsList className="bg-transparent gap-2 h-auto p-0 border-none shadow-none">
                                     <TabsTrigger value="orders" className="data-[state=active]:bg-[#FF6600] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading">Orders Queue</TabsTrigger>
+                                    <TabsTrigger value="offers" className="data-[state=active]:bg-[#FF6600] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading relative">
+                                        Offers Terminal
+                                        {offerStats.totalPending > 0 && (
+                                            <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-[8px] flex items-center justify-center text-white border-2 border-black animate-pulse">
+                                                {offerStats.totalPending}
+                                            </span>
+                                        )}
+                                    </TabsTrigger>
                                     <TabsTrigger value="settings" className="data-[state=active]:bg-[#FF6600] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading">Payout Settings</TabsTrigger>
                                 </TabsList>
                             </div>
@@ -653,6 +787,87 @@ export default function SellerDashboardPage() {
                                     ))}
                                 </div>
                             </Tabs>
+                        </TabsContent>
+
+                        <TabsContent value="offers" className="space-y-10 focus-visible:outline-none focus:outline-none">
+                            <div className="grid grid-cols-1 gap-6">
+                                {offers.length === 0 ? (
+                                    <div className="text-center py-24 glass-card border-dashed">
+                                        <Zap className="h-16 w-16 text-zinc-700 mx-auto mb-6" />
+                                        <p className="text-zinc-500 font-black uppercase tracking-widest text-xs font-heading italic">Zero negotiation signals detected</p>
+                                    </div>
+                                ) : (
+                                    offers.map((offer) => (
+                                        <div key={offer.id} className="glass-card p-6 flex flex-col md:flex-row gap-8 group/card transition-all duration-500 hover:border-[#FF6600]/20 italic">
+                                            <div className="flex-1 space-y-4">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest font-heading">Protocol: #{offer.id.slice(-8).toUpperCase()}</span>
+                                                        <Badge className={cn(
+                                                            "px-3 py-1 font-black uppercase text-[9px] tracking-widest border font-heading italic",
+                                                            offer.status === 'pending' ? 'bg-amber-900/20 text-amber-500 border-amber-500/20' :
+                                                                offer.status === 'accepted' ? 'bg-emerald-950/20 text-[#00FF85] border-emerald-500/20' :
+                                                                    'bg-zinc-800 text-zinc-400 border-zinc-700'
+                                                        )}>
+                                                            {offer.status}
+                                                        </Badge>
+                                                    </div>
+                                                    <span className="text-[10px] text-zinc-600 font-black uppercase font-heading">{new Date(offer.created_at).toLocaleDateString()}</span>
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-xl font-black uppercase tracking-tighter font-heading text-white">{offer.listing?.title}</h3>
+                                                    <div className="flex items-center gap-4 mt-1">
+                                                        <span className="text-[10px] text-zinc-500 font-black tracking-widest uppercase">Original: ₦{offer.listing?.price?.toLocaleString()}</span>
+                                                        <ArrowRight className="h-3 w-3 text-zinc-700" />
+                                                        <span className="text-lg font-black text-[#FF6600]">Offered: ₦{offer.offered_price.toLocaleString()}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="p-4 bg-white/[0.02] border border-white/5 rounded-xl">
+                                                    <p className="text-[10px] text-zinc-600 font-black uppercase tracking-widest mb-1">Transmission Message</p>
+                                                    <p className="text-xs text-zinc-400 font-medium leading-relaxed">{offer.message || 'No additional data transmitted.'}</p>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="h-8 w-8 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center overflow-hidden">
+                                                        {offer.buyer?.photo_url ? <Image src={offer.buyer.photo_url} alt="B" fill className="object-cover" /> : <User className="h-4 w-4 text-zinc-700" />}
+                                                    </div>
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-300">Buyer: {offer.buyer?.display_name}</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex md:flex-col justify-end gap-3 shrink-0">
+                                                {offer.status === 'pending' && (
+                                                    <>
+                                                        <Button
+                                                            onClick={() => handleOfferAction(offer, 'accept')}
+                                                            disabled={processingOffer === offer.id}
+                                                            className="flex-1 md:w-32 h-12 bg-[#00FF85] text-black font-black uppercase tracking-widest text-[10px] hover:bg-[#00CC6A]"
+                                                        >
+                                                            {processingOffer === offer.id ? <Loader2 className="h-4 w-4 animate-spin" /> : "Accept"}
+                                                        </Button>
+                                                        <Button
+                                                            onClick={() => handleOfferAction(offer, 'reject')}
+                                                            disabled={processingOffer === offer.id}
+                                                            variant="outline"
+                                                            className="flex-1 md:w-32 h-12 border-red-500/20 text-red-500 hover:bg-red-500/10 font-black uppercase tracking-widest text-[10px]"
+                                                        >
+                                                            Reject
+                                                        </Button>
+                                                    </>
+                                                )}
+                                                <Button
+                                                    onClick={() => {
+                                                        const conversationId = startConversation(user!.id, offer.buyer_id, offer.listing_id);
+                                                        router.push(`/chats/${conversationId}`);
+                                                    }}
+                                                    variant="ghost"
+                                                    className="flex-1 md:w-32 h-12 text-zinc-500 hover:text-white font-black uppercase tracking-widest text-[10px] gap-2"
+                                                >
+                                                    <MessageCircle className="h-4 w-4" /> Message
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
                         </TabsContent>
 
                         <TabsContent value="settings" className="focus-visible:outline-none focus:outline-none">
