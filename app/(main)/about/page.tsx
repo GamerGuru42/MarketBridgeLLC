@@ -26,23 +26,23 @@ export default function AboutPage() {
                         onClick={() => router.back()}
                         className="text-[#FF6600] border border-[#FF6600]/20 bg-[#FF6600]/5 hover:bg-[#FF6600]/10 rounded-full px-6 h-10 text-[10px] font-black uppercase tracking-[0.2em] font-heading transition-all"
                     >
-                        <ArrowLeft className="mr-2 h-3 w-3" /> Return to Core
+                        <ArrowLeft className="mr-2 h-3 w-3" /> Return Home
                     </Button>
 
                     <div className="space-y-12">
                         <div className="space-y-6">
                             <div className="flex items-center gap-3">
                                 <span className="h-0.5 w-12 bg-[#FF6600]" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#FF6600]">The Architecture of Trust</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#FF6600]">Built for total safety</span>
                             </div>
                             <h1 className="text-6xl md:text-8xl lg:text-[9rem] font-black uppercase tracking-tight italic font-heading leading-[0.8] whitespace-pre-line">
-                                Protocol <br />
-                                <span className="text-zinc-500">Intelligence.</span>
+                                The Standard <br />
+                                <span className="text-zinc-500">for Trust.</span>
                             </h1>
                         </div>
                         <div className="max-w-xl">
                             <p className="text-zinc-400 text-lg md:text-2xl font-medium leading-relaxed italic border-l-2 border-[#FF6600] pl-8">
-                                MarketBridge is an <span className="text-white">escrow-protected infrastructure</span> built to secure high-value asset exchange within Nigeria's campus ecosystem.
+                                MarketBridge is a <span className="text-white">secure payment platform</span> built to protect every transaction within Nigeria's university campuses.
                             </p>
                         </div>
                     </div>
@@ -58,27 +58,27 @@ export default function AboutPage() {
                         <div className="relative z-10 space-y-12">
                             <div className="space-y-6">
                                 <h2 className="text-4xl font-black uppercase italic font-heading tracking-tighter text-white">
-                                    Our <span className="text-[#FF6600]">Genesis</span>
+                                    Our <span className="text-[#FF6600]">Story</span>
                                 </h2>
                                 <div className="h-1 w-20 bg-[#FF6600]" />
                             </div>
 
                             <div className="space-y-8 text-zinc-400 text-lg font-medium leading-relaxed max-w-2xl">
                                 <p>
-                                    In an era where digital commerce often lacks accountability, campus micro-economies are uniquely vulnerable. MarketBridge was founded in Abuja with a radical directive: <span className="text-white italic font-bold">"Capital should only flow when fulfillment is absolute."</span>
+                                    In many online marketplaces, it's hard to know who to trust. MarketBridge was started in Abuja with a simple rule: <span className="text-white italic font-bold">"You only pay when you get exactly what you ordered."</span>
                                 </p>
                                 <p>
-                                    We realized that trust isn't a feeling—it's a technical property. By building a bridge between verified "Merchant Nodes" and campus participants, we've replaced uncertainty with an immutable Escrow Protocol.
+                                    We realized that safety shouldn't be a luxury. By connecting you with verified sellers and holding your payment safely until the deal is done, we've replaced doubt with total peace of mind.
                                 </p>
                                 <p className="text-white italic">
-                                    Welcome to the era of friction-free, secure asset discovery.
+                                    Welcome to a safer way to buy and sell on campus.
                                 </p>
                             </div>
 
                             <div className="pt-8">
                                 <Button asChild size="lg" className="h-16 px-10 bg-[#FF6600] text-black font-black uppercase tracking-widest rounded-2xl hover:bg-[#FF8533] hover:scale-105 transition-all shadow-[0_20px_40px_rgba(255,102,0,0.2)] border-none">
                                     <Link href="/listings" className="flex items-center gap-3">
-                                        Scan Node Activity
+                                        Browse the Marketplace
                                         <ArrowUpRight className="h-4 w-4" />
                                     </Link>
                                 </Button>
@@ -91,9 +91,9 @@ export default function AboutPage() {
                             <div className="h-20 w-20 rounded-3xl bg-[#FF6600]/10 border border-[#FF6600]/20 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
                                 <Target className="h-10 w-10 text-[#FF6600]" />
                             </div>
-                            <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white mb-4">Precision <br />Targeting</h3>
+                            <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white mb-4">Focused on <br />You</h3>
                             <p className="text-sm text-zinc-500 leading-relaxed uppercase tracking-wider font-bold">
-                                We focus on verified university nodes, ensuring that every participant is authorized within our security perimeter.
+                                We focus on verified students and campus shops, making sure everyone is checked before they can join.
                             </p>
                         </div>
                     </div>
@@ -103,8 +103,8 @@ export default function AboutPage() {
                 <div className="mb-40">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-20">
                         <div className="space-y-4">
-                            <p className="text-[10px] text-[#FF6600] font-black uppercase tracking-[0.4em] font-heading">Protocol Pillars</p>
-                            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic font-heading">Foundational <span className="text-zinc-500">Logic</span></h2>
+                            <p className="text-[10px] text-[#FF6600] font-black uppercase tracking-[0.4em] font-heading">Our Safety Promise</p>
+                            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic font-heading">How it <span className="text-zinc-500">Works</span></h2>
                         </div>
                         <div className="h-[1px] flex-1 bg-white/5 hidden md:block" />
                     </div>
@@ -112,22 +112,22 @@ export default function AboutPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
                             {
-                                title: 'The Escrow Shield',
-                                desc: 'Funds are held in a secure bridge vault. Sellers only receive signal-clearance once the buyer confirms delivery.',
+                                title: 'Safe Payments',
+                                desc: 'Your money is held safely by us. The seller only gets paid after you confirm you have received your item.',
                                 icon: Shield,
                                 color: 'text-blue-500',
                                 bg: 'bg-blue-500/10'
                             },
                             {
-                                title: 'Node Verification',
-                                desc: 'Every merchant undergoes a multi-layer verification process, including university matriculation and ID credentials.',
+                                title: 'Verified Sellers',
+                                desc: 'Every seller undergoes a multi-layer check, including university details and ID credentials.',
                                 icon: ShieldCheck,
                                 color: 'text-[#00FF85]',
                                 bg: 'bg-[#00FF85]/10'
                             },
                             {
-                                title: 'Arbitration Unit',
-                                desc: 'Our dedicated operatives resolve conflicts with absolute neutrality, ensuring protocol integrity for all parties.',
+                                title: 'Fair Resolution',
+                                desc: 'Our dedicated support team resolves conflicts fairly, making sure everyone is treated right.',
                                 icon: Eye,
                                 color: 'text-purple-500',
                                 bg: 'bg-purple-500/10'
@@ -157,19 +157,19 @@ export default function AboutPage() {
                                     <div className="h-12 w-12 rounded-xl bg-yellow-500/10 flex items-center justify-center border border-yellow-500/20">
                                         <AlertTriangle className="h-6 w-6 text-yellow-500" />
                                     </div>
-                                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-yellow-500">Security Override</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-yellow-500">Security Policy</span>
                                 </div>
-                                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading text-white">Conflict <span className="text-yellow-500">Resolution</span></h2>
+                                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading text-white">Problem <span className="text-yellow-500">Solving</span></h2>
                                 <p className="text-zinc-400 text-lg font-medium leading-relaxed italic border-l border-yellow-500/30 pl-8">
-                                    If an asset fails to meet specifications or delivery parameters are breached, the protocol enters a "Locked State". Our arbitration node ensures that capital is returned or redirected based on evidence and manifest review.
+                                    If an item isn't what it was supposed to be, the payment is automatically frozen. Our team will review the details to make sure the right person gets their money back.
                                 </p>
                             </div>
                             <div className="grid grid-cols-2 gap-4 relative z-10">
                                 {[
-                                    { label: 'Escrow Lock', val: 'Active', icon: Lock },
-                                    { label: 'Verification', val: 'Forced', icon: CheckCircle },
-                                    { label: 'Capital Flow', val: 'Paused', icon: Clock },
-                                    { label: 'Unit Support', val: '24/7', icon: MessageSquare }
+                                    { label: 'Payment Status', val: 'Protected', icon: Lock },
+                                    { label: 'Checks', val: 'Complete', icon: CheckCircle },
+                                    { label: 'Delivery State', val: 'Tracked', icon: Clock },
+                                    { label: 'Help Desk', val: '24/7', icon: MessageSquare }
                                 ].map((stat, s) => (
                                     <div key={s} className="bg-black/40 border border-white/5 p-6 rounded-[2rem] text-center space-y-2">
                                         <stat.icon className="h-5 w-5 text-yellow-500 mx-auto opacity-50" />
@@ -193,24 +193,24 @@ export default function AboutPage() {
                     <div className="space-y-6">
                         <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter italic font-heading text-white leading-none">
                             The Future of <br />
-                            <span className="text-[#FF6600]">Campus Commerce.</span>
+                            <span className="text-[#FF6600]">Campus Shopping.</span>
                         </h2>
                         <p className="text-zinc-500 text-lg font-medium italic max-w-2xl mx-auto">
-                            We are building more than a marketplace. We are building the trust-layer for the next generation of Nigerian student-entrepreneurs and consumers.
+                            We are building more than a marketplace. We are building a safer way for the next generation of Nigerian students and sellers to connect.
                         </p>
                     </div>
 
                     <div className="pt-12 flex flex-col sm:flex-row gap-6 justify-center">
                         <Button asChild size="lg" className="h-20 px-12 bg-white text-black hover:bg-zinc-200 rounded-[2rem] font-black uppercase tracking-widest text-xs italic shadow-[0_20px_60px_rgba(255,255,255,0.1)] transition-all hover:scale-105 border-none">
-                            <Link href="/listings">Examine Stream</Link>
+                            <Link href="/listings">Start Shopping</Link>
                         </Button>
                         <Button asChild variant="outline" size="lg" className="h-20 px-12 border-white/10 bg-black/40 backdrop-blur-md text-white hover:bg-white/5 rounded-[2rem] font-black uppercase tracking-widest text-xs italic transition-all hover:border-white/20">
-                            <Link href="mailto:support@marketbridge.com.ng">Protocol Support</Link>
+                            <Link href="mailto:support@marketbridge.com.ng">Get Support</Link>
                         </Button>
                     </div>
 
                     <div className="pt-20 opacity-20">
-                        <p className="text-[8px] font-black uppercase tracking-[1em] text-zinc-500">ESTABLISHED ABUJA NODE 2024</p>
+                        <p className="text-[8px] font-black uppercase tracking-[1em] text-zinc-500">ESTABLISHED IN ABUJA 2024</p>
                     </div>
                 </div>
             </div>
