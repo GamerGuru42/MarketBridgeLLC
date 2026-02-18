@@ -182,7 +182,8 @@ function SignupContent() {
 
     const handleRoleSelect = (selectedRole: 'student_buyer' | 'student_seller' | 'admin' | 'ceo') => {
         setRole(selectedRole);
-        if (['student_seller', 'dealer', 'student_buyer', 'customer'].includes(selectedRole)) setStep('auth-method');
+        if (['student_seller', 'dealer'].includes(selectedRole)) setStep('details');
+        else if (['student_buyer', 'customer'].includes(selectedRole)) setStep('auth-method');
         else if (selectedRole === 'admin' || selectedRole === 'ceo') setStep('admin-code');
     };
 
@@ -617,10 +618,12 @@ function SignupContent() {
                             )}
                         </div>
 
-                        <div className="relative flex items-center justify-center py-4">
-                            <div className="absolute inset-x-0 h-px bg-white/5"></div>
-                            <span className="relative bg-black px-4 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-800">Or</span>
-                        </div>
+                        {!['student_seller', 'dealer'].includes(role) && (
+                            <div className="relative flex items-center justify-center py-4">
+                                <div className="absolute inset-x-0 h-px bg-white/5"></div>
+                                <span className="relative bg-black px-4 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-800">Or</span>
+                            </div>
+                        )}
                         <Button className="w-full h-16 rounded-[1.5rem] bg-white border border-white/10 text-black font-black uppercase tracking-widest hover:scale-[1.02] transition-all" onClick={() => setStep('details')}>
                             <Mail className="mr-3 h-5 w-5" /> Use Email & Password
                         </Button>
@@ -637,7 +640,7 @@ function SignupContent() {
             <Card className="w-full max-w-xl glass-card border-none rounded-[3rem] p-12 text-white relative z-10 shadow-2xl">
                 <CardHeader className="p-0 mb-8 text-left">
                     <div className="flex justify-between items-start mb-6">
-                        <Button variant="ghost" onClick={() => setStep('auth-method')} className="text-zinc-600 hover:text-white p-0 h-auto text-[10px] font-black uppercase tracking-widest"><ArrowLeft className="mr-2 h-3 w-3" /> Back</Button>
+                        <Button variant="ghost" onClick={() => setStep(['student_seller', 'dealer'].includes(role) ? 'role' : 'auth-method')} className="text-zinc-600 hover:text-white p-0 h-auto text-[10px] font-black uppercase tracking-widest"><ArrowLeft className="mr-2 h-3 w-3" /> Back</Button>
                         <Logo showText={false} className="opacity-50" />
                     </div>
 
