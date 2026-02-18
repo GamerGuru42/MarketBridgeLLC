@@ -58,6 +58,12 @@ function OnboardingContent() {
                 matricNumber: (user as any).matricNumber || '',
                 storeType: (user.storeType as 'physical' | 'online' | 'both') || 'online',
             });
+
+            // If seller is already identified but not email verified, send them to verification
+            if (['student_seller', 'dealer'].includes(user.role) && !user.email_verified) {
+                router.push('/verify-email');
+                return;
+            }
         }
     }, [user, authLoading]);
 

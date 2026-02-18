@@ -52,6 +52,12 @@ export default function SellerListingsPage() {
 
         if (!user) return;
 
+        // MANDATORY EMAIL VERIFICATION CHECK
+        if (!user.email_verified) {
+            router.push('/verify-email');
+            return;
+        }
+
         const allowedRoles = ['dealer', 'student_seller', 'ceo', 'admin', 'technical_admin'];
         if (!allowedRoles.includes(user.role)) {
             router.push('/');

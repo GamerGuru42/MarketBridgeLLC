@@ -34,6 +34,7 @@ export default function SellerLayout({
 }) {
     const { user, loading } = useAuth();
     const pathname = usePathname();
+    const router = useRouter();
 
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
@@ -42,6 +43,12 @@ export default function SellerLayout({
         // We don't redirect here to avoid race conditions with middleware
         // But we don't show the seller sidebar either
         return <>{children}</>;
+    }
+
+    // MANDATORY EMAIL VERIFICATION GATE
+    if (!user.email_verified && pathname !== '/verify-email') {
+        router.push('/verify-email');
+        return null;
     }
 
     return (

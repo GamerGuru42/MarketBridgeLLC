@@ -40,6 +40,12 @@ export default function NewListingPage() {
 
         if (!user) return;
 
+        // MANDATORY EMAIL VERIFICATION CHECK
+        if (!user.email_verified) {
+            router.push('/verify-email');
+            return;
+        }
+
         const allowedRoles = ['dealer', 'student_seller', 'ceo', 'admin', 'technical_admin'];
         if (!allowedRoles.includes(user.role)) {
             console.warn("Access Denied: Role mismatch for listing deployment", user.role);

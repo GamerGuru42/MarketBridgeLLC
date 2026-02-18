@@ -64,10 +64,8 @@ function SignupContent() {
         if (!authLoading && sessionUser && user) {
             // Check if user is a seller and needs email verification
             if (['student_seller', 'dealer'].includes(user.role)) {
-                if (!sessionUser.email_confirmed_at) {
-                    setFormData(prev => ({ ...prev, email: sessionUser.email || '' }));
-                    setSuccess(true);
-                    setLoginVerification(true);
+                if (!user.email_verified) {
+                    router.push('/verify-email');
                     return;
                 }
             }

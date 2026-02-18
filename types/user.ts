@@ -22,7 +22,9 @@ export interface User {
     trial_start_date?: string;
     listingLimit?: number;
     university?: string;
-    matricNumber?: string;
+    email_verified?: boolean;
+    last_otp_sent?: string;
+    otp_attempts?: number;
 }
 
 export interface FirestoreUser {

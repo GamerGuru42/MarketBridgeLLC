@@ -70,6 +70,13 @@ export default function PricingPage() {
             return;
         }
 
+        // MANDATORY EMAIL VERIFICATION CHECK
+        if (['student_seller', 'dealer'].includes(user.role) && !user.email_verified) {
+            toast('Please verify your email terminal before subscribing.', 'error');
+            router.push('/verify-email');
+            return;
+        }
+
         // If user is a buyer, redirect them to onboarding to become a seller first
         if (user.role === 'student_buyer') {
             router.push(`/onboarding?role=student_seller&plan=${planId}&cycle=${isAnnual ? 'annual' : 'monthly'}`);

@@ -89,6 +89,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     listingLimit: data.listing_limit,
                     university: data.university,
                     matricNumber: data.matric_number,
+                    email_verified: data.email_verified,
+                    last_otp_sent: data.last_otp_sent,
+                    otp_attempts: data.otp_attempts,
                 };
                 setUser(mappedUser as User);
             }

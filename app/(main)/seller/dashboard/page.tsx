@@ -164,6 +164,12 @@ export default function SellerDashboardPage() {
         // 3. Profile Guard: Wait for the user profile to be fully loaded
         if (!user) return;
 
+        // MANDATORY EMAIL VERIFICATION CHECK
+        if (!user.email_verified) {
+            router.push('/verify-email');
+            return;
+        }
+
         // 4. Access Control: Only redirect IF we have the user and the role is objectively wrong
         const validRoles = ['dealer', 'student_seller'];
         if (!validRoles.includes(user.role)) {
