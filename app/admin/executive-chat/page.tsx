@@ -27,6 +27,8 @@ const CHANNELS = [
     { id: 'strat', name: 'ceo-strategy', type: 'private' },
     { id: 'tech', name: 'tech-signals', type: 'public' },
     { id: 'abj', name: 'ops-abuja', type: 'public' },
+    { id: 'ceo-direct', name: 'ceo-direct', type: 'private', isDM: true, label: 'CEO (Admin)' },
+    { id: 'cto-hub', name: 'cto-hub', type: 'private', isDM: true, label: 'CTO Hub' },
 ] as const;
 
 import { supabase } from '@/lib/supabase';
@@ -202,7 +204,7 @@ export default function ExecutiveChatPage() {
 
                     <div className="space-y-1 px-2">
                         <p className="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Channels</p>
-                        {CHANNELS.map(ch => (
+                        {CHANNELS.filter(ch => !('isDM' in ch)).map(ch => (
                             <button
                                 key={ch.id}
                                 onClick={() => setActiveChannel(ch)}
@@ -216,19 +218,19 @@ export default function ExecutiveChatPage() {
 
                     <div className="mt-8 space-y-1 px-2">
                         <p className="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Direct Messages</p>
-                        <button className="w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
-                            <div className="flex items-center gap-2">
-                                <Circle className="h-2 w-2 fill-green-500 text-green-500" />
-                                <span>CEO (Admin)</span>
-                            </div>
-                            <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100" />
-                        </button>
-                        <button className="w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
-                            <div className="flex items-center gap-2">
-                                <Circle className="h-2 w-2 fill-green-500 text-green-500" />
-                                <span>CTO Hub</span>
-                            </div>
-                        </button>
+                        {CHANNELS.filter(ch => 'isDM' in ch).map((ch: any) => (
+                            <button
+                                key={ch.id}
+                                onClick={() => setActiveChannel(ch)}
+                                className={`w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs transition-colors ${activeChannel.id === ch.id ? 'bg-primary/20 text-white font-bold border border-primary/30' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <Circle className={`h-2 w-2 ${activeChannel.id === ch.id ? 'fill-primary text-primary' : 'fill-green-500 text-green-500'}`} />
+                                    <span>{ch.label || ch.name}</span>
+                                </div>
+                                {activeChannel.id === ch.id && <ChevronRight className="h-3 w-3 text-primary" />}
+                            </button>
+                        ))}
                     </div>
                 </div>
 
@@ -250,7 +252,7 @@ export default function ExecutiveChatPage() {
                 <div className="h-14 border-b border-slate-800 flex items-center justify-between px-6 bg-slate-900/20">
                     <div className="flex items-center gap-2">
                         <Hash className="h-4 w-4 text-slate-400" />
-                        <h3 className="font-bold text-white text-sm">{activeChannel.name}</h3>
+                        <h3 className="font-bold text-white text-sm">{(activeChannel as any).label || activeChannel.name}</h3>
                         <Separator orientation="vertical" className="h-4 bg-slate-800 mx-2" />
                         <span className="text-[10px] text-slate-500 font-medium">Internal Coordination Terminal</span>
                     </div>
@@ -297,7 +299,7 @@ export default function ExecutiveChatPage() {
                         <div className="relative flex-1">
                             <Input
                                 className="bg-slate-900 border-slate-800 text-slate-200 h-11 pr-12 focus-visible:ring-primary placeholder:text-slate-600"
-                                placeholder={`Message #${activeChannel.name}`}
+                                placeholder={`Message ${(activeChannel as any).label ? '@' + (activeChannel as any).label : '#' + activeChannel.name}`}
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}

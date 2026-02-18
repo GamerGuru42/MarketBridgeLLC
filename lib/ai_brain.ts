@@ -130,13 +130,36 @@ class AiBrain {
             };
         }
 
-        // 2. Direct Logic: Greetings
+        // 2. Direct Logic: Greetings & Small Talk
+        if (this.matchAny(lowerInput, ['good morning', 'good afternoon', 'good evening', 'morning', 'afternoon', 'evening'])) {
+            const timeOfDay = lowerInput.includes('morning') ? 'morning' : lowerInput.includes('afternoon') ? 'afternoon' : 'evening';
+            return { content: `Good ${timeOfDay}${this.context.userName ? ', ' + this.context.userName : ''}! Hope your day is going well. Ready to browse some campus deals?` };
+        }
+
+        if (this.matchAny(lowerInput, ['what\'s up', 'whats up', 'how far', 'wetin dey sup'])) {
+            return { content: `I'm just over here monitoring the Lagos-Abuja trade routes! Everything is optimized. What's on your mind today?` };
+        }
+
         if (this.matchWholeWord(lowerInput, ['hi', 'hello', 'hey', 'greetings', 'yo', 'sup'])) {
             const response = GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
             return { content: this.context.userName ? `Hi ${this.context.userName}! ${response.substring(6)}` : response };
         }
 
         // 3. Platform Knowledge Queries
+        // Google Identity Hub & Login
+        if (this.matchAny(lowerInput, ['google', 'gmail', 'identity', 'hub', 'automatic', 'prefill'])) {
+            return {
+                content: `Our new **Google Identity Hub** allows you to sign up or log in with a single click. It automatically pre-fills your profile data from your Google account to get you into the marketplace faster. Would you like me to guide you to the login terminal?`
+            };
+        }
+
+        // Executive Terminal / Admin Chat
+        if (this.matchAny(lowerInput, ['terminal', 'executive', 'cto', 'coo', 'admin chat', 'direct message'])) {
+            return {
+                content: `We've recently upgraded the **Executive Terminal**. CEOs and Admins can now initiate direct secure streams with the CTO Hub and other sector admins for real-time coordination. If you're an admin, make sure to use your secure access key.`
+            };
+        }
+
         // Payment & Paystack
         if (this.matchAny(lowerInput, ['pay', 'payment', 'money', 'cost', 'currency', 'paystack', 'transfer', 'card'])) {
             if (lowerInput.includes('secure') || lowerInput.includes('safety') || lowerInput.includes('scam') || lowerInput.includes('escrow')) {

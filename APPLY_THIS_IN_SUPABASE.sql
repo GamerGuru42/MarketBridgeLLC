@@ -165,5 +165,64 @@ CREATE POLICY "Admins can create proposals" ON public.proposals
 CREATE POLICY "Admins can update proposals" ON public.proposals
     FOR UPDATE USING (
         auth.role() = 'authenticated'
-    );
+
+-- ========================================
+-- PART 5: Initialize Admin Channels & Realtime
+-- ========================================
+
+INSERT INTO admin_channels (id, name, type) VALUES
+('gen', 'general-ops', 'public'),
+('strat', 'ceo-strategy', 'private'),
+('tech', 'tech-signals', 'public'),
+('abj', 'ops-abuja', 'public'),
+('ceo-direct', 'ceo-direct', 'private'),
+('cto-hub', 'cto-hub', 'private')
+ON CONFLICT (id) DO NOTHING;
+
+-- Enable Realtime
+-- Ensure the publication exists and contains the tables
+DO $$
+BEGIN
+    -- Check if publication exists
+    IF NOT EXISTS (SELECT 1 FROM pg_publication WHERE pubname = 'supabase_realtime') THEN
+        CREATE PUBLICATION supabase_realtime;
+    END IF;
+    
+    -- Add tables to the publication (ignore error if already added)
+    BEGIN
+        ALTER PUBLICATION supabase_realtime ADD TABLE admin_channel_messages;
+    EXCEPTION WHEN others THEN
+        NULL;
+    END;
+    
+    BEGIN
+        ALTER PUBLICATION supabase_realtime ADD TABLE admin_channels;
+    EXCEPTION WHEN others THEN
+        NULL;
+    END;
+
+    BEGIN
+        ALTER PUBLICATION supabase_realtime ADD TABLE messages;
+    EXCEPTION WHEN others THEN
+        NULL;
+    END;
+
+    BEGIN
+        ALTER PUBLICATION supabase_realtime ADD TABLE conversations;
+    EXCEPTION WHEN others THEN
+        NULL;
+    END;
+
+    BEGIN
+        ALTER PUBLICATION supabase_realtime ADD TABLE escrow_agreements;
+    EXCEPTION WHEN others THEN
+        NULL;
+    END;
+
+    BEGIN
+        ALTER PUBLICATION supabase_realtime ADD TABLE escrow_steps;
+    EXCEPTION WHEN others THEN
+        NULL;
+    END;
+END $$;
 
