@@ -29,19 +29,19 @@ export default function AboutPage() {
                         <ArrowLeft className="mr-2 h-3 w-3" /> Return to Core
                     </Button>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-end">
-                        <div className="lg:col-span-9 space-y-6">
+                    <div className="space-y-12">
+                        <div className="space-y-6">
                             <div className="flex items-center gap-3">
                                 <span className="h-0.5 w-12 bg-[#FF6600]" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#FF6600]">The Architecture of Trust</span>
                             </div>
-                            <h1 className="text-6xl md:text-8xl lg:text-[7vw] xl:text-[9rem] font-black uppercase tracking-tight italic font-heading leading-[0.8] whitespace-pre-line">
+                            <h1 className="text-7xl md:text-9xl lg:text-[12rem] font-black uppercase tracking-tight italic font-heading leading-[0.8] whitespace-pre-line">
                                 Protocol <br />
                                 <span className="text-zinc-500">Intelligence.</span>
                             </h1>
                         </div>
-                        <div className="lg:col-span-3 pb-4">
-                            <p className="text-zinc-400 text-base md:text-lg font-medium leading-relaxed italic border-l-2 border-[#FF6600] pl-6 lg:pl-8">
+                        <div className="max-w-xl">
+                            <p className="text-zinc-400 text-lg md:text-2xl font-medium leading-relaxed italic border-l-2 border-[#FF6600] pl-8">
                                 MarketBridge is an <span className="text-white">escrow-protected infrastructure</span> built to secure high-value asset exchange within Nigeria's campus ecosystem.
                             </p>
                         </div>
