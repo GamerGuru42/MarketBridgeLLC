@@ -92,6 +92,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     email_verified: data.email_verified,
                     last_otp_sent: data.last_otp_sent,
                     otp_attempts: data.otp_attempts,
+                    coins_balance: data.coins_balance,
+                    referral_link_code: data.referral_link_code,
                 };
                 setUser(mappedUser as User);
             }

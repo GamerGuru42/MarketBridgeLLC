@@ -26,6 +26,10 @@ export default function CheckoutPage() {
     const [paymentRef, setPaymentRef] = useState('');
     const [proofUrl, setProofUrl] = useState<string | null>(null);
     const [agreed, setAgreed] = useState(false);
+    const [useCoins, setUseCoins] = useState(false);
+    const [coinsToUse, setCoinsToUse] = useState(0);
+
+    const maxRedeemable = Math.min(user?.coins_balance || 0, total);
 
     // Bank Details State (Default: Moniepoint)
     const [bankDetails, setBankDetails] = useState({
@@ -109,7 +113,8 @@ export default function CheckoutPage() {
                         price: item.price,
                         dealerId: item.dealerId
                     })),
-                    totalAmount: total,
+                    totalAmount: useCoins ? total - maxRedeemable : total,
+                    coinsRedeemed: useCoins ? maxRedeemable : 0,
                     proofUrl,
                     paymentRef
                 })
@@ -239,7 +244,7 @@ export default function CheckoutPage() {
                                             {agreed && <CheckCircle2 className="h-3.5 w-3.5 text-black" />}
                                         </div>
                                         <p className="text-xs text-zinc-500 cursor-pointer select-none" onClick={() => setAgreed(!agreed)}>
-                                            I confirm I have transferred <span className="text-white font-bold">₦{total.toLocaleString()}</span> to the account above.
+                                            I confirm I have transferred <span className="text-white font-bold">₦{(useCoins ? total - maxRedeemable : total).toLocaleString()}</span> to the account above.
                                         </p>
                                     </div>
                                 </div>
@@ -276,11 +281,42 @@ export default function CheckoutPage() {
                                         <span className="text-sm font-black text-[#00FF85] uppercase tracking-tighter italic">WAIVED</span>
                                     </div>
 
+                                    {user?.coins_balance && user.coins_balance > 0 && (
+                                        <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-3">
+                                            <div className="flex justify-between items-center">
+                                                <div className="flex items-center gap-2">
+                                                    <Zap className="h-3 w-3 text-[#FF6600]" />
+                                                    <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Redeem {user.coins_balance} MC</span>
+                                                </div>
+                                                <div
+                                                    className={cn(
+                                                        "h-5 w-10 rounded-full bg-zinc-800 p-1 cursor-pointer transition-colors relative",
+                                                        useCoins ? "bg-[#FF6600]" : "bg-zinc-800"
+                                                    )}
+                                                    onClick={() => setUseCoins(!useCoins)}
+                                                >
+                                                    <div className={cn(
+                                                        "h-3 w-3 rounded-full bg-white transition-all transform",
+                                                        useCoins ? "translate-x-5" : "translate-x-0"
+                                                    )} />
+                                                </div>
+                                            </div>
+                                            {useCoins && (
+                                                <div className="flex justify-between items-center text-[#FF6600]">
+                                                    <span className="text-[9px] font-black uppercase tracking-widest">Coin Discount</span>
+                                                    <span className="text-sm font-black">-₦{maxRedeemable.toLocaleString()}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
                                     <Separator className="bg-white/5" />
 
                                     <div className="flex flex-col space-y-2">
                                         <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] font-heading">Total To Send</span>
-                                        <span className="text-5xl font-black text-[#FF6600] tracking-tighter italic font-heading">₦{total.toLocaleString()}</span>
+                                        <span className="text-5xl font-black text-[#FF6600] tracking-tighter italic font-heading">
+                                            ₦{(useCoins ? total - maxRedeemable : total).toLocaleString()}
+                                        </span>
                                     </div>
                                 </div>
 

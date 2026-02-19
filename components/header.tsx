@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 import { useAuth } from '@/contexts/AuthContext';
-import { Menu, User, LogOut, LayoutDashboard, Crown, MapPin, ChevronRight } from 'lucide-react';
+import { Menu, User, LogOut, LayoutDashboard, Crown, MapPin, ChevronRight, Zap } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import {
@@ -131,6 +131,15 @@ export const Header = () => {
 
                     {user && (
                         <div className="flex items-center gap-3">
+                            {/* MarketCoins Display */}
+                            <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#FF6600]/10 border border-[#FF6600]/20 rounded-full group cursor-help" title="Your MarketCoins balance">
+                                <Zap className="h-4 w-4 text-[#FF6600] fill-[#FF6600]/20 group-hover:scale-110 transition-transform" />
+                                <span className="text-[12px] font-black text-white tracking-widest leading-none">
+                                    {(user.coins_balance || 0).toLocaleString()}
+                                </span>
+                                <span className="text-[8px] font-black uppercase text-[#FF6600] tracking-widest opacity-60">MC</span>
+                            </div>
+
                             {/* External Logout Button for easier access */}
                             <Button
                                 variant="ghost"

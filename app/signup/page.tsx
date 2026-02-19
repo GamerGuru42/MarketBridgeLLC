@@ -21,6 +21,7 @@ function SignupContent() {
 
     const searchParams = useSearchParams();
     const initialRole = searchParams.get('role') as 'customer' | 'dealer' | 'admin' | 'student_buyer' | 'student_seller' | 'ceo' | null;
+    const referralCode = searchParams.get('ref');
 
     // Steps
     const [step, setStep] = useState<'role' | 'details' | 'auth-method' | 'admin-code' | 'admin-dept'>(() => {
@@ -101,52 +102,6 @@ function SignupContent() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
-    // Phone Verification States (Alternative for Sellers)
-    const [verificationMethod, setVerificationMethod] = useState<'id_card' | 'phone_otp'>('id_card');
-    const [isPhoneVerified, setIsPhoneVerified] = useState(false);
-    const [phoneOtp, setPhoneOtp] = useState('');
-    const [isSendingPhoneOtp, setIsSendingPhoneOtp] = useState(false);
-    const [isVerifyingPhoneOtp, setIsVerifyingPhoneOtp] = useState(false);
-    const [phoneVerificationSent, setPhoneVerificationSent] = useState(false);
-
-    const sendPhoneOtp = async () => {
-        if (!formData.phoneNumber) {
-            setError("Please enter your phone number first.");
-            return;
-        }
-        setIsSendingPhoneOtp(true);
-        setError('');
-        try {
-            // TODO: In the backend/Supabase, create an Edge Function 'send-verification-otp'
-            // and call it here. For now, we simulate the send for the demo.
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            setPhoneVerificationSent(true);
-            setIsSendingPhoneOtp(false);
-        } catch (err: any) {
-            setError(err.message || "Failed to send code.");
-            setIsSendingPhoneOtp(false);
-        }
-    };
-
-    const verifyPhoneOtp = async () => {
-        if (!phoneOtp) return;
-        setIsVerifyingPhoneOtp(true);
-        setError('');
-        try {
-            // TODO: In the backend/Supabase, create an Edge Function 'verify-phone-otp'
-            // For now, we accept '123456' as the universal beta code
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            if (phoneOtp === '123456') {
-                setIsPhoneVerified(true);
-            } else {
-                setError("Invalid verification code. Please try again.");
-            }
-        } catch (err: any) {
-            setError(err.message || "Verification failed.");
-        } finally {
-            setIsVerifyingPhoneOtp(false);
-        }
-    };
 
     const handleVerification = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -344,14 +299,8 @@ function SignupContent() {
         }
 
         if (isMerchant) {
-            // Require either student ID upload OR phone verification
-            if (verificationMethod === 'id_card' && !formData.studentIdUrl) {
+            if (!formData.studentIdUrl) {
                 setError("Please upload your Student ID Card for verification.");
-                setIsLoading(false);
-                return;
-            }
-            if (verificationMethod === 'phone_otp' && !isPhoneVerified) {
-                setError("Please verify your phone number via OTP to continue.");
                 setIsLoading(false);
                 return;
             }
@@ -393,6 +342,17 @@ function SignupContent() {
                     authData = { user: sessionUser, session: null };
                 } else {
                     // Scenario B: Traditional Email/Password Signup
+                    // Look up referrer ID if code exists
+                    let referrerId = null;
+                    if (referralCode) {
+                        const { data: refUser } = await supabase
+                            .from('users')
+                            .select('id')
+                            .eq('referral_link_code', referralCode)
+                            .single();
+                        if (refUser) referrerId = refUser.id;
+                    }
+
                     const { data, error: signUpError } = await supabase.auth.signUp({
                         email: emailToUse,
                         password: formData.password,
@@ -406,10 +366,10 @@ function SignupContent() {
                                 phone_number: formData.phoneNumber,
                                 business_name: isMerchant ? formData.businessName : null,
                                 department: formData.department,
-                                verification_method: isMerchant ? verificationMethod : 'none',
-                                student_id_url: (isMerchant && verificationMethod === 'id_card') ? formData.studentIdUrl : null,
-                                is_phone_verified: (isMerchant && verificationMethod === 'phone_otp') ? isPhoneVerified : false,
-                                is_manual_override: missingUni
+                                verification_method: 'id_card',
+                                student_id_url: isMerchant ? formData.studentIdUrl : null,
+                                is_manual_override: missingUni,
+                                referred_by: referralCode
                             },
                         },
                     });
@@ -433,19 +393,47 @@ function SignupContent() {
                         university: finalUniversity,
                         matric_number: isMerchant ? formData.matricNumber : null,
                         subscription_status: isMerchant ? 'pending_verification' : 'active',
-                        is_verified: (isMerchant && verificationMethod === 'phone_otp') ? isPhoneVerified : false,
+                        is_verified: false,
+                        referred_by_id: referralCode ? (await supabase.from('users').select('id').eq('referral_link_code', referralCode).single()).data?.id : null,
                         metadata: {
                             department: formData.department,
-                            student_id_url: (isMerchant && verificationMethod === 'id_card') ? formData.studentIdUrl : null,
-                            verification_method: isMerchant ? verificationMethod : 'none',
-                            is_phone_verified: (isMerchant && verificationMethod === 'phone_otp') ? isPhoneVerified : false,
-                            is_manual_override: missingUni
+                            student_id_url: isMerchant ? formData.studentIdUrl : null,
+                            verification_method: 'id_card',
+                            is_manual_override: missingUni,
+                            referred_by: referralCode
                         }
                     });
 
                 if (profileError) console.error("Profile establishing error (Non-fatal):", profileError);
 
-                // 4. Subscription Setup (If Merchant)
+                // 4. Referral Reward (Welcome Bonus)
+                if (referralCode) {
+                    const { data: refUser } = await supabase
+                        .from('users')
+                        .select('id')
+                        .eq('referral_link_code', referralCode)
+                        .single();
+
+                    if (refUser) {
+                        // Welcome bonus for new user
+                        await supabase.rpc('add_coins', {
+                            user_id: authData.user!.id,
+                            amount_to_add: 100,
+                            trans_type: 'referral_welcome',
+                            trans_desc: `Welcome bonus for using referral code: ${referralCode}`
+                        });
+
+                        // Reward the Referrer too
+                        await supabase.rpc('add_coins', {
+                            user_id: refUser.id,
+                            amount_to_add: 100,
+                            trans_type: 'referral',
+                            trans_desc: `Referral bonus for inviting ${formData.displayName}`
+                        });
+                    }
+                }
+
+                // 5. Subscription Setup (If Merchant)
                 if (isMerchant) {
                     const trialEndDate = new Date();
                     trialEndDate.setDate(trialEndDate.getDate() + 14);
@@ -824,7 +812,7 @@ function SignupContent() {
                                 <div className="space-y-2">
                                     <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Jurisdiction</label>
                                     <div className="relative group">
-                                        <div className="absolute left-6 top-1/2 -translate-y-1/2 text-lg">🇳🇬</div>
+                                        <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center text-lg">🇳🇬</div>
                                         <select className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-black text-[10px] uppercase tracking-widest appearance-none transition-all cursor-pointer">
                                             <option>Nigeria</option>
                                         </select>
@@ -965,109 +953,33 @@ function SignupContent() {
                                     )}
 
                                     <div className="space-y-6 pt-4">
-                                        <div className="space-y-4">
-                                            <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 block ml-2">Choose Verification Method</label>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setVerificationMethod('id_card')}
-                                                    className={`h-14 rounded-2xl border flex items-center justify-center gap-2 transition-all font-bold text-[10px] uppercase tracking-widest ${verificationMethod === 'id_card' ? 'bg-[#FF6600]/10 border-[#FF6600] text-white shadow-[0_0_20px_rgba(255,102,0,0.1)]' : 'bg-black border-white/10 text-zinc-600 hover:border-white/20'}`}
-                                                >
-                                                    <CheckCircle className={`h-4 w-4 ${verificationMethod === 'id_card' ? 'text-[#FF6600]' : 'opacity-20'}`} />
-                                                    Student ID Card
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setVerificationMethod('phone_otp')}
-                                                    className={`h-14 rounded-2xl border flex items-center justify-center gap-2 transition-all font-bold text-[10px] uppercase tracking-widest ${verificationMethod === 'phone_otp' ? 'bg-[#FF6600]/10 border-[#FF6600] text-white shadow-[0_0_20px_rgba(255,102,0,0.1)]' : 'bg-black border-white/10 text-zinc-600 hover:border-white/20'}`}
-                                                >
-                                                    <Zap className={`h-4 w-4 ${verificationMethod === 'phone_otp' ? 'text-[#FF6600]' : 'opacity-20'}`} />
-                                                    Phone Verification
-                                                </button>
+                                        <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                            <div className="flex items-center justify-between ml-2">
+                                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 block">Upload Student ID Card</label>
+                                                {formData.studentIdUrl && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setFormData({ ...formData, studentIdUrl: '' })}
+                                                        className="text-[8px] font-black text-red-500 uppercase tracking-widest hover:underline"
+                                                    >
+                                                        Reset Upload
+                                                    </button>
+                                                )}
+                                            </div>
+
+                                            <div className="glass-card rounded-[2rem] border border-white/10 p-4 group hover:border-[#FF6600]/30 transition-colors bg-zinc-950/50 mt-2">
+                                                <ImageUpload
+                                                    onImagesSelected={(urls: string[]) => {
+                                                        if (urls && urls.length > 0) setFormData({ ...formData, studentIdUrl: urls[0] });
+                                                        else setFormData({ ...formData, studentIdUrl: '' });
+                                                    }}
+                                                    defaultImages={formData.studentIdUrl ? [formData.studentIdUrl] : []}
+                                                    maxImages={1}
+                                                    bucketName="identity"
+                                                    isIDCard={true}
+                                                />
                                             </div>
                                         </div>
-
-                                        {verificationMethod === 'id_card' ? (
-                                            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                                                <div className="flex items-center justify-between ml-2">
-                                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 block">Upload Student ID Card</label>
-                                                    {formData.studentIdUrl && (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setFormData({ ...formData, studentIdUrl: '' })}
-                                                            className="text-[8px] font-black text-red-500 uppercase tracking-widest hover:underline"
-                                                        >
-                                                            Reset Upload
-                                                        </button>
-                                                    )}
-                                                </div>
-
-                                                <div className="glass-card rounded-[2rem] border border-white/10 p-4 group hover:border-[#FF6600]/30 transition-colors bg-zinc-950/50 mt-2">
-                                                    <ImageUpload
-                                                        onImagesSelected={(urls: string[]) => {
-                                                            if (urls && urls.length > 0) setFormData({ ...formData, studentIdUrl: urls[0] });
-                                                            else setFormData({ ...formData, studentIdUrl: '' });
-                                                        }}
-                                                        defaultImages={formData.studentIdUrl ? [formData.studentIdUrl] : []}
-                                                        maxImages={1}
-                                                        bucketName="identity"
-                                                        isIDCard={true}
-                                                    />
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="animate-in fade-in slide-in-from-top-2 duration-300 space-y-4">
-                                                <div className="p-6 bg-zinc-950/50 border border-white/10 rounded-[2rem] space-y-4">
-                                                    <div className="flex items-center justify-between">
-                                                        <div className="space-y-1">
-                                                            <p className="text-[10px] uppercase font-black text-white tracking-widest">Verify Nigerian Phone</p>
-                                                            <p className="text-[8px] text-zinc-500 font-bold uppercase tracking-widest italic">+234 {formData.phoneNumber || "000 000 0000"}</p>
-                                                        </div>
-                                                        {!isPhoneVerified && (
-                                                            <Button
-                                                                type="button"
-                                                                disabled={isSendingPhoneOtp || !formData.phoneNumber}
-                                                                onClick={sendPhoneOtp}
-                                                                className="h-10 px-4 bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest text-white hover:bg-white/10 rounded-xl transition-all"
-                                                            >
-                                                                {isSendingPhoneOtp ? <Loader2 className="h-3 w-3 animate-spin" /> : (phoneVerificationSent ? "Resend OTP" : "Send OTP")}
-                                                            </Button>
-                                                        )}
-                                                        {isPhoneVerified && (
-                                                            <div className="h-10 px-4 flex items-center gap-2 bg-[#00FF85]/10 border border-[#00FF85]/20 rounded-xl">
-                                                                <CheckCircle className="h-3 w-3 text-[#00FF85]" />
-                                                                <span className="text-[9px] font-black uppercase tracking-widest text-[#00FF85]">Verified</span>
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-                                                    {phoneVerificationSent && !isPhoneVerified && (
-                                                        <div className="space-y-4 pt-2 animate-in slide-in-from-top-2 duration-300">
-                                                            <div className="h-[1px] w-full bg-white/5" />
-                                                            <div className="space-y-2">
-                                                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 block ml-1 text-center">Enter 6-Digit Code</label>
-                                                                <input
-                                                                    value={phoneOtp}
-                                                                    onChange={(e) => setPhoneOtp(e.target.value)}
-                                                                    maxLength={6}
-                                                                    placeholder="••••••"
-                                                                    className="w-full h-14 bg-black border border-white/10 rounded-2xl text-center text-xl font-black tracking-[0.5em] text-[#FF6600] focus:border-[#FF6600] outline-none transition-all placeholder:tracking-normal placeholder:text-zinc-900"
-                                                                />
-                                                                <p className="text-[8px] text-zinc-700 text-center italic uppercase tracking-widest">Beta Access: Enter '123456' to proceed</p>
-                                                            </div>
-                                                            <Button
-                                                                type="button"
-                                                                disabled={isVerifyingPhoneOtp || phoneOtp.length < 6}
-                                                                onClick={verifyPhoneOtp}
-                                                                className="w-full h-12 bg-[#FF6600] text-black font-black uppercase tracking-[0.2em] text-[9px] rounded-xl hover:scale-105 transition-all"
-                                                            >
-                                                                {isVerifyingPhoneOtp ? <Loader2 className="h-4 w-4 animate-spin mx-auto" /> : "Verify and Secure Account"}
-                                                            </Button>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
                                     </div>
                                 </div>
                             </div>

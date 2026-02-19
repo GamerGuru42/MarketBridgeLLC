@@ -14,6 +14,7 @@ import { CATEGORIES } from '@/lib/categories';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { intelligentSearch, trackSearch } from '@/lib/ai-search';
+import { SponsoredBadge } from '@/components/listings/SponsoredBadge';
 
 
 interface Listing {
@@ -33,6 +34,7 @@ interface Listing {
     condition?: string;
     is_verified_listing?: boolean;
     verification_status?: string;
+    is_sponsored?: boolean;
     dealer?: {
         id: string;
         display_name: string;
@@ -340,6 +342,11 @@ function ListingsContent() {
                                                 <ShieldCheck className="h-3 w-3 mr-1" />
                                                 VERIFIED
                                             </Badge>
+                                        )}
+                                        {listing.is_sponsored && (
+                                            <div className="absolute top-2 left-2">
+                                                <SponsoredBadge />
+                                            </div>
                                         )}
                                     </div>
                                     <CardHeader>

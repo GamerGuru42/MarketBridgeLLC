@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Package, Plus, Edit, Trash2, Eye, Loader2 } from 'lucide-react';
+import { Package, Plus, Edit, Trash2, Eye, Loader2, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -31,6 +31,7 @@ interface Listing {
     status: 'active' | 'sold' | 'inactive';
     location: string | null;
     created_at: string;
+    is_sponsored?: boolean;
 }
 
 export default function SellerListingsPage() {
@@ -41,6 +42,7 @@ export default function SellerListingsPage() {
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
+    const [promotingId, setPromotingId] = useState<string | null>(null);
 
     useEffect(() => {
         if (authLoading) return;
@@ -161,6 +163,30 @@ export default function SellerListingsPage() {
         }
     };
 
+    const handlePromote = async (listingId: string) => {
+        if (!confirm('Promote this listing for 500 MarketCoins? It will appear as "Sponsored" in the marketplace.')) return;
+
+        setPromotingId(listingId);
+        try {
+            const res = await fetch('/api/listings/promote', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ listingId })
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error);
+
+            alert('Listing successfully promoted! Check the marketplace to see it.');
+            fetchListings();
+        } catch (err: any) {
+            console.error('Promotion failed:', err);
+            alert(err.message || 'Failed to promote listing');
+        } finally {
+            setPromotingId(null);
+        }
+    };
+
     if (authLoading || loading) {
         return (
             <div className="container mx-auto px-4 py-8">
@@ -228,6 +254,12 @@ export default function SellerListingsPage() {
                                     >
                                         {listing.status}
                                     </Badge>
+                                    {listing.is_sponsored && (
+                                        <Badge className="bg-[#FF6600] font-black uppercase tracking-tighter shadow-lg gap-1">
+                                            <Zap className="h-3 w-3 fill-white" />
+                                            Sponsored
+                                        </Badge>
+                                    )}
                                 </div>
                             </div>
                             <CardHeader className="p-5">
@@ -279,6 +311,25 @@ export default function SellerListingsPage() {
                                             </>
                                         )}
                                     </Button>
+
+                                    {!listing.is_sponsored && listing.status === 'active' && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="col-span-2 font-black italic uppercase tracking-widest text-[10px] border-[#FF6600]/20 text-[#FF6600] hover:bg-[#FF6600] hover:text-black mt-2 h-10 shadow-lg shadow-[#FF6600]/5"
+                                            onClick={() => handlePromote(listing.id)}
+                                            disabled={promotingId === listing.id}
+                                        >
+                                            {promotingId === listing.id ? (
+                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                            ) : (
+                                                <>
+                                                    <Zap className="mr-2 h-3 w-3 fill-current" />
+                                                    Promote to Sponsored (500 MC)
+                                                </>
+                                            )}
+                                        </Button>
+                                    )}
                                 </div>
                             </CardContent>
                         </Card>

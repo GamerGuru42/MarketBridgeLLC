@@ -746,6 +746,7 @@ export default function SellerDashboardPage() {
                                             </span>
                                         )}
                                     </TabsTrigger>
+                                    <TabsTrigger value="rewards" className="data-[state=active]:bg-[#FF6600] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading">Rewards & Referrals</TabsTrigger>
                                     <TabsTrigger value="settings" className="data-[state=active]:bg-[#FF6600] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading">Payout Settings</TabsTrigger>
                                 </TabsList>
                             </div>
@@ -873,6 +874,89 @@ export default function SellerDashboardPage() {
                                         </div>
                                     ))
                                 )}
+                            </div>
+                        </TabsContent>
+
+                        <TabsContent value="rewards" className="divide-y divide-white/5 focus-visible:outline-none focus:outline-none">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                                {/* MarketCoins Card */}
+                                <div className="p-10 rounded-[3rem] border border-white/5 bg-white/[0.02] flex flex-col justify-between">
+                                    <div className="space-y-6">
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-12 w-12 rounded-2xl bg-[#FF6600]/10 border border-[#FF6600]/20 flex items-center justify-center">
+                                                <Zap className="h-6 w-6 text-[#FF6600]" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-2xl font-black uppercase tracking-tighter italic font-heading">MarketCoins</h3>
+                                                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Digital Loyalty Protocol</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="py-8 border-y border-white/5">
+                                            <p className="text-[10px] font-black uppercase text-zinc-600 tracking-[0.3em] mb-2 font-heading">Active Balance</p>
+                                            <div className="flex items-baseline gap-2 font-heading">
+                                                <span className="text-6xl font-black text-white italic tracking-tighter">{(user?.coins_balance || 0).toLocaleString()}</span>
+                                                <span className="text-xl font-black text-[#FF6600] italic">MC</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <p className="text-[10px] font-medium text-zinc-500 italic leading-relaxed">
+                                                Earn 1 MC for every ₦200 you sell. Redeem coins for listing promotions, platform perks, or trading discounts.
+                                            </p>
+                                            <div className="flex flex-wrap gap-2">
+                                                <Badge variant="outline" className="border-white/10 text-zinc-400 font-black uppercase text-[8px] tracking-widest">1 MC = Reward Protocol</Badge>
+                                                <Badge variant="outline" className="border-white/10 text-zinc-400 font-black uppercase text-[8px] tracking-widest">Atomic Redemption</Badge>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Refer & Earn Card */}
+                                <div className="p-10 rounded-[3rem] border border-white/5 bg-white/[0.02] space-y-8">
+                                    <div className="space-y-2">
+                                        <h3 className="text-2xl font-black uppercase tracking-tighter italic font-heading">Refer & Earn</h3>
+                                        <p className="text-zinc-500 text-xs italic">Expand the network and earn 100 MC for every verified referral.</p>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 font-heading">Your Referral Transmission Code</Label>
+                                            <div className="flex gap-2">
+                                                <div className="flex-1 bg-black/40 border border-white/10 rounded-xl px-6 flex items-center h-14 font-mono text-lg font-black text-[#FF6600] tracking-widest">
+                                                    {user?.referral_link_code || 'PROTOCOL_PENDING'}
+                                                </div>
+                                                <Button
+                                                    onClick={() => {
+                                                        const link = `${window.location.origin}/signup?ref=${user?.referral_link_code}`;
+                                                        navigator.clipboard.writeText(link);
+                                                        alert('Transmission link copied to clipboard!');
+                                                    }}
+                                                    className="h-14 px-6 bg-white text-black font-black uppercase tracking-widest rounded-xl hover:bg-zinc-200 transition-colors"
+                                                >
+                                                    Copy Link
+                                                </Button>
+                                            </div>
+                                        </div>
+
+                                        <div className="p-6 bg-white/[0.02] border border-white/5 rounded-2xl">
+                                            <div className="flex justify-between items-center mb-4 text-zinc-600">
+                                                <span className="text-[10px] font-black uppercase tracking-widest">Referral Stats</span>
+                                                <span className="h-2 w-2 rounded-full bg-[#00FF85] animate-pulse" />
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-6">
+                                                <div>
+                                                    <p className="text-[10px] font-black uppercase text-zinc-500 mb-1">Total Invited</p>
+                                                    <p className="text-2xl font-black text-white italic font-heading">0</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] font-black uppercase text-zinc-500 mb-1">Coins Earned</p>
+                                                    <p className="text-2xl font-black text-[#FF6600] italic font-heading">0 MC</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </TabsContent>
 

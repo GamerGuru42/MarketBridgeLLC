@@ -25,6 +25,8 @@ export interface User {
     email_verified?: boolean;
     last_otp_sent?: string;
     otp_attempts?: number;
+    coins_balance?: number;
+    referral_link_code?: string;
 }
 
 export interface FirestoreUser {

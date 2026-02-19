@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /public/
+Disallow: /admin/
+Disallow: /payouts/
+Disallow: /api/
+
+Sitemap: https://marketbridge.com.ng/sitemap.xml

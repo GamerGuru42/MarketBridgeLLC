@@ -1,0 +1,11 @@
+import React from 'react';
+import { Sparkles } from 'lucide-react';
+
+export const SponsoredBadge = () => {
+    return (
+        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#FF6600]/10 border border-[#FF6600]/20 text-[9px] font-black uppercase tracking-widest text-[#FF6600]">
+            <Sparkles className="h-2.5 w-2.5" />
+            Sponsored
+        </div>
+    );
+};

@@ -1,165 +1,50 @@
-import { type NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@supabase/ssr'
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
 export async function middleware(request: NextRequest) {
-    const pathname = request.nextUrl.pathname
-    const host = request.headers.get('host')
+    const { pathname } = request.nextUrl;
 
-    // DOMAIN ENFORCEMENT: Redirect Vercel internal URLs to custom domain
-    // This ensures location permissions and Auth branding always show 'marketbridge.com.ng'
-    if (process.env.NODE_ENV === 'production' && host && host.includes('vercel.app')) {
-        return NextResponse.redirect(`https://marketbridge.com.ng${pathname}${request.nextUrl.search}`, 301)
-    }
+    // 1. PUBLIC SECTION KILL-SWITCH
+    // Check environment variable (Redline override)
+    const envEnabled = process.env.ENABLE_PUBLIC_SECTION === 'true';
 
-    // Standard Supabase Next.js Middleware pattern
-    let supabaseResponse = NextResponse.next({
-        request,
-    })
+    // If env is true, we skip the DB check for speed (Manual Overlord override)
+    let isPublicSectionEnabled = envEnabled;
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-    // Fallback if environment variables are missing to prevent middleware crash
-    if (!supabaseUrl || !supabaseAnonKey) {
-        if (process.env.NODE_ENV !== 'production') {
-            console.error('CRITICAL: Supabase environment variables missing in middleware.')
-        }
-        return supabaseResponse
-    }
-
-    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-        cookies: {
-            getAll() {
-                return request.cookies.getAll()
-            },
-            setAll(cookiesToSet) {
-                cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
-                supabaseResponse = NextResponse.next({
-                    request,
-                })
-                cookiesToSet.forEach(({ name, value, options }) =>
-                    supabaseResponse.cookies.set(name, value, options)
-                )
-            },
-        },
-    })
-
-    // BYPASS PROTECTION FOR AUTH HANDSHAKE
-    if (pathname.startsWith('/auth/') || pathname === '/reset-password') {
-        return supabaseResponse
-    }
-
-    // refreshing the auth token (authoritative check)
-    const { data: { user } } = await supabase.auth.getUser()
-
-    let role = user?.user_metadata?.role
-
-    // CRITICAL FIX: Database Fallback for stale metadata
-    if (user && (!role || role === 'customer')) {
+    if (!isPublicSectionEnabled && pathname.startsWith('/public')) {
+        // Check Database setting as fallback
         try {
-            const { data: profile } = await supabase
-                .from('users')
-                .select('role')
-                .eq('id', user.id)
-                .single()
+            const supabase = createClient(
+                process.env.NEXT_PUBLIC_SUPABASE_URL!,
+                process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+            );
 
-            if (profile?.role) {
-                role = profile.role
+            const { data } = await supabase
+                .from('site_settings')
+                .select('value')
+                .eq('key', 'public_section_enabled')
+                .single();
+
+            if (data && data.value === true) {
+                isPublicSectionEnabled = true;
             }
         } catch (e) {
-            // Silence DB errors to maintain performance
+            console.error('Middleware Security Handshake Failed:', e);
         }
     }
 
-    role = role || 'customer'
-
-    // PROTECTION LOGIC
-
-    // CEO PROTECTION
-    if (pathname.startsWith('/ceo')) {
-        // Allow public access to CEO auth pages
-        if (pathname.includes('/login') || pathname.includes('/signup')) {
-            if (user && role === 'ceo') {
-                return NextResponse.redirect(new URL('/ceo', request.url))
-            }
-            return supabaseResponse
-        }
-
-        // Protect CEO Dashboard
-        if (!user || role !== 'ceo') {
-            return NextResponse.redirect(new URL('/ceo/login', request.url))
-        }
+    // If trying to access /public and it's disabled, redirect to home
+    if (pathname.startsWith('/public') && !isPublicSectionEnabled) {
+        return NextResponse.redirect(new URL('/', request.url));
     }
 
-    // AUTH ENTROPY PREVENTION: Redirect logged-in users away from auth pages
-    if (user && (pathname === '/login' || pathname === '/signup' || pathname === '/forgot-password')) {
-        if (role === 'ceo') {
-            return NextResponse.redirect(new URL('/ceo', request.url))
-        } else if (['dealer', 'student_seller'].includes(role)) {
-            return NextResponse.redirect(new URL('/seller/dashboard', request.url))
-        } else if (['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'cto', 'coo', 'cofounder'].includes(role)) {
-            return NextResponse.redirect(new URL('/admin', request.url))
-        } else {
-            return NextResponse.redirect(new URL('/listings', request.url))
-        }
-    }
-
-    const isAdmin = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'cto', 'coo', 'ceo', 'cofounder'].includes(role)
-
-    // ADMIN PROTECTION
-    if (pathname.startsWith('/admin')) {
-        if (pathname === '/admin/login' || pathname === '/admin/signup') {
-            if (user && isAdmin) {
-                // Redirect to specific dashboard based on role to avoid confusion
-                if (role === 'ceo') return NextResponse.redirect(new URL('/ceo', request.url))
-                if (role === 'marketing_admin') return NextResponse.redirect(new URL('/admin/marketing', request.url))
-                if (role === 'operations_admin') return NextResponse.redirect(new URL('/admin/operations', request.url))
-                if (role === 'technical_admin') return NextResponse.redirect(new URL('/admin/technical', request.url))
-                return NextResponse.redirect(new URL('/admin', request.url))
-            }
-            return supabaseResponse
-        }
-
-        if (!user || !isAdmin) {
-            return NextResponse.redirect(new URL('/admin/login', request.url))
-        }
-
-        // Granular Access Control
-        const superAdmins = ['admin', 'ceo', 'cofounder', 'cto', 'coo'];
-        const isSuperAdmin = superAdmins.includes(role);
-
-        if (!isSuperAdmin) {
-            if (pathname.startsWith('/admin/marketing') && role !== 'marketing_admin') {
-                return NextResponse.redirect(new URL('/admin', request.url)) // Or their own dashboard
-            }
-            if (pathname.startsWith('/admin/operations') && role !== 'operations_admin') {
-                return NextResponse.redirect(new URL('/admin', request.url))
-            }
-            if (pathname.startsWith('/admin/technical') && role !== 'technical_admin') {
-                return NextResponse.redirect(new URL('/admin', request.url))
-            }
-        }
-    }
-
-    // SELLER PROTECTION
-    if (pathname.startsWith('/seller')) {
-        if (!user || !['dealer', 'student_seller'].includes(role)) {
-            return NextResponse.redirect(new URL('/login', request.url))
-        }
-    }
-
-    return supabaseResponse
+    return NextResponse.next();
 }
 
+// See "Matching Paths" below to learn more
 export const config = {
     matcher: [
-        /*
-         * Match all request paths except for the ones starting with:
-         * - _next/static (static files)
-         * - _next/image (image optimization files)
-         * - favicon.ico (favicon file)
-         * Feel free to modify this pattern to include more paths.
-         */
-        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+        '/public/:path*',
     ],
-}
+};

@@ -64,6 +64,8 @@ export default function AdminPage() {
         marketingGrowth: 0,
         techHealth: 99
     });
+    const [publicSectionEnabled, setPublicSectionEnabled] = React.useState(false);
+    const [isThinking, setIsThinking] = React.useState(false);
 
     useEffect(() => {
         const fetchGlobalStats = async () => {
@@ -82,6 +84,12 @@ export default function AdminPage() {
                 marketingGrowth: totalUsers || 0,
                 techHealth: dbStatus
             });
+
+            // Fetch site settings
+            const { data: settings } = await supabase.from('site_settings').select('value').eq('key', 'public_section_enabled').single();
+            if (settings) {
+                setPublicSectionEnabled(settings.value as boolean);
+            }
         };
         fetchGlobalStats();
     }, []);
@@ -218,9 +226,87 @@ export default function AdminPage() {
                     </div>
                 </div>
 
+                {/* Kill-Switch Control Protocol */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <Card className="lg:col-span-2 bg-gradient-to-br from-red-500/10 to-transparent border-red-500/20 rounded-[3rem] overflow-hidden p-10">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+                            <div className="space-y-4 max-w-xl">
+                                <div className="flex items-center gap-2 text-red-500">
+                                    <Shield className="h-5 w-5" />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.4em] font-heading">Security Protocol 7</span>
+                                </div>
+                                <h3 className="text-3xl font-black uppercase tracking-tighter italic font-heading">Public Expansion <span className="text-red-500">Kill-Switch</span></h3>
+                                <p className="text-zinc-500 text-sm leading-relaxed italic">
+                                    Emergency override for the national marketplace. Disabling this instantly locks the <span className="text-white">/public</span> route and blocks external search engine crawlers. Use only during maintenance or security breaches.
+                                </p>
+                            </div>
+
+                            <div className="flex flex-col items-center gap-4 bg-black/40 p-8 rounded-3xl border border-white/5 shrink-0 min-w-[200px]">
+                                <div
+                                    className={cn(
+                                        "w-20 h-10 rounded-full p-1 cursor-pointer transition-all duration-500 relative",
+                                        publicSectionEnabled ? "bg-[#00FF85]" : "bg-zinc-800"
+                                    )}
+                                    onClick={async () => {
+                                        if (isThinking) return;
+                                        if (!confirm(`Are you sure you want to ${publicSectionEnabled ? 'DISABLE' : 'ENABLE'} the public marketplace?`)) return;
+
+                                        setIsThinking(true);
+                                        try {
+                                            const res = await fetch('/api/admin/settings', {
+                                                method: 'POST',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify({ key: 'public_section_enabled', value: !publicSectionEnabled })
+                                            });
+                                            if (!res.ok) throw new Error('Protocol failed');
+                                            setPublicSectionEnabled(!publicSectionEnabled);
+                                        } catch (e) {
+                                            alert('Override Failed: Check system logs.');
+                                        } finally {
+                                            setIsThinking(false);
+                                        }
+                                    }}
+                                >
+                                    <div className={cn(
+                                        "h-8 w-8 rounded-full bg-white shadow-xl transition-all duration-500 flex items-center justify-center",
+                                        publicSectionEnabled ? "translate-x-10" : "translate-x-0"
+                                    )}>
+                                        {isThinking ? (
+                                            <Loader2 className="h-4 w-4 animate-spin text-black" />
+                                        ) : (
+                                            <Globe className={cn("h-4 w-4", publicSectionEnabled ? "text-[#00FF85]" : "text-zinc-400")} />
+                                        )}
+                                    </div>
+                                </div>
+                                <span className={cn(
+                                    "text-[10px] font-black uppercase tracking-[0.2em] font-heading",
+                                    publicSectionEnabled ? "text-[#00FF85]" : "text-zinc-500"
+                                )}>
+                                    {publicSectionEnabled ? "Broadcast Active" : "Signal Jammed"}
+                                </span>
+                            </div>
+                        </div>
+                    </Card>
+
+                    <Card className="bg-black/40 border border-white/10 rounded-[3rem] p-10 flex flex-col justify-between">
+                        <div className="space-y-4">
+                            <Cpu className="h-8 w-8 text-[#FF6600]" />
+                            <h3 className="text-xl font-black uppercase tracking-tighter italic font-heading">Handshake Logic</h3>
+                            <p className="text-zinc-500 text-[10px] leading-relaxed uppercase tracking-widest font-bold">
+                                Middleware checks <span className="text-[#FF6600]">ENABLE_PUBLIC_SECTION</span> env first, then falls back to this DB-level switch.
+                            </p>
+                        </div>
+                        <div className="pt-6 border-t border-white/5">
+                            <Link href="/admin/technical" className="text-[10px] font-black uppercase text-[#FF6600] flex items-center gap-2 hover:gap-4 transition-all">
+                                View Technical Audit <ArrowRight className="h-3 w-3" />
+                            </Link>
+                        </div>
+                    </Card>
+                </div>
+
                 {/* Footer Insight */}
                 <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.3em] text-zinc-700 font-heading italic">
-                    <div>Marketbridge Technical Division // 2024</div>
+                    <div>Marketbridge Technical Division // 2026</div>
                     <div className="flex items-center gap-4">
                         <span>Latency: 14ms</span>
                         <span>Uptime: 99.99%</span>
