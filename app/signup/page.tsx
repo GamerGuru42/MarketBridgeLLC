@@ -293,7 +293,7 @@ function SignupContent() {
         }
 
         if (isMerchant && !formData.matricNumber) {
-            setError("Matriculation number is required for student verification.");
+            setError("Matriculation or Staff ID number is required for verification.");
             setIsLoading(false);
             return;
         }
@@ -511,8 +511,8 @@ function SignupContent() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 max-w-6xl mx-auto">
                         {[
-                            { id: 'student_buyer', title: 'Buyer', icon: UserIcon, desc: 'Browse & Buy Assets', color: 'text-blue-400' },
-                            { id: 'student_seller', title: 'Seller', icon: Briefcase, desc: 'Start your Campus Business', color: 'text-[#FF6600]' },
+                            { id: 'student_buyer', title: 'Buyer', icon: UserIcon, desc: 'Shop within your University', color: 'text-blue-400' },
+                            { id: 'student_seller', title: 'Seller', icon: Briefcase, desc: 'Sell to your University Community', color: 'text-[#FF6600]' },
                             { id: 'admin', title: 'Team Admin', icon: ShieldCheck, desc: 'Admin Team', color: 'text-zinc-400' },
                             { id: 'ceo', title: 'CEO/Founder', icon: Lock, desc: 'Founder', color: 'text-red-500' }
                         ].map(item => (
@@ -757,7 +757,7 @@ function SignupContent() {
                                         onChange={handleChange}
                                         required
                                         readOnly={!!sessionUser}
-                                        placeholder={['student_seller', 'dealer'].includes(role) ? "benny@university.edu.ng or 080..." : "email or phone number"}
+                                        placeholder={['student_seller', 'dealer'].includes(role) ? "staff.name@university.edu.ng or matric..." : "email or phone number"}
                                         className={`w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all ${sessionUser ? 'opacity-70 cursor-not-allowed' : ''}`}
                                     />
                                 </div>
@@ -860,7 +860,7 @@ function SignupContent() {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Matriculation Number (Required)</label>
+                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">ID / Matriculation Number (Required)</label>
                                         <div className="relative group">
                                             <School className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
                                             <input
@@ -955,7 +955,7 @@ function SignupContent() {
                                     <div className="space-y-6 pt-4">
                                         <div className="animate-in fade-in slide-in-from-top-2 duration-300">
                                             <div className="flex items-center justify-between ml-2">
-                                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 block">Upload Student ID Card</label>
+                                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 block">Upload Institution ID Card</label>
                                                 {formData.studentIdUrl && (
                                                     <button
                                                         type="button"

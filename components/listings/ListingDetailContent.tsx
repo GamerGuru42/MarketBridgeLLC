@@ -16,6 +16,8 @@ import { startConversation } from '@/lib/chat';
 import { ReviewsSection } from '@/components/ReviewsSection';
 import { cn } from '@/lib/utils';
 import { COMPREHENSIVE_MOCK_LISTINGS } from '@/lib/mockData';
+import { ListingMap } from '@/components/ListingMap';
+import { ABUJA_UNIVERSITIES } from '@/lib/location';
 import {
     Dialog,
     DialogContent,
@@ -629,6 +631,22 @@ export default function ListingDetailContent() {
                                         <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Owner Mode Active</p>
                                     </div>
                                 )}
+                            </div>
+                        </div>
+
+                        {/* Location Node Map */}
+                        <div className="glass-card p-8 rounded-[2.5rem] border-white/5 space-y-6">
+                            <h3 className="text-white font-black uppercase text-xs tracking-[0.2em] font-heading flex items-center gap-3">
+                                <span className="h-1.5 w-1.5 rounded-full bg-[#FF6600]" />
+                                Asset Node Location
+                            </h3>
+                            <ListingMap
+                                lat={ABUJA_UNIVERSITIES.find(u => u.name === listing.location || u.id === listing.location || u.id === 'baze')?.coords.lat || 9.0765}
+                                lng={ABUJA_UNIVERSITIES.find(u => u.name === listing.location || u.id === listing.location || u.id === 'baze')?.coords.lng || 7.3986}
+                                title={listing.location}
+                            />
+                            <div className="flex items-center gap-3 text-[10px] font-bold text-zinc-500 uppercase tracking-widest italic">
+                                <MapPin className="h-3 w-3 text-[#FF6600]" /> {listing.location} Node Stream Active
                             </div>
                         </div>
 

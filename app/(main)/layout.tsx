@@ -17,7 +17,7 @@ export default function MainLayout({
 
     return (
         <>
-            {!isDashboard && <BetaBanner />}
+            {/* {!isDashboard && <BetaBanner />} */}
             {!isDashboard && <Header />}
             <main className={`flex-1 ${!isDashboard ? 'pb-16 md:pb-0' : ''}`}>{children}</main>
             {!isDashboard && <Footer />}

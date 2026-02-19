@@ -42,7 +42,7 @@ export default function AboutPage() {
                         </div>
                         <div className="max-w-xl">
                             <p className="text-zinc-400 text-lg md:text-2xl font-medium leading-relaxed italic border-l-2 border-[#FF6600] pl-8">
-                                MarketBridge is a <span className="text-white">secure payment platform</span> built to protect every transaction within Nigeria's university campuses.
+                                MarketBridge is a <span className="text-white">secure payment platform</span> built to protect every transaction within Nigeria's university communities.
                             </p>
                         </div>
                     </div>
@@ -71,7 +71,7 @@ export default function AboutPage() {
                                     We realized that safety shouldn't be a luxury. By connecting you with verified sellers and holding your payment safely until the deal is done, we've replaced doubt with total peace of mind.
                                 </p>
                                 <p className="text-white italic">
-                                    Welcome to a safer way to buy and sell on campus.
+                                    Welcome to a safer way to buy and sell within the university community.
                                 </p>
                             </div>
 
@@ -93,7 +93,7 @@ export default function AboutPage() {
                             </div>
                             <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white mb-4">Focused on <br />You</h3>
                             <p className="text-sm text-zinc-500 leading-relaxed uppercase tracking-wider font-bold">
-                                We focus on verified students and campus shops, making sure everyone is checked before they can join.
+                                We focus on verified university members and campus shops, making sure everyone is checked before they can join.
                             </p>
                         </div>
                     </div>
@@ -196,7 +196,7 @@ export default function AboutPage() {
                             <span className="text-[#FF6600]">Campus Shopping.</span>
                         </h2>
                         <p className="text-zinc-500 text-lg font-medium italic max-w-2xl mx-auto">
-                            We are building more than a marketplace. We are building a safer way for the next generation of Nigerian students and sellers to connect.
+                            We are building more than a marketplace. We are building a safer way for the next generation of Nigerian university members and sellers to connect.
                         </p>
                     </div>
 

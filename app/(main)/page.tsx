@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Header } from '@/components/header';
+import { useLocation } from '@/contexts/LocationContext';
 import { Footer } from '@/components/footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,31 +14,21 @@ import { Skeleton } from '@/components/ui/skeleton';
 export default function HomePage() {
     const router = useRouter();
     const { user, loading: authLoading } = useAuth();
+    const { isAbuja, city, region } = useLocation();
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
-        if (!authLoading && user) {
-            // Redirect based on role if logged in
-            if (['student_seller', 'student_buyer', 'dealer'].includes(user.role)) {
-                // Campus users go to campus section (home/listings)
-                // Actually, for now, let's just stay here or go to /listings
-                // router.push('/listings');
-            } else if (user.role === 'customer') {
-                // Public users would go to /public if enabled
-                // router.push('/public');
-            }
-        }
-    }, [user, authLoading, router]);
+    }, []);
 
     if (!isMounted || authLoading) {
         return <HomeSkeleton />;
     }
 
+    const userLocation = city ? `${city}, ${region}` : (region || 'Unknown Sector');
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-[#FF6600] selection:text-black font-manrope">
-            <Header />
-
             <main className="relative pt-32 pb-20 px-6 max-w-7xl mx-auto overflow-hidden">
                 {/* Background Glows */}
                 <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#FF6600]/10 blur-[150px] -z-10 animate-pulse" />
@@ -47,7 +37,7 @@ export default function HomePage() {
                 <div className="text-center space-y-6 mb-20 animate-in fade-in slide-in-from-top-10 duration-700">
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-[#FF6600]">
                         <Sparkles className="h-3 w-3" />
-                        Nigeria's Next-Gen Commerce Protocol
+                        {isAbuja ? 'Abuja Node Active' : 'Nigeria\'s Next-Gen Commerce Protocol'}
                     </div>
                     <h1 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter leading-tight font-heading">
                         Market<span className="text-[#FF6600]">Bridge</span>
@@ -55,55 +45,89 @@ export default function HomePage() {
                     <p className="max-w-xl mx-auto text-zinc-400 text-lg md:text-xl font-medium leading-relaxed italic border-x border-white/5 px-8">
                         The hyper-local trade network connecting <span className="text-white font-bold underline decoration-[#FF6600] decoration-2 underline-offset-4">Verified Campus Nodes</span> and the national marketplace.
                     </p>
+                    <div className="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600">
+                        <MapPin className="h-3 w-3" />
+                        Current Signal: <span className={cn(isAbuja ? "text-[#00FF85]" : "text-zinc-400")}>{userLocation}</span>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10">
                     {/* Campus Card */}
                     <Card
                         onClick={() => router.push('/listings')}
-                        className="group relative bg-[#FF6600]/5 border-[#FF6600]/20 rounded-[3rem] overflow-hidden cursor-pointer hover:border-[#FF6600] transition-all duration-500 hover:scale-[1.02] shadow-2xl hover:shadow-[#FF6600]/10"
+                        className={cn(
+                            "group relative border-2 rounded-[3rem] overflow-hidden cursor-pointer transition-all duration-500 hover:scale-[1.02] shadow-2xl",
+                            isAbuja
+                                ? "bg-[#FF6600]/5 border-[#FF6600]/40 hover:border-[#FF6600] border-solid"
+                                : "bg-zinc-900/40 border-white/5 border-dashed hover:border-white/20"
+                        )}
                     >
                         <CardHeader className="p-10 pb-0">
-                            <div className="h-16 w-16 rounded-2xl bg-[#FF6600] flex items-center justify-center mb-6 shadow-xl shadow-[#FF6600]/20">
-                                <Building2 className="h-8 w-8 text-black" />
+                            <div className={cn(
+                                "h-16 w-16 rounded-2xl flex items-center justify-center mb-6 shadow-xl",
+                                isAbuja ? "bg-[#FF6600] shadow-[#FF6600]/20" : "bg-zinc-800 shadow-black"
+                            )}>
+                                <Building2 className={cn("h-8 w-8", isAbuja ? "text-black" : "text-zinc-500")} />
                             </div>
-                            <CardTitle className="text-4xl font-black uppercase italic tracking-tighter text-white group-hover:text-[#FF6600] transition-colors">
+                            <CardTitle className={cn(
+                                "text-4xl font-black uppercase italic tracking-tighter transition-colors",
+                                isAbuja ? "text-white group-hover:text-[#FF6600]" : "text-zinc-500 group-hover:text-white"
+                            )}>
                                 Campus Marketplace
                             </CardTitle>
                             <CardDescription className="text-zinc-400 text-lg font-medium italic mt-2">
-                                (Students Only)
+                                (University Community)
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="p-10 space-y-8">
                             <p className="text-zinc-500 leading-relaxed font-bold uppercase text-xs tracking-widest">
-                                Buy, sell & trade safely within Abuja universities – exclusively for verified students with institutional credentials.
+                                {isAbuja
+                                    ? "Buy, sell & trade safely within Abuja universities – open to all verified students, staff, and alumni."
+                                    : "Live in Abuja. Browse current listings or teleport into the FCT hub to see what's happening."
+                                }
                             </p>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="p-4 bg-white/5 border border-white/5 rounded-2xl flex flex-col items-center gap-2 text-center">
-                                    <ShieldCheck className="h-5 w-5 text-[#FF6600]" />
+                                    <ShieldCheck className={cn("h-5 w-5", isAbuja ? "text-[#FF6600]" : "text-zinc-600")} />
                                     <span className="text-[10px] font-black uppercase tracking-tighter">Verified Node</span>
                                 </div>
                                 <div className="p-4 bg-white/5 border border-white/5 rounded-2xl flex flex-col items-center gap-2 text-center">
-                                    <MapPin className="h-5 w-5 text-[#FF6600]" />
+                                    <MapPin className={cn("h-5 w-5", isAbuja ? "text-[#FF6600]" : "text-zinc-600")} />
                                     <span className="text-[10px] font-black uppercase tracking-tighter">Hyper-Local</span>
                                 </div>
                             </div>
 
-                            <Button className="w-full h-16 bg-[#FF6600] text-black font-black uppercase tracking-[0.25em] rounded-2xl text-xs hover:bg-[#FF8533] transition-all shadow-xl shadow-[#FF6600]/20 group-hover:gap-4 flex items-center justify-center gap-2">
-                                Initializing Terminal <ArrowRight className="h-4 w-4" />
+                            <Button className={cn(
+                                "w-full h-16 font-black uppercase tracking-[0.25em] rounded-2xl text-xs transition-all shadow-xl flex items-center justify-center gap-2",
+                                isAbuja
+                                    ? "bg-[#FF6600] text-black hover:bg-[#FF8533] shadow-[#FF6600]/20 group-hover:gap-4"
+                                    : "bg-white/5 text-zinc-500 hover:text-white hover:bg-white/10"
+                            )}>
+                                {isAbuja ? 'Initializing Terminal' : 'Access Node'} <ArrowRight className="h-4 w-4" />
                             </Button>
                         </CardContent>
                         {/* Status Pin */}
-                        <div className="absolute top-6 right-6 flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                            <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                            <span className="text-[9px] font-black uppercase text-emerald-500 tracking-widest">Live Beta</span>
+                        <div className={cn(
+                            "absolute top-6 right-6 flex items-center gap-2 px-3 py-1 rounded-full border",
+                            isAbuja
+                                ? "bg-emerald-500/10 border-emerald-500/20"
+                                : "bg-zinc-800 border-white/5"
+                        )}>
+                            {isAbuja && <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />}
+                            <span className={cn(
+                                "text-[9px] font-black uppercase tracking-widest",
+                                isAbuja ? "text-emerald-500" : "text-zinc-500"
+                            )}>
+                                {isAbuja ? 'Live Beta' : 'Pilot Restricted'}
+                            </span>
                         </div>
                     </Card>
 
-                    {/* Public Card (Locked) */}
+                    {/* Public Card */}
                     <Card
-                        className="group relative bg-zinc-900/50 border-white/5 rounded-[3rem] overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 opacity-60 hover:opacity-100"
+                        onClick={() => router.push('/public')}
+                        className="group relative bg-zinc-900/50 border-white/5 rounded-[3rem] overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 opacity-60 hover:opacity-100 cursor-pointer"
                     >
                         <CardHeader className="p-10 pb-0">
                             <div className="h-16 w-16 rounded-2xl bg-white/5 flex items-center justify-center mb-6 border border-white/10 group-hover:border-[#FF6600]/50 transition-all">
@@ -132,13 +156,13 @@ export default function HomePage() {
                                 </div>
                             </div>
 
-                            <Button disabled className="w-full h-16 bg-white/5 text-zinc-600 font-black uppercase tracking-[0.25em] rounded-2xl text-xs border border-white/10 flex items-center justify-center gap-2">
-                                <Lock className="h-4 w-4" /> Payload Locked
+                            <Button className="w-full h-16 bg-white/5 text-zinc-600 group-hover:text-white group-hover:bg-blue-500/10 font-black uppercase tracking-[0.25em] rounded-2xl text-xs border border-white/10 flex items-center justify-center gap-2 transition-all">
+                                Launching Protocol <ArrowRight className="h-4 w-4" />
                             </Button>
                         </CardContent>
                         {/* Status Pin */}
                         <div className="absolute top-6 right-6 flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-800 border border-white/5">
-                            <span className="text-[9px] font-black uppercase text-zinc-500 tracking-widest italic">Expansion Phase</span>
+                            <span className="text-[9px] font-black uppercase text-zinc-500 tracking-widest italic">Phase 2</span>
                         </div>
                     </Card>
                 </div>

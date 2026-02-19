@@ -59,7 +59,7 @@ const PLATFORM_KNOWLEDGE = {
         enterprise: "Custom - Solutions for organizations. Dedicated account manager, API access, White-label options."
     },
     verification: {
-        requirements: ["NIN (National Identity Number)", "Student ID Card"],
+        requirements: ["NIN (National Identity Number)", "Institution ID Card"],
         process: "Upload your documents in the Settings > Verification tab. ID reviews take 12-24 hours."
     },
     location: {
@@ -69,7 +69,7 @@ const PLATFORM_KNOWLEDGE = {
     roles: {
         ceo: "Central Command (CEO) has absolute oversight. Access via the 'CEO' terminal on the login page.",
         admin: "Sector Admins (Tech, Ops, Marketing) manage specific nodes. Requires secure access codes.",
-        dealer: "Merchants/Dealers are the heartbeat of the platform. Verified students selling goods."
+        dealer: "Merchants/Dealers are the heartbeat of the platform. Verified university community members selling goods."
     },
     support: {
         tech: {
@@ -86,11 +86,11 @@ const PLATFORM_KNOWLEDGE = {
 };
 
 const GREETINGS = [
-    "Hey there! I'm Sage. Looking for campus deals in Abuja today?",
-    "Hi! Sage here. Need a new phone, wig, or some student-friendly electronics?",
-    "Greetings! I'm your campus shopping assistant. How can I help you navigate the marketplace?",
-    "Hello! Sage at your service. Ready to connect you with verified student sellers.",
-    "Yo! Need to buy or sell safely on campus? I've got you covered."
+    "Hey there! I'm Sage. Looking for university deals in Abuja today?",
+    "Hi! Sage here. Need a new phone, wig, or some community-friendly electronics?",
+    "Greetings! I'm your university shopping assistant. How can I help you navigate the marketplace?",
+    "Hello! Sage at your service. Ready to connect you with verified community sellers.",
+    "Yo! Need to buy or sell safely within the university community? I've got you covered."
 ];
 
 const SMALL_TALK = {
@@ -108,9 +108,9 @@ const SMALL_TALK = {
         "Why was the math book sad? Because it had too many problems. 📚",
         "How do you comfort a grammar nazi? There, their, they're. 📝"
     ],
-    'love': [
-        "That's sweet! I love helping students succeed too.",
-        "Aww, you're making my circuits blush! 😊 Focus on your grades though!",
+    love: [
+        "That's sweet! I love helping our community members succeed too.",
+        "Aww, you're making my circuits blush! 😊 Focus on your goals though!",
         "I appreciate the love! Let's use that energy to find you a great bargain."
     ]
 };
@@ -126,7 +126,7 @@ class AiBrain {
             this.context.userName = input;
             this.context.awaitingInputFor = undefined;
             return {
-                content: `Nice to meet you, ${input}! I've personalized your security protocol. What student essentials are you looking for?`
+                content: `Nice to meet you, ${input}! I've personalized your security protocol. What community essentials are you looking for?`
             };
         }
 
@@ -171,7 +171,7 @@ class AiBrain {
         // Pricing & Plans
         if (this.matchAny(lowerInput, ['plan', 'pricing', 'subscription', 'monthly', 'annual', 'cost', 'upgrade'])) {
             return {
-                content: `MarketBridge currently offers 3 tiers for student sellers:\n\n` +
+                content: `MarketBridge currently offers 3 tiers for community sellers:\n\n` +
                     `• **Free Tier**: ${PLATFORM_KNOWLEDGE.pricing.free}\n` +
                     `• **Founding Seller (Beta)**: ${PLATFORM_KNOWLEDGE.pricing.founding}\n` +
                     `• **Enterprise**: ${PLATFORM_KNOWLEDGE.pricing.enterprise}\n\n` +
@@ -236,7 +236,7 @@ class AiBrain {
             if (results.length > 0) {
                 this.context.recentSearchResults = results;
                 return {
-                    content: `I've scanned the Abuja campus marketplace. Here are the top matches for "${this.extractQuery(lowerInput)}":`,
+                    content: `I've scanned the Abuja university marketplace. Here are the top matches for "${this.extractQuery(lowerInput)}":`,
                     searchResults: results,
                     action: 'search'
                 };

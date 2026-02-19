@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { MapPin, Globe, ArrowRight, CheckCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { MapPin, ArrowRight, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -10,135 +10,26 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-
-// Expanded list of supported hubs with "Physical" alignment
-const SUPPORTED_LOCATIONS = [
-    { name: 'FCT - Abuja', state: 'Federal Capital Territory', health: 'Peak', hub: true },
-    { name: 'Lagos', state: 'Lagos', health: 'High', hub: false },
-    { name: 'Rivers', state: 'Rivers', health: 'Mid', hub: false },
-    { name: 'Kano', state: 'Kano', health: 'Mid', hub: false },
-    { name: 'Oyo', state: 'Oyo', health: 'Active', hub: false },
-    { name: 'Enugu', state: 'Enugu', health: 'Active', hub: false },
-    { name: 'Edo', state: 'Edo', health: 'Stable', hub: false },
-    { name: 'Kaduna', state: 'Kaduna', health: 'Stable', hub: false }
-];
+import { useLocation } from '@/contexts/LocationContext';
+import { ABUJA_UNIVERSITIES } from '@/lib/location';
 
 interface LocationCheckerProps {
     children: React.ReactNode;
 }
 
 export function LocationChecker({ children }: LocationCheckerProps) {
-    const [userLocation, setUserLocation] = useState<string | null>(null);
-    const [isLocationSupported, setIsLocationSupported] = useState<boolean>(true);
-    const [showDialog, setShowDialog] = useState(false);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        // Force re-check if user explicitly requests it or if it's the first time
-        const savedLocation = localStorage.getItem('mb-preferred-node');
-        const sessionChecked = sessionStorage.getItem('mb-location-checked');
-
-        if (savedLocation && sessionChecked) {
-            setLoading(false);
-            return;
-        }
-
-        checkLocation();
-    }, []);
-
-    const checkLocation = async () => {
-        try {
-            setLoading(true);
-
-            // Strategy 1: Browser Geolocation (Highly Precise)
-            if ("geolocation" in navigator) {
-                const options = {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
-                };
-
-                navigator.geolocation.getCurrentPosition(
-                    async (position) => {
-                        const { latitude, longitude } = position.coords;
-                        try {
-                            const geoResponse = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
-                            const geoData = await geoResponse.json();
-
-                            // Extract intelligence from multiple layers
-                            const locationInfo = {
-                                city: geoData.city,
-                                locality: geoData.locality,
-                                state: geoData.principalSubdivision,
-                                country: geoData.countryName
-                            };
-
-                            processLocationIntelligence(locationInfo);
-                        } catch (e) {
-                            fallbackToIp();
-                        }
-                    },
-                    (error) => {
-                        console.warn("Geolocation denied/failed, falling back to IP", error.message);
-                        fallbackToIp();
-                    },
-                    options
-                );
-            } else {
-                fallbackToIp();
-            }
-        } catch (error) {
-            console.error("Critical Location Exception", error);
-            setIsLocationSupported(true);
-            setLoading(false);
-        }
-    };
-
-    const fallbackToIp = async () => {
-        try {
-            const response = await fetch('https://ipapi.co/json/');
-            const data = await response.json();
-
-            processLocationIntelligence({
-                city: data.city,
-                state: data.region,
-                country: data.country_name
-            });
-        } catch (error) {
-            console.error("IP Fallback failed", error);
-            setIsLocationSupported(true);
-            setLoading(false);
-        }
-    };
+    const {
+        isAbuja,
+        loading,
+        city,
+        region,
+        showDialog,
+        setShowDialog,
+        setManualLocation
+    } = useLocation();
 
     const [notifyForm, setNotifyForm] = useState({ email: '', state: '' });
     const [notified, setNotified] = useState(false);
-
-    const processLocationIntelligence = (info: any) => {
-        const { city, locality, state, country } = info;
-        const fullString = `${city || ''} ${locality || ''} ${state || ''}`.toLowerCase();
-
-        // Strict Abuja Pilot Logic
-        const isAbuja = fullString.includes('abuja') || fullString.includes('federal capital territory');
-        const displayName = city || locality || state || 'Unknown Node';
-        setUserLocation(displayName);
-        sessionStorage.setItem('mb-location-checked', 'true');
-
-        if (isAbuja) {
-            setIsLocationSupported(true);
-            localStorage.setItem('mb-preferred-node', 'FCT - Abuja');
-            setShowDialog(false);
-        } else {
-            setIsLocationSupported(false);
-            const currentPref = localStorage.getItem('mb-preferred-node');
-            if (!currentPref) {
-                localStorage.setItem('mb-preferred-node', 'global');
-            }
-            // For the pilot, we show a non-blocking dialog/banner if they aren't in Abuja
-            setShowDialog(true);
-        }
-        setLoading(false);
-    };
 
     const handleNotifyMe = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -148,15 +39,14 @@ export function LocationChecker({ children }: LocationCheckerProps) {
         setTimeout(() => setShowDialog(false), 2000);
     };
 
-    const handleBrowseAnyway = (node = 'global') => {
-        localStorage.setItem('mb-preferred-node', node);
-        setShowDialog(false);
+    const handleTeleportToHub = () => {
+        // Find a default university in Abuja to "teleport" to if they want to see Abuja content
+        const defaultUni = ABUJA_UNIVERSITIES[0];
+        setManualLocation(defaultUni);
     };
 
-    const handleTeleportToHub = (targetHub = 'Abuja') => {
-        localStorage.setItem('mb-preferred-node', targetHub);
-        setShowDialog(false);
-        window.location.reload(); // Refresh to update node context globally
+    const handleBrowseAnyway = () => {
+        setManualLocation('global');
     };
 
     if (loading) {
@@ -178,6 +68,8 @@ export function LocationChecker({ children }: LocationCheckerProps) {
         );
     }
 
+    const userLocation = city ? `${city}, ${region}` : (region || 'Unknown Sector');
+
     return (
         <>
             <Dialog open={showDialog} onOpenChange={setShowDialog}>
@@ -194,7 +86,7 @@ export function LocationChecker({ children }: LocationCheckerProps) {
                         </DialogTitle>
                         <DialogDescription className="text-center text-zinc-500 pt-4 font-medium leading-relaxed">
                             MarketBridge is currently live in <span className="text-white font-bold">Abuja (FCT)</span>.
-                            We detected your signal in <span className="text-white font-bold uppercase">{userLocation || 'Unknown Sector'}</span>.
+                            We detected your signal in <span className="text-white font-bold uppercase">{userLocation}</span>.
                         </DialogDescription>
                     </DialogHeader>
 
@@ -213,7 +105,7 @@ export function LocationChecker({ children }: LocationCheckerProps) {
                                     />
                                     <select
                                         required
-                                        className="w-full h-12 bg-black border border-white/10 rounded-xl px-4 text-[10px] font-bold uppercase focus:border-[#FF6600] outline-none transition-colors appearance-none"
+                                        className="w-full h-12 bg-black border border-white/10 rounded-xl px-4 text-[10px] font-bold uppercase focus:border-[#FF6600] outline-none transition-colors appearance-none text-zinc-400"
                                         value={notifyForm.state}
                                         onChange={(e) => setNotifyForm({ ...notifyForm, state: e.target.value })}
                                     >
@@ -232,14 +124,14 @@ export function LocationChecker({ children }: LocationCheckerProps) {
 
                             <div className="flex flex-col gap-3">
                                 <Button
-                                    onClick={() => handleTeleportToHub('FCT - Abuja')}
+                                    onClick={handleTeleportToHub}
                                     className="w-full h-16 bg-[#FF6600] text-black hover:bg-[#FF6600] font-black uppercase tracking-[0.1em] rounded-2xl shadow-[0_10px_30px_rgba(255,184,0,0.2)] group"
                                 >
                                     Teleport to Abuja
                                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </Button>
                                 <Button
-                                    onClick={() => handleBrowseAnyway()}
+                                    onClick={handleBrowseAnyway}
                                     variant="outline"
                                     className="w-full h-14 border-white/5 text-zinc-500 hover:text-white hover:bg-white/5 font-bold uppercase tracking-widest text-[10px] rounded-2xl"
                                 >

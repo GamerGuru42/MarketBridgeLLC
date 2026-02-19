@@ -193,7 +193,7 @@ function ListingsContent() {
                     </h1>
 
                     <p className="text-zinc-400 text-lg md:text-xl font-medium max-w-xl">
-                        Join thousands of students trading securely. Sign up to view prices, contact sellers, and access over 300+ campus listings.
+                        Join thousands of students trading securely. Sign up to view prices, contact sellers, and access verified campus listings.
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md pt-4">
