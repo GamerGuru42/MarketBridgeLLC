@@ -11,10 +11,12 @@ interface LocationContextType {
     isAbuja: boolean;
     loading: boolean;
     error: string | null;
-    consentGiven: boolean;
+    consentStatus: 'prompt' | 'granted' | 'denied';
     showDialog: boolean;
     setShowDialog: React.Dispatch<React.SetStateAction<boolean>>;
     requestLocation: () => Promise<void>;
+    giveConsent: () => void;
+    denyConsent: () => void;
     setManualLocation: (node: UniversityNode | 'global') => void;
 }
 
@@ -102,7 +104,7 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
     const [isAbuja, setIsAbuja] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [consentGiven, setConsentGiven] = useState(false);
+    const [consentStatus, setConsentStatus] = useState<'prompt' | 'granted' | 'denied'>('prompt');
     const [showDialog, setShowDialog] = useState(false);
     const hasInitialized = useRef(false);
 
@@ -183,9 +185,9 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
 
                 if (typeof localStorage !== 'undefined') {
                     localStorage.setItem('mb-location-coords', JSON.stringify(newCoords));
-                    localStorage.setItem('mb-location-consent', 'true');
+                    localStorage.setItem('mb-location-consent', 'granted');
                 }
-                setConsentGiven(true);
+                setConsentStatus('granted');
                 updateProximity(newCoords);
 
                 // Reverse geocode for city name
@@ -213,8 +215,9 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
 
         if (typeof window === 'undefined') return;
 
-        const consent = localStorage.getItem('mb-location-consent') === 'true';
-        setConsentGiven(consent);
+        const savedConsent = localStorage.getItem('mb-location-consent') as 'granted' | 'denied' | null;
+        const initialStatus = savedConsent || 'prompt';
+        setConsentStatus(initialStatus);
 
         // Restore cached coords for instant UI
         const savedCoords = localStorage.getItem('mb-location-coords');
@@ -226,12 +229,25 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
             } catch { /* ignore parse error */ }
         }
 
-        if (consent) {
+        // Always do IP detection for base region, but don't ask for GPS if prompt
+        if (initialStatus === 'granted') {
             requestLocation();
         } else {
             fallbackToIp();
         }
     }, [requestLocation, fallbackToIp, updateProximity]);
+
+    const giveConsent = useCallback(() => {
+        localStorage.setItem('mb-location-consent', 'granted');
+        setConsentStatus('granted');
+        requestLocation();
+    }, [requestLocation]);
+
+    const denyConsent = useCallback(() => {
+        localStorage.setItem('mb-location-consent', 'denied');
+        setConsentStatus('denied');
+        fallbackToIp();
+    }, [fallbackToIp]);
 
     const setManualLocation = useCallback((target: UniversityNode | 'global') => {
         if (typeof localStorage === 'undefined') return;
@@ -258,7 +274,7 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
     return (
         <LocationContext.Provider value={{
             coords, city, region, nearestUniversity, isAbuja, loading, error,
-            consentGiven, showDialog, setShowDialog, requestLocation, setManualLocation,
+            consentStatus, showDialog, setShowDialog, requestLocation, giveConsent, denyConsent, setManualLocation,
         }}>
             {children}
         </LocationContext.Provider>

@@ -10,6 +10,7 @@ const supabase = createClient();
 import { normalizeIdentifier } from '@/lib/auth/utils';
 import { Loader2, Check, ArrowLeft, ArrowRight, Mail, Globe, Eye, EyeOff, ShieldCheck, User as UserIcon, Briefcase, Zap, Lock, Sparkles, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLocation } from '@/contexts/LocationContext';
 import { Logo } from '@/components/logo';
 import { NIGERIAN_STATES, NIGERIAN_UNIVERSITIES, UNIVERSITIES_BY_STATE } from '@/lib/constants';
 import { ImageUpload } from '@/components/ImageUpload';
@@ -18,6 +19,7 @@ import { School, Search } from 'lucide-react';
 function SignupContent() {
     const router = useRouter();
     const { refreshUser, signInWithGoogle, user, sessionUser, loading: authLoading } = useAuth();
+    const { nearestUniversity, isAbuja } = useLocation();
 
     const searchParams = useSearchParams();
     const initialRole = searchParams.get('role') as 'customer' | 'dealer' | 'admin' | 'student_buyer' | 'student_seller' | 'ceo' | null;
@@ -101,6 +103,17 @@ function SignupContent() {
     const [isVerifying, setIsVerifying] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+
+    // Auto-suggest university based on location
+    useEffect(() => {
+        if (nearestUniversity && !formData.university && ['student_seller', 'student_buyer'].includes(role)) {
+            setFormData(prev => ({
+                ...prev,
+                university: nearestUniversity.node.name,
+                location: isAbuja ? 'FCT - Abuja' : prev.location
+            }));
+        }
+    }, [nearestUniversity, isAbuja, role, formData.university]);
 
 
     const handleVerification = async (e: React.FormEvent) => {

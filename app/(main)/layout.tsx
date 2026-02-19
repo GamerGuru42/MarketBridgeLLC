@@ -4,6 +4,9 @@ import React from 'react';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { MobileBottomNav } from '@/components/MobileBottomNav';
+import { LocationConsentModal } from '@/components/LocationConsentModal';
+import { Badge } from '@/components/ui/badge';
+import { Zap } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 export default function MainLayout({
@@ -17,11 +20,20 @@ export default function MainLayout({
     const isHome = pathname === '/';
 
     return (
-        <>
+        <div className="flex flex-col min-h-screen">
+            <LocationConsentModal />
+            {!isDashboard && !isHome && (
+                <div className="bg-[#FF6600] text-black px-4 py-1.5 flex items-center justify-center gap-2 overflow-hidden whitespace-nowrap">
+                    <Zap className="h-3 w-3 fill-current animate-pulse" />
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em] italic">
+                        MarketBridge Campus Beta – Testing Phase (Nigeria 2026)
+                    </span>
+                </div>
+            )}
             {!isDashboard && !isHome && <Header />}
             <main className={`flex-1 ${!isDashboard && !isHome ? 'pb-16 md:pb-0' : ''}`}>{children}</main>
             {!isDashboard && !isHome && <Footer />}
             {!isDashboard && !isHome && <MobileBottomNav />}
-        </>
+        </div>
     );
 }

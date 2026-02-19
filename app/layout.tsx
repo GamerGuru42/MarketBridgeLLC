@@ -90,11 +90,9 @@ export default function RootLayout({
           <AuthProvider>
             <LocationProvider>
               <CartProvider>
-                <LocationChecker>
-                  <ToastProvider>
-                    {children}
-                  </ToastProvider>
-                </LocationChecker>
+                <ToastProvider>
+                  {children}
+                </ToastProvider>
                 <AiAssistant />
                 <CookieConsent />
               </CartProvider>
