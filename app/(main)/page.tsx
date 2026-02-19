@@ -4,229 +4,305 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLocation } from '@/contexts/LocationContext';
-import { Footer } from '@/components/footer';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ShieldCheck, Globe, ArrowRight, Sparkles, Zap, Lock, MapPin, Building2, Smartphone } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { GraduationCap, ShoppingBag, ArrowRight, MapPin, Lock, AlertCircle, CheckCircle2, Loader2, ChevronDown } from 'lucide-react';
+import { ABUJA_UNIVERSITIES } from '@/lib/location';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Logo } from '@/components/logo';
 
 export default function HomePage() {
     const router = useRouter();
     const { user, loading: authLoading } = useAuth();
-    const { isAbuja, city, region } = useLocation();
+    const { isAbuja, city, region, loading: locationLoading, error: locationError, nearestUniversity, setManualLocation, requestLocation } = useLocation();
     const [isMounted, setIsMounted] = useState(false);
+    const [showManual, setShowManual] = useState(false);
+    const [hovered, setHovered] = useState<'campus' | 'public' | null>(null);
 
     useEffect(() => {
         setIsMounted(true);
     }, []);
 
+    // Auto-redirect logged-in users to the right area
+    useEffect(() => {
+        if (!isMounted || authLoading || !user) return;
+        // All users go to campus listings by default (public is locked)
+        // Future: check user role and redirect accordingly
+    }, [isMounted, authLoading, user, router]);
+
     if (!isMounted || authLoading) {
         return <HomeSkeleton />;
     }
 
-    const userLocation = city ? `${city}, ${region}` : (region || 'Unknown Sector');
+    const locationLabel = (() => {
+        if (locationLoading) return 'Detecting location…';
+        if (locationError) return 'Location access denied';
+        if (city && region) return `${city}, ${region}`;
+        if (region) return region;
+        return 'Location unknown';
+    })();
+
+    const isInAbujaCampus = isAbuja && nearestUniversity;
 
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-[#FF6600] selection:text-black font-manrope">
-            <main className="relative pt-32 pb-20 px-6 max-w-7xl mx-auto overflow-hidden">
-                {/* Background Glows */}
-                <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#FF6600]/10 blur-[150px] -z-10 animate-pulse" />
-                <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-500/5 blur-[120px] -z-10" />
+        <div className="min-h-screen bg-black text-white flex flex-col" style={{ fontFamily: "'Inter', 'Manrope', system-ui, sans-serif" }}>
 
-                <div className="text-center space-y-6 mb-20 animate-in fade-in slide-in-from-top-10 duration-700">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-[#FF6600]">
-                        <Sparkles className="h-3 w-3" />
-                        {isAbuja ? 'Abuja Node Active' : 'Nigeria\'s Next-Gen Commerce Protocol'}
+            {/* ── Minimal Header ── */}
+            <header className="flex items-center justify-between px-6 py-5 border-b border-white/5 flex-shrink-0">
+                <Logo />
+                <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                    <span className="hidden sm:flex items-center gap-2">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        Campus Beta Live
+                    </span>
+                    <a href="mailto:support@marketbridge.com.ng" className="text-zinc-600 hover:text-zinc-400 transition-colors hidden md:block">
+                        Support
+                    </a>
+                </div>
+            </header>
+
+            {/* ── Main Choice Screen ── */}
+            <main className="flex-1 flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden">
+
+                {/* Background ambient glows */}
+                <div className="absolute top-[-20%] left-1/4 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[140px] pointer-events-none" />
+                <div className="absolute bottom-[-20%] right-1/4 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
+
+                {/* Top label */}
+                <div className="text-center mb-10 space-y-3 relative z-10">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                        <span>MarketBridge</span>
+                        <span className="h-1 w-1 rounded-full bg-zinc-600" />
+                        <span>Campus Beta</span>
+                        <span className="h-1 w-1 rounded-full bg-zinc-600" />
+                        <span>February 2026</span>
                     </div>
-                    <h1 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter leading-tight font-heading">
-                        Market<span className="text-[#FF6600]">Bridge</span>
+                    <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-white">
+                        Where do you want to<br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-400">trade today?</span>
                     </h1>
-                    <p className="max-w-xl mx-auto text-zinc-400 text-lg md:text-xl font-medium leading-relaxed italic border-x border-white/5 px-8">
-                        The hyper-local trade network connecting <span className="text-white font-bold underline decoration-[#FF6600] decoration-2 underline-offset-4">Verified Campus Nodes</span> and the national marketplace.
+                    <p className="text-zinc-500 text-sm font-medium max-w-sm mx-auto">
+                        Choose your marketplace. Campus is live. Public launches Phase 2.
                     </p>
-                    <div className="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600">
-                        <MapPin className="h-3 w-3" />
-                        Current Signal: <span className={cn(isAbuja ? "text-[#00FF85]" : "text-zinc-400")}>{userLocation}</span>
-                    </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10">
-                    {/* Campus Card */}
-                    <Card
+                {/* ── Location Signal ── */}
+                <div className="mb-8 relative z-10 w-full max-w-xs mx-auto">
+                    <button
+                        onClick={() => setShowManual(v => !v)}
+                        className="w-full flex items-center justify-between gap-2 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-all text-xs font-bold text-zinc-400 hover:text-white"
+                    >
+                        <span className="flex items-center gap-2">
+                            <MapPin className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
+                            {locationLoading ? (
+                                <span className="flex items-center gap-2"><Loader2 className="h-3 w-3 animate-spin" /> Locating…</span>
+                            ) : (
+                                <span>{locationLabel}</span>
+                            )}
+                        </span>
+                        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showManual ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    {/* Manual location picker */}
+                    {showManual && (
+                        <div className="absolute top-full mt-2 left-0 right-0 z-50 bg-zinc-900 border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600 px-4 pt-3 pb-1">Select Campus Node</p>
+                            {ABUJA_UNIVERSITIES.map((uni) => (
+                                <button
+                                    key={uni.id}
+                                    onClick={() => { setManualLocation(uni); setShowManual(false); }}
+                                    className="w-full text-left px-4 py-3 text-sm font-bold hover:bg-white/5 transition-colors text-zinc-300 hover:text-white flex items-center gap-3"
+                                >
+                                    <GraduationCap className="h-4 w-4 text-emerald-500 shrink-0" />
+                                    {uni.name}
+                                </button>
+                            ))}
+                            <button
+                                onClick={() => { setManualLocation('global'); setShowManual(false); }}
+                                className="w-full text-left px-4 py-3 text-sm font-bold hover:bg-white/5 transition-colors text-zinc-500 hover:text-zinc-300 flex items-center gap-3 border-t border-white/5"
+                            >
+                                <ShoppingBag className="h-4 w-4 text-blue-400 shrink-0" />
+                                Somewhere else in Nigeria
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                {/* ── Two Cards ── */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full max-w-3xl relative z-10">
+
+                    {/* ── Card 1: Campus Marketplace ── */}
+                    <button
+                        id="btn-campus-marketplace"
                         onClick={() => router.push('/listings')}
-                        className={cn(
-                            "group relative border-2 rounded-[3rem] overflow-hidden cursor-pointer transition-all duration-500 hover:scale-[1.02] shadow-2xl",
-                            isAbuja
-                                ? "bg-[#FF6600]/5 border-[#FF6600]/40 hover:border-[#FF6600] border-solid"
-                                : "bg-zinc-900/40 border-white/5 border-dashed hover:border-white/20"
-                        )}
+                        onMouseEnter={() => setHovered('campus')}
+                        onMouseLeave={() => setHovered(null)}
+                        className={`
+                            group relative text-left rounded-3xl border-2 p-8 transition-all duration-300 overflow-hidden
+                            ${isInAbujaCampus
+                                ? 'bg-emerald-950/40 border-emerald-500/50 hover:border-emerald-400 hover:bg-emerald-950/60 shadow-[0_0_60px_rgba(52,211,153,0.1)]'
+                                : 'bg-zinc-900/60 border-white/10 hover:border-emerald-500/40 hover:bg-emerald-950/20'
+                            }
+                        `}
                     >
-                        <CardHeader className="p-10 pb-0">
-                            <div className={cn(
-                                "h-16 w-16 rounded-2xl flex items-center justify-center mb-6 shadow-xl",
-                                isAbuja ? "bg-[#FF6600] shadow-[#FF6600]/20" : "bg-zinc-800 shadow-black"
-                            )}>
-                                <Building2 className={cn("h-8 w-8", isAbuja ? "text-black" : "text-zinc-500")} />
+                        {/* Status badge */}
+                        <div className="absolute top-5 right-5 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400">Live Beta</span>
+                        </div>
+
+                        {/* Background glow on hover */}
+                        <div className={`absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent transition-opacity duration-300 ${hovered === 'campus' ? 'opacity-100' : 'opacity-0'}`} />
+
+                        <div className="relative z-10 space-y-5">
+                            {/* Icon */}
+                            <div className={`h-14 w-14 rounded-2xl flex items-center justify-center transition-all duration-300 ${isInAbujaCampus ? 'bg-emerald-500 shadow-[0_0_30px_rgba(52,211,153,0.3)]' : 'bg-emerald-900/40 border border-emerald-500/20 group-hover:bg-emerald-500/30'}`}>
+                                <GraduationCap className={`h-7 w-7 ${isInAbujaCampus ? 'text-black' : 'text-emerald-400'}`} />
                             </div>
-                            <CardTitle className={cn(
-                                "text-4xl font-black uppercase italic tracking-tighter transition-colors",
-                                isAbuja ? "text-white group-hover:text-[#FF6600]" : "text-zinc-500 group-hover:text-white"
-                            )}>
-                                Campus Marketplace
-                            </CardTitle>
-                            <CardDescription className="text-zinc-400 text-lg font-medium italic mt-2">
-                                (University Community)
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-10 space-y-8">
-                            <p className="text-zinc-500 leading-relaxed font-bold uppercase text-xs tracking-widest">
-                                {isAbuja
-                                    ? "Buy, sell & trade safely within Abuja universities – open to all verified students, staff, and alumni."
-                                    : "Live in Abuja. Browse current listings or teleport into the FCT hub to see what's happening."
-                                }
+
+                            {/* Title */}
+                            <div>
+                                <h2 className="text-2xl font-black uppercase tracking-tight text-white group-hover:text-emerald-300 transition-colors">
+                                    Campus Marketplace
+                                </h2>
+                                <p className="text-emerald-600 text-xs font-bold uppercase tracking-widest mt-1">Students Only</p>
+                            </div>
+
+                            {/* Description */}
+                            <p className="text-zinc-400 text-sm leading-relaxed">
+                                Buy, sell &amp; trade safely within Abuja universities – verified students only.
                             </p>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="p-4 bg-white/5 border border-white/5 rounded-2xl flex flex-col items-center gap-2 text-center">
-                                    <ShieldCheck className={cn("h-5 w-5", isAbuja ? "text-[#FF6600]" : "text-zinc-600")} />
-                                    <span className="text-[10px] font-black uppercase tracking-tighter">Verified Node</span>
+                            {/* Campus indicator */}
+                            {isInAbujaCampus && nearestUniversity && (
+                                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-emerald-500">
+                                    <CheckCircle2 className="h-3 w-3" />
+                                    Near {nearestUniversity.node.name}
                                 </div>
-                                <div className="p-4 bg-white/5 border border-white/5 rounded-2xl flex flex-col items-center gap-2 text-center">
-                                    <MapPin className={cn("h-5 w-5", isAbuja ? "text-[#FF6600]" : "text-zinc-600")} />
-                                    <span className="text-[10px] font-black uppercase tracking-tighter">Hyper-Local</span>
-                                </div>
+                            )}
+
+                            {/* Feature pills */}
+                            <div className="flex flex-wrap gap-2">
+                                {['Verified Students', 'Safe Payments', 'Local Pickup'].map(f => (
+                                    <span key={f} className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[9px] font-bold uppercase tracking-widest text-zinc-400">
+                                        {f}
+                                    </span>
+                                ))}
                             </div>
 
-                            <Button className={cn(
-                                "w-full h-16 font-black uppercase tracking-[0.25em] rounded-2xl text-xs transition-all shadow-xl flex items-center justify-center gap-2",
-                                isAbuja
-                                    ? "bg-[#FF6600] text-black hover:bg-[#FF8533] shadow-[#FF6600]/20 group-hover:gap-4"
-                                    : "bg-white/5 text-zinc-500 hover:text-white hover:bg-white/10"
-                            )}>
-                                {isAbuja ? 'Initializing Terminal' : 'Access Node'} <ArrowRight className="h-4 w-4" />
-                            </Button>
-                        </CardContent>
-                        {/* Status Pin */}
-                        <div className={cn(
-                            "absolute top-6 right-6 flex items-center gap-2 px-3 py-1 rounded-full border",
-                            isAbuja
-                                ? "bg-emerald-500/10 border-emerald-500/20"
-                                : "bg-zinc-800 border-white/5"
-                        )}>
-                            {isAbuja && <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />}
-                            <span className={cn(
-                                "text-[9px] font-black uppercase tracking-widest",
-                                isAbuja ? "text-emerald-500" : "text-zinc-500"
-                            )}>
-                                {isAbuja ? 'Live Beta' : 'Pilot Restricted'}
-                            </span>
+                            {/* CTA */}
+                            <div className={`w-full h-12 flex items-center justify-center gap-2 rounded-2xl font-black uppercase tracking-widest text-xs transition-all duration-300 ${isInAbujaCampus ? 'bg-emerald-500 text-black group-hover:bg-emerald-400' : 'bg-white/5 text-zinc-300 group-hover:bg-emerald-500/20 group-hover:text-emerald-300 border border-white/10'}`}>
+                                Enter Campus
+                                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                            </div>
                         </div>
-                    </Card>
+                    </button>
 
-                    {/* Public Card */}
-                    <Card
+                    {/* ── Card 2: Public Marketplace ── */}
+                    <button
+                        id="btn-public-marketplace"
                         onClick={() => router.push('/public')}
-                        className="group relative bg-zinc-900/50 border-white/5 rounded-[3rem] overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 opacity-60 hover:opacity-100 cursor-pointer"
+                        onMouseEnter={() => setHovered('public')}
+                        onMouseLeave={() => setHovered(null)}
+                        className="group relative text-left rounded-3xl border-2 bg-zinc-900/40 border-white/5 hover:border-blue-500/30 p-8 transition-all duration-300 overflow-hidden"
                     >
-                        <CardHeader className="p-10 pb-0">
-                            <div className="h-16 w-16 rounded-2xl bg-white/5 flex items-center justify-center mb-6 border border-white/10 group-hover:border-[#FF6600]/50 transition-all">
-                                <Globe className="h-8 w-8 text-zinc-600 group-hover:text-blue-400" />
-                            </div>
-                            <CardTitle className="text-4xl font-black uppercase italic tracking-tighter text-zinc-400 group-hover:text-white transition-colors">
-                                Public Marketplace
-                            </CardTitle>
-                            <CardDescription className="text-zinc-600 text-lg font-medium italic mt-2">
-                                (Open to All Nigerians)
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-10 space-y-8">
-                            <p className="text-zinc-600 leading-relaxed font-bold uppercase text-xs tracking-widest">
-                                The broad-spectrum exchange for all Nigerians. Buy & sell anything nationwide with Bridge-Escrow security.
-                            </p>
+                        {/* Status badge */}
+                        <div className="absolute top-5 right-5 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-800/80 border border-white/10">
+                            <Lock className="h-2.5 w-2.5 text-zinc-500" />
+                            <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500">Phase 2</span>
+                        </div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="p-4 bg-white/5 border border-white/5 rounded-2xl flex flex-col items-center gap-2 text-center opacity-40">
-                                    <Smartphone className="h-5 w-5 text-zinc-500" />
-                                    <span className="text-[10px] font-black uppercase tracking-tighter">OTP Secure</span>
-                                </div>
-                                <div className="p-4 bg-white/5 border border-white/5 rounded-2xl flex flex-col items-center gap-2 text-center opacity-40">
-                                    <Zap className="h-5 w-5 text-zinc-500" />
-                                    <span className="text-[10px] font-black uppercase tracking-tighter">Fast Trade</span>
-                                </div>
+                        {/* Background glow on hover */}
+                        <div className={`absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent transition-opacity duration-300 ${hovered === 'public' ? 'opacity-100' : 'opacity-0'}`} />
+
+                        <div className="relative z-10 space-y-5">
+                            {/* Icon */}
+                            <div className="h-14 w-14 rounded-2xl bg-blue-900/20 border border-blue-500/15 flex items-center justify-center group-hover:bg-blue-500/20 group-hover:border-blue-500/30 transition-all duration-300">
+                                <ShoppingBag className="h-7 w-7 text-blue-500/60 group-hover:text-blue-400 transition-colors" />
                             </div>
 
-                            <Button className="w-full h-16 bg-white/5 text-zinc-600 group-hover:text-white group-hover:bg-blue-500/10 font-black uppercase tracking-[0.25em] rounded-2xl text-xs border border-white/10 flex items-center justify-center gap-2 transition-all">
-                                Launching Protocol <ArrowRight className="h-4 w-4" />
-                            </Button>
-                        </CardContent>
-                        {/* Status Pin */}
-                        <div className="absolute top-6 right-6 flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-800 border border-white/5">
-                            <span className="text-[9px] font-black uppercase text-zinc-500 tracking-widest italic">Phase 2</span>
+                            {/* Title */}
+                            <div>
+                                <h2 className="text-2xl font-black uppercase tracking-tight text-zinc-400 group-hover:text-blue-300 transition-colors">
+                                    Public Marketplace
+                                </h2>
+                                <p className="text-blue-700/60 text-xs font-bold uppercase tracking-widest mt-1 group-hover:text-blue-500/70 transition-colors">Open to All Nigerians</p>
+                            </div>
+
+                            {/* Description */}
+                            <p className="text-zinc-600 text-sm leading-relaxed">
+                                Buy &amp; sell anything in Nigeria – open to everyone. Coming soon – currently locked for protocol testing.
+                            </p>
+
+                            {/* Lock notice */}
+                            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-zinc-600">
+                                <AlertCircle className="h-3 w-3" />
+                                Launching Phase 2 – join the waitlist
+                            </div>
+
+                            {/* Feature pills */}
+                            <div className="flex flex-wrap gap-2">
+                                {['Electronics', 'Fashion', 'Vehicles', 'Services'].map(f => (
+                                    <span key={f} className="px-2.5 py-1 rounded-lg bg-white/[0.03] border border-white/5 text-[9px] font-bold uppercase tracking-widest text-zinc-600">
+                                        {f}
+                                    </span>
+                                ))}
+                            </div>
+
+                            {/* CTA */}
+                            <div className="w-full h-12 flex items-center justify-center gap-2 rounded-2xl font-black uppercase tracking-widest text-xs bg-white/[0.03] text-zinc-600 group-hover:bg-blue-500/10 group-hover:text-blue-400 border border-white/5 group-hover:border-blue-500/20 transition-all duration-300">
+                                <Lock className="h-3.5 w-3.5" />
+                                Coming Soon
+                            </div>
                         </div>
-                    </Card>
+                    </button>
                 </div>
 
-                {/* Technical & Community Matrix */}
-                <div className="mt-32 space-y-12">
-                    <div className="flex items-center gap-4">
-                        <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600 font-heading shrink-0 italic">Secure Support Matrix</span>
-                        <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="glass-card p-10 rounded-[2.5rem] border-white/5 bg-gradient-to-br from-[#FF6600]/5 to-transparent space-y-6">
-                            <h3 className="text-xl font-black uppercase italic tracking-tighter font-heading text-white">Technical <span className="text-[#FF6600]">Terminal</span></h3>
-                            <p className="text-xs text-zinc-500 font-medium leading-relaxed italic">
-                                Encountering protocol errors or payout delays? Direct uplink for merchant synchronization and asset ledger issues.
-                            </p>
-                            <Button asChild variant="outline" className="h-14 w-full border-[#FF6600]/20 text-[#FF6600] font-black uppercase tracking-widest text-[10px] rounded-xl hover:bg-[#FF6600] hover:text-black transition-all">
-                                <a href="mailto:support@marketbridge.com.ng">Open Tech Ticket</a>
-                            </Button>
-                        </div>
-
-                        <div className="glass-card p-10 rounded-[2.5rem] border-white/5 bg-gradient-to-br from-blue-500/5 to-transparent space-y-6">
-                            <h3 className="text-xl font-black uppercase italic tracking-tighter font-heading text-white">Community <span className="text-blue-400">Resolution</span></h3>
-                            <p className="text-xs text-zinc-500 font-medium leading-relaxed italic">
-                                Report anomalies, scammers, or bad actors. Our enforcement node ensures the integrity of the Bridge exchange.
-                            </p>
-                            <Button asChild variant="outline" className="h-14 w-full border-blue-500/20 text-blue-400 font-black uppercase tracking-widest text-[10px] rounded-xl hover:bg-blue-400 hover:text-black transition-all">
-                                <a href="mailto:safety@marketbridge.com.ng">Contact Integrity Node</a>
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Additional Stats / Trust Area */}
-                <div className="mt-40 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-white/5 pt-20">
-                    {[
-                        { label: 'Platform Security', value: 'Bridge-Escrow v2', sub: 'Active' },
-                        { label: 'Commission Rate', value: '5.3%', sub: 'Fixed' },
-                        { label: 'Seller Entry', value: '₦1,000/mo', sub: 'Beta Rate' },
-                        { label: 'MarketCoins', value: 'Earn/Redeem', sub: 'Rewards Active' }
-                    ].map((stat, i) => (
-                        <div key={i} className="text-center md:text-left space-y-1">
-                            <p className="text-[10px] font-black uppercase text-zinc-600 tracking-widest font-heading">{stat.label}</p>
-                            <p className="text-lg md:text-xl font-black italic uppercase text-white tracking-widest font-heading">{stat.value}</p>
-                            <p className="text-[10px] font-black uppercase text-[#FF6600] tracking-widest font-heading">{stat.sub}</p>
-                        </div>
-                    ))}
+                {/* ── Bottom support strip ── */}
+                <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-[10px] font-bold uppercase tracking-widest text-zinc-700 relative z-10">
+                    <a href="mailto:support@marketbridge.com.ng" className="hover:text-zinc-400 transition-colors flex items-center gap-1.5">
+                        Tech Issue? support@marketbridge.com.ng
+                    </a>
+                    <span className="h-3 w-px bg-zinc-800 hidden sm:block" />
+                    <a href="mailto:ops-support@marketbridge.com.ng" className="hover:text-zinc-400 transition-colors flex items-center gap-1.5">
+                        Refund / Account? ops-support@marketbridge.com.ng
+                    </a>
                 </div>
             </main>
 
-            <Footer />
+            {/* ── Minimal Footer ── */}
+            <footer className="border-t border-white/5 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 flex-shrink-0">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-700">
+                    © {new Date().getFullYear()} MarketBridge Campus Beta · Abuja, Nigeria
+                </p>
+                <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-zinc-700">
+                    <a href="/terms" className="hover:text-zinc-400 transition-colors">Terms</a>
+                    <a href="/privacy" className="hover:text-zinc-400 transition-colors">Privacy</a>
+                    <a href="/disclaimer" className="hover:text-zinc-400 transition-colors">Beta Disclaimer</a>
+                </div>
+            </footer>
         </div>
     );
 }
 
 function HomeSkeleton() {
     return (
-        <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 space-y-8">
-            <Skeleton className="h-12 w-48 bg-zinc-900 rounded-xl" />
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-5xl">
-                <Skeleton className="h-[500px] w-full bg-zinc-900 rounded-[3rem]" />
-                <Skeleton className="h-[500px] w-full bg-zinc-900 rounded-[3rem]" />
+        <div className="min-h-screen bg-black flex flex-col">
+            {/* Header skeleton */}
+            <div className="flex items-center justify-between px-6 py-5 border-b border-white/5">
+                <Skeleton className="h-8 w-32 bg-zinc-900 rounded-xl" />
+                <Skeleton className="h-5 w-24 bg-zinc-900 rounded-full" />
+            </div>
+            {/* Main skeleton */}
+            <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 gap-8">
+                <div className="space-y-3 text-center">
+                    <Skeleton className="h-6 w-64 bg-zinc-900 rounded-full mx-auto" />
+                    <Skeleton className="h-12 w-80 bg-zinc-900 rounded-xl mx-auto" />
+                    <Skeleton className="h-4 w-60 bg-zinc-900 rounded-lg mx-auto" />
+                </div>
+                <Skeleton className="h-12 w-72 bg-zinc-900 rounded-2xl" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full max-w-3xl">
+                    <Skeleton className="h-[380px] w-full bg-zinc-900 rounded-3xl" />
+                    <Skeleton className="h-[380px] w-full bg-zinc-900 rounded-3xl" />
+                </div>
             </div>
         </div>
     );

@@ -1,8 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import axios from 'axios';
-import { Coordinates, findNearestUniversity, UniversityNode } from '@/lib/location';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
+import { Coordinates, findNearestUniversity, UniversityNode, ABUJA_UNIVERSITIES } from '@/lib/location';
 
 interface LocationContextType {
     coords: Coordinates | null;
@@ -21,6 +20,80 @@ interface LocationContextType {
 
 const LocationContext = createContext<LocationContextType | undefined>(undefined);
 
+// ── Trusted list of Abuja-area city names / regions from IP APIs ──
+// These vary by provider; we normalize them all to "Abuja"
+const ABUJA_ALIASES = [
+    'abuja', 'fct', 'federal capital territory', 'abuja municipal',
+    'garki', 'wuse', 'maitama', 'gwarinpa', 'kubwa', 'kuje',
+    'bwari', 'gwagwalada', 'nyanya', 'lugbe', 'lokogoma',
+];
+
+function isAbujaCity(city: string | null, region: string | null): boolean {
+    const normalized = [city, region]
+        .filter(Boolean)
+        .map(s => s!.toLowerCase().trim());
+    return normalized.some(s => ABUJA_ALIASES.some(alias => s.includes(alias)));
+}
+
+/** Fetch city/region from bigdatacloud (primary) or ipapi.co (fallback).
+ *  Returns { city, region, lat, lng } or null on failure.
+ */
+async function fetchIpLocation(): Promise<{ city: string; region: string; lat: number; lng: number } | null> {
+    // Try bigdatacloud first (no CORS issues, free)
+    try {
+        const res = await fetch('https://api.bigdatacloud.net/data/client-ip');
+        const ipData = await res.json();
+        const ip = ipData.ipString;
+
+        if (ip) {
+            const geoRes = await fetch(
+                `https://api.bigdatacloud.net/data/ip-geolocation?ip=${ip}&localityLanguage=en&key=free`
+            );
+            const geoData = await geoRes.json();
+            if (geoData.location?.latitude) {
+                return {
+                    city: geoData.location.city || geoData.location.localityName || '',
+                    region: geoData.location.principalSubdivision || geoData.location.countryName || '',
+                    lat: geoData.location.latitude,
+                    lng: geoData.location.longitude,
+                };
+            }
+        }
+    } catch (_) { /* fall through */ }
+
+    // Fallback: ipapi.co (reliable, free up to 1k/day)
+    try {
+        const res = await fetch('https://ipapi.co/json/');
+        const d = await res.json();
+        if (d.latitude) {
+            return {
+                city: d.city || '',
+                region: d.region || d.country_name || '',
+                lat: d.latitude,
+                lng: d.longitude,
+            };
+        }
+    } catch (_) { /* fall through */ }
+
+    return null;
+}
+
+/** Reverse-geocode coordinates to get city/region via bigdatacloud (free) */
+async function reverseGeocode(lat: number, lng: number): Promise<{ city: string; region: string }> {
+    try {
+        const res = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
+        );
+        const d = await res.json();
+        return {
+            city: d.city || d.locality || d.localityInfo?.administrative?.[3]?.name || '',
+            region: d.principalSubdivision || '',
+        };
+    } catch {
+        return { city: '', region: '' };
+    }
+}
+
 export function LocationProvider({ children }: { children: React.ReactNode }) {
     const [coords, setCoords] = useState<Coordinates | null>(null);
     const [city, setCity] = useState<string | null>(null);
@@ -31,44 +104,71 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
     const [error, setError] = useState<string | null>(null);
     const [consentGiven, setConsentGiven] = useState(false);
     const [showDialog, setShowDialog] = useState(false);
+    const hasInitialized = useRef(false);
 
-    useEffect(() => {
-        const consent = localStorage.getItem('mb-location-consent') === 'true';
-        setConsentGiven(consent);
-
-        const savedCoords = localStorage.getItem('mb-location-coords');
-        if (savedCoords) {
-            try {
-                const parsed = JSON.parse(savedCoords);
-                setCoords(parsed);
-                updateProximity(parsed);
-            } catch (e) {
-                console.error("Failed to parse saved coords", e);
-            }
-        }
-
-        if (consent) {
-            requestLocation();
-        } else {
-            fallbackToIp();
-        }
-    }, []);
-
-    const updateProximity = (currentCoords: Coordinates) => {
+    const updateProximity = useCallback((currentCoords: Coordinates) => {
         const nearest = findNearestUniversity(currentCoords);
         setNearestUniversity(nearest);
-
-        // If within 25km of any Abuja uni, we consider them in Abuja region
-        const inAbuja = (nearest && nearest.distance < 25) || false;
+        // Within 15km of any Abuja campus = campus node; also accept Abuja city center
+        const inAbuja = (nearest && nearest.distance < 15) || false;
         setIsAbuja(inAbuja);
-    };
+        return nearest;
+    }, []);
 
-    const requestLocation = async () => {
+    const fallbackToIp = useCallback(async () => {
+        try {
+            // Check if user manually selected a preferred node from a previous session
+            const savedNode = typeof localStorage !== 'undefined' ? localStorage.getItem('mb-preferred-node') : null;
+            if (savedNode && savedNode !== 'global') {
+                const uni = ABUJA_UNIVERSITIES.find(u => u.id === savedNode);
+                if (uni) {
+                    setCoords(uni.coords);
+                    setCity(uni.name);
+                    setRegion('Abuja, FCT');
+                    setNearestUniversity({ node: uni, distance: 0 });
+                    setIsAbuja(true);
+                    setLoading(false);
+                    return;
+                }
+            }
+
+            const data = await fetchIpLocation();
+            if (data) {
+                const ipCoords = { lat: data.lat, lng: data.lng };
+                setCoords(ipCoords);
+
+                let resolvedCity = data.city;
+                let resolvedRegion = data.region;
+
+                // ── Abuja FCT correction ──
+                // Some IP APIs return "Ede" (a city in Osun state) for Abuja VPN/ISP exit points.
+                // Cross-check: if coords are within Abuja bounding box, override city/region.
+                const isInAbujaBounds = (
+                    data.lat >= 8.4 && data.lat <= 9.5 &&
+                    data.lng >= 6.8 && data.lng <= 7.8
+                );
+                if (isInAbujaBounds) {
+                    resolvedCity = 'Abuja';
+                    resolvedRegion = 'Federal Capital Territory';
+                }
+
+                setCity(resolvedCity || null);
+                setRegion(resolvedRegion || null);
+                updateProximity(ipCoords);
+            }
+        } catch (e) {
+            console.error('IP Geoloc failed', e);
+        } finally {
+            setLoading(false);
+        }
+    }, [updateProximity]);
+
+    const requestLocation = useCallback(async () => {
         setLoading(true);
         setError(null);
 
-        if (!("geolocation" in navigator)) {
-            setError("Geolocation is not supported by this browser.");
+        if (!('geolocation' in navigator)) {
+            setError('Geolocation is not supported by this browser.');
             await fallbackToIp();
             return;
         }
@@ -80,63 +180,85 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
                     lng: position.coords.longitude
                 };
                 setCoords(newCoords);
-                localStorage.setItem('mb-location-coords', JSON.stringify(newCoords));
-                localStorage.setItem('mb-location-consent', 'true');
+
+                if (typeof localStorage !== 'undefined') {
+                    localStorage.setItem('mb-location-coords', JSON.stringify(newCoords));
+                    localStorage.setItem('mb-location-consent', 'true');
+                }
                 setConsentGiven(true);
                 updateProximity(newCoords);
 
-                try {
-                    // Get city/region from reverse geocode
-                    const res = await axios.get(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${newCoords.lat}&longitude=${newCoords.lng}&localityLanguage=en`);
-                    setCity(res.data.city || res.data.locality);
-                    setRegion(res.data.principalSubdivision);
-                } catch (e) {
-                    console.error("Reverse geocode failed", e);
-                }
+                // Reverse geocode for city name
+                const geo = await reverseGeocode(newCoords.lat, newCoords.lng);
+                setCity(geo.city || null);
+                // Normalize FCT/Abuja from reverse geocode
+                const normalizedRegion = (geo.region?.toLowerCase().includes('federal capital') || geo.region?.toLowerCase().includes('fct'))
+                    ? 'Federal Capital Territory'
+                    : (geo.region || null);
+                setRegion(normalizedRegion);
                 setLoading(false);
             },
             async (err) => {
-                console.warn("Geolocation denied", err);
-                setError(err.message);
+                console.warn('Geolocation denied:', err.message);
+                setError('Location access denied – using approximate detection');
                 await fallbackToIp();
             },
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
         );
-    };
+    }, [fallbackToIp, updateProximity]);
 
-    const fallbackToIp = async () => {
-        try {
-            const res = await axios.get('https://ipapi.co/json/');
-            const ipCoords = { lat: res.data.latitude, lng: res.data.longitude };
-            setCoords(ipCoords);
-            setCity(res.data.city);
-            setRegion(res.data.region);
-            updateProximity(ipCoords);
-        } catch (e) {
-            console.error("IP Geoloc failed", e);
-        } finally {
-            setLoading(false);
+    useEffect(() => {
+        if (hasInitialized.current) return;
+        hasInitialized.current = true;
+
+        if (typeof window === 'undefined') return;
+
+        const consent = localStorage.getItem('mb-location-consent') === 'true';
+        setConsentGiven(consent);
+
+        // Restore cached coords for instant UI
+        const savedCoords = localStorage.getItem('mb-location-coords');
+        if (savedCoords) {
+            try {
+                const parsed = JSON.parse(savedCoords);
+                setCoords(parsed);
+                updateProximity(parsed);
+            } catch { /* ignore parse error */ }
         }
-    };
 
-    const setManualLocation = (target: UniversityNode | 'global') => {
+        if (consent) {
+            requestLocation();
+        } else {
+            fallbackToIp();
+        }
+    }, [requestLocation, fallbackToIp, updateProximity]);
+
+    const setManualLocation = useCallback((target: UniversityNode | 'global') => {
+        if (typeof localStorage === 'undefined') return;
+
         if (target === 'global') {
             setIsAbuja(false);
             setNearestUniversity(null);
+            setCity(null);
+            setRegion('Nigeria');
             localStorage.setItem('mb-preferred-node', 'global');
         } else {
             setCoords(target.coords);
             setNearestUniversity({ node: target, distance: 0 });
             setIsAbuja(true);
+            setCity(target.name);
+            setRegion('Abuja, FCT');
             localStorage.setItem('mb-preferred-node', target.id);
             localStorage.setItem('mb-location-coords', JSON.stringify(target.coords));
         }
         setShowDialog(false);
-    };
+        setLoading(false);
+    }, []);
 
     return (
         <LocationContext.Provider value={{
-            coords, city, region, nearestUniversity, isAbuja, loading, error, consentGiven, showDialog, setShowDialog, requestLocation, setManualLocation
+            coords, city, region, nearestUniversity, isAbuja, loading, error,
+            consentGiven, showDialog, setShowDialog, requestLocation, setManualLocation,
         }}>
             {children}
         </LocationContext.Provider>

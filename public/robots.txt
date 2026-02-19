@@ -1,8 +1,13 @@
 User-agent: *
-Allow: /
 Disallow: /public/
 Disallow: /admin/
-Disallow: /payouts/
 Disallow: /api/
+
+# Campus marketplace is public-indexed
+Allow: /listings/
+Allow: /about
+Allow: /pricing
+Allow: /terms
+Allow: /privacy
 
 Sitemap: https://marketbridge.com.ng/sitemap.xml

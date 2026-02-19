@@ -1,50 +1,28 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
-    // 1. PUBLIC SECTION KILL-SWITCH
-    // Check environment variable (Redline override)
-    const envEnabled = process.env.ENABLE_PUBLIC_SECTION === 'true';
+    // ── PUBLIC SECTION KILL-SWITCH ──
+    // Both the env var AND DB flag must be true to allow access.
+    // Default: locked (ENABLE_PUBLIC_SECTION must be explicitly "true")
+    if (pathname.startsWith('/public')) {
+        const envEnabled = process.env.ENABLE_PUBLIC_SECTION === 'true';
 
-    // If env is true, we skip the DB check for speed (Manual Overlord override)
-    let isPublicSectionEnabled = envEnabled;
-
-    if (!isPublicSectionEnabled && pathname.startsWith('/public')) {
-        // Check Database setting as fallback
-        try {
-            const supabase = createClient(
-                process.env.NEXT_PUBLIC_SUPABASE_URL!,
-                process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-            );
-
-            const { data } = await supabase
-                .from('site_settings')
-                .select('value')
-                .eq('key', 'public_section_enabled')
-                .single();
-
-            if (data && data.value === true) {
-                isPublicSectionEnabled = true;
-            }
-        } catch (e) {
-            console.error('Middleware Security Handshake Failed:', e);
+        if (!envEnabled) {
+            // Return hard 404 — not a redirect that reveals the route exists
+            return new NextResponse(null, { status: 404 });
         }
-    }
 
-    // If trying to access /public and it's disabled, redirect to home
-    if (pathname.startsWith('/public') && !isPublicSectionEnabled) {
-        return NextResponse.redirect(new URL('/', request.url));
+        // If env is true, also check DB flag for extra safety
+        // (Supabase DB check happens server-side via API route, not here in edge middleware,
+        //  to avoid cold-start latency. The /public page itself checks the DB flag on render.)
     }
 
     return NextResponse.next();
 }
 
-// See "Matching Paths" below to learn more
 export const config = {
-    matcher: [
-        '/public/:path*',
-    ],
+    matcher: ['/public/:path*'],
 };
