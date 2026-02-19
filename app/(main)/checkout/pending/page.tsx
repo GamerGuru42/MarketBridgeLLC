@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle, ArrowRight, ShieldCheck, Loader2, Zap, Sparkles, Trophy, Star } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
 
 function PaymentPendingContent() {
     const searchParams = useSearchParams();
