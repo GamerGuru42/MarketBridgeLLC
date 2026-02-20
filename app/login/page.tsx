@@ -182,7 +182,7 @@ export default function LoginPage() {
     if (step === 'role') {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-black overflow-hidden relative">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#FF6600]/5 blur-[120px] rounded-full" />
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#FF6200]/5 blur-[120px] rounded-full" />
 
                 <div className="w-full max-w-5xl relative z-10">
                     <div className="text-center mb-16">
@@ -195,17 +195,17 @@ export default function LoginPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 max-w-6xl mx-auto">
                         {[
-                            { id: 'student_buyer', title: 'Buyer', icon: User, desc: 'Personal Account', color: 'text-blue-400' },
-                            { id: 'student_seller', title: 'Merchant', icon: Briefcase, desc: 'Business Terminal', color: 'text-[#FF6600]' },
+                            { id: 'student_buyer', title: 'Buyer', icon: User, desc: 'Personal Account', color: 'text-white' },
+                            { id: 'student_seller', title: 'Merchant', icon: Briefcase, desc: 'Business Terminal', color: 'text-[#FF6200]' },
                             { id: 'admin', title: 'Team Admin', icon: ShieldCheck, desc: 'Sector Gateway', color: 'text-zinc-400' },
-                            { id: 'ceo', title: 'CEO', icon: Lock, desc: 'Central Command', color: 'text-red-500' }
+                            { id: 'ceo', title: 'CEO', icon: Lock, desc: 'Central Command', color: 'text-[#FF6200]' }
                         ].map(item => (
                             <Card
                                 key={item.id}
                                 className={`glass-card border-white/5 rounded-[2rem] p-8 text-center group cursor-pointer hover:bg-white/[0.08] hover:translate-y-[-8px] transition-all duration-500 ${item.id === 'ceo' ? 'border-red-500/20' : ''}`}
                                 onClick={() => handleRoleSelect(item.id as any)}
                             >
-                                <div className={`h-16 w-16 glass-card rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform ${item.id === 'ceo' ? 'bg-red-500/10' : ''}`}>
+                                <div className={`h-16 w-16 glass-card rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform ${item.id === 'ceo' ? 'bg-[#FF6200]/10' : ''}`}>
                                     <item.icon className={`h-8 w-8 ${item.color}`} />
                                 </div>
                                 <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2 italic">{item.title}</h3>
@@ -222,28 +222,28 @@ export default function LoginPage() {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-black">
                 <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-[1px] bg-red-500/50 shadow-[0_0_20px_red]" />
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-[#FF6200]/50 shadow-[0_0_20px_#FF6200]" />
                     <CardHeader className="p-0 text-center mb-10">
                         <Button variant="ghost" onClick={() => setStep('role')} className="text-zinc-600 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
-                        <div className="mx-auto h-16 w-16 rounded-2xl border border-red-500/30 bg-red-500/5 flex items-center justify-center mb-6">
-                            <Lock className="h-8 w-8 text-red-500" />
+                        <div className="mx-auto h-16 w-16 rounded-2xl border border-[#FF6200]/30 bg-[#FF6200]/5 flex items-center justify-center mb-6">
+                            <Lock className="h-8 w-8 text-[#FF6200]" />
                         </div>
-                        <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2 text-red-500">Restricted</CardTitle>
+                        <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2 text-[#FF6200]">Restricted</CardTitle>
                         <CardDescription className="text-zinc-500 font-medium italic lowercase">enter administrative access key</CardDescription>
                     </CardHeader>
                     <CardContent className="p-0 space-y-6 pb-8">
-                        {error && <div className="bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-red-500/20">{error}</div>}
+                        {error && <div className="bg-[#FF6200]/10 text-white text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-[#FF6200]/20">{error}</div>}
                         <form onSubmit={handleAdminCodeSubmit} className="space-y-6">
                             <input
                                 type="password"
-                                className="w-full h-16 bg-black border border-white/5 rounded-2xl text-center tracking-[0.5em] font-mono text-xl focus:outline-none focus:ring-2 focus:ring-red-500/50 text-red-500"
+                                className="w-full h-16 bg-black border border-white/5 rounded-2xl text-center tracking-[0.5em] font-mono text-xl focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 text-[#FF6200]"
                                 value={accessCode}
                                 onChange={(e) => setAccessCode(e.target.value)}
                                 placeholder="••••••••"
                                 autoFocus
                                 required
                             />
-                            <Button type="submit" className="w-full h-16 rounded-2xl bg-red-600 text-white font-black uppercase tracking-widest hover:bg-red-700 shadow-[0_0_30px_rgba(220,38,38,0.3)]">
+                            <Button type="submit" className="w-full h-16 rounded-2xl bg-[#FF6200] text-black font-black uppercase tracking-widest hover:bg-[#FF7A29] shadow-[0_0_30px_rgba(255,98,0,0.3)]">
                                 Authorize
                             </Button>
                         </form>
@@ -255,8 +255,8 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-black overflow-hidden relative">
-            <div className="absolute top-[10%] left-[10%] w-[40%] h-[40%] bg-[#FF6600]/5 blur-[120px] rounded-full pointer-events-none" />
-            <div className="absolute bottom-[10%] right-[10%] w-[40%] h-[40%] bg-[#FF8A00]/5 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute top-[10%] left-[10%] w-[40%] h-[40%] bg-[#FF6200]/5 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-[10%] right-[10%] w-[40%] h-[40%] bg-[#FF6200]/5 blur-[120px] rounded-full pointer-events-none" />
 
             <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white relative z-10">
                 <CardHeader className="p-0 mb-10 text-center">
@@ -289,7 +289,7 @@ export default function LoginPage() {
                                     onChange={handleChange}
                                     required
                                     placeholder={role === 'admin' ? "admin@marketbridge.io" : "user@example.com / phone"}
-                                    className="w-full h-16 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6600]/50 transition-all font-medium"
+                                    className="w-full h-16 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
                                 />
                             </div>
                         </div>
@@ -297,7 +297,7 @@ export default function LoginPage() {
                         <div className="space-y-2">
                             <div className="flex justify-between items-center ml-2">
                                 <label className="text-[10px] uppercase font-black tracking-widest text-zinc-500">Security Signature</label>
-                                <Link href="/forgot-password" className="text-[10px] font-black uppercase tracking-widest text-[#FF6600] hover:opacity-80 transition-opacity">Reset Key</Link>
+                                <Link href="/forgot-password" className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] hover:opacity-80 transition-opacity">Reset Key</Link>
                             </div>
                             <div className="relative">
                                 <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-600" />
@@ -308,7 +308,7 @@ export default function LoginPage() {
                                     onChange={handleChange}
                                     required
                                     placeholder="••••••••"
-                                    className="w-full h-16 pl-14 pr-16 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6600]/50 transition-all font-medium"
+                                    className="w-full h-16 pl-14 pr-16 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
                                 />
                                 <button
                                     type="button"
@@ -320,7 +320,7 @@ export default function LoginPage() {
                             </div>
                         </div>
 
-                        <Button type="submit" className="w-full h-16 bg-gold-gradient text-black font-black uppercase tracking-widest rounded-2xl glow-on-hover border-none flex items-center justify-center gap-2 group" disabled={isLoading}>
+                        <Button type="submit" className="w-full h-16 bg-orange-gradient text-black font-black uppercase tracking-widest rounded-2xl glow-on-hover border-none flex items-center justify-center gap-2 group" disabled={isLoading}>
                             {isLoading ? <Loader2 className="animate-spin h-6 w-6" /> : (
                                 <>
                                     Establish Link
@@ -345,13 +345,13 @@ export default function LoginPage() {
                     )}
 
                     <p className="text-center text-zinc-500 text-xs font-bold uppercase tracking-widest">
-                        Unauthorized? <Link href="/signup" className="text-[#FF6600] hover:opacity-80 transition-opacity italic ml-1 underline decoration-dotted">Register Identity</Link>
+                        Unauthorized? <Link href="/signup" className="text-[#FF6200] hover:opacity-80 transition-opacity italic ml-1 underline decoration-dotted">Register Identity</Link>
                     </p>
 
                     <div className="mt-8 pt-6 border-t border-white/5 text-center">
                         <p className="text-[10px] text-zinc-600 font-medium leading-relaxed">
-                            Beta platform – technical problems? Email <a href="mailto:support@marketbridge.com.ng?subject=Tech%20Support" className="text-[#FF6600] hover:underline">support@marketbridge.com.ng</a><br />
-                            Refunds, subscriptions or seller questions? Email <a href="mailto:ops-support@marketbridge.com.ng?subject=Ops%20Support" className="text-[#00FF85] hover:underline">ops-support@marketbridge.com.ng</a>
+                            Beta platform – technical problems? Email <a href="mailto:support@marketbridge.com.ng?subject=Tech%20Support" className="text-[#FF6200] hover:underline">support@marketbridge.com.ng</a><br />
+                            Refunds, subscriptions or seller questions? Email <a href="mailto:ops-support@marketbridge.com.ng?subject=Ops%20Support" className="text-[#FF6200] hover:underline">ops-support@marketbridge.com.ng</a>
                         </p>
                     </div>
                 </CardContent>

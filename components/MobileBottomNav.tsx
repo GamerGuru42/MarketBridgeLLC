@@ -73,13 +73,13 @@ export const MobileBottomNav = () => {
                             href={item.href}
                             className={cn(
                                 "flex flex-col items-center justify-center gap-1 transition-all relative group",
-                                isActive ? "text-[#FF6600] scale-110" : "text-zinc-600 hover:text-white"
+                                isActive ? "text-[#FF6200] scale-110" : "text-zinc-600 hover:text-white"
                             )}
                         >
                             <div className="relative">
                                 <Icon className={cn("h-6 w-6", isActive ? "drop-shadow-[0_0_8px_rgba(255,184,0,0.5)]" : "")} />
                                 {item.badge && item.badge > 0 && (
-                                    <span className="absolute -top-2 -right-3 h-4 w-4 rounded-full bg-[#FF6600] text-[9px] font-black text-black flex items-center justify-center">
+                                    <span className="absolute -top-2 -right-3 h-4 w-4 rounded-full bg-[#FF6200] text-[9px] font-black text-black flex items-center justify-center">
                                         {item.badge}
                                     </span>
                                 )}
@@ -87,7 +87,7 @@ export const MobileBottomNav = () => {
                             <span className="text-[8px] font-black uppercase tracking-widest italic">{item.label}</span>
 
                             {isActive && (
-                                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#FF6600] rounded-full shadow-[0_0_8px_#FF6600]" />
+                                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#FF6200] rounded-full shadow-[0_0_8px_#FF6200]" />
                             )}
                         </Link>
                     );

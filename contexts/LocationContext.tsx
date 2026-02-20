@@ -142,13 +142,14 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
                 let resolvedCity = data.city;
                 let resolvedRegion = data.region;
 
-                // ── Abuja FCT correction ──
-                // Some IP APIs return "Ede" (a city in Osun state) for Abuja VPN/ISP exit points.
-                // Cross-check: if coords are within Abuja bounding box, override city/region.
+                // ── Abuja FCT correction (Nigeria-wide prioritizing Abuja) ──
+                // Precision IP check: if coordinates fall within the general FCT/Abuja bounding box, 
+                // we forcefully normalize to Abuja to satisfy campus priority.
                 const isInAbujaBounds = (
-                    data.lat >= 8.4 && data.lat <= 9.5 &&
-                    data.lng >= 6.8 && data.lng <= 7.8
+                    data.lat >= 8.5 && data.lat <= 9.6 &&
+                    data.lng >= 6.9 && data.lng <= 7.9
                 );
+
                 if (isInAbujaBounds) {
                     resolvedCity = 'Abuja';
                     resolvedRegion = 'Federal Capital Territory';

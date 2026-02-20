@@ -78,11 +78,11 @@ export default function ContactPage() {
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="h-10 w-10 bg-red-500/10 rounded-full flex items-center justify-center text-red-500 flex-shrink-0">
+                                    <div className="h-10 w-10 bg-[#FF6200]/10 rounded-full flex items-center justify-center text-[#FF6200] flex-shrink-0">
                                         <Mail className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold mb-1">Tech Support</h3>
+                                        <h3 className="font-semibold mb-1 text-white">Tech Support</h3>
                                         <p className="text-sm text-muted-foreground">support@marketbridge.com.ng</p>
                                         <p className="text-[10px] text-zinc-600 mt-1">App bugs, login issues, errors</p>
                                     </div>
@@ -97,7 +97,7 @@ export default function ContactPage() {
                                         <Mail className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold mb-1">Ops Support</h3>
+                                        <h3 className="font-semibold mb-1 text-white">Ops Support</h3>
                                         <p className="text-sm text-muted-foreground">ops-support@marketbridge.com.ng</p>
                                         <p className="text-[10px] text-zinc-600 mt-1">Refunds, payments, seller questions</p>
                                     </div>
@@ -108,11 +108,11 @@ export default function ContactPage() {
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center text-primary flex-shrink-0">
+                                    <div className="h-10 w-10 bg-[#FF6200]/10 rounded-full flex items-center justify-center text-[#FF6200] flex-shrink-0">
                                         <Phone className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold mb-1">Phone</h3>
+                                        <h3 className="font-semibold mb-1 text-white">Phone</h3>
                                         <p className="text-sm text-muted-foreground">+234 805 593 3107</p>
                                         <p className="text-sm text-muted-foreground">+234 913 994 6753</p>
                                     </div>
@@ -123,13 +123,13 @@ export default function ContactPage() {
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center text-primary flex-shrink-0">
+                                    <div className="h-10 w-10 bg-[#FF6200]/10 rounded-full flex items-center justify-center text-[#FF6200] flex-shrink-0">
                                         <MapPin className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold mb-1">Headquarters</h3>
+                                        <h3 className="font-semibold mb-1 text-white">Headquarters</h3>
                                         <p className="text-sm text-muted-foreground">Abuja, Nigeria</p>
-                                        <p className="text-[10px] text-primary font-mono uppercase mt-1">Digital-First Operations</p>
+                                        <p className="text-[10px] text-[#FF6200] font-mono uppercase mt-1">Digital-First Operations</p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -139,19 +139,19 @@ export default function ContactPage() {
                     {/* Contact Form */}
                     <Card className="lg:col-span-2">
                         <CardHeader>
-                            <CardTitle>Send us a Message</CardTitle>
+                            <CardTitle className="text-white">Send us a Message</CardTitle>
                         </CardHeader>
                         <CardContent>
                             {submitted ? (
-                                <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 text-center animate-in fade-in duration-500">
-                                    <p className="text-primary font-bold text-lg mb-2">Message Dispatched!</p>
+                                <div className="bg-[#FF6200]/10 border border-[#FF6200]/20 rounded-lg p-6 text-center animate-in fade-in duration-500">
+                                    <p className="text-[#FF6200] font-bold text-lg mb-2">Message Dispatched!</p>
                                     <p className="text-sm text-muted-foreground">{successMessage}</p>
                                 </div>
                             ) : (
                                 <form onSubmit={handleSubmit} className="space-y-4">
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label htmlFor="name">Name</Label>
+                                            <Label htmlFor="name" className="text-white">Name</Label>
                                             <Input
                                                 id="name"
                                                 name="name"
@@ -159,10 +159,11 @@ export default function ContactPage() {
                                                 onChange={handleChange}
                                                 required
                                                 placeholder="Your name"
+                                                className="bg-zinc-900 border-white/10 text-white focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200]"
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="email">Email</Label>
+                                            <Label htmlFor="email" className="text-white">Email</Label>
                                             <Input
                                                 id="email"
                                                 name="email"
@@ -171,11 +172,12 @@ export default function ContactPage() {
                                                 onChange={handleChange}
                                                 required
                                                 placeholder="your.email@example.com"
+                                                className="bg-zinc-900 border-white/10 text-white focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200]"
                                             />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="subject">Subject</Label>
+                                        <Label htmlFor="subject" className="text-white">Subject</Label>
                                         <Input
                                             id="subject"
                                             name="subject"
@@ -183,10 +185,11 @@ export default function ContactPage() {
                                             onChange={handleChange}
                                             required
                                             placeholder="How can we help?"
+                                            className="bg-zinc-900 border-white/10 text-white focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200]"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="message">Message</Label>
+                                        <Label htmlFor="message" className="text-white">Message</Label>
                                         <textarea
                                             id="message"
                                             name="message"
@@ -194,11 +197,11 @@ export default function ContactPage() {
                                             onChange={handleChange}
                                             required
                                             rows={6}
-                                            className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                            className="flex w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6200] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-white"
                                             placeholder="Tell us more about your inquiry..."
                                         />
                                     </div>
-                                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                                    <Button type="submit" className="w-full bg-[#FF6200] text-black hover:bg-[#FF7A29] font-black uppercase tracking-widest h-12 border-none" disabled={isSubmitting}>
                                         {isSubmitting ? 'Sending...' : 'Send Message'}
                                     </Button>
                                 </form>

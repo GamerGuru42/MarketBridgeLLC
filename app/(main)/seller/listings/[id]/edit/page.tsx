@@ -143,7 +143,7 @@ export default function EditListingPage() {
             <div className="min-h-screen bg-black flex items-center justify-center text-white">
                 <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20" />
                 <div className="flex flex-col items-center gap-6 relative z-10">
-                    <Loader2 className="h-12 w-12 animate-spin text-[#FF6600]" />
+                    <Loader2 className="h-12 w-12 animate-spin text-[#FF6200]" />
                     <p className="text-zinc-600 font-black uppercase tracking-[0.4em] text-[10px] font-heading animate-pulse">Synchronizing Asset Feed...</p>
                 </div>
             </div>
@@ -165,21 +165,21 @@ export default function EditListingPage() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white relative selection:bg-[#FF6600] selection:text-black pt-32 pb-24">
+        <div className="min-h-screen bg-black text-white relative selection:bg-[#FF6200] selection:text-black pt-32 pb-24">
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
             <div className="container px-6 mx-auto relative z-10 max-w-4xl space-y-12">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/5 pb-10">
                     <div className="space-y-4">
-                        <Link href="/seller/listings" className="inline-flex items-center text-zinc-500 hover:text-[#FF6600] transition-colors text-[10px] font-black uppercase tracking-widest font-heading mb-4">
+                        <Link href="/seller/listings" className="inline-flex items-center text-zinc-500 hover:text-[#FF6200] transition-colors text-[10px] font-black uppercase tracking-widest font-heading mb-4">
                             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Inventory
                         </Link>
                         <div className="flex items-center gap-3">
-                            <span className="h-2 w-2 rounded-full bg-[#FF6600] animate-pulse" />
+                            <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading">Node Management Moditication</span>
                         </div>
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
-                            Refine <span className="text-[#FF6600]">Asset</span>
+                            Refine <span className="text-[#FF6200]">Asset</span>
                         </h1>
                         <p className="text-zinc-500 font-medium max-w-xl italic">
                             Authorized modification of marketplace node <span className="text-white font-bold">{listing.id.slice(0, 8).toUpperCase()}</span>.
@@ -194,14 +194,14 @@ export default function EditListingPage() {
                                 <div className="space-y-3">
                                     <Label htmlFor="title" className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading">Authorized Reference Title *</Label>
                                     <div className="relative group">
-                                        <div className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-700 group-focus-within:text-[#FF6600] transition-colors">
+                                        <div className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-700 group-focus-within:text-[#FF6200] transition-colors">
                                             <Box className="h-5 w-5" />
                                         </div>
                                         <Input
                                             id="title"
                                             value={formData.title}
                                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                            className="h-16 pl-16 rounded-2xl bg-black/40 border-white/5 focus:border-[#FF6600] focus:ring-1 focus:ring-[#FF6600] transition-all text-sm font-bold uppercase tracking-widest font-heading"
+                                            className="h-16 pl-16 rounded-2xl bg-black/40 border-white/5 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] transition-all text-sm font-bold uppercase tracking-widest font-heading"
                                             required
                                         />
                                     </div>
@@ -214,7 +214,7 @@ export default function EditListingPage() {
                                         value={formData.description}
                                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                         rows={6}
-                                        className="p-8 rounded-[2rem] bg-black/40 border-white/5 focus:border-[#FF6600] focus:ring-1 focus:ring-[#FF6600] transition-all text-xs font-medium leading-relaxed italic border-dashed"
+                                        className="p-8 rounded-[2rem] bg-black/40 border-white/5 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] transition-all text-xs font-medium leading-relaxed italic border-dashed"
                                         required
                                     />
                                 </div>
@@ -223,13 +223,13 @@ export default function EditListingPage() {
                             <div className="space-y-3">
                                 <Label htmlFor="price" className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading">Valuation (₦) *</Label>
                                 <div className="relative group">
-                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-700 group-focus-within:text-[#FF6600] transition-colors font-black font-heading text-lg italic">₦</div>
+                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-700 group-focus-within:text-[#FF6200] transition-colors font-black font-heading text-lg italic">₦</div>
                                     <Input
                                         id="price"
                                         type="number"
                                         value={formData.price}
                                         onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                                        className="h-16 pl-16 rounded-2xl bg-black/40 border-white/5 focus:border-[#FF6600] focus:ring-1 focus:ring-[#FF6600] transition-all text-2xl font-black font-heading"
+                                        className="h-16 pl-16 rounded-2xl bg-black/40 border-white/5 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] transition-all text-2xl font-black font-heading"
                                         required
                                     />
                                 </div>
@@ -242,12 +242,12 @@ export default function EditListingPage() {
                                     onValueChange={(value) => setFormData({ ...formData, category: value })}
                                     required
                                 >
-                                    <SelectTrigger className="h-16 rounded-2xl bg-black/40 border-white/5 focus:ring-1 focus:ring-[#FF6600] font-heading text-[10px] font-black uppercase tracking-widest">
+                                    <SelectTrigger className="h-16 rounded-2xl bg-black/40 border-white/5 focus:ring-1 focus:ring-[#FF6200] font-heading text-[10px] font-black uppercase tracking-widest">
                                         <SelectValue placeholder="Select sector" />
                                     </SelectTrigger>
                                     <SelectContent className="bg-zinc-900 border-white/10 text-white font-heading text-[10px] uppercase font-black tracking-widest">
                                         {CATEGORIES.map((cat) => (
-                                            <SelectItem key={cat.id} value={cat.name} disabled={cat.locked} className="focus:bg-[#FF6600] focus:text-black py-3">
+                                            <SelectItem key={cat.id} value={cat.name} disabled={cat.locked} className="focus:bg-[#FF6200] focus:text-black py-3">
                                                 {cat.name} {cat.locked ? '(COMING SOON)' : ''}
                                             </SelectItem>
                                         ))}
@@ -258,14 +258,14 @@ export default function EditListingPage() {
                             <div className="space-y-3 md:col-span-2">
                                 <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading">Geographic Node (Location)</Label>
                                 <div className="relative group">
-                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-700 group-focus-within:text-[#FF6600] transition-colors">
+                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-700 group-focus-within:text-[#FF6200] transition-colors">
                                         <MapPin className="h-5 w-5" />
                                     </div>
                                     <Input
                                         id="location"
                                         value={formData.location}
                                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                        className="h-16 pl-16 rounded-2xl bg-black/40 border-white/5 focus:border-[#FF6600] focus:ring-1 focus:ring-[#FF6600] transition-all text-sm font-bold uppercase tracking-widest font-heading"
+                                        className="h-16 pl-16 rounded-2xl bg-black/40 border-white/5 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] transition-all text-sm font-bold uppercase tracking-widest font-heading"
                                     />
                                 </div>
                             </div>
@@ -274,10 +274,10 @@ export default function EditListingPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8 border-t border-white/5">
                             <div className="space-y-6">
                                 <div className="space-y-1">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF6600] italic font-heading">Visual Feed (Images) *</Label>
+                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF6200] italic font-heading">Visual Feed (Images) *</Label>
                                     <p className="text-zinc-600 text-[10px] uppercase font-bold tracking-widest leading-relaxed">Authorized gallery deployment (Max 5).</p>
                                 </div>
-                                <div className="p-8 rounded-[2.5rem] bg-black/40 border border-white/5 border-dashed group hover:border-[#FF6600]/20 transition-all">
+                                <div className="p-8 rounded-[2.5rem] bg-black/40 border border-white/5 border-dashed group hover:border-[#FF6200]/20 transition-all">
                                     <ImageUpload
                                         onImagesSelected={(urls) => setImageUrls(urls)}
                                         defaultImages={imageUrls.filter(url => url !== '')}
@@ -302,7 +302,7 @@ export default function EditListingPage() {
                         </div>
 
                         <div className="flex flex-col md:flex-row gap-6 pt-12">
-                            <Button type="submit" disabled={saving} className="flex-1 h-20 bg-[#FF6600] text-black hover:bg-[#FF6600] rounded-[1.5rem] font-black uppercase tracking-[0.3em] text-xs transition-all font-heading italic shadow-2xl shadow-[#FF6600]/10">
+                            <Button type="submit" disabled={saving} className="flex-1 h-20 bg-[#FF6200] text-black hover:bg-[#FF7A29] rounded-[1.5rem] font-black uppercase tracking-[0.3em] text-xs transition-all font-heading italic shadow-2xl shadow-[#FF6200]/10">
                                 {saving ? (
                                     <>
                                         <Loader2 className="mr-3 h-5 w-5 animate-spin" />

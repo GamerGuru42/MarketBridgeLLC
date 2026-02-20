@@ -14,6 +14,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Check, Zap, Crown, Rocket, ArrowLeft, Sparkles, Shield, TrendingUp, Loader2, ShieldCheck, CheckCircle, AlertCircle } from 'lucide-react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { cn } from '@/lib/utils';
+import { NIGERIAN_BANKS } from '@/lib/banks';
 
 function OnboardingContent() {
     const router = useRouter();
@@ -35,6 +36,8 @@ function OnboardingContent() {
         university: '',
         matricNumber: '',
         storeType: 'online' as 'physical' | 'online' | 'both',
+        bankCode: '',
+        accountNumber: '',
     });
 
     useEffect(() => {
@@ -47,7 +50,6 @@ function OnboardingContent() {
             // Get detected location for pre-fill
             const detectedNode = localStorage.getItem('mb-preferred-node');
 
-            // Pre-fill with existing data, using detected node as fallback for location
             setFormData({
                 displayName: user.displayName || user.email?.split('@')[0] || '',
                 location: user.location || (detectedNode !== 'global' ? detectedNode : '') || '',
@@ -57,9 +59,10 @@ function OnboardingContent() {
                 university: (user as any).university || '',
                 matricNumber: (user as any).matricNumber || '',
                 storeType: (user.storeType as 'physical' | 'online' | 'both') || 'online',
+                bankCode: (user as any).bank_name || '',
+                accountNumber: (user as any).account_number || '',
             });
 
-            // If seller is already identified but not email verified, send them to verification
             if (['student_seller', 'dealer'].includes(user.role) && !user.email_verified) {
                 router.push('/verify-email');
                 return;
@@ -71,7 +74,6 @@ function OnboardingContent() {
         if (e) e.preventDefault();
         if (!user) return;
 
-        // If user is switching from buyer to seller, show confirmation first
         if (user.role === 'student_buyer' && (formData.role === 'student_seller' || formData.role === 'dealer') && !showConfirmSwitch) {
             setShowConfirmSwitch(true);
             return;
@@ -79,6 +81,7 @@ function OnboardingContent() {
 
         setLoading(true);
         try {
+            // 1. Update Profile in Supabase
             const updateData: any = {
                 display_name: formData.displayName,
                 location: formData.location,
@@ -86,6 +89,8 @@ function OnboardingContent() {
                 role: formData.role,
                 university: formData.university,
                 matric_number: formData.matricNumber,
+                bank_name: formData.bankCode,
+                account_number: formData.accountNumber
             };
 
             if (formData.role === 'student_seller' || formData.role === 'dealer') {
@@ -94,24 +99,40 @@ function OnboardingContent() {
                 updateData.subscription_status = 'pending_verification';
             }
 
-            // Authoritative Role and Metadata Update
-            const { error: authUpdateError } = await supabase.auth.updateUser({
-                data: { role: formData.role }
-            });
-
-            if (authUpdateError) console.warn('Auth metadata update failed, but proceeding with profile update.');
-
-            const { error } = await supabase
+            const { error: profileError } = await supabase
                 .from('users')
                 .update(updateData)
                 .eq('id', user.id);
 
-            if (error) throw error;
+            if (profileError) throw profileError;
+
+            // 2. Create Paystack Subaccount for Sellers
+            if (['student_seller', 'dealer'].includes(formData.role)) {
+                const paystackRes = await fetch('/api/paystack/subaccount', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        businessName: formData.businessName,
+                        bankCode: formData.bankCode,
+                        accountNumber: formData.accountNumber,
+                        userId: user.id
+                    })
+                });
+
+                if (!paystackRes.ok) {
+                    console.warn('Paystack subaccount creation failed, will retry later.');
+                }
+            }
+
+            // 3. Update Auth Metadata
+            await supabase.auth.updateUser({
+                data: { role: formData.role }
+            });
 
             await refreshUser();
 
-            // Direct Redirect Logic
-            if (formData.role === 'student_seller' || formData.role === 'dealer') {
+            // Redirect
+            if (['student_seller', 'dealer'].includes(formData.role)) {
                 if (selectedPlan) {
                     router.push(`/checkout/subscription?plan=${selectedPlan}&billing=${selectedCycle}`);
                 } else {
@@ -120,10 +141,9 @@ function OnboardingContent() {
             } else {
                 router.push('/');
             }
-        } catch (err: unknown) {
-            console.error('Failed to update profile:', err);
-            const message = err instanceof Error ? err.message : 'Failed to update profile';
-            alert(message);
+        } catch (err: any) {
+            console.error('Onboarding failed:', err);
+            alert(err.message || 'Onboarding failed');
         } finally {
             setLoading(false);
         }
@@ -140,7 +160,7 @@ function OnboardingContent() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white relative py-20 px-6 selection:bg-[#FF6600] selection:text-black">
+        <div className="min-h-screen bg-black text-white relative py-20 px-6 selection:bg-[#FF6200] selection:text-black">
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
             <div className="max-w-2xl mx-auto relative z-10 space-y-12">
@@ -158,18 +178,18 @@ function OnboardingContent() {
                         </div>
 
                         {user?.role === 'student_buyer' ? (
-                            <div className="text-center space-y-8 py-20 glass-card rounded-[3.5rem] border border-[#FF6600]/20 bg-[#FF6600]/5">
-                                <div className="mx-auto h-20 w-20 rounded-full bg-[#FF6600]/10 flex items-center justify-center mb-6">
-                                    <ShieldCheck className="h-10 w-10 text-[#FF6600]" />
+                            <div className="text-center space-y-8 py-20 glass-card rounded-[3.5rem] border border-[#FF6200]/20 bg-[#FF6200]/5">
+                                <div className="mx-auto h-20 w-20 rounded-full bg-[#FF6200]/10 flex items-center justify-center mb-6">
+                                    <ShieldCheck className="h-10 w-10 text-[#FF6200]" />
                                 </div>
                                 <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic">
-                                    Account <span className="text-[#FF6600]">Separation</span>
+                                    Account <span className="text-[#FF6200]">Separation</span>
                                 </h1>
                                 <p className="text-zinc-400 text-lg max-w-lg mx-auto leading-relaxed px-8">
                                     To maintain protocol security, <span className="text-white font-bold">Buyer Accounts</span> cannot be transitioned into Merchant accounts.
                                 </p>
                                 <div className="space-y-4 pt-6">
-                                    <p className="text-xs text-[#FF6600] font-black uppercase tracking-widest">Action Required:</p>
+                                    <p className="text-xs text-[#FF6200] font-black uppercase tracking-widest">Action Required:</p>
                                     <p className="text-sm text-zinc-500 max-w-sm mx-auto">Please logout and create a <span className="text-white">New Seller Account</span> using your student merchant credentials.</p>
                                     <div className="pt-8">
                                         <Button
@@ -188,32 +208,32 @@ function OnboardingContent() {
                             <>
                                 <div className="text-center space-y-8">
                                     <div className="flex items-center justify-center gap-3">
-                                        <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#FF6600]" />
-                                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#FF6600] font-heading drop-shadow-[0_0_10px_rgba(255,102,0,0.5)]">Protocol Shift Initiated</span>
-                                        <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#FF6600]" />
+                                        <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#FF6200]" />
+                                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#FF6200] font-heading drop-shadow-[0_0_10px_rgba(255,98,0,0.5)]">Protocol Shift Initiated</span>
+                                        <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#FF6200]" />
                                     </div>
                                     <h1 className="text-7xl md:text-9xl font-black uppercase tracking-tighter italic font-heading leading-none">
-                                        Start <span className="text-[#FF6600] drop-shadow-[0_0_30px_rgba(255,102,0,0.3)]">Selling.</span>
+                                        Start <span className="text-[#FF6200] drop-shadow-[0_0_30px_rgba(255,98,0,0.3)]">Selling.</span>
                                     </h1>
                                     <p className="text-zinc-400 text-lg max-w-lg mx-auto leading-relaxed italic border-x border-white/5 px-8">
-                                        You are about to upgrade your profile to <span className="text-white font-bold underline decoration-[#FF6600] decoration-2 underline-offset-4">STUDENT MERCHANT</span>. Unlock the terminal and claim your campus node.
+                                        You are about to upgrade your profile to <span className="text-white font-bold underline decoration-[#FF6200] decoration-2 underline-offset-4">STUDENT MERCHANT</span>. Unlock the terminal and claim your campus node.
                                     </p>
                                 </div>
 
                                 <div className="glass-card p-12 rounded-[3.5rem] border border-white/10 space-y-10 bg-gradient-to-br from-zinc-900 to-black relative overflow-hidden group">
-                                    <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#FF6600]/10 rounded-full blur-3xl group-hover:bg-[#FF6600]/20 transition-all duration-1000" />
+                                    <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#FF6200]/10 rounded-full blur-3xl group-hover:bg-[#FF6200]/20 transition-all duration-1000" />
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
-                                        <div className="space-y-3 p-6 bg-white/5 rounded-[2rem] border border-white/5 hover:border-[#FF6600]/30 transition-all">
-                                            <div className="h-10 w-10 rounded-xl bg-[#FF6600]/10 flex items-center justify-center">
-                                                <Zap className="h-5 w-5 text-[#FF6600]" />
+                                        <div className="space-y-3 p-6 bg-white/5 rounded-[2rem] border border-white/5 hover:border-[#FF6200]/30 transition-all">
+                                            <div className="h-10 w-10 rounded-xl bg-[#FF6200]/10 flex items-center justify-center">
+                                                <Zap className="h-5 w-5 text-[#FF6200]" />
                                             </div>
                                             <h4 className="text-xs font-black uppercase tracking-widest text-white">Merchant Tools</h4>
                                             <p className="text-[10px] text-zinc-500 leading-relaxed uppercase tracking-wider font-bold">Inventory command & analytics terminal.</p>
                                         </div>
-                                        <div className="space-y-3 p-6 bg-white/5 rounded-[2rem] border border-white/5 hover:border-[#FF6600]/30 transition-all">
-                                            <div className="h-10 w-10 rounded-xl bg-[#FF6600]/10 flex items-center justify-center">
-                                                <ShieldCheck className="h-5 w-5 text-[#FF6600]" />
+                                        <div className="space-y-3 p-6 bg-white/5 rounded-[2rem] border border-white/5 hover:border-[#FF6200]/30 transition-all">
+                                            <div className="h-10 w-10 rounded-xl bg-[#FF6200]/10 flex items-center justify-center">
+                                                <ShieldCheck className="h-5 w-5 text-[#FF6200]" />
                                             </div>
                                             <h4 className="text-xs font-black uppercase tracking-widest text-white">Trust Protocol</h4>
                                             <p className="text-[10px] text-zinc-500 leading-relaxed uppercase tracking-wider font-bold">Verified merchant badge encryption.</p>
@@ -223,7 +243,7 @@ function OnboardingContent() {
                                     <div className="pt-4 relative z-10">
                                         <Button
                                             onClick={() => setConfirmedUpgrade(true)}
-                                            className="w-full h-20 bg-[#FF6600] text-black font-black uppercase tracking-[0.25em] rounded-[2rem] hover:scale-[1.02] transition-all shadow-[0_20px_60px_rgba(255,102,0,0.25)] border-none text-xs"
+                                            className="w-full h-20 bg-[#FF6200] text-black font-black uppercase tracking-[0.25em] rounded-[2rem] hover:scale-[1.02] transition-all shadow-[0_20px_60px_rgba(255,98,0,0.25)] border-none text-xs"
                                         >
                                             Confirm Upgrade & Proceed
                                         </Button>
@@ -243,11 +263,11 @@ function OnboardingContent() {
                     <>
                         <div className="text-center space-y-4">
                             <div className="flex items-center justify-center gap-3">
-                                <span className="h-2 w-2 rounded-full bg-[#FF6600] animate-pulse" />
+                                <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading">Protocol Identification</span>
                             </div>
                             <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
-                                {forcedRole === 'student_seller' ? 'Merchant' : 'Establish'} <span className="text-[#FF6600]">{forcedRole === 'student_seller' ? 'Terminal' : 'Profile'}</span>
+                                {forcedRole === 'student_seller' ? 'Merchant' : 'Establish'} <span className="text-[#FF6200]">{forcedRole === 'student_seller' ? 'Terminal' : 'Profile'}</span>
                             </h1>
                             <p className="text-zinc-500 font-medium italic">
                                 Initialize your operational parameters for the Abuja Pilot Phase.
@@ -266,14 +286,14 @@ function OnboardingContent() {
                         </div>
 
                         <Card className="glass-card border-none rounded-[3rem] p-10 overflow-hidden relative">
-                            <div className="absolute top-0 left-0 w-full h-1 bg-gold-gradient" />
+                            <div className="absolute top-0 left-0 w-full h-1 bg-orange-gradient" />
                             <CardContent className="p-0">
                                 <form onSubmit={handleSubmit} className="space-y-10">
                                     <div className="space-y-8">
                                         <div className="flex justify-center mb-10">
                                             <div className="w-40 space-y-4">
                                                 <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-center block font-heading">Digital Identity Avatar</Label>
-                                                <div className="glass-card rounded-[2rem] p-2 hover:border-[#FF6600]/30 transition-all">
+                                                <div className="glass-card rounded-[2rem] p-2 hover:border-[#FF6200]/30 transition-all">
                                                     <ImageUpload
                                                         onImagesSelected={(urls) => setFormData({ ...formData, photoURL: urls[0] || '' })}
                                                         defaultImages={formData.photoURL ? [formData.photoURL] : []}
@@ -293,7 +313,7 @@ function OnboardingContent() {
                                                     onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
                                                     placeholder="OPERATIVE NAME"
                                                     required
-                                                    className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FF6600]/50 transition-all font-heading uppercase tracking-widest text-xs"
+                                                    className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FF6200]/50 transition-all font-heading uppercase tracking-widest text-xs"
                                                 />
                                             </div>
 
@@ -304,7 +324,7 @@ function OnboardingContent() {
                                                     value={formData.location}
                                                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                                                     placeholder="e.g. FCT - ABUJA"
-                                                    className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FF6600]/50 transition-all font-heading uppercase tracking-widest text-xs"
+                                                    className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FF6200]/50 transition-all font-heading uppercase tracking-widest text-xs"
                                                 />
                                             </div>
                                         </div>
@@ -319,7 +339,7 @@ function OnboardingContent() {
                                                 >
                                                     <div className={cn(
                                                         "flex items-center space-x-4 border rounded-[2rem] p-6 cursor-pointer transition-all duration-500",
-                                                        formData.role === 'student_buyer' || formData.role === 'customer' ? "bg-[#FF6600] border-[#FF6600] text-black" : "bg-white/5 border-white/10 text-white hover:border-white/20"
+                                                        formData.role === 'student_buyer' || formData.role === 'customer' ? "bg-[#FF6200] border-[#FF6200] text-black" : "bg-white/5 border-white/10 text-white hover:border-white/20"
                                                     )} onClick={() => setFormData({ ...formData, role: 'student_buyer' })}>
                                                         <RadioGroupItem value="student_buyer" id="student_buyer" className="hidden" />
                                                         <Label htmlFor="student_buyer" className="cursor-pointer flex-1 space-y-1">
@@ -331,7 +351,7 @@ function OnboardingContent() {
                                                     </div>
                                                     <div className={cn(
                                                         "flex items-center space-x-4 border rounded-[2rem] p-6 cursor-pointer transition-all duration-500",
-                                                        formData.role === 'student_seller' || formData.role === 'dealer' ? "bg-[#FF6600] border-[#FF6600] text-black" : "bg-white/5 border-white/10 text-white hover:border-white/20"
+                                                        formData.role === 'student_seller' || formData.role === 'dealer' ? "bg-[#FF6200] border-[#FF6200] text-black" : "bg-white/5 border-white/10 text-white hover:border-white/20"
                                                     )} onClick={() => setFormData({ ...formData, role: 'student_seller' })}>
                                                         <RadioGroupItem value="student_seller" id="student_seller" className="hidden" />
                                                         <Label htmlFor="student_seller" className="cursor-pointer flex-1 space-y-1">
@@ -356,7 +376,7 @@ function OnboardingContent() {
                                                             onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
                                                             placeholder="e.g. UNIVERSITY GADGETS"
                                                             required={['student_seller', 'dealer'].includes(formData.role)}
-                                                            className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FF6600]/50 transition-all font-heading uppercase tracking-widest text-xs"
+                                                            className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FF6200]/50 transition-all font-heading uppercase tracking-widest text-xs"
                                                         />
                                                     </div>
 
@@ -368,7 +388,7 @@ function OnboardingContent() {
                                                             onChange={(e) => setFormData({ ...formData, university: e.target.value })}
                                                             placeholder="e.g. UNIVERSITY OF ABUJA"
                                                             required={['student_seller', 'dealer'].includes(formData.role)}
-                                                            className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FF6600]/50 transition-all font-heading uppercase tracking-widest text-xs"
+                                                            className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FF6200]/50 transition-all font-heading uppercase tracking-widest text-xs"
                                                         />
                                                     </div>
                                                 </div>
@@ -381,8 +401,39 @@ function OnboardingContent() {
                                                         onChange={(e) => setFormData({ ...formData, matricNumber: e.target.value })}
                                                         placeholder="e.g. U/2024/CORE/001"
                                                         required={['student_seller', 'dealer'].includes(formData.role)}
-                                                        className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FF6600]/50 transition-all font-heading uppercase tracking-widest text-xs"
+                                                        className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FF6200]/50 transition-all font-heading uppercase tracking-widest text-xs"
                                                     />
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                                                    <div className="space-y-3">
+                                                        <Label htmlFor="bankName" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2 font-heading">Settlement Bank *</Label>
+                                                        <select
+                                                            id="bankName"
+                                                            value={formData.bankCode}
+                                                            onChange={(e) => setFormData({ ...formData, bankCode: e.target.value })}
+                                                            required={['student_seller', 'dealer'].includes(formData.role)}
+                                                            className="w-full h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FF6200]/50 transition-all font-heading uppercase tracking-widest text-[10px] px-4 text-white appearance-none"
+                                                        >
+                                                            <option value="" className="bg-black">SELECT BANK</option>
+                                                            {NIGERIAN_BANKS.map(bank => (
+                                                                <option key={bank.code} value={bank.code} className="bg-black">{bank.name}</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+
+                                                    <div className="space-y-3">
+                                                        <Label htmlFor="accountNumber" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2 font-heading">Account Number *</Label>
+                                                        <Input
+                                                            id="accountNumber"
+                                                            value={formData.accountNumber}
+                                                            onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
+                                                            placeholder="10 DIGITS"
+                                                            maxLength={10}
+                                                            required={['student_seller', 'dealer'].includes(formData.role)}
+                                                            className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FF6200]/50 transition-all font-heading uppercase tracking-widest text-xs"
+                                                        />
+                                                    </div>
                                                 </div>
 
                                                 <div className="space-y-4">
@@ -394,7 +445,7 @@ function OnboardingContent() {
                                                     >
                                                         {['physical', 'online', 'both'].map((type) => (
                                                             <div key={type} className="flex items-center space-x-2">
-                                                                <RadioGroupItem value={type} id={type} className="border-zinc-700 text-[#FF6600]" />
+                                                                <RadioGroupItem value={type} id={type} className="border-zinc-700 text-[#FF6200]" />
                                                                 <Label htmlFor={type} className="text-[10px] font-black uppercase tracking-widest cursor-pointer font-heading">{type}</Label>
                                                             </div>
                                                         ))}
@@ -403,7 +454,7 @@ function OnboardingContent() {
                                             </div>
                                         )}
 
-                                        <Button type="submit" disabled={loading} className="w-full h-16 bg-gold-gradient text-black hover:bg-[#FF6600] rounded-2xl font-black uppercase tracking-widest transition-all font-heading shadow-[0_10px_40px_rgba(255,184,0,0.2)] border-none mt-8">
+                                        <Button type="submit" disabled={loading} className="w-full h-16 bg-orange-gradient text-black hover:bg-[#FF6200] rounded-2xl font-black uppercase tracking-widest transition-all font-heading shadow-[0_10px_40px_rgba(255,184,0,0.2)] border-none mt-8">
                                             {loading ? (
                                                 <>
                                                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -427,19 +478,19 @@ function OnboardingContent() {
             {/* Confirmation Dialog for Role Switch */}
             {showConfirmSwitch && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm animate-in fade-in duration-300">
-                    <Card className="glass-card border-[#FF6600]/20 max-w-md w-full p-8 rounded-[2.5rem] space-y-8 relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-[#FF6600]" />
+                    <Card className="glass-card border-[#FF6200]/20 max-w-md w-full p-8 rounded-[2.5rem] space-y-8 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-[#FF6200]" />
                         <div className="flex flex-col items-center text-center space-y-4">
-                            <div className="h-16 w-16 rounded-2xl bg-[#FF6600]/10 border border-[#FF6600]/20 flex items-center justify-center mb-2">
-                                <AlertCircle className="h-8 w-8 text-[#FF6600]" />
+                            <div className="h-16 w-16 rounded-2xl bg-[#FF6200]/10 border border-[#FF6200]/20 flex items-center justify-center mb-2">
+                                <AlertCircle className="h-8 w-8 text-[#FF6200]" />
                             </div>
-                            <h2 className="text-3xl font-black uppercase tracking-tighter italic italic">Protocol <span className="text-[#FF6600]">Shift</span></h2>
+                            <h2 className="text-3xl font-black uppercase tracking-tighter italic italic">Protocol <span className="text-[#FF6200]">Shift</span></h2>
                             <p className="text-zinc-400 text-sm leading-relaxed">
                                 You are about to upgrade your profile to <span className="text-white font-bold">STUDENT MERCHANT</span>.
                                 This will grant you access to listing assets and managing orders.
                             </p>
                             <div className="p-4 bg-white/5 border border-white/10 rounded-2xl w-full">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-[#FF6600] mb-1">Authorization Required</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] mb-1">Authorization Required</p>
                                 <p className="text-xs text-zinc-500">You may be required to choose a subscription plan to activate your terminal.</p>
                             </div>
                         </div>
@@ -447,7 +498,7 @@ function OnboardingContent() {
                             <Button
                                 onClick={() => handleSubmit()}
                                 disabled={loading}
-                                className="w-full h-14 bg-[#FF6600] text-black font-black uppercase tracking-widest rounded-xl hover:bg-[#FF8533]"
+                                className="w-full h-14 bg-[#FF6200] text-black font-black uppercase tracking-widest rounded-xl hover:bg-[#FF7A29]"
                             >
                                 {loading ? 'UPDATING...' : 'CONFIRM UPGRADE'}
                             </Button>
@@ -468,7 +519,7 @@ function OnboardingContent() {
 
 export default function OnboardingPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-black"><Loader2 className="h-8 w-8 animate-spin text-[#FF6600]" /></div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-black"><Loader2 className="h-8 w-8 animate-spin text-[#FF6200]" /></div>}>
             <OnboardingContent />
         </Suspense>
     );

@@ -5,7 +5,7 @@
 @layer base {
   :root {
     --radius: 1rem;
-    /* MarketBridge Revamp (Pure Black & Vibrant Orange) */
+    /* MarketBridge Revamp (Pure Black & Vibrant Orange #FF6200) */
     --background: 0 0% 0%;
     --foreground: 0 0% 100%;
 
@@ -15,7 +15,7 @@
     --popover: 0 0% 6%;
     --popover-foreground: 0 0% 100%;
 
-    --primary: 28 100% 50%;
+    --primary: 23 100% 50%;
     --primary-foreground: 0 0% 0%;
 
     --secondary: 0 0% 10%;
@@ -24,30 +24,30 @@
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 65%;
 
-    --accent: 28 100% 50%;
-    --accent-foreground: 28 100% 50%;
+    --accent: 23 100% 50%;
+    --accent-foreground: 23 100% 50%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 23 100% 50%;
+    --destructive-foreground: 0 0% 0%;
 
-    --border: 0 0% 100%;
-    --input: 0 0% 100%;
-    --ring: 28 100% 50%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 23 100% 50%;
 
-    --chart-1: 28 100% 50%;
-    --chart-2: 45 90% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 20 70% 50%;
-    --chart-5: 10 60% 45%;
+    --chart-1: 23 100% 50%;
+    --chart-2: 0 0% 100%;
+    --chart-3: 0 0% 40%;
+    --chart-4: 23 100% 60%;
+    --chart-5: 23 100% 40%;
 
     --sidebar-background: 0 0% 0%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 28 100% 50%;
+    --sidebar-primary: 23 100% 50%;
     --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 100%;
+    --sidebar-accent: 0 0% 10%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 100%;
-    --sidebar-ring: 28 100% 50%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 23 100% 50%;
   }
 
   .dark {
@@ -57,19 +57,19 @@
     --card-foreground: 0 0% 100%;
     --popover: 0 0% 6%;
     --popover-foreground: 0 0% 100%;
-    --primary: 28 100% 50%;
+    --primary: 23 100% 50%;
     --primary-foreground: 0 0% 0%;
     --secondary: 0 0% 10%;
     --secondary-foreground: 0 0% 100%;
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 65%;
-    --accent: 28 100% 50%;
-    --accent-foreground: 28 100% 50%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 100%;
-    --input: 0 0% 100%;
-    --ring: 28 100% 50%;
+    --accent: 23 100% 50%;
+    --accent-foreground: 23 100% 50%;
+    --destructive: 23 100% 50%;
+    --destructive-foreground: 0 0% 0%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 23 100% 50%;
   }
 }
 
@@ -128,19 +128,18 @@
   }
 
   .text-glow {
-    text-shadow: 0 0 30px hsla(28, 100%, 50%, 0.6);
+    text-shadow: 0 0 30px hsla(23, 100%, 50%, 0.6);
   }
 
-  .bg-gold-gradient {
-    /* Kept name for compatibility, updated to Orange */
-    background: linear-gradient(135deg, #FF6600 0%, #FF4500 100%);
+  .bg-orange-gradient {
+    background: linear-gradient(135deg, #FF6200 0%, #FF7A29 100%);
   }
 
-  .gold-blur {
+  .brand-blur {
     position: absolute;
     width: 600px;
     height: 600px;
-    background: radial-gradient(circle, hsla(28, 100%, 50%, 0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, hsla(23, 100%, 50%, 0.1) 0%, transparent 70%);
     filter: blur(100px);
     z-index: -1;
     pointer-events: none;
@@ -151,7 +150,7 @@
   }
 
   .glow-on-hover:hover {
-    box-shadow: 0 0 20px hsla(28, 100%, 50%, 0.3);
+    box-shadow: 0 0 20px hsla(23, 100%, 50%, 0.3);
     transform: translateY(-2px);
   }
 

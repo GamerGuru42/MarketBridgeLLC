@@ -184,27 +184,27 @@ function ListingsContent() {
                 <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
                 <div className="container px-6 mx-auto relative z-10 flex flex-col items-center justify-center flex-1 text-center space-y-8">
-                    <div className="h-24 w-24 rounded-3xl bg-gradient-to-br from-[#FF6600]/20 to-black border border-[#FF6600]/30 flex items-center justify-center shadow-[0_0_50px_rgba(255,102,0,0.2)] mb-4">
-                        <Store className="h-12 w-12 text-[#FF6600]" />
+                    <div className="h-24 w-24 rounded-3xl bg-gradient-to-br from-[#FF6200]/20 to-black border border-[#FF6200]/30 flex items-center justify-center shadow-[0_0_50px_rgba(255,98,0,0.2)] mb-4">
+                        <Store className="h-12 w-12 text-[#FF6200]" />
                     </div>
 
                     <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter max-w-3xl leading-tight">
-                        Unlock Exclusive <span className="text-[#FF6600]">Details</span>
+                        Unlock Exclusive <span className="text-[#FF6200]">Details</span>
                     </h1>
 
                     <p className="text-zinc-400 text-lg md:text-xl font-medium max-w-xl">
                         Join thousands of students trading securely. Sign up to view prices, contact sellers, and access verified campus listings.
                     </p>
 
-                    <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md pt-4">
-                        <Button size="lg" asChild className="h-14 flex-1 bg-[#FF6600] text-black font-black uppercase tracking-widest hover:bg-[#FF8533] hover:scale-105 transition-all shadow-[0_0_40px_rgba(255,102,0,0.3)] rounded-xl">
+                    <div className="flex flex-col sm:flex-row gap-6 w-full max-w-lg pt-10">
+                        <Button size="lg" asChild className="h-20 flex-1 bg-[#FF6200] text-black font-black uppercase tracking-[0.2em] hover:bg-[#FF7A29] rounded-[2rem] border-none shadow-[0_20px_40px_rgba(255,98,0,0.2)]">
                             <Link href="/signup">
-                                Create Account
+                                Initialize Account
                             </Link>
                         </Button>
-                        <Button size="lg" variant="outline" asChild className="h-14 flex-1 border-white/20 text-white font-bold uppercase tracking-widest hover:bg-white hover:text-black hover:border-transparent transition-all rounded-xl">
+                        <Button size="lg" variant="outline" asChild className="h-20 flex-1 border-white/10 text-white font-black uppercase tracking-[0.2em] hover:bg-white/5 rounded-[2rem]">
                             <Link href="/login">
-                                Sign In
+                                Auth Session
                             </Link>
                         </Button>
                     </div>
@@ -223,71 +223,73 @@ function ListingsContent() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white relative selection:bg-[#FF6600] selection:text-black flex flex-col pt-28 pb-20">
+        <div className="min-h-screen bg-black text-white relative selection:bg-[#FF6200] selection:text-black flex flex-col pt-28 pb-20">
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
             <div className="container px-6 mx-auto relative z-10 space-y-12">
                 {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-12">
-                    <div>
-                        <Link href="/" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white mb-4 text-sm font-mono transition-colors">
-                            <ArrowLeft className="h-3 w-3" />
-                            BACK TO HOME
-                        </Link>
-                        <h1 className="text-5xl md:text-6xl font-black uppercase tracking-tighter italic">
-                            Browse <span className="text-[#FF6600]">Marketplace</span>
-                        </h1>
-                        <p className="text-zinc-500 mt-3 font-mono text-sm">
-                            {listings.length} listings available
-                        </p>
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading">Global Asset Index</span>
                     </div>
+                    <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
+                        Market<span className="text-[#FF6200]">Place</span>
+                    </h1>
+                    <p className="text-zinc-500 font-medium italic">
+                        Scanning <span className="text-white font-bold">{listings.length} live signals</span> across the network.
+                    </p>
                 </div>
 
                 {/* Search & Filters */}
-                <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                    <div className="md:col-span-2 relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-600" />
+                <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                    <div className="md:col-span-5 relative group">
+                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-600 group-focus-within:text-[#FF6200] transition-colors" />
                         <input
                             type="text"
-                            placeholder="Search products... (e.g., 'wig', 'laptop', 'shoes')"
+                            placeholder="Search active signals..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full bg-zinc-900 border border-white/10 pl-12 pr-4 py-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#FF6600] rounded-none font-mono text-sm"
+                            className="w-full bg-white/5 border border-white/10 pl-16 pr-6 h-16 text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-medium italic text-sm transition-all"
                         />
                     </div>
 
-                    <select
-                        value={category}
-                        onChange={(e) => setCategory(e.target.value)}
-                        className="bg-zinc-900 border border-white/10 px-4 py-4 text-white focus:outline-none focus:border-[#FF6600] rounded-none font-mono text-sm"
-                    >
-                        <option value="All Categories">All Categories</option>
-                        {CATEGORIES.map((cat: any, idx: number) => (
-                            <option key={idx} value={cat.name}>{cat.name}</option>
-                        ))}
-                    </select>
+                    <div className="md:col-span-3">
+                        <select
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                            className="w-full bg-white/5 border border-white/10 px-6 h-16 text-white focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
+                        >
+                            <option value="All Categories" className="bg-black text-white">All Categories</option>
+                            {CATEGORIES.map((cat: any, idx: number) => (
+                                <option key={idx} value={cat.name} className="bg-black text-white">{cat.name.toUpperCase()}</option>
+                            ))}
+                        </select>
+                    </div>
 
-                    <select
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        className="bg-zinc-900 border border-white/10 px-4 py-4 text-white focus:outline-none focus:border-[#FF6600] rounded-none font-mono text-sm"
-                    >
-                        <option value="">All Locations</option>
-                        <option value="Abuja">Abuja</option>
-                        <option value="Lagos">Lagos</option>
-                        <option value="Port Harcourt">Port Harcourt</option>
-                    </select>
+                    <div className="md:col-span-2">
+                        <select
+                            value={location}
+                            onChange={(e) => setLocation(e.target.value)}
+                            className="w-full bg-white/5 border border-white/10 px-6 h-16 text-white focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
+                        >
+                            <option value="" className="bg-black text-white">All Nodes</option>
+                            <option value="Abuja" className="bg-black text-white">Abuja</option>
+                            <option value="Lagos" className="bg-black text-white">Lagos</option>
+                            <option value="Port Harcourt" className="bg-black text-white">Port Harcourt</option>
+                        </select>
+                    </div>
 
-                    <Button type="submit" className="bg-[#FF6600] text-black hover:bg-[#FF6600] font-black uppercase tracking-widest rounded-none">
-                        Search
+                    <Button type="submit" className="md:col-span-2 h-16 bg-[#FF6200] text-black hover:bg-[#FF7A29] font-black uppercase tracking-widest rounded-2xl border-none shadow-[0_10px_20px_rgba(255,98,0,0.1)]">
+                        Fire Query
                     </Button>
                 </form>
 
                 {/* Loading */}
                 {loading && (
                     <div className="flex items-center justify-center py-20">
-                        <Loader2 className="h-10 w-10 animate-spin text-[#FF6600]" />
+                        <Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" />
                     </div>
                 )}
 
@@ -300,20 +302,20 @@ function ListingsContent() {
 
                 {/* No Results State */}
                 {!loading && !error && listings.length === 0 && (
-                    <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-                        <div className="h-20 w-20 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center">
-                            <Search className="h-10 w-10 text-zinc-700" />
+                    <div className="text-center py-40 bg-white/5 border border-white/10 rounded-[3rem] space-y-8">
+                        <div className="h-28 w-28 rounded-full bg-[#FF6200]/5 border border-[#FF6200]/20 flex items-center justify-center mx-auto">
+                            <Search className="h-10 w-10 text-zinc-800" />
                         </div>
-                        <h3 className="text-xl font-black uppercase text-white">No Listings Found</h3>
-                        <p className="text-zinc-500 max-w-md font-mono text-sm">
-                            We couldn't find any items matching your search. Try different keywords or browse all categories.
-                        </p>
+                        <div className="space-y-2">
+                            <h3 className="text-2xl font-black uppercase tracking-tighter italic font-heading">Zero Matches Found</h3>
+                            <p className="text-zinc-500 font-medium italic">Adjust your parameters to re-scan the marketplace.</p>
+                        </div>
                         <Button
                             onClick={() => { setSearch(''); window.location.href = '/listings'; }}
                             variant="outline"
-                            className="mt-4 border-white/10 hover:bg-white/5 text-white font-mono uppercase text-xs tracking-widest"
+                            className="h-12 px-8 border-white/10 text-zinc-500 hover:text-white rounded-xl font-black uppercase tracking-widest text-[10px]"
                         >
-                            Clear Search Filters
+                            Reset Network Scan
                         </Button>
                     </div>
                 )}
@@ -323,49 +325,75 @@ function ListingsContent() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {listings.map((listing) => (
                             <Link key={listing.id} href={`/listings/${listing.id}`}>
-                                <Card className="bg-zinc-900 border-white/10 hover:border-[#FF6600] transition-all cursor-pointer group overflow-hidden rounded-none">
-                                    <div className="relative h-48 w-full overflow-hidden bg-zinc-800">
+                                <div className="glass-card rounded-[2rem] border-white/5 hover:border-[#FF6200]/40 transition-all duration-500 group overflow-hidden flex flex-col h-full shadow-2xl hover:shadow-[#FF6200]/10">
+                                    <div className="relative h-64 w-full overflow-hidden bg-zinc-900 border-b border-white/5">
                                         {listing.images && listing.images[0] ? (
                                             <Image
                                                 src={listing.images[0]}
                                                 alt={listing.title}
                                                 fill
-                                                className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                                className="object-cover group-hover:scale-110 transition-transform duration-700"
                                             />
                                         ) : (
                                             <div className="flex items-center justify-center h-full">
-                                                <Store className="h-12 w-12 text-zinc-700" />
+                                                <Store className="h-12 w-12 text-zinc-800" />
                                             </div>
                                         )}
-                                        {listing.is_verified_listing && (
-                                            <Badge className="absolute top-2 right-2 bg-[#00FF85] text-black font-black text-[10px]">
-                                                <ShieldCheck className="h-3 w-3 mr-1" />
-                                                VERIFIED
-                                            </Badge>
-                                        )}
+
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                                        <div className="absolute top-4 right-4 flex flex-col gap-2">
+                                            {listing.is_verified_listing && (
+                                                <div className="px-3 py-1.5 rounded-full bg-[#00FF85] text-black font-black text-[8px] tracking-widest flex items-center gap-1.5 shadow-xl">
+                                                    <ShieldCheck className="h-3 w-3" />
+                                                    VERIFIED
+                                                </div>
+                                            )}
+                                        </div>
+
                                         {listing.is_sponsored && (
-                                            <div className="absolute top-2 left-2">
+                                            <div className="absolute top-4 left-4">
                                                 <SponsoredBadge />
                                             </div>
                                         )}
+
+                                        <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-500">
+                                            <div className="h-10 w-10 rounded-full bg-[#FF6200] flex items-center justify-center text-black">
+                                                <ArrowUpRight className="h-5 w-5" />
+                                            </div>
+                                        </div>
                                     </div>
-                                    <CardHeader>
-                                        <CardTitle className="text-white text-lg font-black uppercase tracking-tight line-clamp-2">
-                                            {listing.title}
-                                        </CardTitle>
-                                        <p className="text-zinc-500 text-xs font-mono line-clamp-2 mt-2">
-                                            {listing.description}
-                                        </p>
-                                    </CardHeader>
-                                    <CardFooter className="flex justify-between items-center border-t border-white/5 pt-4">
-                                        <span className="text-2xl font-black text-[#FF6600]">
-                                            ₦{listing.price.toLocaleString()}
-                                        </span>
-                                        {listing.dealer?.is_verified && (
-                                            <ShieldCheck className="h-4 w-4 text-[#00FF85]" />
-                                        )}
-                                    </CardFooter>
-                                </Card>
+
+                                    <div className="p-8 space-y-6 flex-1 flex flex-col justify-between">
+                                        <div className="space-y-3">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <span className="text-[9px] font-black text-[#FF6200] uppercase tracking-widest">{listing.category.toUpperCase()}</span>
+                                                <span className="h-1 w-1 rounded-full bg-zinc-700" />
+                                                <span className="text-[9px] font-medium text-zinc-500 italic">{listing.location || 'Remote'}</span>
+                                            </div>
+                                            <h3 className="text-xl font-black uppercase tracking-tighter italic font-heading line-clamp-1 group-hover:text-[#FF6200] transition-colors leading-tight">
+                                                {listing.title}
+                                            </h3>
+                                            <p className="text-zinc-500 text-xs font-medium italic line-clamp-2 leading-relaxed">
+                                                {listing.description}
+                                            </p>
+                                        </div>
+
+                                        <div className="pt-6 border-t border-white/5 flex justify-between items-center">
+                                            <div className="flex flex-col">
+                                                <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest">Pricing Unit</span>
+                                                <span className="text-2xl font-black text-white italic font-heading tracking-tighter">₦{listing.price.toLocaleString()}</span>
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                {listing.dealer?.is_verified && (
+                                                    <div className="h-8 w-8 rounded-full bg-[#00FF85]/10 flex items-center justify-center border border-[#00FF85]/20">
+                                                        <ShieldCheck className="h-4 w-4 text-[#00FF85]" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </Link>
                         ))}
                     </div>
@@ -378,7 +406,7 @@ function ListingsContent() {
 
 export default function ListingsPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-[#FF6600]" /></div>}>
+        <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" /></div>}>
             <ListingsContent />
         </Suspense>
     );

@@ -207,7 +207,7 @@ export default function SellerListingsPage() {
                     <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">Inventory Node</h1>
                     <p className="text-muted-foreground mt-2">Manage your marketplace assets and deployment status.</p>
                 </div>
-                <Button asChild className="font-black uppercase tracking-widest italic shadow-xl shadow-primary/20">
+                <Button asChild className="bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest italic shadow-xl shadow-[#FF6200]/20 rounded-xl">
                     <Link href="/seller/listings/new">
                         <Plus className="mr-2 h-4 w-4" />
                         Deploy New Asset
@@ -223,7 +223,7 @@ export default function SellerListingsPage() {
                         </div>
                         <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-2">Zero Inventory Detected</h3>
                         <p className="text-muted-foreground mb-8 text-sm italic">You haven't deployed any assets to the marketplace yet.</p>
-                        <Button asChild className="px-10 h-12 font-bold uppercase tracking-widest text-xs">
+                        <Button asChild className="px-10 h-12 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-bold uppercase tracking-widest text-xs rounded-xl">
                             <Link href="/seller/listings/new">
                                 <Plus className="mr-2 h-4 w-4" />
                                 Create First Listing
@@ -234,8 +234,8 @@ export default function SellerListingsPage() {
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {listings.map((listing) => (
-                        <Card key={listing.id} className="overflow-hidden border-primary/10 hover:shadow-2xl transition-all group">
-                            <div className="aspect-[4/3] bg-muted relative overflow-hidden">
+                        <Card key={listing.id} className="overflow-hidden border-white/5 bg-zinc-900/50 hover:border-[#FF6200]/30 hover:shadow-2xl transition-all group rounded-[2rem]">
+                            <div className="aspect-[4/3] bg-zinc-900 relative overflow-hidden">
                                 {listing.images && listing.images.length > 0 ? (
                                     <Image
                                         src={listing.images[0]}
@@ -250,13 +250,13 @@ export default function SellerListingsPage() {
                                 )}
                                 <div className="absolute top-3 right-3 flex flex-col gap-2">
                                     <Badge
-                                        className={`font-black uppercase tracking-tighter shadow-lg ${listing.status === 'active' ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-slate-500 hover:bg-slate-600'}`}
+                                        className={`font-black uppercase tracking-tighter shadow-lg ${listing.status === 'active' ? 'bg-[#00FF85] text-black hover:bg-[#00E676]' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}
                                     >
                                         {listing.status}
                                     </Badge>
                                     {listing.is_sponsored && (
-                                        <Badge className="bg-[#FF6600] font-black uppercase tracking-tighter shadow-lg gap-1">
-                                            <Zap className="h-3 w-3 fill-white" />
+                                        <Badge className="bg-[#FF6200] text-black font-black uppercase tracking-tighter shadow-lg gap-1 border-none">
+                                            <Zap className="h-3 w-3 fill-black" />
                                             Sponsored
                                         </Badge>
                                     )}
@@ -264,9 +264,9 @@ export default function SellerListingsPage() {
                             </div>
                             <CardHeader className="p-5">
                                 <div className="flex justify-between items-start gap-4">
-                                    <CardTitle className="text-xl font-black italic uppercase tracking-tighter line-clamp-1 group-hover:text-primary transition-colors">{listing.title}</CardTitle>
+                                    <CardTitle className="text-xl font-black italic uppercase tracking-tighter line-clamp-1 group-hover:text-[#FF6200] transition-colors text-white">{listing.title}</CardTitle>
                                 </div>
-                                <p className="text-2xl font-black text-primary mt-1">
+                                <p className="text-2xl font-black text-[#FF6200] mt-1">
                                     ₦{listing.price.toLocaleString()}
                                 </p>
                             </CardHeader>
@@ -275,13 +275,13 @@ export default function SellerListingsPage() {
                                     {listing.description}
                                 </p>
                                 <div className="grid grid-cols-2 gap-3">
-                                    <Button asChild variant="outline" size="sm" className="font-bold border-slate-200 dark:border-slate-800 hover:bg-primary/5">
+                                    <Button asChild variant="outline" size="sm" className="font-bold border-white/10 hover:border-[#FF6200]/30 hover:bg-white/5 rounded-xl text-[10px] uppercase tracking-widest font-heading">
                                         <Link href={`/listings/${listing.id}`}>
                                             <Eye className="mr-2 h-3.5 w-3.5" />
                                             PREVIEW
                                         </Link>
                                     </Button>
-                                    <Button asChild variant="outline" size="sm" className="font-bold border-slate-200 dark:border-slate-800 hover:bg-primary/5">
+                                    <Button asChild variant="outline" size="sm" className="font-bold border-white/10 hover:border-[#FF6200]/30 hover:bg-white/5 rounded-xl text-[10px] uppercase tracking-widest font-heading">
                                         <Link href={`/seller/listings/${listing.id}/edit`}>
                                             <Edit className="mr-2 h-3.5 w-3.5" />
                                             MODIFY
@@ -290,7 +290,7 @@ export default function SellerListingsPage() {
                                     <Button
                                         variant="secondary"
                                         size="sm"
-                                        className="font-bold bg-slate-100 dark:bg-slate-800"
+                                        className="font-bold bg-zinc-800 text-white hover:bg-zinc-700 rounded-xl text-[10px] uppercase tracking-widest font-heading"
                                         onClick={() => toggleStatus(listing)}
                                     >
                                         {listing.status === 'active' ? 'OFFLINE' : 'ONLINE'}
@@ -298,7 +298,7 @@ export default function SellerListingsPage() {
                                     <Button
                                         variant="destructive"
                                         size="sm"
-                                        className="font-bold shadow-lg shadow-destructive/10"
+                                        className="font-bold shadow-lg shadow-destructive/10 rounded-xl text-[10px] uppercase tracking-widest font-heading"
                                         onClick={() => handleDeleteClick(listing)}
                                         disabled={deletingId === listing.id}
                                     >
@@ -316,7 +316,7 @@ export default function SellerListingsPage() {
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="col-span-2 font-black italic uppercase tracking-widest text-[10px] border-[#FF6600]/20 text-[#FF6600] hover:bg-[#FF6600] hover:text-black mt-2 h-10 shadow-lg shadow-[#FF6600]/5"
+                                            className="col-span-2 font-black italic uppercase tracking-widest text-[10px] border-[#FF6200]/20 text-[#FF6200] hover:bg-[#FF6200] hover:text-black mt-2 h-10 shadow-lg shadow-[#FF6200]/5 rounded-xl"
                                             onClick={() => handlePromote(listing.id)}
                                             disabled={promotingId === listing.id}
                                         >

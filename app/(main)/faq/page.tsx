@@ -53,33 +53,33 @@ export default function FAQPage() {
             <div className="container mx-auto px-4 max-w-4xl">
                 {/* Header */}
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold mb-4">Frequently Asked Questions</h1>
-                    <p className="text-lg text-muted-foreground">
-                        Everything you need to know about shopping on MarketBridge
+                    <h1 className="text-4xl font-black uppercase tracking-tighter italic mb-4 text-white">Frequently Asked <span className="text-[#FF6200]">Questions</span></h1>
+                    <p className="text-lg text-zinc-500 font-medium italic">
+                        Everything you need to know about trading on MarketBridge
                     </p>
                 </div>
 
                 {/* Trust Highlights */}
                 <div className="grid md:grid-cols-3 gap-4 mb-12">
-                    <Card>
+                    <Card className="bg-zinc-900/50 border-white/5">
                         <CardContent className="p-6 text-center">
-                            <Shield className="h-8 w-8 mx-auto mb-3 text-primary" />
-                            <h3 className="font-semibold mb-1">Verified Dealers</h3>
-                            <p className="text-sm text-muted-foreground">All dealers go through verification</p>
+                            <Shield className="h-8 w-8 mx-auto mb-3 text-[#FF6200]" />
+                            <h3 className="font-bold uppercase tracking-widest text-white mb-1">Verified Dealers</h3>
+                            <p className="text-xs text-zinc-500">All dealers go through verification</p>
                         </CardContent>
                     </Card>
-                    <Card>
+                    <Card className="bg-zinc-900/50 border-white/5">
                         <CardContent className="p-6 text-center">
-                            <Eye className="h-8 w-8 mx-auto mb-3 text-primary" />
-                            <h3 className="font-semibold mb-1">Full Transparency</h3>
-                            <p className="text-sm text-muted-foreground">See ratings and reviews before buying</p>
+                            <Eye className="h-8 w-8 mx-auto mb-3 text-[#FF6200]" />
+                            <h3 className="font-bold uppercase tracking-widest text-white mb-1">Full Transparency</h3>
+                            <p className="text-xs text-zinc-500">See ratings and reviews before buying</p>
                         </CardContent>
                     </Card>
-                    <Card>
+                    <Card className="bg-zinc-900/50 border-white/5">
                         <CardContent className="p-6 text-center">
-                            <Lock className="h-8 w-8 mx-auto mb-3 text-primary" />
-                            <h3 className="font-semibold mb-1">Secure Payments</h3>
-                            <p className="text-sm text-muted-foreground">Pay on delivery for your protection</p>
+                            <Lock className="h-8 w-8 mx-auto mb-3 text-[#FF6200]" />
+                            <h3 className="font-bold uppercase tracking-widest text-white mb-1">Secure Payments</h3>
+                            <p className="text-xs text-zinc-500">Pay on delivery for your protection</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -87,10 +87,10 @@ export default function FAQPage() {
                 {/* FAQs */}
                 <div className="space-y-6">
                     {faqs.map((faq, index) => (
-                        <Card key={index}>
+                        <Card key={index} className="bg-zinc-900/30 border-white/5">
                             <CardContent className="p-6">
-                                <h3 className="text-lg font-semibold mb-3">{faq.question}</h3>
-                                <p className="text-muted-foreground leading-relaxed">{faq.answer}</p>
+                                <h3 className="text-lg font-black uppercase tracking-tighter italic text-white mb-3">{faq.question}</h3>
+                                <p className="text-zinc-400 leading-relaxed text-sm font-medium">{faq.answer}</p>
                             </CardContent>
                         </Card>
                     ))}
@@ -98,17 +98,17 @@ export default function FAQPage() {
 
                 {/* CTA */}
                 <div className="mt-12 text-center">
-                    <Card className="bg-primary text-primary-foreground">
-                        <CardContent className="p-8">
-                            <h2 className="text-2xl font-bold mb-4">Still have questions?</h2>
-                            <p className="mb-6 opacity-90">
+                    <Card className="bg-[#FF6200] text-black border-none rounded-[2.5rem] overflow-hidden">
+                        <CardContent className="p-10">
+                            <h2 className="text-3xl font-black uppercase tracking-tighter italic mb-4">Still have questions?</h2>
+                            <p className="mb-8 font-bold uppercase tracking-widest text-sm opacity-80">
                                 Our support team is here to help
                             </p>
-                            <div className="flex gap-4 justify-center">
-                                <Button asChild variant="secondary" size="lg">
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                <Button asChild variant="secondary" size="lg" className="bg-black text-white hover:bg-zinc-800 rounded-xl px-8 h-14 font-black uppercase tracking-widest border-none">
                                     <Link href="/contact">Contact Support</Link>
                                 </Button>
-                                <Button asChild variant="outline" size="lg" className="bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
+                                <Button asChild variant="outline" size="lg" className="bg-transparent border-black/20 text-black hover:bg-black/5 rounded-xl px-8 h-14 font-black uppercase tracking-widest">
                                     <Link href="/about">Learn More</Link>
                                 </Button>
                             </div>

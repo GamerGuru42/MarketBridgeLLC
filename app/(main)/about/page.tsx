@@ -12,11 +12,11 @@ export default function AboutPage() {
     const router = useRouter();
 
     return (
-        <div className="min-h-screen bg-black text-white relative selection:bg-[#FF6600] selection:text-black pt-28 pb-32 overflow-hidden">
+        <div className="min-h-screen bg-black text-white relative selection:bg-[#FF6200] selection:text-black pt-28 pb-32 overflow-hidden">
             {/* Background Grid & Ambient Glow */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
-            <div className="fixed top-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#FF6600]/10 rounded-full blur-[120px] pointer-events-none z-0" />
-            <div className="fixed bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#FF6600]/5 rounded-full blur-[120px] pointer-events-none z-0" />
+            <div className="fixed top-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#FF6200]/10 rounded-full blur-[120px] pointer-events-none z-0" />
+            <div className="fixed bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#FF6200]/5 rounded-full blur-[120px] pointer-events-none z-0" />
 
             <div className="container px-6 mx-auto relative z-10 max-w-7xl">
                 {/* Header Section */}
@@ -24,7 +24,7 @@ export default function AboutPage() {
                     <Button
                         variant="ghost"
                         onClick={() => router.back()}
-                        className="text-[#FF6600] border border-[#FF6600]/20 bg-[#FF6600]/5 hover:bg-[#FF6600]/10 rounded-full px-6 h-10 text-[10px] font-black uppercase tracking-[0.2em] font-heading transition-all"
+                        className="text-[#FF6200] border border-[#FF6200]/20 bg-[#FF6200]/5 hover:bg-[#FF6200]/10 rounded-full px-6 h-10 text-[10px] font-black uppercase tracking-[0.2em] font-heading transition-all"
                     >
                         <ArrowLeft className="mr-2 h-3 w-3" /> Return Home
                     </Button>
@@ -32,16 +32,16 @@ export default function AboutPage() {
                     <div className="space-y-12">
                         <div className="space-y-6">
                             <div className="flex items-center gap-3">
-                                <span className="h-0.5 w-12 bg-[#FF6600]" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#FF6600]">Built for total safety</span>
+                                <span className="h-0.5 w-12 bg-[#FF6200]" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#FF6200]">Built for total safety</span>
                             </div>
                             <h1 className="text-6xl md:text-8xl lg:text-[9rem] font-black uppercase tracking-tight italic font-heading leading-[0.8] whitespace-pre-line">
                                 The Standard <br />
-                                <span className="text-zinc-500">for Trust.</span>
+                                <span className="text-[#FF6200]">for Trust.</span>
                             </h1>
                         </div>
                         <div className="max-w-xl">
-                            <p className="text-zinc-400 text-lg md:text-2xl font-medium leading-relaxed italic border-l-2 border-[#FF6600] pl-8">
+                            <p className="text-zinc-400 text-lg md:text-2xl font-medium leading-relaxed italic border-l-2 border-[#FF6200] pl-8">
                                 MarketBridge is a <span className="text-white">secure payment platform</span> built to protect every transaction within Nigeria's university communities.
                             </p>
                         </div>
@@ -58,9 +58,9 @@ export default function AboutPage() {
                         <div className="relative z-10 space-y-12">
                             <div className="space-y-6">
                                 <h2 className="text-4xl font-black uppercase italic font-heading tracking-tighter text-white">
-                                    Our <span className="text-[#FF6600]">Story</span>
+                                    Our <span className="text-[#FF6200]">Story</span>
                                 </h2>
-                                <div className="h-1 w-20 bg-[#FF6600]" />
+                                <div className="h-1 w-20 bg-[#FF6200]" />
                             </div>
 
                             <div className="space-y-8 text-zinc-400 text-lg font-medium leading-relaxed max-w-2xl">
@@ -76,7 +76,7 @@ export default function AboutPage() {
                             </div>
 
                             <div className="pt-8">
-                                <Button asChild size="lg" className="h-16 px-10 bg-[#FF6600] text-black font-black uppercase tracking-widest rounded-2xl hover:bg-[#FF8533] hover:scale-105 transition-all shadow-[0_20px_40px_rgba(255,102,0,0.2)] border-none">
+                                <Button asChild size="lg" className="h-16 px-10 bg-[#FF6200] text-black font-black uppercase tracking-widest rounded-2xl hover:bg-[#FF7A29] hover:scale-105 transition-all shadow-[0_20px_40px_rgba(255,98,0,0.2)] border-none">
                                     <Link href="/listings" className="flex items-center gap-3">
                                         Browse the Marketplace
                                         <ArrowUpRight className="h-4 w-4" />
@@ -87,9 +87,9 @@ export default function AboutPage() {
                     </div>
 
                     <div className="space-y-8">
-                        <div className="glass-card p-10 rounded-[3rem] border-white/5 hover:border-[#FF6600]/30 transition-all duration-500 bg-white/5 group h-full flex flex-col justify-center">
-                            <div className="h-20 w-20 rounded-3xl bg-[#FF6600]/10 border border-[#FF6600]/20 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                                <Target className="h-10 w-10 text-[#FF6600]" />
+                        <div className="glass-card p-10 rounded-[3rem] border-white/5 hover:border-[#FF6200]/30 transition-all duration-500 bg-white/5 group h-full flex flex-col justify-center">
+                            <div className="h-20 w-20 rounded-3xl bg-[#FF6200]/10 border border-[#FF6200]/20 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                                <Target className="h-10 w-10 text-[#FF6200]" />
                             </div>
                             <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white mb-4">Focused on <br />You</h3>
                             <p className="text-sm text-zinc-500 leading-relaxed uppercase tracking-wider font-bold">
@@ -103,8 +103,8 @@ export default function AboutPage() {
                 <div className="mb-40">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-20">
                         <div className="space-y-4">
-                            <p className="text-[10px] text-[#FF6600] font-black uppercase tracking-[0.4em] font-heading">Our Safety Promise</p>
-                            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic font-heading">How it <span className="text-zinc-500">Works</span></h2>
+                            <p className="text-[10px] text-[#FF6200] font-black uppercase tracking-[0.4em] font-heading">Our Safety Promise</p>
+                            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic font-heading">How it <span className="text-[#FF6200]">Works</span></h2>
                         </div>
                         <div className="h-[1px] flex-1 bg-white/5 hidden md:block" />
                     </div>
@@ -115,22 +115,22 @@ export default function AboutPage() {
                                 title: 'Safe Payments',
                                 desc: 'Your money is held safely by us. The seller only gets paid after you confirm you have received your item.',
                                 icon: Shield,
-                                color: 'text-blue-500',
-                                bg: 'bg-blue-500/10'
+                                color: 'text-[#FF6200]',
+                                bg: 'bg-[#FF6200]/10'
                             },
                             {
                                 title: 'Verified Sellers',
                                 desc: 'Every seller undergoes a multi-layer check, including university details and ID credentials.',
                                 icon: ShieldCheck,
-                                color: 'text-[#00FF85]',
-                                bg: 'bg-[#00FF85]/10'
+                                color: 'text-white',
+                                bg: 'bg-white/10'
                             },
                             {
                                 title: 'Fair Resolution',
                                 desc: 'Our dedicated support team resolves conflicts fairly, making sure everyone is treated right.',
                                 icon: Eye,
-                                color: 'text-purple-500',
-                                bg: 'bg-purple-500/10'
+                                color: 'text-[#FF6200]',
+                                bg: 'bg-[#FF6200]/10'
                             }
                         ].map((item, i) => (
                             <div key={i} className="glass-card p-12 rounded-[3.5rem] border-white/5 hover:border-white/10 transition-all duration-500 group relative">
@@ -149,18 +149,18 @@ export default function AboutPage() {
 
                 {/* Dispute Framework Visual */}
                 <div className="relative mb-40">
-                    <div className="absolute inset-0 bg-yellow-500/5 blur-[100px] rounded-full" />
-                    <div className="glass-card p-12 md:p-20 rounded-[4rem] border-yellow-500/20 relative overflow-hidden border">
+                    <div className="absolute inset-0 bg-[#FF6200]/5 blur-[100px] rounded-full" />
+                    <div className="glass-card p-12 md:p-20 rounded-[4rem] border-[#FF6200]/20 relative overflow-hidden border">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                             <div className="space-y-8 relative z-10">
                                 <div className="flex items-center gap-4">
-                                    <div className="h-12 w-12 rounded-xl bg-yellow-500/10 flex items-center justify-center border border-yellow-500/20">
-                                        <AlertTriangle className="h-6 w-6 text-yellow-500" />
+                                    <div className="h-12 w-12 rounded-xl bg-[#FF6200]/10 flex items-center justify-center border border-[#FF6200]/20">
+                                        <AlertTriangle className="h-6 w-6 text-[#FF6200]" />
                                     </div>
-                                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-yellow-500">Security Policy</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#FF6200]">Security Policy</span>
                                 </div>
-                                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading text-white">Problem <span className="text-yellow-500">Solving</span></h2>
-                                <p className="text-zinc-400 text-lg font-medium leading-relaxed italic border-l border-yellow-500/30 pl-8">
+                                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading text-white">Problem <span className="text-[#FF6200]">Solving</span></h2>
+                                <p className="text-zinc-400 text-lg font-medium leading-relaxed italic border-l border-[#FF6200]/30 pl-8">
                                     If an item isn't what it was supposed to be, the payment is automatically frozen. Our team will review the details to make sure the right person gets their money back.
                                 </p>
                             </div>
@@ -172,7 +172,7 @@ export default function AboutPage() {
                                     { label: 'Help Desk', val: '24/7', icon: MessageSquare }
                                 ].map((stat, s) => (
                                     <div key={s} className="bg-black/40 border border-white/5 p-6 rounded-[2rem] text-center space-y-2">
-                                        <stat.icon className="h-5 w-5 text-yellow-500 mx-auto opacity-50" />
+                                        <stat.icon className="h-5 w-5 text-[#FF6200] mx-auto opacity-50" />
                                         <p className="text-[8px] font-black uppercase tracking-widest text-zinc-500">{stat.label}</p>
                                         <p className="text-xs font-black uppercase tracking-tighter text-white">{stat.val}</p>
                                     </div>
@@ -193,7 +193,7 @@ export default function AboutPage() {
                     <div className="space-y-6">
                         <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter italic font-heading text-white leading-none">
                             The Future of <br />
-                            <span className="text-[#FF6600]">Campus Shopping.</span>
+                            <span className="text-[#FF6200]">Campus Shopping.</span>
                         </h2>
                         <p className="text-zinc-500 text-lg font-medium italic max-w-2xl mx-auto">
                             We are building more than a marketplace. We are building a safer way for the next generation of Nigerian university members and sellers to connect.

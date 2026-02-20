@@ -154,7 +154,7 @@ export function ImageUpload({
                         <button
                             type="button"
                             onClick={() => removeImage(index)}
-                            className="absolute top-2 right-2 p-1.5 bg-black/60 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md hover:bg-[#FF6600]"
+                            className="absolute top-2 right-2 p-1.5 bg-black/60 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md hover:bg-[#FF6200]"
                         >
                             <X className="h-4 w-4" />
                         </button>
@@ -179,25 +179,25 @@ export function ImageUpload({
                             }
                         }}
                         className={cn(
-                            "rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center cursor-pointer hover:bg-white/[0.03] hover:border-[#FF6600]/40 hover:text-[#FF6600] transition-all group relative overflow-hidden",
+                            "rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center cursor-pointer hover:bg-white/[0.03] hover:border-[#FF6200]/40 hover:text-[#FF6200] transition-all group relative overflow-hidden",
                             maxImages === 1 ? "h-32 w-full" : "aspect-square"
                         )}
                     >
                         {uploading ? (
                             <div className="flex flex-col items-center gap-2">
-                                <Loader2 className="h-8 w-8 animate-spin text-[#FF6600]" />
-                                <span className="text-[10px] uppercase font-black tracking-widest text-[#FF6600]">
-                                    {identifying ? "Identifying ID Card..." : "Processing Stream..."}
+                                <Loader2 className="h-8 w-8 animate-spin text-[#FF6200]" />
+                                <span className="text-[10px] uppercase font-black tracking-widest text-[#FF6200]">
+                                    {identifying ? "IDENTIFYING DATA..." : "UPLOADING AS WEBP..."}
                                 </span>
                             </div>
                         ) : (
                             <>
-                                <div className="p-4 rounded-xl bg-white/[0.02] group-hover:bg-[#FF6600]/10 transition-colors mb-3">
-                                    <Upload className="h-6 w-6 text-zinc-600 group-hover:text-[#FF6600] transition-colors" />
+                                <div className="p-4 rounded-xl bg-white/[0.02] group-hover:bg-[#FF6200]/10 transition-colors mb-3">
+                                    <Upload className="h-6 w-6 text-zinc-600 group-hover:text-[#FF6200] transition-colors" />
                                 </div>
                                 <div className="text-center">
                                     <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-white transition-colors">
-                                        Click or Drag Images
+                                        CLICK OR DRAG ASSETS
                                     </span>
                                 </div>
                             </>

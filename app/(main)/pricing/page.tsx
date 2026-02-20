@@ -150,7 +150,7 @@ export default function PricingPage() {
     };
 
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-[#FF6600] selection:text-black pt-28 pb-20">
+        <div className="min-h-screen bg-black text-white selection:bg-[#FF6200] selection:text-black pt-28 pb-20">
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
             <div className="container px-4 mx-auto relative z-10 max-w-7xl">
@@ -158,14 +158,14 @@ export default function PricingPage() {
                 <div className="text-center mb-20 space-y-8">
                     <Link
                         href="/"
-                        className="inline-flex items-center text-[#FF6600] hover:text-[#FF6600] text-[10px] font-black uppercase tracking-[0.2em] mb-4"
+                        className="inline-flex items-center text-[#FF6200] hover:text-[#FF7A29] text-[10px] font-black uppercase tracking-[0.2em] mb-4"
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" /> Return to Core
                     </Link>
 
                     <div className="space-y-4">
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic leading-none">
-                            Power Your <span className="text-[#FF6600]">Campus Empire</span>
+                            Power Your <span className="text-[#FF6200]">Campus Empire</span>
                         </h1>
                         <p className="text-zinc-400 text-lg md:text-xl font-medium leading-relaxed italic max-w-3xl mx-auto">
                             Choose the plan that scales with your ambition. <span className="text-white">No hidden fees.</span> Cancel anytime.
@@ -181,7 +181,7 @@ export default function PricingPage() {
                             <Switch
                                 checked={isAnnual}
                                 onCheckedChange={setIsAnnual}
-                                className="data-[state=checked]:bg-[#FF6600]"
+                                className="data-[state=checked]:bg-[#FF6200]"
                             />
                             <span className={`text-sm font-black uppercase tracking-widest transition-colors ${isAnnual ? 'text-white' : 'text-zinc-600'}`}>
                                 Annual
@@ -199,9 +199,9 @@ export default function PricingPage() {
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00FF85]">Merchant Status Verified: Terminal Unlocked</span>
                             </div>
                         ) : (
-                            <div className="flex items-center gap-2 px-6 py-2 bg-[#FF6600]/10 border border-[#FF6600]/20 rounded-full animate-pulse">
-                                <Shield className="h-3 w-3 text-[#FF6600]" />
-                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[#FF6600]">Merchant Exclusive: Plans for Sellers only</span>
+                            <div className="flex items-center gap-2 px-6 py-2 bg-[#FF6200]/10 border border-[#FF6200]/20 rounded-full animate-pulse">
+                                <Shield className="h-3 w-3 text-[#FF6200]" />
+                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[#FF6200]">Merchant Exclusive: Plans for Sellers only</span>
                             </div>
                         )}
                     </div>
@@ -210,7 +210,7 @@ export default function PricingPage() {
                 {/* Pricing Cards */}
                 {loading ? (
                     <div className="text-center py-20">
-                        <Loader2 className="h-12 w-12 animate-spin text-[#FF6600] mx-auto mb-6" />
+                        <Loader2 className="h-12 w-12 animate-spin text-[#FF6200] mx-auto mb-6" />
                         <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Loading Plans...</p>
                     </div>
                 ) : (
@@ -226,24 +226,24 @@ export default function PricingPage() {
                                 <Card
                                     key={plan.id}
                                     className={`w-full max-w-sm relative overflow-hidden transition-all duration-500 ${isPro
-                                        ? 'bg-gradient-to-b from-[#FF6600]/10 to-black border-[#FF6600]/30 scale-105 shadow-[0_0_50px_rgba(255,184,0,0.2)] z-20'
-                                        : 'bg-zinc-900/40 border-white/5 hover:border-[#FF6600]/20 z-10'
+                                        ? 'bg-gradient-to-b from-[#FF6200]/10 to-black border-[#FF6200]/30 scale-105 shadow-[0_0_50px_rgba(255,98,0,0.2)] z-20'
+                                        : 'bg-zinc-900/40 border-white/5 hover:border-[#FF6200]/20 z-10'
                                         } rounded-[2.5rem]`}
                                 >
                                     {isPro && (
-                                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#FF6600] to-transparent" />
+                                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#FF6200] to-transparent" />
                                     )}
 
                                     <CardHeader className="p-8 pb-4">
                                         {isPro && (
-                                            <Badge className="bg-[#FF6600] text-black border-none text-[8px] font-black uppercase tracking-widest mb-4 w-fit">
+                                            <Badge className="bg-[#FF6200] text-black border-none text-[8px] font-black uppercase tracking-widest mb-4 w-fit">
                                                 Founding Member
                                             </Badge>
                                         )}
 
-                                        <div className={`h-14 w-14 rounded-2xl flex items-center justify-center mb-6 ${isPro ? 'bg-[#FF6600]/20 border-[#FF6600]/50' : 'bg-white/5 border-white/10'
+                                        <div className={`h-14 w-14 rounded-2xl flex items-center justify-center mb-6 ${isPro ? 'bg-[#FF6200]/20 border-[#FF6200]/50' : 'bg-white/5 border-white/10'
                                             } border`}>
-                                            <div className={isPro ? 'text-[#FF6600]' : 'text-zinc-500'}>
+                                            <div className={isPro ? 'text-[#FF6200]' : 'text-zinc-500'}>
                                                 {getPlanIcon(plan.id)}
                                             </div>
                                         </div>
@@ -264,7 +264,7 @@ export default function PricingPage() {
                                             ) : (
                                                 <>
                                                     <div className="flex items-baseline gap-2">
-                                                        <span className="text-4xl font-black text-[#FF6600]">
+                                                        <span className="text-4xl font-black text-[#FF6200]">
                                                             ₦{price.toLocaleString()}
                                                         </span>
                                                         <span className="text-zinc-600 text-sm font-black uppercase">
@@ -285,7 +285,7 @@ export default function PricingPage() {
                                         <ul className="space-y-4">
                                             {plan.features.map((feature, idx) => (
                                                 <li key={idx} className="flex items-start gap-3">
-                                                    <Check className={`h-4 w-4 mt-0.5 flex-shrink-0 ${isPro ? 'text-[#FF6600]' : 'text-[#00FF85]'
+                                                    <Check className={`h-4 w-4 mt-0.5 flex-shrink-0 ${isPro ? 'text-[#FF6200]' : 'text-[#00FF85]'
                                                         }`} />
                                                     <span className="text-xs text-zinc-400 font-medium leading-relaxed">
                                                         {feature}
@@ -307,8 +307,8 @@ export default function PricingPage() {
                                             <Button
                                                 onClick={() => handleSelectPlan(plan.id)}
                                                 className={`w-full h-14 rounded-2xl font-black uppercase tracking-widest transition-all ${isPro
-                                                    ? 'bg-[#FF6600] text-black hover:bg-[#FF6600]'
-                                                    : 'bg-white/5 border border-white/10 hover:bg-[#FF6600] hover:text-black hover:border-[#FF6600]'
+                                                    ? 'bg-[#FF6200] text-black hover:bg-[#FF7A29]'
+                                                    : 'bg-white/5 border border-white/10 hover:bg-[#FF6200] hover:text-black hover:border-[#FF6200]'
                                                     }`}
                                             >
                                                 {isFree ? 'Get Started' : plan.id === 'enterprise' ? 'Contact Sales' : 'Join Beta'}
@@ -349,10 +349,10 @@ export default function PricingPage() {
                             }
                         ].map((item, idx) => (
                             <div key={idx} className="text-center space-y-4">
-                                <div className="h-14 w-14 rounded-2xl bg-[#FF6600]/10 border border-[#FF6600]/20 flex items-center justify-center mx-auto">
-                                    <div className="text-[#FF6600]">{item.icon}</div>
+                                <div className="h-14 w-14 rounded-2xl bg-[#FF6200]/10 border border-[#FF6200]/20 flex items-center justify-center mx-auto">
+                                    <div className="text-[#FF6200]">{item.icon}</div>
                                 </div>
-                                <div className="text-4xl font-black text-[#FF6600] uppercase tracking-tighter italic">
+                                <div className="text-4xl font-black text-[#FF6200] uppercase tracking-tighter italic">
                                     {item.stat}
                                 </div>
                                 <div className="text-sm font-black uppercase tracking-widest text-white">

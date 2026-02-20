@@ -134,7 +134,7 @@ export default function SettingsPage() {
     if (authLoading) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#FF6200]" />
             </div>
         );
     }
@@ -151,17 +151,17 @@ export default function SettingsPage() {
         <div className="min-h-screen bg-black text-white pb-20">
             {/* Background Grid Accent */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none" />
-            <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-[#FF6600]/5 blur-[120px] rounded-full pointer-events-none" />
+            <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-[#FF6200]/5 blur-[120px] rounded-full pointer-events-none" />
 
             <div className="container mx-auto px-4 py-12 max-w-5xl relative z-10">
                 <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                     <div>
-                        <div className="flex items-center gap-2 text-[#FF6600] mb-2">
+                        <div className="flex items-center gap-2 text-[#FF6200] mb-2">
                             <Shield className="h-4 w-4" />
                             <span className="text-[10px] font-black uppercase tracking-[0.2em]">Secure Area</span>
                         </div>
                         <h1 className="text-4xl font-black uppercase tracking-tighter italic">
-                            Profile <span className="text-[#FF6600]">Settings</span>
+                            Profile <span className="text-[#FF6200]">Settings</span>
                         </h1>
                         <p className="text-zinc-500 mt-2 font-medium">
                             Account status: {user.isVerified ? 'Verified' : 'Pending Verification'}
@@ -190,27 +190,27 @@ export default function SettingsPage() {
 
                 <Tabs defaultValue="profile" className="space-y-8">
                     <TabsList className="bg-white/5 border border-white/10 p-1 lg:w-auto w-full flex overflow-x-auto no-scrollbar rounded-2xl h-14">
-                        <TabsTrigger value="profile" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FF6600] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
+                        <TabsTrigger value="profile" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FF6200] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
                             <User className="h-3.5 w-3.5" />
                             Profile
                         </TabsTrigger>
                         {['dealer', 'student_seller'].includes(user.role) && (
                             <>
-                                <TabsTrigger value="business" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FF6600] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
+                                <TabsTrigger value="business" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FF6200] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
                                     <Building className="h-3.5 w-3.5" />
                                     Business
                                 </TabsTrigger>
-                                <TabsTrigger value="financials" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FF6600] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
+                                <TabsTrigger value="financials" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FF6200] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
                                     <Banknote className="h-3.5 w-3.5" />
                                     Payments
                                 </TabsTrigger>
                             </>
                         )}
-                        <TabsTrigger value="security" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FF6600] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
+                        <TabsTrigger value="security" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FF6200] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
                             <Shield className="h-3.5 w-3.5" />
                             Security
                         </TabsTrigger>
-                        <TabsTrigger value="notifications" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FF6600] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
+                        <TabsTrigger value="notifications" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FF6200] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
                             <Bell className="h-3.5 w-3.5" />
                             Notifications
                         </TabsTrigger>
@@ -228,7 +228,7 @@ export default function SettingsPage() {
                                     <div className="space-y-4">
                                         <Label className="text-[10px] uppercase font-black tracking-widest text-zinc-600">Profile Picture</Label>
                                         <div className="w-40 h-40 relative group">
-                                            <div className="absolute inset-0 bg-gold-gradient rounded-3xl blur opacity-20 group-hover:opacity-40 transition-opacity" />
+                                            <div className="absolute inset-0 bg-gradient-to-br from-[#FF6200] to-orange-400 rounded-3xl blur opacity-20 group-hover:opacity-40 transition-opacity" />
                                             <div className="relative h-full w-full rounded-3xl overflow-hidden border border-white/10 bg-black">
                                                 <ImageUpload
                                                     onImagesSelected={(urls) => setFormData({ ...formData, photoURL: urls[0] || '' })}
@@ -244,10 +244,10 @@ export default function SettingsPage() {
                                         <div className="grid gap-3">
                                             <Label htmlFor="displayName" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Full Name</Label>
                                             <div className="relative group">
-                                                <User className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6600] transition-colors" />
+                                                <User className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6200] transition-colors" />
                                                 <Input
                                                     id="displayName"
-                                                    className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus:ring-[#FF6600] focus:border-[#FF6600] font-bold text-white"
+                                                    className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus-visible:ring-[#FF6200] focus-visible:border-[#FF6200] focus-visible:ring-1 font-bold text-white uppercase placeholder:text-zinc-800"
                                                     value={formData.displayName}
                                                     onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
                                                 />
@@ -258,10 +258,10 @@ export default function SettingsPage() {
                                             <div className="grid gap-3">
                                                 <Label htmlFor="phone" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Phone Number</Label>
                                                 <div className="relative group">
-                                                    <Phone className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6600] transition-colors" />
+                                                    <Phone className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6200] transition-colors" />
                                                     <Input
                                                         id="phone"
-                                                        className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus:ring-[#FF6600] focus:border-[#FF6600] font-bold text-white"
+                                                        className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus-visible:ring-[#FF6200] focus-visible:border-[#FF6200] focus-visible:ring-1 font-bold text-white"
                                                         value={formData.phone_number}
                                                         onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
                                                     />
@@ -270,10 +270,10 @@ export default function SettingsPage() {
                                             <div className="grid gap-3">
                                                 <Label htmlFor="location" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Location / State</Label>
                                                 <div className="relative group">
-                                                    <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6600] transition-colors z-10" />
+                                                    <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6200] transition-colors z-10" />
                                                     <select
                                                         id="location"
-                                                        className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase appearance-none"
+                                                        className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-1 focus:ring-[#FF6200] focus:border-[#FF6200] outline-none font-bold uppercase appearance-none"
                                                         value={formData.location}
                                                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                                                     >
@@ -289,7 +289,7 @@ export default function SettingsPage() {
                                 </div>
                             </CardContent>
                             <CardFooter className="bg-white/5 border-t border-white/10 p-8 flex justify-end">
-                                <Button onClick={handleUpdateProfile} disabled={updating} className="h-14 px-10 bg-[#FF6600] hover:bg-[#FF6600] text-black font-black uppercase tracking-widest rounded-2xl border-none">
+                                <Button onClick={handleUpdateProfile} disabled={updating} className="h-14 px-10 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest rounded-2xl border-none">
                                     {updating ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <CheckCircle className="mr-3 h-5 w-5" />}
                                     Save Changes
                                 </Button>
@@ -310,10 +310,10 @@ export default function SettingsPage() {
                                         <div className="grid gap-3">
                                             <Label htmlFor="businessName" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Business Name</Label>
                                             <div className="relative group">
-                                                <Building className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6600] transition-colors" />
+                                                <Building className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6200] transition-colors" />
                                                 <Input
                                                     id="businessName"
-                                                    className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus:ring-[#FF6600] focus:border-[#FF6600] font-bold text-white"
+                                                    className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus-visible:ring-[#FF6200] focus-visible:border-[#FF6200] focus-visible:ring-1 font-bold text-white"
                                                     value={formData.businessName}
                                                     onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
                                                 />
@@ -323,7 +323,7 @@ export default function SettingsPage() {
                                             <Label htmlFor="storeType" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Store Type</Label>
                                             <select
                                                 id="storeType"
-                                                className="w-full h-14 px-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold uppercase appearance-none"
+                                                className="w-full h-14 px-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-1 focus:ring-[#FF6200] focus:border-[#FF6200] outline-none font-bold uppercase appearance-none"
                                                 value={formData.storeType}
                                                 onChange={(e) => setFormData({ ...formData, storeType: e.target.value })}
                                             >
@@ -335,7 +335,7 @@ export default function SettingsPage() {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="bg-white/5 border-t border-white/10 p-8 flex justify-end">
-                                    <Button onClick={handleUpdateProfile} disabled={updating} className="h-14 px-10 bg-[#FF6600] hover:bg-[#FF6600] text-black font-black uppercase tracking-widest rounded-2xl border-none">
+                                    <Button onClick={handleUpdateProfile} disabled={updating} className="h-14 px-10 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest rounded-2xl border-none">
                                         {updating ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <CheckCircle className="mr-3 h-5 w-5" />}
                                         Update Business
                                     </Button>
@@ -357,11 +357,11 @@ export default function SettingsPage() {
                                         <div className="grid gap-3">
                                             <Label htmlFor="bankName" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Bank Name</Label>
                                             <div className="relative group">
-                                                <Landmark className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6600] transition-colors" />
+                                                <Landmark className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6200] transition-colors" />
                                                 <Input
                                                     id="bankName"
                                                     placeholder="e.g. GTBank, Kuda, Moniepoint"
-                                                    className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus:ring-[#FF6600] focus:border-[#FF6600] font-bold text-white"
+                                                    className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus-visible:ring-[#FF6200] focus-visible:border-[#FF6200] focus-visible:ring-1 font-bold text-white"
                                                     value={bankData.bankName}
                                                     onChange={(e) => setBankData({ ...bankData, bankName: e.target.value })}
                                                 />
@@ -370,11 +370,11 @@ export default function SettingsPage() {
                                         <div className="grid gap-3">
                                             <Label htmlFor="accountNumber" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Account Number</Label>
                                             <div className="relative group">
-                                                <Banknote className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6600] transition-colors" />
+                                                <Banknote className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6200] transition-colors" />
                                                 <Input
                                                     id="accountNumber"
                                                     placeholder="10-digit NUBAN"
-                                                    className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus:ring-[#FF6600] focus:border-[#FF6600] font-bold text-white font-mono"
+                                                    className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus-visible:ring-[#FF6200] focus-visible:border-[#FF6200] focus-visible:ring-1 font-bold text-white font-mono"
                                                     value={bankData.accountNumber}
                                                     onChange={(e) => setBankData({ ...bankData, accountNumber: e.target.value })}
                                                 />
@@ -384,11 +384,11 @@ export default function SettingsPage() {
                                     <div className="grid gap-3">
                                         <Label htmlFor="accountName" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Account Name</Label>
                                         <div className="relative group">
-                                            <User className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6600] transition-colors" />
+                                            <User className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6200] transition-colors" />
                                             <Input
                                                 id="accountName"
                                                 placeholder="Matching Bank Account Name"
-                                                className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus:ring-[#FF6600] focus:border-[#FF6600] font-bold text-white"
+                                                className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus-visible:ring-[#FF6200] focus-visible:border-[#FF6200] focus-visible:ring-1 font-bold text-white"
                                                 value={bankData.accountName}
                                                 onChange={(e) => setBankData({ ...bankData, accountName: e.target.value })}
                                             />
@@ -396,7 +396,7 @@ export default function SettingsPage() {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="bg-white/5 border-t border-white/10 p-8 flex justify-end">
-                                    <Button onClick={handleUpdateBank} disabled={updating} className="h-14 px-10 bg-[#FF6600] hover:bg-[#FF6600] text-black font-black uppercase tracking-widest rounded-2xl border-none">
+                                    <Button onClick={handleUpdateBank} disabled={updating} className="h-14 px-10 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest rounded-2xl border-none">
                                         {updating ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <CheckCircle className="mr-3 h-5 w-5" />}
                                         Save Details
                                     </Button>
@@ -419,7 +419,7 @@ export default function SettingsPage() {
                                             <p className="text-[10px] uppercase font-black text-zinc-600 tracking-[0.2em]">Current Role</p>
                                             <p className="font-bold text-white uppercase tracking-wider">{user.role}</p>
                                         </div>
-                                        <Shield className="h-6 w-6 text-[#FF6600] opacity-50" />
+                                        <Shield className="h-6 w-6 text-[#FF6200] opacity-50" />
                                     </div>
                                     <div className="flex items-center justify-between p-6 bg-black border border-white/5 rounded-2xl">
                                         <div className="space-y-1">

@@ -23,7 +23,7 @@ export default function MainLayout({
         <div className="flex flex-col min-h-screen">
             <LocationConsentModal />
             {!isDashboard && !isHome && (
-                <div className="bg-[#FF6600] text-black px-4 py-1.5 flex items-center justify-center gap-2 overflow-hidden whitespace-nowrap">
+                <div className="bg-[#FF6200] text-black px-4 py-1.5 flex items-center justify-center gap-2 overflow-hidden whitespace-nowrap">
                     <Zap className="h-3 w-3 fill-current animate-pulse" />
                     <span className="text-[9px] font-black uppercase tracking-[0.2em] italic">
                         MarketBridge Campus Beta – Testing Phase (Nigeria 2026)

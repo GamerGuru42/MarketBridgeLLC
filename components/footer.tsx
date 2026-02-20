@@ -12,10 +12,10 @@ export const Footer = () => {
                         <Logo />
                         <p className="text-zinc-500 text-xs font-medium leading-relaxed">
                             <strong>MarketBridge Campus Beta</strong><br />
-                            <a href="mailto:support@marketbridge.com.ng?subject=Tech%20Support" className="hover:text-[#FF6600] transition-colors">
+                            <a href="mailto:support@marketbridge.com.ng?subject=Tech%20Support" className="hover:text-[#FF6200] transition-colors">
                                 Tech Support: support@marketbridge.com.ng
                             </a><br />
-                            <a href="mailto:ops-support@marketbridge.com.ng?subject=Ops%20Support" className="hover:text-[#FF6600] transition-colors">
+                            <a href="mailto:ops-support@marketbridge.com.ng?subject=Ops%20Support" className="hover:text-[#FF6200] transition-colors">
                                 Ops / Refunds / Account Help: ops-support@marketbridge.com.ng
                             </a><br />
                             Website: <a href="https://marketbridge.com.ng" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">https://marketbridge.com.ng</a><br />
@@ -52,7 +52,7 @@ export const Footer = () => {
                                 { Icon: Twitter, href: "https://x.com/marketbridgeng" },
                                 { Icon: Facebook, href: "https://facebook.com/marketbridgeng" }
                             ].map((social, i) => (
-                                <Link key={i} href={social.href} target="_blank" rel="noopener noreferrer" className="h-10 w-10 glass-card rounded-xl flex items-center justify-center text-zinc-500 hover:text-[#FF6600] hover:border-[#FF6600]/50 transition-all">
+                                <Link key={i} href={social.href} target="_blank" rel="noopener noreferrer" className="h-10 w-10 glass-card rounded-xl flex items-center justify-center text-zinc-500 hover:text-[#FF6200] hover:border-[#FF6200]/50 transition-all">
                                     <social.Icon className="h-4 w-4" />
                                 </Link>
                             ))}

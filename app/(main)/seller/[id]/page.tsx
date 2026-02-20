@@ -101,7 +101,7 @@ export default function SellerProfilePage() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-[#FF6600] selection:text-black pt-28 pb-20">
+        <div className="min-h-screen bg-black text-white selection:bg-[#FF6200] selection:text-black pt-28 pb-20">
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
             <div className="container px-4 mx-auto relative z-10 max-w-7xl">
@@ -109,7 +109,7 @@ export default function SellerProfilePage() {
                 <div className="mb-12">
                     <Link
                         href="/sellers"
-                        className="inline-flex items-center text-[#FF6600] hover:text-[#FF6600] text-[10px] font-black uppercase tracking-[0.2em] mb-8 py-3"
+                        className="inline-flex items-center text-[#FF6200] hover:text-[#FF6200] text-[10px] font-black uppercase tracking-[0.2em] mb-8 py-3"
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" /> Return to Sellers
                     </Link>
@@ -138,7 +138,7 @@ export default function SellerProfilePage() {
                                 </div>
                                 <div className="flex items-center gap-4 text-zinc-500">
                                     <div className="flex items-center gap-2">
-                                        <MapPin className="h-4 w-4 text-[#FF6600]" />
+                                        <MapPin className="h-4 w-4 text-[#FF6200]" />
                                         <span className="text-[10px] font-black uppercase tracking-widest">{seller.location}</span>
                                     </div>
                                     <span className="w-1 h-1 rounded-full bg-zinc-800" />
@@ -152,20 +152,20 @@ export default function SellerProfilePage() {
                             <div className="flex flex-wrap gap-4">
                                 {seller.phone_number && (
                                     <a href={`tel:${seller.phone_number}`} className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all">
-                                        <Phone className="h-4 w-4 text-[#FF6600]" />
+                                        <Phone className="h-4 w-4 text-[#FF6200]" />
                                         <span className="text-[10px] font-black uppercase tracking-widest">{seller.phone_number}</span>
                                     </a>
                                 )}
                                 {seller.email && (
                                     <a href={`mailto:${seller.email}`} className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all">
-                                        <Mail className="h-4 w-4 text-[#FF6600]" />
+                                        <Mail className="h-4 w-4 text-[#FF6200]" />
                                         <span className="text-[10px] font-black uppercase tracking-widest">Contact</span>
                                     </a>
                                 )}
                             </div>
 
                             <div className="pt-6 border-t border-white/5">
-                                <Button className="bg-[#FF6600] text-black font-black uppercase tracking-widest h-14 px-8 rounded-2xl hover:bg-[#FF6600]">
+                                <Button className="bg-[#FF6200] text-black font-black uppercase tracking-widest h-14 px-8 rounded-2xl hover:bg-[#FF6200]">
                                     <MessageCircle className="mr-2 h-4 w-4" />
                                     Initiate Secure Chat
                                 </Button>
@@ -184,7 +184,7 @@ export default function SellerProfilePage() {
                     ].map((stat, i) => (
                         <div key={i} className="glass-card p-6 rounded-2xl border-white/5">
                             <div className="flex items-center gap-3 mb-3">
-                                <stat.icon className="h-4 w-4 text-[#FF6600]" />
+                                <stat.icon className="h-4 w-4 text-[#FF6200]" />
                                 <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600">{stat.label}</span>
                             </div>
                             <p className="text-2xl font-black uppercase tracking-tighter italic">{stat.value}</p>
@@ -202,7 +202,7 @@ export default function SellerProfilePage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {listings.map((listing) => (
                                 <Link key={listing.id} href={`/listings/${listing.id}`}>
-                                    <Card className="bg-zinc-900/40 border-white/5 rounded-[2rem] overflow-hidden group hover:border-[#FF6600]/20 transition-all duration-500 h-full">
+                                    <Card className="bg-zinc-900/40 border-white/5 rounded-[2rem] overflow-hidden group hover:border-[#FF6200]/20 transition-all duration-500 h-full">
                                         <div className="aspect-video bg-zinc-900 relative overflow-hidden">
                                             {listing.images && listing.images[0] ? (
                                                 <img src={listing.images[0]} alt={listing.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -214,7 +214,7 @@ export default function SellerProfilePage() {
                                         </div>
                                         <CardContent className="p-6">
                                             <h3 className="text-lg font-black uppercase tracking-tighter italic mb-2 line-clamp-1">{listing.title}</h3>
-                                            <p className="text-2xl font-black text-[#FF6600] mb-4">₦{listing.price?.toLocaleString()}</p>
+                                            <p className="text-2xl font-black text-[#FF6200] mb-4">₦{listing.price?.toLocaleString()}</p>
                                             <div className="flex items-center gap-2 text-[10px] font-black text-zinc-600 uppercase tracking-widest">
                                                 <MapPin className="h-3 w-3" />
                                                 {listing.location}

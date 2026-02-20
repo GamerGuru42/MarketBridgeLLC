@@ -142,23 +142,23 @@ export default function CheckoutPage() {
     if (authLoading || (items.length === 0 && !authLoading)) {
         return (
             <div className="min-h-screen bg-black flex items-center justify-center">
-                <Loader2 className="h-10 w-10 animate-spin text-[#FF6600]" />
+                <Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-[#FF6600] selection:text-black pt-32 pb-20">
+        <div className="min-h-screen bg-black text-white selection:bg-[#FF6200] selection:text-black pt-32 pb-20">
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
             <div className="container relative z-10 max-w-6xl mx-auto px-6">
                 <div className="text-center space-y-6 mb-16">
                     <div className="flex items-center justify-center gap-3">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#FF6600] animate-pulse" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200] animate-pulse" />
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading leading-tight">Secure Handshake Protocol</span>
                     </div>
                     <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
-                        Order <span className="text-[#FF6600]">Verification</span>
+                        Order <span className="text-[#FF6200]">Verification</span>
                     </h1>
                     <p className="text-zinc-500 font-medium max-w-2xl mx-auto italic lowercase leading-relaxed">
                         To guarantee 0% transaction fees, please transfer the exact amount directly to our secure escrow account.
@@ -176,7 +176,7 @@ export default function CheckoutPage() {
                                     <Building2 className="h-32 w-32 text-white" />
                                 </div>
                                 <div className="relative z-10 space-y-4">
-                                    <h3 className="text-xs font-black uppercase tracking-widest text-[#FF6600]">MarketBridge Escrow Account</h3>
+                                    <h3 className="text-xs font-black uppercase tracking-widest text-[#FF6200]">MarketBridge Escrow Account</h3>
                                     <div className="space-y-1">
                                         <p className="text-3xl font-black tracking-tighter text-white">{bankDetails.account_number}</p>
                                         <p className="text-sm font-bold text-zinc-400">{bankDetails.bank_name}</p>
@@ -202,13 +202,13 @@ export default function CheckoutPage() {
                                             value={paymentRef}
                                             onChange={(e) => setPaymentRef(e.target.value)}
                                             placeholder="e.g. Ref: 123456789 or John Doe"
-                                            className="bg-black border-white/10 h-12 text-white focus:border-[#FF6600]"
+                                            className="bg-black border-white/10 h-12 text-white focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200]"
                                         />
                                     </div>
 
                                     <div className="space-y-2">
                                         <Label className="text-xs uppercase font-bold text-zinc-500">Upload Receipt (Screenshot)</Label>
-                                        <div className="border-2 border-dashed border-white/10 rounded-xl p-8 text-center hover:border-[#FF6600]/50 transition-colors cursor-pointer relative">
+                                        <div className="border-2 border-dashed border-white/10 rounded-xl p-8 text-center hover:border-[#FF6200]/50 transition-colors cursor-pointer relative">
                                             <input
                                                 type="file"
                                                 accept="image/*"
@@ -217,7 +217,7 @@ export default function CheckoutPage() {
                                                 disabled={uploading}
                                             />
                                             {uploading ? (
-                                                <Loader2 className="h-8 w-8 text-[#FF6600] animate-spin mx-auto" />
+                                                <Loader2 className="h-8 w-8 text-[#FF6200] animate-spin mx-auto" />
                                             ) : proofUrl ? (
                                                 <div className="flex flex-col items-center gap-2">
                                                     <CheckCircle2 className="h-8 w-8 text-green-500" />
@@ -237,7 +237,7 @@ export default function CheckoutPage() {
                                         <div
                                             className={cn(
                                                 "h-5 w-5 rounded border flex items-center justify-center cursor-pointer transition-colors",
-                                                agreed ? "bg-[#FF6600] border-[#FF6600]" : "border-zinc-700 hover:border-zinc-500"
+                                                agreed ? "bg-[#FF6200] border-[#FF6200]" : "border-zinc-700 hover:border-zinc-500"
                                             )}
                                             onClick={() => setAgreed(!agreed)}
                                         >
@@ -260,9 +260,9 @@ export default function CheckoutPage() {
 
                     {/* Summary & Execution */}
                     <div className="lg:col-span-5 space-y-8">
-                        <div className="glass-card rounded-[3rem] p-10 border-[#FF6600]/20 bg-gradient-to-br from-[#FF6600]/5 to-transparent relative overflow-hidden">
+                        <div className="glass-card rounded-[3rem] p-10 border-[#FF6200]/20 bg-gradient-to-br from-[#FF6200]/5 to-transparent relative overflow-hidden">
                             <div className="absolute top-0 right-0 p-8 opacity-5">
-                                <ShieldCheck className="h-40 w-40 text-[#FF6600]" />
+                                <ShieldCheck className="h-40 w-40 text-[#FF6200]" />
                             </div>
 
                             <div className="relative z-10 space-y-10">
@@ -285,13 +285,13 @@ export default function CheckoutPage() {
                                         <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-3">
                                             <div className="flex justify-between items-center">
                                                 <div className="flex items-center gap-2">
-                                                    <Zap className="h-3 w-3 text-[#FF6600]" />
+                                                    <Zap className="h-3 w-3 text-[#FF6200]" />
                                                     <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Redeem {user.coins_balance} MC</span>
                                                 </div>
                                                 <div
                                                     className={cn(
                                                         "h-5 w-10 rounded-full bg-zinc-800 p-1 cursor-pointer transition-colors relative",
-                                                        useCoins ? "bg-[#FF6600]" : "bg-zinc-800"
+                                                        useCoins ? "bg-[#FF6200]" : "bg-zinc-800"
                                                     )}
                                                     onClick={() => setUseCoins(!useCoins)}
                                                 >
@@ -302,7 +302,7 @@ export default function CheckoutPage() {
                                                 </div>
                                             </div>
                                             {useCoins && (
-                                                <div className="flex justify-between items-center text-[#FF6600]">
+                                                <div className="flex justify-between items-center text-[#FF6200]">
                                                     <span className="text-[9px] font-black uppercase tracking-widest">Coin Discount</span>
                                                     <span className="text-sm font-black">-₦{maxRedeemable.toLocaleString()}</span>
                                                 </div>
@@ -314,7 +314,7 @@ export default function CheckoutPage() {
 
                                     <div className="flex flex-col space-y-2">
                                         <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] font-heading">Total To Send</span>
-                                        <span className="text-5xl font-black text-[#FF6600] tracking-tighter italic font-heading">
+                                        <span className="text-5xl font-black text-[#FF6200] tracking-tighter italic font-heading">
                                             ₦{(useCoins ? total - maxRedeemable : total).toLocaleString()}
                                         </span>
                                     </div>
@@ -324,7 +324,7 @@ export default function CheckoutPage() {
                                     <Button
                                         onClick={handleConfirmPayment}
                                         disabled={actionLoading || uploading || !proofUrl || !paymentRef || !agreed}
-                                        className="w-full h-20 bg-[#FF6600] text-black hover:bg-[#FF6600] rounded-2xl font-black uppercase tracking-[0.2em] transition-all font-heading shadow-[0_15px_45px_rgba(255,184,0,0.3)] border-none relative group scale-100 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="w-full h-20 bg-[#FF6200] text-black hover:bg-[#FF7A29] rounded-2xl font-black uppercase tracking-[0.2em] transition-all font-heading shadow-[0_15px_45px_rgba(255,98,0,0.3)] border-none relative group scale-100 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {actionLoading ? (
                                             <Loader2 className="h-6 w-6 animate-spin" />
@@ -355,7 +355,7 @@ export default function CheckoutPage() {
                                             <p className="text-[10px] font-bold text-white truncate">{item.title}</p>
                                             <p className="text-[9px] text-zinc-500">Qty: {item.quantity}</p>
                                         </div>
-                                        <p className="text-xs font-bold text-[#FF6600]">₦{item.price.toLocaleString()}</p>
+                                        <p className="text-xs font-bold text-[#FF6200]">₦{item.price.toLocaleString()}</p>
                                     </div>
                                 ))}
                             </div>

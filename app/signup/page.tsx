@@ -8,13 +8,12 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 const supabase = createClient();
 import { normalizeIdentifier } from '@/lib/auth/utils';
-import { Loader2, Check, ArrowLeft, ArrowRight, Mail, Globe, Eye, EyeOff, ShieldCheck, User as UserIcon, Briefcase, Zap, Lock, Sparkles, CheckCircle } from 'lucide-react';
+import { Loader2, Check, ArrowLeft, ArrowRight, Mail, Globe, Eye, EyeOff, ShieldCheck, User as UserIcon, Briefcase, Zap, Lock, Sparkles, CheckCircle, School, Search } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLocation } from '@/contexts/LocationContext';
 import { Logo } from '@/components/logo';
 import { NIGERIAN_STATES, NIGERIAN_UNIVERSITIES, UNIVERSITIES_BY_STATE } from '@/lib/constants';
 import { ImageUpload } from '@/components/ImageUpload';
-import { School, Search } from 'lucide-react';
 
 function SignupContent() {
     const router = useRouter();
@@ -59,13 +58,10 @@ function SignupContent() {
         studentIdUrl: '',
     });
 
-    // Detect if user came back from Google and needs to finish profile
-    // Detect if user is already logged in and has a profile
     const [loginVerification, setLoginVerification] = useState(false);
 
     useEffect(() => {
         if (!authLoading && sessionUser && user) {
-            // Check if user is a seller and needs email verification
             if (['student_seller', 'dealer'].includes(user.role)) {
                 if (!user.email_verified) {
                     router.push('/verify-email');
@@ -82,7 +78,6 @@ function SignupContent() {
             }
         }
 
-        // Detect if user came back from Google and needs to finish profile
         if (!authLoading && sessionUser && !user) {
             setFormData(prev => ({
                 ...prev,
@@ -104,7 +99,6 @@ function SignupContent() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
-    // Auto-suggest university based on location
     useEffect(() => {
         if (nearestUniversity && !formData.university && ['student_seller', 'student_buyer'].includes(role)) {
             setFormData(prev => ({
@@ -139,7 +133,6 @@ function SignupContent() {
             const data = await Promise.race([verifyPromise, timeoutPromise]) as any;
 
             if (data.session) {
-                // Update verified status in profile if needed
                 if (['student_seller', 'dealer'].includes(role) || loginVerification) {
                     await supabase.from('users').update({ is_verified: true }).eq('id', data.user.id);
                 }
@@ -189,7 +182,6 @@ function SignupContent() {
         }
     };
 
-    // AI-Simulated University Detection
     const detectUniversity = async (matric: string) => {
         if (!matric || matric.length < 3) return;
 
@@ -247,8 +239,8 @@ function SignupContent() {
                 {steps.map((s, i) => (
                     <React.Fragment key={s}>
                         <div className="flex flex-col items-center gap-2">
-                            <div className={`h-2 w-12 rounded-full transition-all duration-500 ${i <= activeIdx ? 'bg-[#FF6600] shadow-[0_0_10px_rgba(255,184,0,0.5)]' : 'bg-zinc-800'}`} />
-                            <span className={`text-[8px] font-black uppercase tracking-widest ${i <= activeIdx ? 'text-[#FF6600]' : 'text-zinc-600'}`}>{s}</span>
+                            <div className={`h-2 w-12 rounded-full transition-all duration-500 ${i <= activeIdx ? 'bg-[#FF6200] shadow-[0_0_10px_rgba(255,98,0,0.5)]' : 'bg-zinc-800'}`} />
+                            <span className={`text-[8px] font-black uppercase tracking-widest ${i <= activeIdx ? 'text-[#FF6200]' : 'text-zinc-600'}`}>{s}</span>
                         </div>
                         {i < steps.length - 1 && <div className="h-[1px] w-4 bg-zinc-900 mb-4" />}
                     </React.Fragment>
@@ -341,21 +333,16 @@ function SignupContent() {
             const emailToUse = normalizeIdentifier(formData.email);
             const finalUniversity = missingUni ? missingUniName : formData.university;
 
-            // 1. Timeout Promise for Network Safety
             const timeoutPromise = new Promise((_, reject) =>
                 setTimeout(() => reject(new Error("Network Timeout: Account creation took too long. Please try again.")), 20000)
             );
 
-            // 2. The Core Signup Logic
             const signupLogicPromise = (async () => {
                 let authData;
 
                 if (sessionUser) {
-                    // Scenario A: User is already authenticated via Google
                     authData = { user: sessionUser, session: null };
                 } else {
-                    // Scenario B: Traditional Email/Password Signup
-                    // Look up referrer ID if code exists
                     let referrerId = null;
                     if (referralCode) {
                         const { data: refUser } = await supabase
@@ -392,7 +379,6 @@ function SignupContent() {
                     authData = data;
                 }
 
-                // 3. Database Sync (Profile)
                 const { error: profileError } = await supabase
                     .from('users')
                     .upsert({
@@ -419,7 +405,6 @@ function SignupContent() {
 
                 if (profileError) console.error("Profile establishing error (Non-fatal):", profileError);
 
-                // 4. Referral Reward (Welcome Bonus)
                 if (referralCode) {
                     const { data: refUser } = await supabase
                         .from('users')
@@ -428,7 +413,6 @@ function SignupContent() {
                         .single();
 
                     if (refUser) {
-                        // Welcome bonus for new user
                         await supabase.rpc('add_coins', {
                             user_id: authData.user!.id,
                             amount_to_add: 100,
@@ -436,7 +420,6 @@ function SignupContent() {
                             trans_desc: `Welcome bonus for using referral code: ${referralCode}`
                         });
 
-                        // Reward the Referrer too
                         await supabase.rpc('add_coins', {
                             user_id: refUser.id,
                             amount_to_add: 100,
@@ -446,7 +429,6 @@ function SignupContent() {
                     }
                 }
 
-                // 5. Subscription Setup (If Merchant)
                 if (isMerchant) {
                     const trialEndDate = new Date();
                     trialEndDate.setDate(trialEndDate.getDate() + 14);
@@ -472,11 +454,9 @@ function SignupContent() {
                 return authData;
             })();
 
-            // Race the signup against the timeout
             const authData = await Promise.race([signupLogicPromise, timeoutPromise]) as any;
 
             if (authData.session || sessionUser) {
-                // Auto-login or already logged in scenario
                 await refreshUser(authData.user.id);
                 if (isMerchant) {
                     router.push('/seller/dashboard');
@@ -486,7 +466,6 @@ function SignupContent() {
                     router.push('/listings');
                 }
             } else {
-                // Email confirmation required scenario
                 setSuccess(true);
             }
 
@@ -501,43 +480,43 @@ function SignupContent() {
             }
 
             setError(message);
-            setIsLoading(false); // CRITICAL: Stop loading on error
+            setIsLoading(false);
         }
     };
 
     if (step === 'role') {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-black overflow-hidden relative">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#FF6600]/5 blur-[120px] rounded-full" />
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#FF6200]/5 blur-[120px] rounded-full" />
 
-                <div className="w-full max-w-5xl relative z-10">
-                    <div className="text-center mb-16">
+                <div className="w-full max-w-5xl relative z-10 px-4 py-8">
+                    <div className="text-center mb-10 sm:mb-16">
                         <Link href="/" className="inline-flex items-center text-zinc-500 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest transition-colors py-3">
                             <ArrowLeft className="mr-2 h-4 w-4" /> Return to Home
                         </Link>
                         <div className="flex justify-center mb-6">
-                            <Logo showText={false} className="scale-125" />
+                            <Logo showText={false} className="scale-110 sm:scale-125" />
                         </div>
-                        <h1 className="text-5xl font-black uppercase tracking-tighter text-white italic mb-4">Join MarketBridge</h1>
-                        <p className="text-zinc-500 font-medium lowercase italic">select your status to begin identity establishment</p>
+                        <h1 className="text-4xl sm:text-5xl font-black uppercase tracking-tighter text-white italic mb-3 sm:mb-4">Join MarketBridge</h1>
+                        <p className="text-zinc-500 font-medium lowercase italic text-xs sm:text-base">select your status to begin identity establishment</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 max-w-6xl mx-auto">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-6xl mx-auto">
                         {[
-                            { id: 'student_buyer', title: 'Buyer', icon: UserIcon, desc: 'Shop within your University', color: 'text-blue-400' },
-                            { id: 'student_seller', title: 'Seller', icon: Briefcase, desc: 'Sell to your University Community', color: 'text-[#FF6600]' },
+                            { id: 'student_buyer', title: 'Buyer', icon: UserIcon, desc: 'Shop within your University', color: 'text-white' },
+                            { id: 'student_seller', title: 'Seller', icon: Briefcase, desc: 'Sell to your University Community', color: 'text-[#FF6200]' },
                             { id: 'admin', title: 'Team Admin', icon: ShieldCheck, desc: 'Admin Team', color: 'text-zinc-400' },
-                            { id: 'ceo', title: 'CEO/Founder', icon: Lock, desc: 'Founder', color: 'text-red-500' }
+                            { id: 'ceo', title: 'CEO/Founder', icon: Lock, desc: 'Founder', color: 'text-[#FF6200]' }
                         ].map(item => (
                             <Card
                                 key={item.id}
-                                className={`glass-card border-white/5 rounded-[2rem] p-8 text-center group cursor-pointer hover:bg-white/[0.08] hover:translate-y-[-8px] transition-all duration-500 ${item.id === 'ceo' ? 'border-red-500/20 shadow-[0_0_30px_rgba(239,68,68,0.1)]' : ''}`}
+                                className={`glass-card border-white/5 rounded-[2rem] p-6 sm:p-8 text-center group cursor-pointer hover:border-[#FF6200]/50 hover:translate-y-[-8px] transition-all duration-500 ${item.id === 'ceo' ? 'border-[#FF6200]/20 shadow-[0_0_30px_rgba(255,98,0,0.1)]' : ''}`}
                                 onClick={() => handleRoleSelect(item.id as any)}
                             >
-                                <div className={`h-16 w-16 glass-card rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform ${item.id === 'ceo' ? 'bg-red-500/10' : ''}`}>
-                                    <item.icon className={`h-8 w-8 ${item.color}`} />
+                                <div className={`h-14 w-14 sm:h-16 sm:w-16 glass-card rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 group-hover:scale-110 transition-transform ${item.id === 'ceo' ? 'bg-[#FF6200]/10' : ''}`}>
+                                    <item.icon className={`h-7 w-7 sm:h-8 sm:w-8 ${item.color}`} />
                                 </div>
-                                <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2 italic">{item.title}</h3>
+                                <h3 className="text-base sm:text-lg font-black text-white uppercase tracking-tight mb-2 italic">{item.title}</h3>
                                 <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">{item.desc}</p>
                             </Card>
                         ))}
@@ -551,28 +530,28 @@ function SignupContent() {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-black">
                 <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-[1px] bg-red-500/50 shadow-[0_0_20px_red]" />
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-[#FF6200]/50 shadow-[0_0_20px_#FF6200]" />
                     <CardHeader className="p-0 text-center mb-10">
                         <Button variant="ghost" onClick={() => setStep('role')} className="text-zinc-600 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
-                        <div className="mx-auto h-16 w-16 rounded-2xl border border-red-500/30 bg-red-500/5 flex items-center justify-center mb-6">
-                            <Lock className="h-8 w-8 text-red-500" />
+                        <div className="mx-auto h-16 w-16 rounded-2xl border border-[#FF6200]/30 bg-[#FF6200]/5 flex items-center justify-center mb-6">
+                            <Lock className="h-8 w-8 text-[#FF6200]" />
                         </div>
-                        <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2 text-red-500">Restricted</CardTitle>
+                        <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2 text-[#FF6200]">Restricted</CardTitle>
                         <CardDescription className="text-zinc-500 font-medium italic lowercase">enter access code</CardDescription>
                     </CardHeader>
                     <CardContent className="p-0 space-y-6 pb-8">
-                        {error && <div className="bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-red-500/20">{error}</div>}
+                        {error && <div className="bg-[#FF6200]/10 text-[#FF6200] text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-[#FF6200]/20">{error}</div>}
                         <form onSubmit={handleAdminCodeSubmit} className="space-y-6">
                             <input
                                 type="password"
-                                className="w-full h-16 bg-black border border-white/5 rounded-2xl text-center tracking-[0.5em] font-mono text-xl focus:outline-none focus:ring-2 focus:ring-red-500/50 text-red-500"
+                                className="w-full h-16 bg-black border border-white/5 rounded-2xl text-center tracking-[0.5em] font-mono text-xl focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 text-[#FF6200]"
                                 value={adminCode}
                                 onChange={(e) => setAdminCode(e.target.value)}
                                 placeholder="••••••••"
                                 autoFocus
                                 required
                             />
-                            <Button type="submit" className="w-full h-16 rounded-2xl bg-red-600 text-white font-black uppercase tracking-widest hover:bg-red-700 shadow-[0_0_30px_rgba(220,38,38,0.3)]">
+                            <Button type="submit" className="w-full h-16 rounded-2xl bg-[#FF6200] text-black font-black uppercase tracking-widest hover:bg-[#FF7A29] shadow-[0_0_30px_rgba(255,98,0,0.3)]">
                                 Unlock
                             </Button>
                         </form>
@@ -592,17 +571,17 @@ function SignupContent() {
                     </CardHeader>
                     <CardContent className="p-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[
-                            { id: 'marketing', title: 'Marketing', icon: Zap, color: 'text-orange-400' },
-                            { id: 'operations', title: 'Operations', icon: Briefcase, desc: 'Escrow Team', color: 'text-red-400' },
-                            { id: 'technical', title: 'Technical', icon: Loader2, desc: 'Development', color: 'text-blue-400' },
-                            { id: 'ceo', title: 'Central', icon: Lock, desc: 'Main', color: 'text-red-500' }
+                            { id: 'marketing', title: 'Marketing', icon: Zap, color: 'text-[#FF6200]' },
+                            { id: 'operations', title: 'Operations', icon: Briefcase, desc: 'Escrow Team', color: 'text-white' },
+                            { id: 'technical', title: 'Technical', icon: Loader2, desc: 'Development', color: 'text-[#FF6200]' },
+                            { id: 'ceo', title: 'Central', icon: Lock, desc: 'Main', color: 'text-white' }
                         ].map(dept => (
                             <button
                                 key={dept.id}
                                 onClick={() => handleDeptSelect(dept.id as any)}
-                                className={`glass-card p-8 rounded-3xl border-white/5 hover:bg-white/5 transition-all group flex flex-col items-center gap-4 text-center ${dept.id === 'ceo' ? 'border-red-500/20' : ''}`}
+                                className={`glass-card p-8 rounded-3xl border-white/5 hover:border-[#FF6200]/50 transition-all group flex flex-col items-center gap-4 text-center ${dept.id === 'ceo' ? 'border-[#FF6200]/20' : ''}`}
                             >
-                                <div className={`h-14 w-14 rounded-xl bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform ${dept.id === 'ceo' ? 'bg-red-500/10' : ''}`}>
+                                <div className={`h-14 w-14 rounded-xl bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform ${dept.id === 'ceo' ? 'bg-[#FF6200]/10' : ''}`}>
                                     <dept.icon className={`h-7 w-7 ${dept.color}`} />
                                 </div>
                                 <div>
@@ -621,11 +600,11 @@ function SignupContent() {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-black">
                 <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF6600] to-transparent" />
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF6200] to-transparent" />
                     <CardHeader className="p-0 text-center mb-10">
-                        <div className="mx-auto h-24 w-24 rounded-full bg-[#FF6600]/10 flex items-center justify-center mb-6 relative">
-                            <Lock className="h-10 w-10 text-[#FF6600] animate-bounce" />
-                            <div className="absolute inset-0 rounded-full border border-[#FF6600]/30 animate-ping opacity-25" />
+                        <div className="mx-auto h-24 w-24 rounded-full bg-[#FF6200]/10 flex items-center justify-center mb-6 relative">
+                            <Lock className="h-10 w-10 text-[#FF6200] animate-bounce" />
+                            <div className="absolute inset-0 rounded-full border border-[#FF6200]/30 animate-ping opacity-25" />
                         </div>
                         <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-4">Code Sent</CardTitle>
                         <CardDescription className="text-zinc-500 font-medium leading-relaxed">
@@ -638,7 +617,7 @@ function SignupContent() {
                             <p className="text-sm text-white font-medium">Please enter the code sent to your inbox.</p>
                         </div>
 
-                        {error && <div className="bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-red-500/20">{error}</div>}
+                        {error && <div className="bg-[#FF6200]/10 text-[#FF6200] text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-[#FF6200]/20">{error}</div>}
 
                         <form onSubmit={handleVerification} className="space-y-6">
                             <div className="space-y-2">
@@ -647,7 +626,7 @@ function SignupContent() {
                                     value={otpCode}
                                     onChange={(e) => setOtpCode(e.target.value)}
                                     placeholder="• • • • • •"
-                                    className="w-full h-16 bg-black border border-white/10 rounded-2xl text-center text-2xl font-black tracking-[1em] text-white focus:border-[#FF6600] outline-none transition-all placeholder:tracking-normal placeholder:text-zinc-800"
+                                    className="w-full h-16 bg-black border border-white/10 rounded-2xl text-center text-2xl font-black tracking-[1em] text-white focus:border-[#FF6200] outline-none transition-all placeholder:tracking-normal placeholder:text-zinc-800"
                                     maxLength={6}
                                 />
                             </div>
@@ -658,7 +637,7 @@ function SignupContent() {
                         </form>
 
                         <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest pt-4">
-                            Didn't receive code? Check spam or <button type="button" onClick={resendCode} className="text-[#FF6600] hover:underline" disabled={isVerifying}>Resend Code</button>
+                            Didn't receive code? Check spam or <button type="button" onClick={resendCode} className="text-[#FF6200] hover:underline" disabled={isVerifying}>Resend Code</button>
                         </p>
                     </CardContent>
                 </Card>
@@ -670,7 +649,7 @@ function SignupContent() {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-black">
                 <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden">
-                    <div className="absolute top-[-10%] right-[-10%] w-32 h-32 bg-[#FF6600]/5 blur-[40px] rounded-full" />
+                    <div className="absolute top-[-10%] right-[-10%] w-32 h-32 bg-[#FF6200]/5 blur-[40px] rounded-full" />
                     <CardHeader className="p-0 text-center mb-10">
                         <Button variant="ghost" onClick={() => initialRole ? router.push('/') : setStep('role')} className="text-zinc-600 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> {initialRole ? 'Cancel' : 'Back'}</Button>
                         <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2">
@@ -688,7 +667,7 @@ function SignupContent() {
                                     className="w-full h-16 rounded-[1.5rem] border-white/10 hover:bg-white/5 text-white font-bold uppercase tracking-widest group transition-all"
                                     onClick={() => signInWithGoogle(`${window.location.origin}/auth/callback?next=/signup`)}
                                 >
-                                    <Globe className="mr-3 h-5 w-5 text-blue-500 group-hover:scale-110 transition-transform" /> Sign up with Google
+                                    <Globe className="mr-3 h-5 w-5 text-zinc-400 group-hover:scale-110 transition-transform" /> Sign up with Google
                                 </Button>
                             )}
                             {['student_seller', 'dealer'].includes(role) && (
@@ -712,10 +691,10 @@ function SignupContent() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center py-20 px-4 bg-black relative">
-            <div className="absolute top-[10%] right-[10%] w-[30%] h-[30%] bg-[#FF6600]/5 blur-[120px] rounded-full" />
+        <div className="min-h-screen flex items-center justify-center py-10 sm:py-20 px-4 bg-black relative">
+            <div className="absolute top-[10%] right-[10%] w-[30%] h-[30%] bg-[#FF6200]/5 blur-[120px] rounded-full" />
 
-            <Card className="w-full max-w-xl glass-card border-none rounded-[3rem] p-12 text-white relative z-10 shadow-2xl">
+            <Card className="w-full max-w-xl glass-card border-none rounded-[2.5rem] sm:rounded-[3rem] p-6 sm:p-12 text-white relative z-10 shadow-2xl">
                 <CardHeader className="p-0 mb-8 text-left">
                     <div className="flex justify-between items-start mb-6">
                         <Button variant="ghost" onClick={() => setStep(['student_seller', 'dealer'].includes(role) ? 'role' : 'auth-method')} className="text-zinc-600 hover:text-white p-0 h-auto text-[10px] font-black uppercase tracking-widest"><ArrowLeft className="mr-2 h-3 w-3" /> Back</Button>
@@ -724,21 +703,21 @@ function SignupContent() {
 
                     <StepProgress currentStep={step} role={role} />
 
-                    <CardTitle className="text-4xl font-black uppercase italic tracking-tighter mb-2">Join MarketBridge</CardTitle>
-                    <CardDescription className="text-zinc-500 font-medium italic lowercase">
+                    <CardTitle className="text-3xl sm:text-4xl font-black uppercase italic tracking-tighter mb-2">Join MarketBridge</CardTitle>
+                    <CardDescription className="text-zinc-500 font-medium italic lowercase text-xs sm:text-sm">
                         {['student_seller', 'dealer'].includes(role) ? `Setting up your seller account` : "Please fill in your details"}
                     </CardDescription>
                 </CardHeader>
 
                 <CardContent className="p-0">
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {error && <div className="bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest p-4 rounded-2xl border border-red-500/20 text-center mb-6 animate-pulse">{error}</div>}
+                        {error && <div className="bg-[#FF6200]/10 text-[#FF6200] text-[10px] font-black uppercase tracking-widest p-4 rounded-2xl border border-[#FF6200]/20 text-center mb-6 animate-pulse">{error}</div>}
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                             <div className="space-y-2">
                                 <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Full Name</label>
                                 <div className="relative group">
-                                    <UserIcon className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                    <UserIcon className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
                                     <input
                                         name="displayName"
                                         value={formData.displayName}
@@ -746,23 +725,23 @@ function SignupContent() {
                                         required
                                         readOnly={!!sessionUser}
                                         placeholder="Samuel Ade"
-                                        className={`w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all ${sessionUser ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                        className={`w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all ${sessionUser ? 'opacity-70 cursor-not-allowed' : ''}`}
                                     />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center ml-2">
                                     <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600">
-                                        {['student_seller', 'dealer'].includes(role) ? "Email / Phone Identity" : "Email / Phone Identity"}
+                                        Email / Phone Identity
                                     </label>
                                     {sessionUser && (
-                                        <span className="text-[8px] font-black text-[#FF6600] uppercase tracking-widest bg-[#FF6600]/10 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                        <span className="text-[8px] font-black text-[#FF6200] uppercase tracking-widest bg-[#FF6200]/10 px-2 py-0.5 rounded-full flex items-center gap-1">
                                             <Globe className="h-2 w-2" /> Connected to Google
                                         </span>
                                     )}
                                 </div>
                                 <div className="relative group">
-                                    <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                    <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
                                     <input
                                         name="email"
                                         type="text"
@@ -770,28 +749,28 @@ function SignupContent() {
                                         onChange={handleChange}
                                         required
                                         readOnly={!!sessionUser}
-                                        placeholder={['student_seller', 'dealer'].includes(role) ? "staff.name@university.edu.ng or matric..." : "email or phone number"}
-                                        className={`w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all ${sessionUser ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                        placeholder={['student_seller', 'dealer'].includes(role) ? "staff.name@university.edu.ng..." : "email or phone number"}
+                                        className={`w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all ${sessionUser ? 'opacity-70 cursor-not-allowed' : ''}`}
                                     />
                                 </div>
                             </div>
                         </div>
 
                         {!sessionUser && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in duration-500">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 animate-in fade-in duration-500">
                                 <div className="space-y-2">
                                     <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Secure Key</label>
                                     <div className="relative group">
-                                        <Lock className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
-                                        <input name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleChange} required={!sessionUser} className="w-full h-14 pl-14 pr-14 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold" />
-                                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-800 hover:text-[#FF6600]">{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
+                                        <Lock className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
+                                        <input name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleChange} required={!sessionUser} className="w-full h-14 pl-14 pr-14 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold" />
+                                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-800 hover:text-[#FF6200]">{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Confirm Key</label>
                                     <div className="relative group">
-                                        <ShieldCheck className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
-                                        <input name="confirmPassword" type={showPassword ? 'text' : 'password'} value={formData.confirmPassword} onChange={handleChange} required={!sessionUser} className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold" />
+                                        <ShieldCheck className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
+                                        <input name="confirmPassword" type={showPassword ? 'text' : 'password'} value={formData.confirmPassword} onChange={handleChange} required={!sessionUser} className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold" />
                                     </div>
                                 </div>
                             </div>
@@ -801,10 +780,10 @@ function SignupContent() {
                             <div className="space-y-2">
                                 <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Operational Region</label>
                                 <div className="relative group">
-                                    <Globe className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors z-10" />
+                                    <Globe className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors z-10" />
                                     <select
                                         name="location"
-                                        className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold relative appearance-none"
+                                        className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold relative appearance-none"
                                         value={formData.location}
                                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                                             setFormData({ ...formData, location: e.target.value, university: '' });
@@ -815,42 +794,42 @@ function SignupContent() {
                                         <option value="" className="bg-zinc-900">Select Node State</option>
                                         {NIGERIAN_STATES.map(s => <option key={s} value={s} className="bg-zinc-900">{s}</option>)}
                                     </select>
-                                    <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-600 group-focus-within:text-[#FF6600]">
+                                    <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-600 group-focus-within:text-[#FF6200]">
                                         <ArrowRight className="h-4 w-4 rotate-90" />
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="space-y-2">
-                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Jurisdiction</label>
-                                    <div className="relative group">
-                                        <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center text-lg">🇳🇬</div>
-                                        <select className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-black text-[10px] uppercase tracking-widest appearance-none transition-all cursor-pointer">
-                                            <option>Nigeria</option>
-                                        </select>
-                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
-                                            <ArrowRight className="h-3 w-3 rotate-90" />
-                                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+                            <div className="space-y-2">
+                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Jurisdiction</label>
+                                <div className="relative group">
+                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center text-lg">🇳🇬</div>
+                                    <select className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-black text-[10px] uppercase tracking-widest appearance-none transition-all cursor-pointer">
+                                        <option>Nigeria</option>
+                                    </select>
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
+                                        <ArrowRight className="h-3 w-3 rotate-90" />
                                     </div>
                                 </div>
-                                <div className="md:col-span-2 space-y-2">
-                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Mobile Comms</label>
-                                    <div className="relative group">
-                                        <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center gap-2 pr-3 border-r border-white/10">
-                                            <Zap className="h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
-                                            <span className="text-zinc-500 font-black text-[10px] tracking-widest">+234</span>
-                                        </div>
-                                        <input
-                                            name="phoneNumber"
-                                            type="tel"
-                                            value={formData.phoneNumber}
-                                            onChange={handleChange}
-                                            required
-                                            placeholder="803 000 0000"
-                                            className="w-full h-14 pl-24 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold text-xs transition-all"
-                                        />
+                            </div>
+                            <div className="md:col-span-2 space-y-2">
+                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Mobile Comms</label>
+                                <div className="relative group">
+                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center gap-2 pr-3 border-r border-white/10">
+                                        <Zap className="h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
+                                        <span className="text-zinc-500 font-black text-[10px] tracking-widest">+234</span>
                                     </div>
+                                    <input
+                                        name="phoneNumber"
+                                        type="tel"
+                                        value={formData.phoneNumber}
+                                        onChange={handleChange}
+                                        required
+                                        placeholder="803 000 0000"
+                                        className="w-full h-14 pl-24 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold text-xs transition-all"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -860,33 +839,33 @@ function SignupContent() {
                                 <div className="space-y-2">
                                     <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Business / Brand Name</label>
                                     <div className="relative group">
-                                        <Briefcase className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                        <Briefcase className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
                                         <input
                                             name="businessName"
                                             value={formData.businessName}
                                             onChange={handleChange}
-                                            className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all"
+                                            className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all"
                                             placeholder="Campus Kicks"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">ID / Matriculation Number (Required)</label>
+                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">ID / Matriculation Number</label>
                                         <div className="relative group">
-                                            <School className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                            <School className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
                                             <input
                                                 name="matricNumber"
                                                 value={formData.matricNumber}
                                                 onChange={handleChange}
                                                 required
                                                 onBlur={(e) => detectUniversity(e.target.value)}
-                                                className="w-full h-14 pl-14 pr-12 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold transition-all"
+                                                className="w-full h-14 pl-14 pr-12 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all"
                                                 placeholder="U/2024/..."
                                             />
                                             {isDetectingSchool && (
-                                                <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-[#FF6600]" />
+                                                <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-[#FF6200]" />
                                             )}
                                         </div>
                                     </div>
@@ -894,13 +873,13 @@ function SignupContent() {
                                     <div className="space-y-2">
                                         <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Department (Optional)</label>
                                         <div className="relative group">
-                                            <Sparkles className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                            <Sparkles className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
                                             <input
                                                 name="department"
                                                 value={formData.department}
                                                 onChange={handleChange}
                                                 placeholder="Computer Science"
-                                                className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold"
+                                                className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold"
                                             />
                                         </div>
                                     </div>
@@ -912,7 +891,7 @@ function SignupContent() {
                                         <button
                                             type="button"
                                             onClick={() => setMissingUni(!missingUni)}
-                                            className="text-[8px] font-black text-[#FF6600] uppercase tracking-widest hover:underline"
+                                            className="text-[8px] font-black text-[#FF6200] uppercase tracking-widest hover:underline"
                                         >
                                             {missingUni ? "Back to List" : "Uni not listed?"}
                                         </button>
@@ -921,13 +900,13 @@ function SignupContent() {
                                     {!missingUni ? (
                                         <div className="space-y-2">
                                             <div className="relative group">
-                                                <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6600] transition-colors" />
+                                                <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
                                                 <input
                                                     type="text"
                                                     placeholder="Search your institution..."
                                                     value={uniSearch}
                                                     onChange={(e) => setUniSearch(e.target.value)}
-                                                    className="w-full h-14 pl-14 pr-10 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold text-xs"
+                                                    className="w-full h-14 pl-14 pr-10 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold text-xs"
                                                 />
                                             </div>
 
@@ -936,7 +915,7 @@ function SignupContent() {
                                                     name="university"
                                                     value={formData.university}
                                                     onChange={(e) => setFormData(p => ({ ...p, university: e.target.value }))}
-                                                    className="w-full h-14 pl-6 pr-10 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6600]/50 outline-none font-bold appearance-none transition-all"
+                                                    className="w-full h-14 pl-6 pr-10 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold appearance-none transition-all"
                                                     required
                                                 >
                                                     <option value="" className="bg-zinc-900 font-medium">
@@ -947,9 +926,12 @@ function SignupContent() {
                                                             <option key={uni} value={uni} className="bg-zinc-900 font-medium">{uni}</option>
                                                         ))
                                                     ) : (
-                                                        <option disabled className="bg-zinc-900 text-zinc-700 italic">No matching institutions found in this region</option>
+                                                        <option disabled className="bg-zinc-900 text-zinc-700 italic">No matching institutions found</option>
                                                     )}
                                                 </select>
+                                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
+                                                    <ArrowRight className="h-3 w-3 rotate-90" />
+                                                </div>
                                             </div>
                                         </div>
                                     ) : (
@@ -959,13 +941,13 @@ function SignupContent() {
                                                 value={missingUniName}
                                                 onChange={(e) => setMissingUniName(e.target.value)}
                                                 placeholder="Enter full university name"
-                                                className="w-full h-14 bg-black border border-white/10 rounded-2xl px-6 text-white font-bold outline-none focus:border-[#FF6600]"
+                                                className="w-full h-14 bg-black border border-white/10 rounded-2xl px-6 text-white font-bold outline-none focus:border-[#FF6200]"
                                             />
                                             <p className="text-[8px] text-zinc-600 italic">Admin will review and enable this node within 24 hours.</p>
                                         </div>
                                     )}
 
-                                    <div className="space-y-6 pt-4">
+                                    <div className="space-y-4 pt-4">
                                         <div className="animate-in fade-in slide-in-from-top-2 duration-300">
                                             <div className="flex items-center justify-between ml-2">
                                                 <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 block">Upload Institution ID Card</label>
@@ -973,14 +955,14 @@ function SignupContent() {
                                                     <button
                                                         type="button"
                                                         onClick={() => setFormData({ ...formData, studentIdUrl: '' })}
-                                                        className="text-[8px] font-black text-red-500 uppercase tracking-widest hover:underline"
+                                                        className="text-[8px] font-black text-white uppercase tracking-widest hover:underline"
                                                     >
                                                         Reset Upload
                                                     </button>
                                                 )}
                                             </div>
 
-                                            <div className="glass-card rounded-[2rem] border border-white/10 p-4 group hover:border-[#FF6600]/30 transition-colors bg-zinc-950/50 mt-2">
+                                            <div className="glass-card rounded-[2rem] border border-white/10 p-4 group hover:border-[#FF6200]/30 transition-colors bg-zinc-950/50 mt-2">
                                                 <ImageUpload
                                                     onImagesSelected={(urls: string[]) => {
                                                         if (urls && urls.length > 0) setFormData({ ...formData, studentIdUrl: urls[0] });
@@ -998,35 +980,33 @@ function SignupContent() {
                             </div>
                         )}
 
-
-
                         {['student_seller', 'dealer'].includes(role) && (
                             <div className="space-y-6 pt-6 border-t border-white/5 animate-in fade-in duration-700 delay-100">
-                                <div className="glass-card p-8 rounded-[2rem] border border-white/5 text-center bg-gradient-to-b from-[#FF6600]/5 to-transparent relative overflow-hidden">
-                                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF6600]/20 to-transparent" />
-                                    <Sparkles className="h-6 w-6 text-[#FF6600] mx-auto mb-4" />
-                                    <p className="text-[10px] uppercase font-black text-[#FF6600] mb-2 tracking-[0.2em]">Verification Protocol</p>
+                                <div className="glass-card p-6 sm:p-8 rounded-[2rem] border border-white/5 text-center bg-gradient-to-b from-[#FF6200]/5 to-transparent relative overflow-hidden">
+                                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF6200]/20 to-transparent" />
+                                    <Sparkles className="h-6 w-6 text-[#FF6200] mx-auto mb-4" />
+                                    <p className="text-[10px] uppercase font-black text-[#FF6200] mb-2 tracking-[0.2em]">Verification Protocol</p>
                                     <p className="text-zinc-500 text-[9px] font-bold uppercase leading-relaxed">
-                                        Your account will enter a PENDING status for admin security oversight. Once your ID is verified, your dealership node will be activated.
+                                        Your account will enter a PENDING status for admin security oversight. Once verified, your node will be activated.
                                     </p>
                                 </div>
                             </div>
                         )}
 
-                        <div className="flex items-start md:items-center gap-4 pt-6 border-t border-white/5">
+                        <div className="flex items-start gap-4 pt-6 border-t border-white/5">
                             <input
                                 type="checkbox"
                                 id="terms"
                                 checked={agreedToTerms}
                                 onChange={(e) => setAgreedToTerms(e.target.checked)}
-                                className="mt-1 md:mt-0 h-5 w-5 rounded-lg border-white/10 bg-zinc-950 checked:bg-[#FF6600] checked:text-black focus:ring-[#FF6600]/50 transition-all cursor-pointer"
+                                className="mt-1 h-5 w-5 rounded-lg border-white/10 bg-zinc-950 checked:bg-[#FF6200] checked:text-black focus:ring-[#FF6200]/50 transition-all cursor-pointer"
                             />
                             <label htmlFor="terms" className="text-[11px] text-zinc-500 font-bold leading-tight cursor-pointer">
-                                I verify compliance with the <Link href="/terms" target="_blank" className="text-zinc-300 hover:text-white underline decoration-[#FF6600]/40 decoration-1 underline-offset-4 transition-colors">Terms of Engagement</Link> & <Link href="/privacy" target="_blank" className="text-zinc-300 hover:text-white underline decoration-[#FF6600]/40 decoration-1 underline-offset-4 transition-colors">Privacy Protocol</Link> (NDPA 2023).
+                                I verify compliance with the <Link href="/terms" target="_blank" className="text-zinc-300 hover:text-white underline decoration-[#FF6200]/40 decoration-1 underline-offset-4 transition-colors">Terms of Engagement</Link> & <Link href="/privacy" target="_blank" className="text-zinc-300 hover:text-white underline decoration-[#FF6200]/40 decoration-1 underline-offset-4 transition-colors">Privacy Protocol</Link>.
                             </label>
                         </div>
 
-                        <Button type="submit" className="w-full h-18 bg-[#FF6600] hover:bg-[#FF6600]/90 text-black font-black uppercase tracking-widest rounded-[1.5rem] shadow-[0_0_30px_rgba(255,102,0,0.3)] border-none mt-4 text-xs group transition-all" disabled={isLoading}>
+                        <Button type="submit" className="w-full h-16 sm:h-18 bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black uppercase tracking-widest rounded-[1.5rem] shadow-[0_0_30px_rgba(255,102,0,0.3)] border-none mt-4 text-[10px] sm:text-xs group transition-all" disabled={isLoading}>
                             {isLoading ? <Loader2 className="animate-spin h-6 w-6" /> : (
                                 <span className="flex items-center gap-3">
                                     {['student_seller', 'dealer'].includes(role) ? 'Initialize Beta Node' : role === 'ceo' ? 'Establish Command' : 'Enter MarketBridge'}
@@ -1037,9 +1017,9 @@ function SignupContent() {
                     </form>
 
                     <div className="mt-8 pt-6 border-t border-white/5 text-center">
-                        <p className="text-[10px] text-zinc-600 font-medium leading-relaxed">
-                            Beta platform – technical problems? Email <a href="mailto:support@marketbridge.com.ng?subject=Tech%20Support" className="text-[#FF6600] hover:underline">support@marketbridge.com.ng</a><br />
-                            Refunds, subscriptions or seller questions? Email <a href="mailto:ops-support@marketbridge.com.ng?subject=Ops%20Support" className="text-[#00FF85] hover:underline">ops-support@marketbridge.com.ng</a>
+                        <p className="text-[9px] sm:text-[10px] text-zinc-600 font-medium leading-relaxed">
+                            Beta platform – technical problems? Email <a href="mailto:support@marketbridge.com.ng" className="text-[#FF6200] hover:underline">support@marketbridge.com.ng</a><br />
+                            Refunds or seller questions? Email <a href="mailto:ops-support@marketbridge.com.ng" className="text-[#FF6200] hover:underline">ops-support@marketbridge.com.ng</a>
                         </p>
                     </div>
                 </CardContent>
@@ -1049,5 +1029,9 @@ function SignupContent() {
 }
 
 export default function SignupPage() {
-    return <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-black"><Loader2 className="h-8 w-8 animate-spin text-[#FF6600]" /></div>}><SignupContent /></Suspense>;
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-black"><Loader2 className="h-8 w-8 animate-spin text-[#FF6200]" /></div>}>
+            <SignupContent />
+        </Suspense>
+    );
 }

@@ -397,7 +397,7 @@ export default function ListingDetailContent() {
     if (loading) {
         return (
             <div className="min-h-screen bg-black flex items-center justify-center text-white">
-                <Loader2 className="h-10 w-10 animate-spin text-[#FF6600]" />
+                <Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" />
             </div>
         );
     }
@@ -409,7 +409,7 @@ export default function ListingDetailContent() {
                 <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
                 <div className="container px-6 mx-auto relative z-10 flex flex-col items-center justify-center flex-1 text-center space-y-8">
-                    <div className="glass-card rounded-[2.5rem] overflow-hidden p-2 border-white/5 relative group mb-8 max-w-sm w-full mx-auto shadow-2xl shadow-[#FF6600]/10">
+                    <div className="glass-card rounded-[2.5rem] overflow-hidden p-2 border-white/5 relative group mb-8 max-w-sm w-full mx-auto shadow-2xl shadow-[#FF6200]/10">
                         <div className="aspect-[4/3] rounded-[2rem] overflow-hidden relative bg-zinc-900 filter blur-sm opacity-50">
                             {listing.images && listing.images.length > 0 && (
                                 <Image
@@ -421,12 +421,12 @@ export default function ListingDetailContent() {
                             )}
                         </div>
                         <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                            <ShieldCheck className="h-16 w-16 text-[#FF6600]" />
+                            <ShieldCheck className="h-16 w-16 text-[#FF6200]" />
                         </div>
                     </div>
 
                     <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter max-w-3xl leading-tight">
-                        Unlock Full <span className="text-[#FF6600]">Details</span>
+                        Unlock Full <span className="text-[#FF6200]">Details</span>
                     </h1>
 
                     <p className="text-zinc-400 text-lg md:text-xl font-medium max-w-xl">
@@ -434,14 +434,14 @@ export default function ListingDetailContent() {
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md pt-4">
-                        <Button size="lg" asChild className="h-14 flex-1 bg-[#FF6600] text-black font-black uppercase tracking-widest hover:bg-[#FF8533] hover:scale-105 transition-all shadow-[0_0_40px_rgba(255,102,0,0.3)] rounded-xl">
+                        <Button size="lg" asChild className="h-20 flex-1 bg-[#FF6200] text-black font-black uppercase tracking-[0.2em] hover:bg-[#FF7A29] rounded-[2rem] border-none shadow-[0_20px_40px_rgba(255,98,0,0.2)]">
                             <Link href={`/signup?redirect=/listings/${listing.id}`}>
-                                Create Account
+                                Initialize Account
                             </Link>
                         </Button>
-                        <Button size="lg" variant="outline" asChild className="h-14 flex-1 border-white/20 text-white font-bold uppercase tracking-widest hover:bg-white hover:text-black hover:border-transparent transition-all rounded-xl">
+                        <Button size="lg" variant="outline" asChild className="h-20 flex-1 border-white/10 text-white font-black uppercase tracking-[0.2em] hover:bg-white/5 rounded-[2rem]">
                             <Link href={`/login?redirect=/listings/${listing.id}`}>
-                                Sign In
+                                Auth Session
                             </Link>
                         </Button>
                     </div>
@@ -466,7 +466,7 @@ export default function ListingDetailContent() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white relative selection:bg-[#FF6600] selection:text-black pt-28 pb-20">
+        <div className="min-h-screen bg-black text-white relative selection:bg-[#FF6200] selection:text-black pt-28 pb-20">
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
@@ -477,7 +477,7 @@ export default function ListingDetailContent() {
                         <Button
                             variant="ghost"
                             onClick={() => router.back()}
-                            className="text-[#FF6600] hover:text-[#FF6600] hover:bg-transparent p-0 h-auto text-[10px] font-black uppercase tracking-[0.2em] font-heading"
+                            className="text-[#FF6200] hover:text-[#FF7A29] hover:bg-transparent p-0 h-auto text-[10px] font-black uppercase tracking-[0.2em] font-heading"
                         >
                             <ArrowLeft className="mr-2 h-3 w-3" /> Return to Signal
                         </Button>
@@ -516,7 +516,7 @@ export default function ListingDetailContent() {
                                 {/* Overlay Badges */}
                                 <div className="absolute top-6 left-6 flex flex-col gap-3">
                                     {(listing.is_verified_listing || listing.verification_status === 'verified') && (
-                                        <div className="bg-[#FF6600] text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-[#FF6600]/20 font-heading italic">
+                                        <div className="bg-[#FF6200] text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-[#FF6200]/20 font-heading italic">
                                             <ShieldCheck className="h-3 w-3" /> Verified Node
                                         </div>
                                     )}
@@ -534,7 +534,7 @@ export default function ListingDetailContent() {
                                         className={cn(
                                             "aspect-square rounded-2xl overflow-hidden border transition-all relative group",
                                             selectedImage === idx
-                                                ? "border-[#FF6600] ring-1 ring-[#FF6600]"
+                                                ? "border-[#FF6200] ring-1 ring-[#FF6200]"
                                                 : "border-white/10 hover:border-white/30"
                                         )}
                                     >
@@ -555,7 +555,7 @@ export default function ListingDetailContent() {
                         {/* Price Card */}
                         <div className="glass-card rounded-[2.5rem] p-8 border-white/5 relative overflow-hidden">
                             <div className="absolute top-0 right-0 p-8 opacity-50">
-                                <Zap className="h-24 w-24 text-[#FF6600]/10" />
+                                <Zap className="h-24 w-24 text-[#FF6200]/10" />
                             </div>
 
                             <div className="relative z-10">
@@ -578,7 +578,7 @@ export default function ListingDetailContent() {
                                             <Button
                                                 onClick={handlePlaceOrder}
                                                 disabled={actionLoading}
-                                                className="flex-3 h-16 bg-[#FF6600] text-black hover:bg-[#FF6600] rounded-2xl font-black uppercase tracking-widest text-xs font-heading italic flex-1"
+                                                className="flex-3 h-16 bg-[#FF6200] text-black hover:bg-[#FF7A29] rounded-2xl font-black uppercase tracking-widest text-xs font-heading italic flex-1 border-none transition-all"
                                             >
                                                 {actionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
                                                 Secure Asset Now
@@ -595,11 +595,11 @@ export default function ListingDetailContent() {
                                         {/* Contact Grid */}
                                         <div className="grid grid-cols-2 gap-3 pt-4 border-t border-white/5">
                                             {activeOffer && activeOffer.status === 'pending' ? (
-                                                <Button disabled className="h-12 rounded-xl border-[#FF6600]/20 bg-[#FF6600]/5 text-[#FF6600] text-[10px] uppercase font-bold tracking-widest opacity-80 cursor-default">
+                                                <Button disabled className="h-12 rounded-xl border-[#FF6200]/20 bg-[#FF6200]/5 text-[#FF6200] text-[10px] uppercase font-bold tracking-widest opacity-80 cursor-default">
                                                     <Clock className="mr-2 h-3 w-3 animate-pulse" /> Offer Transmission Pending
                                                 </Button>
                                             ) : (
-                                                <Button onClick={() => setIsOfferOpen(true)} variant="outline" className="h-12 rounded-xl border-[#FF6600]/20 bg-[#FF6600]/5 text-[#FF6600] hover:bg-[#FF6600]/10 text-[10px] uppercase font-bold tracking-widest">
+                                                <Button onClick={() => setIsOfferOpen(true)} variant="outline" className="h-12 rounded-xl border-[#FF6200]/20 bg-[#FF6200]/5 text-[#FF6200] hover:bg-[#FF6200]/10 text-[10px] uppercase font-bold tracking-widest">
                                                     <Zap className="mr-2 h-3 w-3" /> {activeOffer?.status === 'rejected' ? 'Re-Negotiate' : 'Make Offer'}
                                                 </Button>
                                             )}
@@ -637,7 +637,7 @@ export default function ListingDetailContent() {
                         {/* Location Node Map */}
                         <div className="glass-card p-8 rounded-[2.5rem] border-white/5 space-y-6">
                             <h3 className="text-white font-black uppercase text-xs tracking-[0.2em] font-heading flex items-center gap-3">
-                                <span className="h-1.5 w-1.5 rounded-full bg-[#FF6600]" />
+                                <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200]" />
                                 Asset Node Location
                             </h3>
                             <ListingMap
@@ -646,7 +646,7 @@ export default function ListingDetailContent() {
                                 title={listing.location}
                             />
                             <div className="flex items-center gap-3 text-[10px] font-bold text-zinc-500 uppercase tracking-widest italic">
-                                <MapPin className="h-3 w-3 text-[#FF6600]" /> {listing.location} Node Stream Active
+                                <MapPin className="h-3 w-3 text-[#FF6200]" /> {listing.location} Node Stream Active
                             </div>
                         </div>
 
@@ -673,10 +673,10 @@ export default function ListingDetailContent() {
                         {/* Merchant Intelligence */}
                         <div className="glass-card p-8 rounded-[2.5rem] border-white/10 bg-white/[0.03] backdrop-blur-xl relative overflow-hidden group">
                             <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-10 transition-opacity">
-                                <ShieldCheck className="h-24 w-24 text-[#FF6600]" />
+                                <ShieldCheck className="h-24 w-24 text-[#FF6200]" />
                             </div>
                             <h3 className="text-white font-black uppercase text-xs tracking-[0.2em] font-heading mb-6 flex items-center gap-3 relative z-10">
-                                <span className="h-1.5 w-1.5 rounded-full bg-[#FF6600]" />
+                                <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200]" />
                                 Merchant Intelligence
                             </h3>
                             <div className="flex items-center gap-6 relative z-10">
@@ -690,12 +690,12 @@ export default function ListingDetailContent() {
                                 <div>
                                     <div className="flex items-center gap-2 mb-1">
                                         <h4 className="text-xl font-black uppercase tracking-tighter italic">{listing.dealer.display_name}</h4>
-                                        {listing.dealer.is_verified && <ShieldCheck className="h-4 w-4 text-[#FF6600]" />}
+                                        {listing.dealer.is_verified && <ShieldCheck className="h-4 w-4 text-[#FF6200]" />}
                                     </div>
                                     <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mb-4">Verified Institutional Node</p>
                                     <div className="flex items-center gap-4">
                                         <div className="flex items-center gap-1.5">
-                                            <Star className="h-3 w-3 fill-[#FF6600] text-[#FF6600]" />
+                                            <Star className="h-3 w-3 fill-[#FF6200] text-[#FF6200]" />
                                             <span className="text-[10px] font-black italic">4.9 RATING</span>
                                         </div>
                                         <span className="w-1 h-1 rounded-full bg-zinc-800" />
@@ -708,7 +708,7 @@ export default function ListingDetailContent() {
                         {/* Description */}
                         <div className="glass-card p-8 rounded-[2.5rem] border-white/5">
                             <h3 className="text-white font-black uppercase text-xs tracking-[0.2em] font-heading mb-6 flex items-center gap-3">
-                                <span className="h-1.5 w-1.5 rounded-full bg-[#FF6600]" />
+                                <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200]" />
                                 Technical Manifest
                             </h3>
                             <p className="text-zinc-400 text-sm leading-relaxed font-medium whitespace-pre-wrap">
@@ -724,7 +724,7 @@ export default function ListingDetailContent() {
                 <DialogContent className="bg-zinc-950 border-white/10 text-white sm:max-w-md">
                     <form onSubmit={handleMakeOffer}>
                         <DialogHeader>
-                            <DialogTitle className="text-[#FF6600] uppercase font-black tracking-widest flex items-center gap-2">
+                            <DialogTitle className="text-[#FF6200] uppercase font-black tracking-widest flex items-center gap-2">
                                 <Zap className="h-5 w-5" /> Negotiate Asset Price
                             </DialogTitle>
                             <DialogDescription className="text-zinc-400 text-xs">
@@ -739,7 +739,7 @@ export default function ListingDetailContent() {
                                     value={offerPrice}
                                     onChange={(e) => setOfferPrice(e.target.value)}
                                     placeholder={listing.price.toString()}
-                                    className="w-full h-12 px-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-1 focus:ring-[#FF6600]"
+                                    className="w-full h-12 px-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-1 focus:ring-[#FF6200]"
                                     required
                                 />
                             </div>
@@ -752,8 +752,8 @@ export default function ListingDetailContent() {
                                     className="bg-black/50 border-white/10 text-xs min-h-[100px] rounded-xl"
                                 />
                             </div>
-                            <div className="bg-[#FF6600]/5 border border-[#FF6600]/20 p-4 rounded-xl">
-                                <p className="text-[10px] text-[#FF6600] font-black uppercase leading-relaxed text-center">
+                            <div className="bg-[#FF6200]/5 border border-[#FF6200]/20 p-4 rounded-xl">
+                                <p className="text-[10px] text-[#FF6200] font-black uppercase leading-relaxed text-center">
                                     Keep negotiations in-app for security. Hand-to-hand or off-platform payments are not protected.
                                 </p>
                             </div>
@@ -763,7 +763,7 @@ export default function ListingDetailContent() {
                             <Button
                                 type="submit"
                                 disabled={isSubmittingOffer}
-                                className="bg-[#FF6600] text-black hover:bg-[#FF8533] font-black uppercase tracking-widest text-xs flex-1"
+                                className="bg-[#FF6200] text-black hover:bg-[#FF7A29] font-black uppercase tracking-widest text-xs flex-1 transition-all border-none"
                             >
                                 {isSubmittingOffer ? <Loader2 className="h-4 w-4 animate-spin" /> : "Dispatch Offer"}
                             </Button>
@@ -776,7 +776,7 @@ export default function ListingDetailContent() {
             <Dialog open={isReportOpen} onOpenChange={setIsReportOpen}>
                 <DialogContent className="bg-zinc-950 border-white/10 text-white sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle className="text-[#FF6600] uppercase font-black tracking-widest flex items-center gap-2">
+                        <DialogTitle className="text-[#FF6200] uppercase font-black tracking-widest flex items-center gap-2">
                             <AlertTriangle className="h-5 w-5" /> Report Issue
                         </DialogTitle>
                         <DialogDescription className="text-zinc-400 text-xs">

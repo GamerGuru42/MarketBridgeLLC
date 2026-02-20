@@ -78,7 +78,7 @@ export const Header = () => {
                 <div className="flex items-center gap-6">
                     <Logo />
                     <div
-                        className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full cursor-pointer hover:bg-white/10 hover:border-[#FF6600]/30 transition-all group"
+                        className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full cursor-pointer hover:bg-white/10 hover:border-[#FF6200]/30 transition-all group"
                         onClick={() => { localStorage.removeItem('mb-preferred-node'); window.location.reload(); }}
                     >
                         <div className="relative flex h-2 w-2">
@@ -93,23 +93,23 @@ export const Header = () => {
                 <nav className="hidden lg:flex items-center gap-8 bg-black/50 border border-white/5 px-8 py-3 rounded-full backdrop-blur-md">
                     <Link href="/" className={navLinkClass('/')}>
                         Home
-                        {isActive('/') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6600] rounded-full" />}
+                        {isActive('/') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6200] rounded-full" />}
                     </Link>
                     <Link href="/listings" className={navLinkClass('/listings')}>
                         Listings
-                        {isActive('/listings') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6600] rounded-full" />}
+                        {isActive('/listings') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6200] rounded-full" />}
                     </Link>
                     <Link href="/sellers" className={navLinkClass('/sellers')}>
                         Sellers
-                        {isActive('/sellers') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6600] rounded-full" />}
+                        {isActive('/sellers') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6200] rounded-full" />}
                     </Link>
                     <Link href="/pricing" className={navLinkClass('/pricing')}>
                         Pricing
-                        {isActive('/pricing') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6600] rounded-full" />}
+                        {isActive('/pricing') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6200] rounded-full" />}
                     </Link>
                     <Link href="/about" className={navLinkClass('/about')}>
                         About
-                        {isActive('/about') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6600] rounded-full" />}
+                        {isActive('/about') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6200] rounded-full" />}
                     </Link>
                 </nav>
 
@@ -117,10 +117,10 @@ export const Header = () => {
                 <div className="flex items-center gap-4">
                     {!user && !loading && (
                         <div className="hidden lg:flex items-center gap-4">
-                            <Link href="/login" className="text-white font-bold text-xs uppercase tracking-widest hover:text-[#FF6600] transition-colors">
+                            <Link href="/login" className="text-white font-bold text-xs uppercase tracking-widest hover:text-[#FF6200] transition-colors">
                                 Sign In
                             </Link>
-                            <Button asChild className="bg-[#FF6600] hover:bg-[#FF8533] text-black font-black uppercase tracking-widest px-6 rounded-full h-10 transition-all shadow-lg shadow-[#FF6600]/20 hover:shadow-[#FF6600]/40 hover:scale-105 border-none">
+                            <Button asChild className="bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest px-6 rounded-full h-10 transition-all shadow-lg shadow-[#FF6200]/20 hover:shadow-[#FF6200]/40 hover:scale-105 border-none">
                                 <Link href="/signup">
                                     Get Started
                                     <ChevronRight className="ml-1 h-4 w-4" />
@@ -132,12 +132,12 @@ export const Header = () => {
                     {user && (
                         <div className="flex items-center gap-3">
                             {/* MarketCoins Display */}
-                            <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#FF6600]/10 border border-[#FF6600]/20 rounded-full group cursor-help" title="Your MarketCoins balance">
-                                <Zap className="h-4 w-4 text-[#FF6600] fill-[#FF6600]/20 group-hover:scale-110 transition-transform" />
+                            <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#FF6200]/10 border border-[#FF6200]/20 rounded-full group cursor-help" title="Your MarketCoins balance">
+                                <Zap className="h-4 w-4 text-[#FF6200] fill-[#FF6200]/20 group-hover:scale-110 transition-transform" />
                                 <span className="text-[12px] font-black text-white tracking-widest leading-none">
                                     {(user.coins_balance || 0).toLocaleString()}
                                 </span>
-                                <span className="text-[8px] font-black uppercase text-[#FF6600] tracking-widest opacity-60">MC</span>
+                                <span className="text-[8px] font-black uppercase text-[#FF6200] tracking-widest opacity-60">MC</span>
                             </div>
 
                             {/* External Logout Button for easier access */}
@@ -156,8 +156,8 @@ export const Header = () => {
                                         <div className="relative">
                                             <User className="h-5 w-5 text-zinc-300" />
                                             <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6600] opacity-75"></span>
-                                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#FF6600]"></span>
+                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6200] opacity-75"></span>
+                                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#FF6200]"></span>
                                             </span>
                                         </div>
                                     </Button>
@@ -171,25 +171,25 @@ export const Header = () => {
                                         <div className="px-4 py-4 mb-2 border-b border-white/5 bg-zinc-900/50 rounded-2xl">
                                             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Account Protocol</p>
                                             <p className="text-sm font-black truncate text-white uppercase tracking-tight">{user.displayName || 'MarketBridge User'}</p>
-                                            <p className="text-[10px] text-[#FF6600] font-bold truncate opacity-80">{user.email}</p>
+                                            <p className="text-[10px] text-[#FF6200] font-bold truncate opacity-80">{user.email}</p>
                                         </div>
 
                                         {/* Primary Seller Action */}
                                         {['dealer', 'student_seller'].includes(user.role) && (
                                             <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1 outline-none border border-transparent focus:border-white/5">
                                                 <Link href="/seller/dashboard" className="flex items-center gap-4 w-full px-2">
-                                                    <div className="h-9 w-9 rounded-xl bg-[#FF6600]/10 border border-[#FF6600]/20 flex items-center justify-center group-hover:bg-[#FF6600]/20 transition-all">
-                                                        <LayoutDashboard className="h-4 w-4 text-[#FF6600]" />
+                                                    <div className="h-9 w-9 rounded-xl bg-[#FF6200]/10 border border-[#FF6200]/20 flex items-center justify-center group-hover:bg-[#FF6200]/20 transition-all">
+                                                        <LayoutDashboard className="h-4 w-4 text-[#FF6200]" />
                                                     </div>
-                                                    <span className="font-bold uppercase text-[10px] tracking-widest text-[#FF6600]">Merchant Terminal</span>
+                                                    <span className="font-bold uppercase text-[10px] tracking-widest text-[#FF6200]">Merchant Terminal</span>
                                                 </Link>
                                             </DropdownMenuItem>
                                         )}
 
                                         <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1 outline-none transition-colors border border-transparent focus:border-white/5">
                                             <Link href="/settings" className="flex items-center gap-4 w-full px-2">
-                                                <div className="h-9 w-9 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center group-hover:border-[#FF6600]/50 transition-colors">
-                                                    <User className="h-4 w-4 text-zinc-500 group-hover:text-[#FF6600]" />
+                                                <div className="h-9 w-9 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center group-hover:border-[#FF6200]/50 transition-colors">
+                                                    <User className="h-4 w-4 text-zinc-500 group-hover:text-[#FF6200]" />
                                                 </div>
                                                 <span className="font-bold uppercase text-[10px] tracking-widest text-zinc-400 group-hover:text-white transition-colors">Profile Node</span>
                                             </Link>
@@ -235,35 +235,35 @@ export const Header = () => {
                                 <Link
                                     href="/"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={cn("transition-all hover:translate-x-4", isActive('/') ? "text-[#FF6600]" : "text-white/40 hover:text-white")}
+                                    className={cn("transition-all hover:translate-x-4", isActive('/') ? "text-[#FF6200]" : "text-white/40 hover:text-white")}
                                 >
                                     Home
                                 </Link>
                                 <Link
                                     href="/listings"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={cn("transition-all hover:translate-x-4", isActive('/listings') ? "text-[#FF6600]" : "text-white/40 hover:text-white")}
+                                    className={cn("transition-all hover:translate-x-4", isActive('/listings') ? "text-[#FF6200]" : "text-white/40 hover:text-white")}
                                 >
                                     Listings
                                 </Link>
                                 <Link
                                     href="/sellers"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={cn("transition-all hover:translate-x-4", isActive('/sellers') ? "text-[#FF6600]" : "text-white/40 hover:text-white")}
+                                    className={cn("transition-all hover:translate-x-4", isActive('/sellers') ? "text-[#FF6200]" : "text-white/40 hover:text-white")}
                                 >
                                     Sellers
                                 </Link>
                                 <Link
                                     href="/pricing"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={cn("transition-all hover:translate-x-4", isActive('/pricing') ? "text-[#FF6600]" : "text-white/40 hover:text-white")}
+                                    className={cn("transition-all hover:translate-x-4", isActive('/pricing') ? "text-[#FF6200]" : "text-white/40 hover:text-white")}
                                 >
                                     Pricing
                                 </Link>
                                 <Link
                                     href="/about"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={cn("transition-all hover:translate-x-4", isActive('/about') ? "text-[#FF6600]" : "text-white/40 hover:text-white")}
+                                    className={cn("transition-all hover:translate-x-4", isActive('/about') ? "text-[#FF6200]" : "text-white/40 hover:text-white")}
                                 >
                                     About
                                 </Link>
@@ -272,7 +272,7 @@ export const Header = () => {
                             <div className="mt-auto flex flex-col gap-4">
                                 {!user ? (
                                     <>
-                                        <Button asChild className="h-16 rounded-[2rem] bg-[#FF6600] text-black font-black uppercase tracking-widest border-none hover:bg-[#FF8533]">
+                                        <Button asChild className="h-16 rounded-[2rem] bg-[#FF6200] text-black font-black uppercase tracking-widest border-none hover:bg-[#FF7A29]">
                                             <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>Create Account</Link>
                                         </Button>
                                         <Button variant="outline" asChild className="h-16 rounded-[2rem] bg-transparent border-white/20 text-white font-black uppercase tracking-widest hover:bg-white hover:text-black hover:border-transparent transition-all">
