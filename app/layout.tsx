@@ -90,7 +90,9 @@ export default function RootLayout({
             <LocationProvider>
               <CartProvider>
                 <ToastProvider>
-                  {children}
+                  <LocationChecker>
+                    {children}
+                  </LocationChecker>
 
                   {/* Global Beta Testing Label */}
                   <div className="fixed bottom-4 left-4 z-[9999] pointer-events-none">

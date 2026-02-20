@@ -6,23 +6,50 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLocation } from '@/contexts/LocationContext';
 import { GraduationCap, ShoppingBag, ArrowRight, Loader2 } from 'lucide-react';
 import { Logo } from '@/components/logo';
+import { createClient } from '@/lib/supabase/client';
+
 
 export default function HomePage() {
     const router = useRouter();
     const { user, loading: authLoading } = useAuth();
     const { isAbuja, loading: locationLoading, nearestUniversity } = useLocation();
     const [isMounted, setIsMounted] = useState(false);
-
-    // Both the environment variable AND a potential DB check are used for the hard lock
-    const isPublicEnabled = process.env.NEXT_PUBLIC_ENABLE_PUBLIC_SECTION === 'true';
+    const [isPublicEnabled, setIsPublicEnabled] = useState(false);
+    const [dbLoading, setDbLoading] = useState(true);
+    const supabase = createClient();
 
     useEffect(() => {
         setIsMounted(true);
+        checkPublicStatus();
     }, []);
+
+    const checkPublicStatus = async () => {
+        const envEnabled = process.env.NEXT_PUBLIC_ENABLE_PUBLIC_SECTION === 'true';
+        if (!envEnabled) {
+            setIsPublicEnabled(false);
+            setDbLoading(false);
+            return;
+        }
+
+        try {
+            const { data, error } = await supabase
+                .from('site_settings')
+                .select('value')
+                .eq('key', 'public_section_enabled')
+                .single();
+
+            const dbEnabled = data?.value === 'true' || data?.value === true;
+            setIsPublicEnabled(envEnabled && dbEnabled);
+        } catch (e) {
+            setIsPublicEnabled(false);
+        } finally {
+            setDbLoading(false);
+        }
+    };
 
     // Auto-redirect logged-in users to the right area based on role
     useEffect(() => {
-        if (!isMounted || authLoading || !user) return;
+        if (!isMounted || authLoading || dbLoading || !user) return;
 
         if (['student_seller', 'dealer'].includes(user.role)) {
             router.push('/seller/dashboard');
@@ -33,14 +60,15 @@ export default function HomePage() {
         } else if (user.role === 'customer' && isPublicEnabled) {
             router.push('/public');
         }
-    }, [isMounted, authLoading, user, router, isPublicEnabled]);
+    }, [isMounted, authLoading, dbLoading, user, router, isPublicEnabled]);
 
-    if (!isMounted || authLoading || locationLoading) {
+    if (!isMounted || authLoading || locationLoading || dbLoading) {
         return <HomeSkeleton />;
     }
 
-    // High fidelity detection: if within 10km of a campus or Geolocation says Abuja
+    const { data: { public: isPublicClient } } = { data: { public: true } }; // Mocking for local logic
     const isInAbujaCampus = isAbuja || (nearestUniversity && nearestUniversity.distance < 10);
+
 
     return (
         <div className="min-h-screen bg-[#000000] text-white flex flex-col font-sans selection:bg-[#FF6200] selection:text-black">
