@@ -1,1 +1,63 @@
-'use client';import React, { useState, useEffect } from 'react';import { X, Sparkles, Info } from 'lucide-react';import { Button } from '@/components/ui/button';import { motion, AnimatePresence } from 'framer-motion';export const BetaBanner = () => {    const [isVisible, setIsVisible] = useState(true);    useEffect(() => {        // Auto-dismiss after 15 seconds        const timer = setTimeout(() => {            setIsVisible(false);        }, 15000);        return () => clearTimeout(timer);    }, []);    if (!isVisible) return null;    return (        <AnimatePresence>            {isVisible && (                <motion.div                    initial={{ y: 50, opacity: 0 }}                    animate={{ y: 0, opacity: 1 }}                    exit={{ y: 50, opacity: 0 }}                    className="fixed bottom-8 sm:bottom-6 left-0 right-0 z-[9999] pointer-events-none flex justify-center px-4"                >                    <div className="bg-zinc-900/90 backdrop-blur-xl border border-[#FF6200]/30 text-white py-2.5 px-4 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.4)] flex items-center gap-3 sm:gap-4 max-w-[90vw] sm:max-w-2xl pointer-events-auto">                        <div className="flex items-center gap-3 flex-1 min-w-0">                            <span className="relative flex h-2 w-2 flex-shrink-0">                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6200] opacity-75"></span>                                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF6200]"></span>                            </span>                            <div className="overflow-hidden flex-1 mask-linear-fade">                                <div className="animate-marquee whitespace-nowrap text-[10px] sm:text-xs font-bold uppercase tracking-wider text-zinc-300 will-change-transform">                                    <span className="text-[#FF6200] mr-2">Market Notice:</span>                                    Listings are samples for demonstration. Real inventory incoming.                                    <span className="mx-4 text-zinc-600">///</span>                                    <span className="text-[#FF6200] mr-2">Market Notice:</span>                                    Listings are samples for demonstration. Real inventory incoming.                                    <span className="mx-4 text-zinc-600">///</span>                                </div>                            </div>                        </div>                        <Button                            variant="ghost"                            size="icon"                            onClick={() => setIsVisible(false)}                            className="h-6 w-6 rounded-full hover:bg-white/10 text-zinc-400 hover:text-white flex-shrink-0"                        >                            <X className="h-3 w-3" />                        </Button>                    </div>                </motion.div>            )}        </AnimatePresence>    );};
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { X, Sparkles, Info } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { motion, AnimatePresence } from 'framer-motion';
+
+export const BetaBanner = () => {
+    const [isVisible, setIsVisible] = useState(true);
+
+    useEffect(() => {
+        // Auto-dismiss after 15 seconds
+        const timer = setTimeout(() => {
+            setIsVisible(false);
+        }, 15000);
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    if (!isVisible) return null;
+
+    return (
+        <AnimatePresence>
+            {isVisible && (
+                <motion.div
+                    initial={{ y: 50, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: 50, opacity: 0 }}
+                    className="fixed bottom-8 sm:bottom-6 left-0 right-0 z-[9999] pointer-events-none flex justify-center px-4"
+                >
+                    <div className="bg-zinc-900/90 backdrop-blur-xl border border-[#FF6200]/30 text-white py-2.5 px-4 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.4)] flex items-center gap-3 sm:gap-4 max-w-[90vw] sm:max-w-2xl pointer-events-auto">
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <span className="relative flex h-2 w-2 flex-shrink-0">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6200] opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF6200]"></span>
+                            </span>
+
+                            <div className="overflow-hidden flex-1 mask-linear-fade">
+                                <div className="animate-marquee whitespace-nowrap text-[10px] sm:text-xs font-bold uppercase tracking-wider text-zinc-300 will-change-transform">
+                                    <span className="text-[#FF6200] mr-2">Market Notice:</span>
+                                    Listings are samples for demonstration. Real inventory incoming.
+                                    <span className="mx-4 text-zinc-600">///</span>
+                                    <span className="text-[#FF6200] mr-2">Market Notice:</span>
+                                    Listings are samples for demonstration. Real inventory incoming.
+                                    <span className="mx-4 text-zinc-600">///</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setIsVisible(false)}
+                            className="h-6 w-6 rounded-full hover:bg-white/10 text-zinc-400 hover:text-white flex-shrink-0"
+                        >
+                            <X className="h-3 w-3" />
+                        </Button>
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
+    );
+};

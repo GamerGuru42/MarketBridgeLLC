@@ -124,11 +124,11 @@ export default function CartPage() {
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest font-heading">Protocol Fees</span>
-                                    <span className="text-sm font-black text-[#00FF85] uppercase tracking-tighter italic">0.0% (WAVED)</span>
+                                    <span className="text-sm font-black text-[#FF6200] uppercase tracking-tighter italic">0.0% (WAVED)</span>
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest font-heading">Hub Routing</span>
-                                    <span className="text-sm font-black text-[#00FF85] uppercase tracking-tighter italic">DIRECTED</span>
+                                    <span className="text-sm font-black text-[#FF6200] uppercase tracking-tighter italic">DIRECTED</span>
                                 </div>
 
                                 <Separator className="bg-white/5" />

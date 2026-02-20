@@ -82,7 +82,7 @@ export default function HomePage() {
                                 <GraduationCap className="h-10 w-10 text-[#FF6200]" />
                             </div>
                             <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tighter text-white mb-4">
-                                Campus <span className="text-[#FF6200]">Marketplace</span>
+                                Campus Marketplace (Students Only)
                             </h2>
                             <p className="text-zinc-500 text-sm font-bold uppercase tracking-wide leading-relaxed">
                                 Buy, sell & trade safely within Abuja universities – verified students only
@@ -145,11 +145,6 @@ export default function HomePage() {
                             </a>
                         </div>
                     </div>
-                </div>
-                <div className="mt-10 text-center">
-                    <p className="text-[10px] text-white/20 font-bold uppercase tracking-[0.4em]">
-                        MarketBridge Beta Protocol © 2026
-                    </p>
                 </div>
             </footer>
         </div>

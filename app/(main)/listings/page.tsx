@@ -344,7 +344,7 @@ function ListingsContent() {
 
                                         <div className="absolute top-4 right-4 flex flex-col gap-2">
                                             {listing.is_verified_listing && (
-                                                <div className="px-3 py-1.5 rounded-full bg-[#00FF85] text-black font-black text-[8px] tracking-widest flex items-center gap-1.5 shadow-xl">
+                                                <div className="px-3 py-1.5 rounded-full bg-[#FF6200] text-black font-black text-[8px] tracking-widest flex items-center gap-1.5 shadow-xl">
                                                     <ShieldCheck className="h-3 w-3" />
                                                     VERIFIED
                                                 </div>
@@ -386,8 +386,8 @@ function ListingsContent() {
                                             </div>
                                             <div className="flex items-center gap-3">
                                                 {listing.dealer?.is_verified && (
-                                                    <div className="h-8 w-8 rounded-full bg-[#00FF85]/10 flex items-center justify-center border border-[#00FF85]/20">
-                                                        <ShieldCheck className="h-4 w-4 text-[#00FF85]" />
+                                                    <div className="h-8 w-8 rounded-full bg-[#FF6200]/10 flex items-center justify-center border border-[#FF6200]/20">
+                                                        <ShieldCheck className="h-4 w-4 text-[#FF6200]" />
                                                     </div>
                                                 )}
                                             </div>

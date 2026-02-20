@@ -1,1 +1,191 @@
-'use client';import React, { useState, useEffect, useRef } from 'react';import { useRouter } from 'next/navigation';import { useAuth } from '@/contexts/AuthContext';import { createClient } from '@/lib/supabase/client';import { Button } from '@/components/ui/button';import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';import { Loader2, Mail, Lock, AlertCircle, CheckCircle, RefreshCw, ArrowLeft } from 'lucide-react';import { cn } from '@/lib/utils';export default function VerifyEmailPage() {    const { user, sessionUser, loading: authLoading, refreshUser } = useAuth();    const router = useRouter();    const supabase = createClient();    const [otpCode, setOtpCode] = useState(['', '', '', '', '', '']);    const [isVerifying, setIsVerifying] = useState(false);    const [isSending, setIsSending] = useState(false);    const [error, setError] = useState<string | null>(null);    const [success, setSuccess] = useState(false);    const [cooldown, setCooldown] = useState(0);    const inputRefs = useRef<(HTMLInputElement | null)[]>([]);    useEffect(() => {        if (!authLoading && !sessionUser) {            router.push('/login');            return;        }        if (user && user.email_verified) {            router.push('/seller/dashboard');        }    }, [user, sessionUser, authLoading, router]);    useEffect(() => {        let timer: NodeJS.Timeout;        if (cooldown > 0) {            timer = setInterval(() => {                setCooldown(prev => prev - 1);            }, 1000);        }        return () => clearInterval(timer);    }, [cooldown]);    const handleOtpChange = (index: number, value: string) => {        if (!/^\d*$/.test(value)) return;        const newOtp = [...otpCode];        newOtp[index] = value.slice(-1);        setOtpCode(newOtp);        if (value && index < 5) {            inputRefs.current[index + 1]?.focus();        }    };    const handleKeyDown = (index: number, e: React.KeyboardEvent) => {        if (e.key === 'Backspace' && !otpCode[index] && index > 0) {            inputRefs.current[index - 1]?.focus();        }    };    const handlePaste = (e: React.ClipboardEvent) => {        e.preventDefault();        const pastedData = e.clipboardData.getData('text').slice(0, 6).split('');        const newOtp = [...otpCode];        pastedData.forEach((char, i) => {            if (/^\d$/.test(char)) {                newOtp[i] = char;            }        });        setOtpCode(newOtp);        inputRefs.current[Math.min(pastedData.length, 5)]?.focus();    };    const sendOtp = async () => {        if (!sessionUser?.email || cooldown > 0) return;        setIsSending(true);        setError(null);        try {            const { error } = await supabase.auth.signInWithOtp({                email: sessionUser.email,                options: { shouldCreateUser: false }            });            if (error) throw error;            // Track last_otp_sent in users table            await supabase.from('users')                .update({ last_otp_sent: new Date().toISOString() })                .eq('id', sessionUser.id);            setCooldown(60);        } catch (err: any) {            console.error('Error sending OTP:', err);            setError(err.message || 'Failed to send verification code.');        } finally {            setIsSending(false);        }    };    const verifyOtp = async () => {        const code = otpCode.join('');        if (code.length !== 6 || !sessionUser?.email) return;        setIsVerifying(true);        setError(null);        try {            const { data, error } = await supabase.auth.verifyOtp({                email: sessionUser.email,                token: code,                type: 'email'            });            if (error) throw error;            // Success! Update our users table            const { error: updateError } = await supabase.from('users')                .update({ email_verified: true })                .eq('id', sessionUser.id);            if (updateError) throw updateError;            setSuccess(true);            await refreshUser();            // Redirect after a brief moment            setTimeout(() => {                router.push('/seller/dashboard');            }, 2000);        } catch (err: any) {            console.error('Error verifying OTP:', err);            setError(err.message || 'Invalid or expired code.');            // Clear code on error            setOtpCode(['', '', '', '', '', '']);            inputRefs.current[0]?.focus();        } finally {            setIsVerifying(false);        }    };    if (authLoading) {        return (            <div className="min-h-screen flex items-center justify-center bg-black">                <Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" />            </div>        );    }    return (        <div className="min-h-screen flex items-center justify-center p-4 bg-black relative overflow-hidden">            <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none" />            <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white shadow-2xl relative z-10">                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF6200] to-transparent" />                <CardHeader className="p-0 text-center mb-8">                    <div className="mx-auto h-20 w-20 rounded-full bg-[#FF6200]/10 flex items-center justify-center mb-6 relative">                        {success ? (                            <CheckCircle className="h-10 w-10 text-[#00FF85] animate-in zoom-in duration-300" />                        ) : (                            <Mail className="h-10 w-10 text-[#FF6200] animate-pulse" />                        )}                        {!success && <div className="absolute inset-0 rounded-full border border-[#FF6200]/30 animate-ping opacity-25" />}                    </div>                    <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2">                        {success ? "Identity Verified" : "Verify Your Email"}                    </CardTitle>                    <CardDescription className="text-zinc-500 font-medium leading-relaxed">                        {success                            ? "Terminal access granted. Redirecting to your dashboard..."                            : "This is a Beta step – verifying your email helps keep the platform safe and trusted."}                    </CardDescription>                </CardHeader>                <CardContent className="p-0 space-y-8">                    {!success && (                        <>                            <div className="text-center space-y-4">                                <p className="text-sm text-zinc-400">                                    We sent a 6-digit code to <br />                                    <span className="text-white font-bold">{sessionUser?.email}</span>                                </p>                                <div className="flex justify-between gap-2" onPaste={handlePaste}>                                    {otpCode.map((digit, i) => (                                        <input                                            key={i}                                            ref={el => { inputRefs.current[i] = el; }}                                            type="text"                                            maxLength={1}                                            value={digit}                                            onChange={e => handleOtpChange(i, e.target.value)}                                            onKeyDown={e => handleKeyDown(i, e)}                                            className="w-12 h-14 bg-zinc-900 border border-white/5 rounded-xl text-center text-xl font-black text-white focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] outline-none transition-all"                                            autoFocus={i === 0}                                        />                                    ))}                                </div>                            </div>                            {error && (                                <div className="flex items-center gap-2 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500 text-xs font-bold animate-in fade-in slide-in-from-top-2">                                    <AlertCircle className="h-4 w-4" />                                    {error}                                </div>                            )}                            <div className="space-y-4">                                <Button                                    onClick={verifyOtp}                                    disabled={isVerifying || otpCode.join('').length !== 6}                                    className="w-full h-14 bg-[#FF6200] text-black font-black uppercase tracking-widest rounded-xl hover:bg-[#FF8533] disabled:opacity-50 disabled:grayscale transition-all shadow-[0_10px_30px_rgba(255,102,0,0.2)]"                                >                                    {isVerifying ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : "Verify and Secure"}                                </Button>                                <div className="text-center">                                    <Button                                        variant="ghost"                                        disabled={isSending || cooldown > 0}                                        onClick={sendOtp}                                        className="text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white"                                    >                                        {cooldown > 0 ? `Resend Code (${cooldown}s)` : (isSending ? "Sending..." : "Didn't receive a code? Resend")}                                    </Button>                                </div>                            </div>                        </>                    )}                    {success && (                        <div className="py-8 text-center animate-pulse">                            <p className="text-[#00FF85] font-black uppercase tracking-[0.2em] text-xs">Access Protocol Syncing...</p>                        </div>                    )}                </CardContent>                <div className="mt-10 pt-6 border-t border-white/5 flex justify-center">                    <Button                        variant="ghost"                        onClick={() => router.push('/')}                        className="text-zinc-600 hover:text-white text-[10px] font-black uppercase tracking-widest gap-2"                    >                        <ArrowLeft className="h-3 w-3" /> Return to Base                    </Button>                </div>            </Card>        </div>    );}
+'use client';
+
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { createClient } from '@/lib/supabase/client';
+import { Logo } from '@/components/logo';
+import { useToast } from '@/contexts/ToastContext';
+import { Loader2, ShieldCheck, Mail, ArrowRight, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+
+function VerifyEmailContent() {
+    const [otp, setOtp] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [isResending, setIsResending] = useState(false);
+    const [countdown, setCountdown] = useState(0);
+    const [isVerified, setIsVerified] = useState(false);
+
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const { toast } = useToast();
+    const { user, refreshUser } = useAuth();
+    const supabase = createClient();
+
+    const email = searchParams.get('email') || user?.email;
+
+    useEffect(() => {
+        if (countdown > 0) {
+            const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [countdown]);
+
+    const handleVerify = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (otp.length !== 6) {
+            toast('Please enter the 6-digit code', 'error');
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const { error } = await supabase.auth.verifyOtp({
+                email: email!,
+                token: otp,
+                type: 'signup'
+            });
+
+            if (error) throw error;
+
+            // Update user status
+            await supabase.from('users').update({ email_verified: true }).eq('id', user?.id);
+
+            setIsVerified(true);
+            toast('Email verified successfully', 'success');
+            await refreshUser();
+
+            setTimeout(() => {
+                router.push('/seller/dashboard');
+            }, 2000);
+
+        } catch (err: any) {
+            console.error('Verification error:', err);
+            toast(err.message || 'Invalid code. Please check and try again.', 'error');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleResend = async () => {
+        if (countdown > 0) return;
+
+        setIsResending(true);
+        try {
+            const { error } = await supabase.auth.resend({
+                type: 'signup',
+                email: email!,
+            });
+
+            if (error) throw error;
+
+            toast('New code transmitted', 'success');
+            setCountdown(60);
+        } catch (err: any) {
+            toast(err.message || 'Resend failed', 'error');
+        } finally {
+            setIsResending(false);
+        }
+    };
+
+    if (isVerified) {
+        return (
+            <div className="text-center space-y-8 animate-in zoom-in-95 duration-500">
+                <div className="flex justify-center">
+                    <div className="h-24 w-24 rounded-full bg-[#FF6200]/10 flex items-center justify-center border-4 border-[#FF6200]/20">
+                        <CheckCircle2 className="h-12 w-12 text-[#FF6200]" />
+                    </div>
+                </div>
+                <div className="space-y-2">
+                    <h2 className="text-3xl font-black uppercase italic tracking-tighter">Access <span className="text-[#FF6200]">Granted</span></h2>
+                    <p className="text-zinc-500 font-bold uppercase text-[10px] tracking-widest">Redirecting to Seller Dashboard...</p>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-10">
+            <div className="space-y-4">
+                <div className="flex justify-center mb-8">
+                    <div className="h-16 w-16 rounded-2xl bg-[#FF6200]/5 flex items-center justify-center border border-white/5">
+                        <Mail className="h-8 w-8 text-[#FF6200]" />
+                    </div>
+                </div>
+                <div className="text-center space-y-2">
+                    <h2 className="text-3xl font-black uppercase italic tracking-tighter">Enter <span className="text-[#FF6200]">Access Code</span></h2>
+                    <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Encoded signal sent to {email}</p>
+                </div>
+            </div>
+
+            <form onSubmit={handleVerify} className="space-y-8">
+                <div className="space-y-4">
+                    <input
+                        type="text"
+                        maxLength={6}
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                        placeholder="000 000"
+                        className="w-full bg-black border-2 border-white/10 rounded-[1.5rem] h-20 text-center text-4xl font-black tracking-[0.5em] text-[#FF6200] placeholder:text-zinc-900 focus:border-[#FF6200] focus:ring-4 focus:ring-[#FF6200]/10 outline-none transition-all"
+                        required
+                    />
+                    <div className="flex justify-between items-center px-2">
+                        <button
+                            type="button"
+                            onClick={handleResend}
+                            disabled={countdown > 0 || isResending}
+                            className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 group disabled:opacity-30"
+                        >
+                            {isResending ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3 group-hover:rotate-180 transition-transform duration-500" />}
+                            {countdown > 0 ? `Resend Signal in ${countdown}s` : 'Resend Signal'}
+                        </button>
+                        <ShieldCheck className="h-4 w-4 text-zinc-800" />
+                    </div>
+                </div>
+
+                <Button
+                    type="submit"
+                    disabled={isLoading || otp.length !== 6}
+                    className="w-full h-18 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest rounded-[1.5rem] shadow-[0_20px_40px_rgba(255,102,0,0.2)] border-none text-xs flex items-center justify-center gap-3 transition-all"
+                >
+                    {isLoading ? <Loader2 className="animate-spin h-6 w-6" /> : (
+                        <>
+                            Verify Identity
+                            <ArrowRight className="h-4 w-4" />
+                        </>
+                    )}
+                </Button>
+            </form>
+
+            <div className="text-center pt-4">
+                <button
+                    onClick={() => router.push('/login')}
+                    className="text-[9px] font-black uppercase tracking-widest text-zinc-600 hover:text-white transition-colors"
+                >
+                    Return to Login Base
+                </button>
+            </div>
+        </div>
+    );
+}
+
+export default function VerifyEmailPage() {
+    return (
+        <div className="min-h-screen bg-black flex items-center justify-center p-6 relative">
+            <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#FF6200]/5 blur-[100px] rounded-full pointer-events-none" />
+
+            <Card className="w-full max-lg glass-card border-none rounded-[3rem] p-8 sm:p-14 relative z-10">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[1px] bg-[#FF6200]/30" />
+                <div className="mb-12 flex justify-center">
+                    <Logo showText={false} className="scale-110 saturate-150" />
+                </div>
+                <Suspense fallback={<div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-[#FF6200]" /></div>}>
+                    <VerifyEmailContent />
+                </Suspense>
+            </Card>
+        </div>
+    );
+}

@@ -283,7 +283,7 @@ export default function OrdersPage() {
                                         <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Cycle ID</p>
                                         <h3 className="text-3xl font-black uppercase tracking-tighter italic font-heading">#{order.id.slice(-8).toUpperCase()}</h3>
                                     </div>
-                                    <div className={`px-6 py-3 rounded-2xl border flex items-center gap-3 ${order.status === 'completed' ? 'bg-[#00FF85]/10 border-[#00FF85]/20 text-[#00FF85]' :
+                                    <div className={`px-6 py-3 rounded-2xl border flex items-center gap-3 ${order.status === 'completed' ? 'bg-[#FF6200]/10 border-[#FF6200]/20 text-[#FF6200]' :
                                         order.status === 'disputed' ? 'bg-red-500/10 border-red-500/20 text-red-500' :
                                             order.status === 'cancelled' ? 'bg-zinc-800 border-zinc-700 text-zinc-500' :
                                                 'bg-[#FF6200]/10 border-[#FF6200]/20 text-[#FF6200]'
@@ -446,8 +446,8 @@ export default function OrdersPage() {
                                             </div>
                                         )}
                                         {order.status === 'completed' && (
-                                            <div className="bg-[#00FF85]/10 border border-[#00FF85]/20 rounded-[2rem] p-8 space-y-2">
-                                                <div className="flex items-center gap-3 text-[#00FF85]">
+                                            <div className="bg-[#FF6200]/10 border border-[#FF6200]/20 rounded-[2rem] p-8 space-y-2">
+                                                <div className="flex items-center gap-3 text-[#FF6200]">
                                                     <CheckCircle className="h-5 w-5" />
                                                     <span className="text-xs font-black uppercase tracking-widest">Protocol Terminated: Successful</span>
                                                 </div>

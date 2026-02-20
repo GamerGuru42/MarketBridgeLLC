@@ -181,7 +181,7 @@ export default function SettingsPage() {
                         </Button>
                     </div>
                     {successMessage && (
-                        <div className="bg-[#00FF85]/10 border border-[#00FF85]/20 text-[#00FF85] px-6 py-3 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 backdrop-blur-md">
+                        <div className="bg-[#FF6200]/10 border border-[#FF6200]/20 text-[#FF6200] px-6 py-3 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 backdrop-blur-md">
                             <CheckCircle className="h-4 w-4" />
                             <span className="text-xs font-black uppercase tracking-widest">{successMessage}</span>
                         </div>
@@ -424,11 +424,11 @@ export default function SettingsPage() {
                                     <div className="flex items-center justify-between p-6 bg-black border border-white/5 rounded-2xl">
                                         <div className="space-y-1">
                                             <p className="text-[10px] uppercase font-black text-zinc-600 tracking-[0.2em]">Verification Status</p>
-                                            <p className={`font-black uppercase tracking-wider ${user.isVerified ? 'text-[#00FF85]' : 'text-zinc-500'}`}>
+                                            <p className={`font-black uppercase tracking-wider ${user.isVerified ? 'text-[#FF6200]' : 'text-zinc-500'}`}>
                                                 {user.isVerified ? 'Verified' : 'Pending'}
                                             </p>
                                         </div>
-                                        <CheckCircle className={`h-6 w-6 ${user.isVerified ? 'text-[#00FF85]' : 'text-zinc-700'}`} />
+                                        <CheckCircle className={`h-6 w-6 ${user.isVerified ? 'text-[#FF6200]' : 'text-zinc-700'}`} />
                                     </div>
                                 </CardContent>
                             </Card>
@@ -460,7 +460,7 @@ export default function SettingsPage() {
                                         <p className="font-bold text-white uppercase tracking-wider">Order Updates</p>
                                         <p className="text-xs text-zinc-500 font-medium">Order status and essential updates</p>
                                     </div>
-                                    <div className="px-3 py-1 bg-[#00FF85]/10 text-[#00FF85] text-[9px] font-black uppercase rounded-full border border-[#00FF85]/20 tracking-tighter">On</div>
+                                    <div className="px-3 py-1 bg-[#FF6200]/10 text-[#FF6200] text-[9px] font-black uppercase rounded-full border border-[#FF6200]/20 tracking-tighter">On</div>
                                 </div>
                                 <div className="border-t border-zinc-800 my-2" />
                                 <div className="flex items-center justify-between p-6 bg-white/5 border border-white/5 rounded-2xl opacity-40">

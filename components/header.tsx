@@ -82,8 +82,8 @@ export const Header = () => {
                         onClick={() => { localStorage.removeItem('mb-preferred-node'); window.location.reload(); }}
                     >
                         <div className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00FF85] opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00FF85]"></span>
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6200] opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF6200]"></span>
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-[0.1em] text-zinc-300 group-hover:text-white transition-colors">{currentNode} Node</span>
                     </div>
@@ -197,10 +197,10 @@ export const Header = () => {
                                         {['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'].includes(user.role) && (
                                             <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1 outline-none border border-transparent focus:border-white/5">
                                                 <Link href="/admin" className="flex items-center gap-4 w-full px-2">
-                                                    <div className="h-9 w-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                                                        <Crown className="h-4 w-4 text-emerald-500" />
+                                                    <div className="h-9 w-9 rounded-xl bg-[#FF6200]/10 border border-[#FF6200]/20 flex items-center justify-center">
+                                                        <Crown className="h-4 w-4 text-[#FF6200]" />
                                                     </div>
-                                                    <span className="font-bold uppercase text-[10px] tracking-widest text-emerald-500">Master Control</span>
+                                                    <span className="font-bold uppercase text-[10px] tracking-widest text-[#FF6200]">Master Control</span>
                                                 </Link>
                                             </DropdownMenuItem>
                                         )}

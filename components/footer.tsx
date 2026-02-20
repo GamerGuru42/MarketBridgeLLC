@@ -63,8 +63,8 @@ export const Footer = () => {
                 <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-zinc-700 font-black uppercase tracking-[0.2em]">
                     <p>&copy; {new Date().getFullYear()} MarketBridge Limited (Beta). All rights reserved.</p>
                     <div className="flex gap-8">
-                        <span className="text-[#00FF85] flex items-center gap-2">
-                            <span className="h-1.5 w-1.5 rounded-full bg-[#00FF85] animate-pulse" />
+                        <span className="text-[#FF6200] flex items-center gap-2">
+                            <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200] animate-pulse" />
                             Systems Operational
                         </span>
                         <span className="text-zinc-600">v1.0.0-BETA.3</span>

@@ -250,7 +250,7 @@ export default function SellerListingsPage() {
                                 )}
                                 <div className="absolute top-3 right-3 flex flex-col gap-2">
                                     <Badge
-                                        className={`font-black uppercase tracking-tighter shadow-lg ${listing.status === 'active' ? 'bg-[#00FF85] text-black hover:bg-[#00E676]' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}
+                                        className={`font-black uppercase tracking-tighter shadow-lg ${listing.status === 'active' ? 'bg-[#FF6200] text-black hover:bg-[#FF7A29]' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}
                                     >
                                         {listing.status}
                                     </Badge>

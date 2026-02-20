@@ -614,7 +614,7 @@ export default function SellerDashboardPage() {
                                     Your merchant credentials are under review by central command. Access will be granted upon successful ID verification.
                                     <br /><br />
                                     <span className="text-[10px] uppercase font-bold text-zinc-600">
-                                        For verification questions, email <a href="mailto:ops-support@marketbridge.com.ng?subject=Account%20Verification" className="text-[#00FF85] hover:underline">ops-support@marketbridge.com.ng</a>
+                                        For verification questions, email <a href="mailto:ops-support@marketbridge.com.ng?subject=Account%20Verification" className="text-[#FF6200] hover:underline">ops-support@marketbridge.com.ng</a>
                                     </span>
                                 </>
                             )
@@ -675,20 +675,20 @@ export default function SellerDashboardPage() {
                     <div className="flex items-center gap-4">
                         <div className="h-16 px-8 rounded-2xl bg-white/5 border border-white/10 flex flex-col justify-center">
                             <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest border-b border-white/5 mb-1 pb-1 font-heading">Network Status</span>
-                            <span className="text-sm font-black text-[#00FF85] italic uppercase tracking-tighter flex items-center gap-2 font-heading">
-                                <span className="h-1.5 w-1.5 rounded-full bg-[#00FF85]" /> Connected
+                            <span className="text-sm font-black text-white italic uppercase tracking-tighter flex items-center gap-2 font-heading">
+                                <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200]" /> Connected
                             </span>
                         </div>
                         <div className="hidden md:flex gap-3">
                             <a
                                 href={`mailto:support@marketbridge.com.ng?subject=Tech%20Support%20%E2%80%93%20${user?.displayName || 'Merchant'}`}
-                                className="h-16 px-6 flex items-center justify-center bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-2xl text-red-500 font-black uppercase tracking-widest text-[10px] transition-all font-heading"
+                                className="h-16 px-6 flex items-center justify-center bg-[#FF6200]/10 hover:bg-[#FF6200]/20 border border-[#FF6200]/20 rounded-2xl text-[#FF6200] font-black uppercase tracking-widest text-[10px] transition-all font-heading"
                             >
                                 Report Bug / Tech Issue
                             </a>
                             <a
                                 href={`mailto:ops-support@marketbridge.com.ng?subject=Seller%20Support%20%E2%80%93%20${user?.displayName || 'Merchant'}`}
-                                className="h-16 px-6 flex items-center justify-center bg-[#00FF85]/10 hover:bg-[#00FF85]/20 border border-[#00FF85]/20 rounded-2xl text-[#00FF85] font-black uppercase tracking-widest text-[10px] transition-all font-heading"
+                                className="h-16 px-6 flex items-center justify-center bg-white/5 hover:bg-white/10 border border-white/20 rounded-2xl text-white font-black uppercase tracking-widest text-[10px] transition-all font-heading"
                             >
                                 Refund / Payment / Seller Help
                             </a>
@@ -708,7 +708,7 @@ export default function SellerDashboardPage() {
                         { label: "Revenue Cycle", val: `₦${stats.totalRevenue.toLocaleString()}`, icon: DollarSign, trend: "+12.5%" },
                         { label: "Active Orders", val: stats.totalOrders, icon: ShoppingBag, trend: "Stable" },
                         { label: "Pending Verification", val: stats.pendingOrders, icon: Clock, color: "text-[#FF6200]" },
-                        { label: "Success Rate", val: `${Math.round((stats.completedOrders / (stats.totalOrders || 1)) * 100)}%`, icon: TrendingUp, color: "text-[#00FF85]" }
+                        { label: "Success Rate", val: `${Math.round((stats.completedOrders / (stats.totalOrders || 1)) * 100)}%`, icon: TrendingUp, color: "text-white" }
                     ].map((stat, i) => (
                         <div key={i} className="glass-card p-8 group relative overflow-hidden transition-all duration-500 hover:translate-y-[-5px]">
                             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -717,7 +717,7 @@ export default function SellerDashboardPage() {
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
                                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading leading-tight">{stat.label}</span>
-                                    {stat.trend && <span className="text-[9px] font-black text-[#00FF85] bg-[#00FF85]/5 px-2 py-0.5 rounded uppercase font-heading">{stat.trend}</span>}
+                                    {stat.trend && <span className="text-[9px] font-black text-[#FF6200] bg-[#FF6200]/5 px-2 py-0.5 rounded uppercase font-heading">{stat.trend}</span>}
                                 </div>
                                 <div className={cn("text-3xl font-black uppercase tracking-tighter font-heading", stat.color || "text-white")}>
                                     {stat.val}
@@ -768,7 +768,7 @@ export default function SellerDashboardPage() {
                                     <TabsTrigger value="offers" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading relative">
                                         Offers Terminal
                                         {offerStats.totalPending > 0 && (
-                                            <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-[8px] flex items-center justify-center text-white border-2 border-black animate-pulse">
+                                            <span className="absolute -top-1 -right-1 h-4 w-4 bg-[#FF6200] rounded-full text-[8px] flex items-center justify-center text-black border-2 border-black animate-pulse">
                                                 {offerStats.totalPending}
                                             </span>
                                         )}
@@ -778,7 +778,7 @@ export default function SellerDashboardPage() {
                                 </TabsList>
                             </div>
                             <div className="flex items-center gap-4 text-zinc-500 text-[10px] font-black uppercase tracking-widest font-heading italic">
-                                <span className="h-1.5 w-1.5 rounded-full bg-[#00FF85] animate-pulse" /> Auto-sync enabled
+                                <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200] animate-pulse" /> Auto-sync enabled
                             </div>
                         </div>
 
@@ -840,7 +840,7 @@ export default function SellerDashboardPage() {
                                                         <Badge className={cn(
                                                             "px-3 py-1 font-black uppercase text-[9px] tracking-widest border font-heading italic",
                                                             offer.status === 'pending' ? 'bg-[#FF6200]/10 text-[#FF6200] border-[#FF6200]/20' :
-                                                                offer.status === 'accepted' ? 'bg-emerald-950/20 text-[#00FF85] border-emerald-500/20' :
+                                                                offer.status === 'accepted' ? 'bg-white/5 text-white border-white/20' :
                                                                     'bg-zinc-800 text-zinc-400 border-zinc-700'
                                                         )}>
                                                             {offer.status}
@@ -873,7 +873,7 @@ export default function SellerDashboardPage() {
                                                         <Button
                                                             onClick={() => handleOfferAction(offer, 'accept')}
                                                             disabled={processingOffer === offer.id}
-                                                            className="flex-1 md:w-32 h-12 bg-[#00FF85] text-black font-black uppercase tracking-widest text-[10px] hover:bg-[#00CC6A]"
+                                                            className="flex-1 md:w-32 h-12 bg-[#FF6200] text-black font-black uppercase tracking-widest text-[10px] hover:bg-[#FF7A29]"
                                                         >
                                                             {processingOffer === offer.id ? <Loader2 className="h-4 w-4 animate-spin" /> : "Accept"}
                                                         </Button>
@@ -881,7 +881,7 @@ export default function SellerDashboardPage() {
                                                             onClick={() => handleOfferAction(offer, 'reject')}
                                                             disabled={processingOffer === offer.id}
                                                             variant="outline"
-                                                            className="flex-1 md:w-32 h-12 border-red-500/20 text-red-500 hover:bg-red-500/10 font-black uppercase tracking-widest text-[10px]"
+                                                            className="flex-1 md:w-32 h-12 border-white/20 text-zinc-400 hover:text-white hover:bg-white/5 font-black uppercase tracking-widest text-[10px]"
                                                         >
                                                             Reject
                                                         </Button>
@@ -969,7 +969,7 @@ export default function SellerDashboardPage() {
                                         <div className="p-6 bg-white/[0.02] border border-white/5 rounded-2xl">
                                             <div className="flex justify-between items-center mb-4 text-zinc-600">
                                                 <span className="text-[10px] font-black uppercase tracking-widest">Referral Stats</span>
-                                                <span className="h-2 w-2 rounded-full bg-[#00FF85] animate-pulse" />
+                                                <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
                                             </div>
                                             <div className="grid grid-cols-2 gap-6">
                                                 <div>
@@ -992,9 +992,9 @@ export default function SellerDashboardPage() {
                                 <div className="space-y-1">
                                     <h3 className="text-2xl font-black uppercase tracking-tighter font-heading italic">Payout Terminal</h3>
                                     <p className="text-zinc-500 text-sm italic mb-4">Establishing secure Paystack subaccount for auto-payouts.</p>
-                                    <div className="bg-[#00FF85]/5 border border-[#00FF85]/10 p-4 rounded-2xl flex items-start gap-4 mb-8">
-                                        <Zap className="h-5 w-5 text-[#00FF85] shrink-0 mt-1" />
-                                        <p className="text-[10px] text-[#00FF85] font-black uppercase tracking-widest leading-relaxed">
+                                    <div className="bg-[#FF6200]/5 border border-[#FF6200]/10 p-4 rounded-2xl flex items-start gap-4 mb-8">
+                                        <Zap className="h-5 w-5 text-[#FF6200] shrink-0 mt-1" />
+                                        <p className="text-[10px] text-[#FF6200] font-black uppercase tracking-widest leading-relaxed">
                                             Beta Feature: Funds are split automatically. You receive the net amount minus platform commission directly to this bank via Paystack settlement.
                                         </p>
                                     </div>
@@ -1040,7 +1040,7 @@ export default function SellerDashboardPage() {
                                             value={bankDetails.accountName}
                                             readOnly
                                             placeholder="AUTO-RESOLVING NAME..."
-                                            className="h-14 bg-white/[0.02] border-white/10 rounded-xl font-heading text-sm uppercase tracking-widest text-[#00FF85] cursor-not-allowed"
+                                            className="h-14 bg-white/[0.02] border-white/10 rounded-xl font-heading text-sm uppercase tracking-widest text-white cursor-not-allowed"
                                             required
                                         />
                                     </div>
@@ -1088,8 +1088,8 @@ function OrderCard({
         const colors = {
             pending: 'bg-[#FF6200]/10 text-[#FF6200] border-[#FF6200]/20',
             confirmed: 'bg-zinc-800 text-zinc-400 border-zinc-700',
-            completed: 'bg-emerald-950/20 text-[#00FF85] border-emerald-500/20',
-            cancelled: 'bg-red-950/20 text-red-400 border-red-500/20',
+            completed: 'bg-white/5 text-white border-white/20',
+            cancelled: 'bg-white/5 text-zinc-400 border-zinc-700',
         } as const;
 
         return (
@@ -1141,7 +1141,7 @@ function OrderCard({
                         </SelectTrigger>
                         <SelectContent className="bg-zinc-900 border-white/10 text-white font-heading text-[10px] uppercase font-black tracking-widest">
                             <SelectItem value="confirmed" className="focus:bg-[#FF6200] focus:text-black">Mark Shipped</SelectItem>
-                            <SelectItem value="cancelled" className="focus:bg-red-500 focus:text-white">Cancel Order</SelectItem>
+                            <SelectItem value="cancelled" className="focus:bg-zinc-800 focus:text-white text-red-500">Cancel Order</SelectItem>
                         </SelectContent>
                     </Select>
                 )}

@@ -12,6 +12,10 @@ import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
+const Separator = ({ className }: { className?: string }) => (
+    <div className={cn("h-[1px] w-full", className)} />
+);
+
 const supabase = createClient();
 
 export default function CheckoutPage() {
@@ -220,8 +224,8 @@ export default function CheckoutPage() {
                                                 <Loader2 className="h-8 w-8 text-[#FF6200] animate-spin mx-auto" />
                                             ) : proofUrl ? (
                                                 <div className="flex flex-col items-center gap-2">
-                                                    <CheckCircle2 className="h-8 w-8 text-green-500" />
-                                                    <p className="text-xs font-bold text-green-500">Receipt Uploaded</p>
+                                                    <CheckCircle2 className="h-8 w-8 text-[#FF6200]" />
+                                                    <p className="text-xs font-bold text-[#FF6200]">Receipt Uploaded</p>
                                                     <a href={proofUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] underline text-zinc-500 z-10 relative">View</a>
                                                 </div>
                                             ) : (
@@ -278,7 +282,7 @@ export default function CheckoutPage() {
                                     </div>
                                     <div className="flex justify-between items-center text-zinc-400">
                                         <span className="text-[10px] font-black uppercase tracking-widest font-heading">Fees (0%)</span>
-                                        <span className="text-sm font-black text-[#00FF85] uppercase tracking-tighter italic">WAIVED</span>
+                                        <span className="text-sm font-black text-[#FF6200] uppercase tracking-tighter italic">WAIVED</span>
                                     </div>
 
                                     {user?.coins_balance && user.coins_balance > 0 && (
@@ -367,6 +371,3 @@ export default function CheckoutPage() {
     );
 }
 
-const Separator = ({ className }: { className?: string }) => (
-    <div className={cn("h-[1px] w-full", className)} />
-);

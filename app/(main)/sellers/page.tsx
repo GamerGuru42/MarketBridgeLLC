@@ -201,7 +201,7 @@ export default function FindSellersPage() {
                                     </div>
                                     <div className="flex items-center justify-between pt-6 border-t border-white/5">
                                         <div className="flex items-center gap-1.5">
-                                            <Star className="h-3 w-3 fill-[#00FF85] text-[#00FF85]" />
+                                            <Star className="h-3 w-3 fill-[#FF6200] text-[#FF6200]" />
                                             <span className="text-xs font-black text-white font-heading">4.8</span>
                                             <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">(New)</span>
                                         </div>

@@ -1,0 +1,11 @@
+C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\app\(legal)\disclaimer\page.tsx
+C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\app\(legal)\privacy\page.tsx
+C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\app\(legal)\refund\page.tsx
+C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\app\(legal)\terms\page.tsx
+C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\app\(main)\checkout\subscription\page.tsx
+C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\app\(main)\seller\listings\new\page.tsx
+C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\app\admin\(auth)\login\page.tsx
+C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\app\admin\(auth)\signup\page.tsx
+C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\components\dashboard-header.tsx
+C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\components\SellerGuide.tsx
+C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\components\landing\HeroSection.tsx

@@ -1,1 +1,172 @@
-'use client';import React, { Suspense, useEffect } from 'react';import Link from 'next/link';import { Button } from '@/components/ui/button';import { CheckCircle, ArrowRight, ShieldCheck, Loader2, Zap, Sparkles, Trophy, Star } from 'lucide-react';import { useSearchParams, useRouter } from 'next/navigation';import { motion } from 'framer-motion';import { useAuth } from '@/contexts/AuthContext';function PaymentPendingContent() {    const searchParams = useSearchParams();    const router = useRouter();    const { refreshUser, user } = useAuth();    const ref = searchParams.get('ref');    const status = searchParams.get('status');    useEffect(() => {        // Refresh the user profile to sync the new subscription plan locally        if (ref || status === 'success') {            refreshUser();        }    }, [ref, status, refreshUser]);    return (        <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 relative overflow-hidden">            {/* Background Effects */}            <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none" />            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#00FF85]/5 blur-[120px] rounded-full pointer-events-none" />            <motion.div                initial={{ opacity: 0, y: 30 }}                animate={{ opacity: 1, y: 0 }}                transition={{ duration: 0.8, ease: "easeOut" }}                className="bg-zinc-950/50 backdrop-blur-xl border border-white/10 p-10 md:p-16 rounded-[3rem] max-w-2xl w-full text-center relative z-10 shadow-[0_0_100px_rgba(0,255,133,0.1)]"            >                {/* Animated Icon Header */}                <div className="relative w-32 h-32 mx-auto mb-10">                    <motion.div                        initial={{ scale: 0 }}                        animate={{ scale: 1 }}                        transition={{ delay: 0.3, type: "spring", stiffness: 200 }}                        className="absolute inset-0 bg-[#00FF85]/20 rounded-full blur-2xl animate-pulse"                    />                    <motion.div                        initial={{ scale: 0, rotate: -45 }}                        animate={{ scale: 1, rotate: 0 }}                        transition={{ delay: 0.5, type: "spring", stiffness: 150 }}                        className="relative h-full w-full bg-black border-2 border-[#00FF85] rounded-[2rem] flex items-center justify-center shadow-[0_0_40px_rgba(0,255,133,0.3)]"                    >                        <Zap className="h-14 w-14 text-[#00FF85] fill-[#00FF85]/20" />                    </motion.div>                </div>                {/* Main Text */}                <div className="space-y-4 mb-10">                    <motion.h1                        initial={{ opacity: 0 }}                        animate={{ opacity: 1 }}                        transition={{ delay: 0.8 }}                        className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading leading-none"                    >                        Welcome as a <span className="text-[#00FF85]">Seller</span> now                    </motion.h1>                    <motion.div                        initial={{ opacity: 0 }}                        animate={{ opacity: 1 }}                        transition={{ delay: 1 }}                        className="flex items-center justify-center gap-2 text-[#00FF85] font-black uppercase tracking-[0.3em] text-[10px]"                    >                        <Sparkles className="h-4 w-4" />                        Channel Established                        <Sparkles className="h-4 w-4" />                    </motion.div>                    <motion.p                        initial={{ opacity: 0 }}                        animate={{ opacity: 1 }}                        transition={{ delay: 1.2 }}                        className="text-zinc-400 text-lg font-medium italic"                    >                        Success! Your plan has been <span className="text-white font-bold">opened</span> and all premium features are now <span className="text-[#00FF85]">unlocked</span>.                    </motion.p>                </div>                {/* Features Checklist */}                <motion.div                    initial={{ opacity: 0, y: 20 }}                    animate={{ opacity: 1, y: 0 }}                    transition={{ delay: 1.5 }}                    className="grid grid-cols-2 gap-4 mb-12"                >                    {[                        { icon: Trophy, text: "Unlimited Terminal Access" },                        { icon: Star, text: "Priority Asset Listing" },                        { icon: ShieldCheck, text: "Verified Merchant Badge" },                        { icon: Zap, text: "Instant Discovery" }                    ].map((item, i) => (                        <div key={i} className="flex items-center gap-3 p-4 bg-white/5 border border-white/5 rounded-2xl text-left">                            <item.icon className="h-5 w-5 text-[#00FF85]" />                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-300 leading-tight">{item.text}</span>                        </div>                    ))}                </motion.div>                {/* Reference Box */}                {ref && (                    <motion.div                        initial={{ opacity: 0 }}                        animate={{ opacity: 1 }}                        transition={{ delay: 1.8 }}                        className="bg-black/80 p-5 rounded-2xl border border-white/10 mb-10 group transition-all hover:border-[#00FF85]/30"                    >                        <p className="text-[9px] text-zinc-600 uppercase font-black tracking-[0.3em] mb-2">Secure Signature Reference</p>                        <p className="font-mono text-sm text-[#FF6200] tracking-widest font-bold">{ref}</p>                    </motion.div>                )}                {/* Actions */}                <div className="space-y-6">                    <motion.div                        initial={{ opacity: 0 }}                        animate={{ opacity: 1 }}                        transition={{ delay: 2 }}                    >                        <Button                            asChild                            className="w-full h-20 bg-[#00FF85] text-black hover:bg-[#00CC6A] font-black uppercase tracking-[0.2em] rounded-[1.5rem] text-sm shadow-[0_20px_50px_rgba(0,255,133,0.2)] hover:scale-[1.02] active:scale-[0.98] transition-all"                        >                            <Link href="/seller/dashboard">                                Enter Seller Terminal <ArrowRight className="ml-3 h-5 w-5" />                            </Link>                        </Button>                    </motion.div>                    <Link                        href="/"                        className="inline-block text-[10px] text-zinc-600 hover:text-white uppercase font-black tracking-widest transition-colors"                    >                        Return to Public Floor                    </Link>                </div>            </motion.div>            {/* Floating particles (Decorative) */}            <div className="absolute top-0 left-0 w-full h-full pointer-events-none">                {[...Array(6)].map((_, i) => (                    <motion.div                        key={i}                        className="absolute w-1 h-1 bg-[#00FF85] rounded-full opacity-20"                        animate={{                            y: [0, -100, 0],                            x: [0, (i % 2 === 0 ? 50 : -50), 0],                            opacity: [0, 0.5, 0]                        }}                        transition={{                            duration: 3 + i,                            repeat: Infinity,                            delay: i * 0.5                        }}                        style={{                            left: `${20 + (i * 12)}%`,                            top: `${80 - (i * 8)}%`                        }}                    />                ))}            </div>        </div>    );}export default function PaymentPendingPage() {    return (        <Suspense fallback={            <div className="min-h-screen bg-black flex items-center justify-center">                <Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" />            </div>        }>            <PaymentPendingContent />        </Suspense>    );}
+'use client';
+
+import React, { Suspense, useEffect } from 'react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { CheckCircle, ArrowRight, ShieldCheck, Loader2, Zap, Sparkles, Trophy, Star } from 'lucide-react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
+
+function PaymentPendingContent() {
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const { refreshUser, user } = useAuth();
+    const ref = searchParams.get('ref');
+    const status = searchParams.get('status');
+
+    useEffect(() => {
+        if (ref || status === 'success') {
+            refreshUser();
+        }
+    }, [ref, status, refreshUser]);
+
+    return (
+        <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 relative overflow-hidden">
+            <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#FF6200]/5 blur-[120px] rounded-full pointer-events-none" />
+
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="bg-zinc-950/50 backdrop-blur-xl border border-white/10 p-10 md:p-16 rounded-[3rem] max-w-2xl w-full text-center relative z-10 shadow-[0_0_100px_rgba(255,98,0,0.1)]"
+            >
+                <div className="relative w-32 h-32 mx-auto mb-10">
+                    <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+                        className="absolute inset-0 bg-[#FF6200]/20 rounded-full blur-2xl animate-pulse"
+                    />
+                    <motion.div
+                        initial={{ scale: 0, rotate: -45 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ delay: 0.5, type: "spring", stiffness: 150 }}
+                        className="relative h-full w-full bg-black border-2 border-[#FF6200] rounded-[2rem] flex items-center justify-center shadow-[0_0_40px_rgba(255,98,0,0.3)]"
+                    >
+                        <Zap className="h-14 w-14 text-[#FF6200] fill-[#FF6200]/20" />
+                    </motion.div>
+                </div>
+
+                <div className="space-y-4 mb-10">
+                    <motion.h1
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.8 }}
+                        className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading leading-none"
+                    >
+                        Welcome as a <span className="text-[#FF6200]">Seller</span> now
+                    </motion.h1>
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 1 }}
+                        className="flex items-center justify-center gap-2 text-[#FF6200] font-black uppercase tracking-[0.3em] text-[10px]"
+                    >
+                        <Sparkles className="h-4 w-4" />
+                        Channel Established
+                        <Sparkles className="h-4 w-4" />
+                    </motion.div>
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 1.2 }}
+                        className="text-zinc-400 text-lg font-medium italic"
+                    >
+                        Success! Your plan has been <span className="text-white font-bold">opened</span> and all premium features are now <span className="text-[#FF6200]">unlocked</span>.
+                    </motion.p>
+                </div>
+
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.5 }}
+                    className="grid grid-cols-2 gap-4 mb-12"
+                >
+                    {[
+                        { icon: Trophy, text: "Unlimited Terminal Access" },
+                        { icon: Star, text: "Priority Asset Listing" },
+                        { icon: ShieldCheck, text: "Verified Merchant Badge" },
+                        { icon: Zap, text: "Instant Discovery" }
+                    ].map((item, i) => (
+                        <div key={i} className="flex items-center gap-3 p-4 bg-white/5 border border-white/5 rounded-2xl text-left">
+                            <item.icon className="h-5 w-5 text-[#FF6200]" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-300 leading-tight">{item.text}</span>
+                        </div>
+                    ))}
+                </motion.div>
+
+                {ref && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 1.8 }}
+                        className="bg-black/80 p-5 rounded-2xl border border-white/10 mb-10 group transition-all hover:border-[#FF6200]/30"
+                    >
+                        <p className="text-[9px] text-zinc-600 uppercase font-black tracking-[0.3em] mb-2">Secure Signature Reference</p>
+                        <p className="font-mono text-sm text-[#FF6200] tracking-widest font-bold">{ref}</p>
+                    </motion.div>
+                )}
+
+                <div className="space-y-6">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 2 }}
+                    >
+                        <Button
+                            asChild
+                            className="w-full h-20 bg-[#FF6200] text-black hover:bg-[#FF7A29] font-black uppercase tracking-[0.2em] rounded-[1.5rem] text-sm shadow-[0_20px_50px_rgba(255,98,0,0.2)] hover:scale-[1.02] active:scale-[0.98] transition-all border-none"
+                        >
+                            <Link href="/seller/dashboard">
+                                Enter Seller Terminal <ArrowRight className="ml-3 h-5 w-5" />
+                            </Link>
+                        </Button>
+                    </motion.div>
+                    <Link
+                        href="/"
+                        className="inline-block text-[10px] text-zinc-600 hover:text-white uppercase font-black tracking-widest transition-colors"
+                    >
+                        Return to Public Floor
+                    </Link>
+                </div>
+            </motion.div>
+
+            <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+                {[...Array(6)].map((_, i) => (
+                    <motion.div
+                        key={i}
+                        className="absolute w-1 h-1 bg-[#FF6200] rounded-full opacity-20"
+                        animate={{
+                            y: [0, -100, 0],
+                            x: [0, (i % 2 === 0 ? 50 : -50), 0],
+                            opacity: [0, 0.5, 0]
+                        }}
+                        transition={{
+                            duration: 3 + i,
+                            repeat: Infinity,
+                            delay: i * 0.5
+                        }}
+                        style={{
+                            left: `${20 + (i * 12)}%`,
+                            top: `${80 - (i * 8)}%`
+                        }}
+                    />
+                ))}
+            </div>
+        </div>
+    );
+}
+
+export default function PaymentPendingPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" />
+            </div>
+        }>
+            <PaymentPendingContent />
+        </Suspense>
+    );
+}

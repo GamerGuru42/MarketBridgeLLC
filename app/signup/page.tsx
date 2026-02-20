@@ -1,841 +1,399 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { createClient } from '@/lib/supabase/client';
-const supabase = createClient();
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Logo } from '@/components/logo';
 import { normalizeIdentifier } from '@/lib/auth/utils';
 import { Loader2, Check, ArrowLeft, ArrowRight, Mail, Globe, Eye, EyeOff, ShieldCheck, User as UserIcon, Briefcase, Zap, Lock, Sparkles, CheckCircle, School, Search } from 'lucide-react';
+import Link from 'next/link';
+import { useToast } from '@/contexts/ToastContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { useLocation } from '@/contexts/LocationContext';
-import { Logo } from '@/components/logo';
-import { NIGERIAN_STATES, NIGERIAN_UNIVERSITIES, UNIVERSITIES_BY_STATE } from '@/lib/constants';
 import { ImageUpload } from '@/components/ImageUpload';
 
+const NIGERIAN_STATES = [
+    'Abia', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue', 'Borno',
+    'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu', 'FCT - Abuja', 'Gombe',
+    'Imo', 'Jigawa', 'Kaduna', 'Kano', 'Katsina', 'Kebbi', 'Kogi', 'Kwara', 'Lagos',
+    'Nasarawa', 'Niger', 'Ogun', 'Ondo', 'Osun', 'Oyo', 'Plateau', 'Rivers', 'Sokoto',
+    'Taraba', 'Yobe', 'Zamfara'
+];
+
+const UNIVERSITIES: Record<string, string[]> = {
+    'FCT - Abuja': [
+        'University of Abuja (UNIABUJA)',
+        'Baze University',
+        'Nile University of Nigeria',
+        'Veritas University',
+        'African University of Science and Technology',
+        'Bingham University (New Karu)'
+    ],
+    'Lagos': [
+        'University of Lagos (UNILAG)',
+        'Lagos State University (LASU)',
+        'Pan-Atlantic University',
+        'Caleb University',
+        'Anchor University'
+    ],
+    'Oyo': [
+        'University of Ibadan (UI)',
+        'Ladoke Akintola University (LAUTECH)',
+        'Lead City University',
+        'Ajayi Crowther University',
+        'Dominion University'
+    ],
+    'Enugu': [
+        'University of Nigeria, Nsukka (UNN)',
+        'Enugu State University of Science and Technology (ESUT)',
+        'Godfrey Okoye University',
+        'Caritas University'
+    ],
+    'Kaduna': [
+        'Ahmadu Bello University (ABU)',
+        'Kaduna State University (KASU)',
+        'Air Force Institute of Technology',
+        'Greenfield University'
+    ]
+};
+
+const StepProgress = ({ currentStep, role }: { currentStep: string, role: string }) => {
+    const steps = role === 'student_seller' || role === 'dealer'
+        ? ['Profile', 'Business', 'ID Check', 'Terms']
+        : ['Profile', 'Terms'];
+
+    let activeIdx = 0;
+    if (currentStep === 'profile') activeIdx = 0;
+    else if (currentStep === 'business') activeIdx = 1;
+    else if (currentStep === 'id_check') activeIdx = 2;
+    else if (currentStep === 'terms') activeIdx = steps.length - 1;
+
+    return (
+        <div className="flex items-center justify-center gap-4 mb-12">
+            {steps.map((s, i) => (
+                <React.Fragment key={s}>
+                    <div className="flex flex-col items-center gap-2">
+                        <div className={`h-2 w-12 rounded-full transition-all duration-500 ${i <= activeIdx ? 'bg-[#FF6200] shadow-[0_0_10px_rgba(255,98,0,0.5)]' : 'bg-zinc-800'}`} />
+                        <span className={`text-[8px] font-black uppercase tracking-widest ${i <= activeIdx ? 'text-[#FF6200]' : 'text-zinc-600'}`}>{s}</span>
+                    </div>
+                    {i < steps.length - 1 && <div className="h-[1px] w-4 bg-zinc-900 mb-4" />}
+                </React.Fragment>
+            ))}
+        </div>
+    );
+};
+
 function SignupContent() {
+    const supabase = createClient();
     const router = useRouter();
-    const { refreshUser, signInWithGoogle, user, sessionUser, loading: authLoading } = useAuth();
-    const { nearestUniversity, isAbuja } = useLocation();
-
     const searchParams = useSearchParams();
-    const initialRole = searchParams.get('role') as 'customer' | 'dealer' | 'admin' | 'student_buyer' | 'student_seller' | 'ceo' | null;
-    const referralCode = searchParams.get('ref');
+    const { refreshUser } = useAuth();
+    const role = searchParams.get('role') || 'buyer';
+    const { toast } = useToast();
 
-    // Steps
-    const [step, setStep] = useState<'role' | 'details' | 'auth-method' | 'admin-code' | 'admin-dept'>(() => {
-        if (initialRole === 'dealer' || initialRole === 'customer') return 'auth-method';
-        if (initialRole === 'admin' || initialRole === 'ceo') return 'admin-code';
-        return 'role';
-    });
-
-    const [role, setRole] = useState<'student_buyer' | 'student_seller' | 'admin' | 'customer' | 'dealer' | 'ceo'>(() => {
-        if (initialRole === 'dealer' || initialRole === 'student_seller') return 'student_seller';
-        if (initialRole === 'admin') return 'admin';
-        if (initialRole === 'ceo') return 'ceo';
-        return 'student_buyer';
-    });
-
-    // Admin Flow
-    const [adminCode, setAdminCode] = useState('');
-    const [adminDept, setAdminDept] = useState<'technical' | 'operations' | 'marketing' | 'ceo' | null>(null);
-
-    // Form
+    const [currentStep, setCurrentStep] = useState('profile');
     const [formData, setFormData] = useState({
-        displayName: '',
         email: '',
-        schoolEmail: '',
         password: '',
-        confirmPassword: '',
-        location: 'FCT - Abuja',
+        passwordConfirm: '',
+        firstName: '',
+        lastName: '',
         businessName: '',
+        phoneNumber: '',
+        location: 'FCT - Abuja',
+        university: '',
         matricNumber: '',
         department: '',
-        university: '',
-        phoneNumber: '',
-        studentIdUrl: '',
+        studentIdUrl: ''
     });
 
-    const [loginVerification, setLoginVerification] = useState(false);
-
-    useEffect(() => {
-        if (!authLoading && sessionUser && user) {
-            if (['student_seller', 'dealer'].includes(user.role)) {
-                if (!user.email_verified) {
-                    router.push('/verify-email');
-                    return;
-                }
-            }
-
-            if (['student_seller', 'dealer'].includes(user.role)) {
-                router.push('/seller/dashboard');
-            } else if (user.role === 'ceo') {
-                router.push('/ceo');
-            } else {
-                router.push('/listings');
-            }
-        }
-
-        if (!authLoading && sessionUser && !user) {
-            setFormData(prev => ({
-                ...prev,
-                email: sessionUser.email || '',
-                displayName: sessionUser.user_metadata?.full_name || sessionUser.user_metadata?.name || '',
-            }));
-            setStep('details');
-        }
-    }, [sessionUser, user, authLoading, router]);
-
+    const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [agreedToTerms, setAgreedToTerms] = useState(false);
+    const [uniSearch, setUniSearch] = useState('');
     const [isDetectingSchool, setIsDetectingSchool] = useState(false);
     const [missingUni, setMissingUni] = useState(false);
     const [missingUniName, setMissingUniName] = useState('');
 
-    const [success, setSuccess] = useState(false);
-    const [otpCode, setOtpCode] = useState('');
-    const [isVerifying, setIsVerifying] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState('');
+    const universitiesInSelectedState = UNIVERSITIES[formData.location] || [];
+    const filteredUniversities = universitiesInSelectedState.filter(u =>
+        u.toLowerCase().includes(uniSearch.toLowerCase())
+    );
 
-    useEffect(() => {
-        if (nearestUniversity && !formData.university && ['student_seller', 'student_buyer'].includes(role)) {
-            setFormData(prev => ({
-                ...prev,
-                university: nearestUniversity.node.name,
-                location: isAbuja ? 'FCT - Abuja' : prev.location
-            }));
-        }
-    }, [nearestUniversity, isAbuja, role, formData.university]);
-
-
-    const handleVerification = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsVerifying(true);
-        setError('');
-
-        try {
-            const timeoutPromise = new Promise((_, reject) =>
-                setTimeout(() => reject(new Error("Network Timeout: Verification took too long.")), 20000)
-            );
-
-            const verifyPromise = (async () => {
-                const { data, error } = await supabase.auth.verifyOtp({
-                    email: normalizeIdentifier(formData.email),
-                    token: otpCode,
-                    type: loginVerification ? 'email' : 'signup'
-                });
-                if (error) throw error;
-                return data;
-            })();
-
-            const data = await Promise.race([verifyPromise, timeoutPromise]) as any;
-
-            if (data.session) {
-                if (['student_seller', 'dealer'].includes(role) || loginVerification) {
-                    await supabase.from('users').update({ is_verified: true }).eq('id', data.user.id);
-                }
-
-                await refreshUser(data.user?.id);
-                if (['student_seller', 'dealer'].includes(role) || (user && ['student_seller', 'dealer'].includes(user.role))) {
-                    router.push('/seller/dashboard');
-                } else if (role === 'ceo') {
-                    router.push('/ceo');
-                } else {
-                    router.push('/listings');
-                }
-            } else {
-                throw new Error("Verification successful but session not created. Please log in.");
-            }
-        } catch (err: any) {
-            console.error("Verification failed:", err);
-            let message = 'Verification failed. Invalid code.';
-            if (err.message && err.message.includes("Timeout")) message = "Network too slow. Please resend code.";
-            setError(message);
-            setIsVerifying(false);
-        }
-    };
-
-    const resendCode = async () => {
-        setIsVerifying(true);
-        setError('');
-        try {
-            if (loginVerification) {
-                const { error } = await supabase.auth.signInWithOtp({
-                    email: normalizeIdentifier(formData.email),
-                    options: { shouldCreateUser: false }
-                });
-                if (error) throw error;
-            } else {
-                const { error } = await supabase.auth.resend({
-                    type: 'signup',
-                    email: normalizeIdentifier(formData.email)
-                });
-                if (error) throw error;
-            }
-            alert("Verification code sent to your inbox.");
-        } catch (err: any) {
-            setError(err.message || "Failed to resend code.");
-        } finally {
-            setIsVerifying(false);
-        }
-    };
-
-    const detectUniversity = async (matric: string) => {
-        if (!matric || matric.length < 3) return;
-
-        setIsDetectingSchool(true);
-        await new Promise(r => setTimeout(r, 1200));
-
-        const upper = matric.toUpperCase();
-        let detected = '';
-
-        if (upper.includes('LASU')) detected = 'Lagos State University (LASU)';
-        else if (upper.includes('UOL') || upper.includes('UNILAG')) detected = 'University of Lagos (UNILAG)';
-        else if (upper.includes('ABU')) detected = 'Ahmadu Bello University (ABU)';
-        else if (upper.includes('OAU')) detected = 'Obafemi Awolowo University (OAU)';
-        else if (upper.includes('UNIABUJA')) detected = 'University of Abuja (UNIABUJA)';
-        else if (upper.includes('BAZE')) detected = 'Baze University';
-        else if (upper.includes('NILE')) detected = 'Nile University';
-        else if (upper.includes('VERITAS')) detected = 'Veritas University';
-
-        if (detected) {
-            setFormData(prev => ({ ...prev, university: detected }));
-        }
-        setIsDetectingSchool(false);
-    };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
-    const handleRoleSelect = (selectedRole: 'student_buyer' | 'student_seller' | 'admin' | 'ceo') => {
-        setRole(selectedRole);
-        if (['student_seller', 'dealer'].includes(selectedRole)) setStep('details');
-        else if (['student_buyer', 'customer'].includes(selectedRole)) setStep('auth-method');
-        else if (selectedRole === 'admin' || selectedRole === 'ceo') setStep('admin-code');
+    const detectUniversity = (matric: string) => {
+        if (!matric || matric.length < 3) return;
+        setIsDetectingSchool(true);
+        setTimeout(() => {
+            const m = matric.toUpperCase();
+            if (m.includes('UNIABUJA') || m.includes('U/'))
+                setFormData(p => ({ ...p, university: 'University of Abuja (UNIABUJA)', location: 'FCT - Abuja' }));
+            else if (m.includes('UNILAG'))
+                setFormData(p => ({ ...p, university: 'University of Lagos (UNILAG)', location: 'Lagos' }));
+            setIsDetectingSchool(false);
+        }, 600);
     };
 
-    const [uniSearch, setUniSearch] = useState('');
-
-    const filteredUniversities = (formData.location && UNIVERSITIES_BY_STATE[formData.location]
-        ? UNIVERSITIES_BY_STATE[formData.location]
-        : NIGERIAN_UNIVERSITIES
-    ).filter(uni => uni.toLowerCase().includes(uniSearch.toLowerCase()));
-
-    const StepProgress = ({ currentStep, role }: { currentStep: string, role: string }) => {
-        const steps = ['student_seller', 'dealer'].includes(role)
-            ? ['Access', 'Identity', 'Verification']
-            : (role === 'admin' || role === 'ceo' ? ['Access', 'Sector', 'Identity'] : ['Access', 'Identity']);
-
-        let activeIdx = 0;
-        if (currentStep === 'role' || currentStep === 'admin-code' || currentStep === 'auth-method') activeIdx = 0;
-        else if (currentStep === 'details') activeIdx = 1;
-        else activeIdx = steps.length - 1;
-
-        return (
-            <div className="flex items-center justify-center gap-4 mb-12">
-                {steps.map((s, i) => (
-                    <React.Fragment key={s}>
-                        <div className="flex flex-col items-center gap-2">
-                            <div className={`h-2 w-12 rounded-full transition-all duration-500 ${i <= activeIdx ? 'bg-[#FF6200] shadow-[0_0_10px_rgba(255,98,0,0.5)]' : 'bg-zinc-800'}`} />
-                            <span className={`text-[8px] font-black uppercase tracking-widest ${i <= activeIdx ? 'text-[#FF6200]' : 'text-zinc-600'}`}>{s}</span>
-                        </div>
-                        {i < steps.length - 1 && <div className="h-[1px] w-4 bg-zinc-900 mb-4" />}
-                    </React.Fragment>
-                ))}
-            </div>
-        );
-    };
-
-    const handleAdminCodeSubmit = (e: React.FormEvent) => {
+    const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
-        const validCodes = ['marketbridge2026', '1029384756', 'MB-FOUNDER-99', 'MB-TECH-2024', 'MB-OPS-2024', 'MB-MKT-2024'];
-        if (validCodes.includes(adminCode)) {
-            setStep('admin-dept');
-            setError('');
-        } else {
-            setError('Access Denied: Invalid Security Signature');
-        }
-    };
 
-    const handleDeptSelect = (dept: 'technical' | 'operations' | 'marketing' | 'ceo') => {
-        setAdminDept(dept);
-        if (dept === 'ceo') {
-            setRole('ceo');
-            setStep('details');
-        } else {
-            router.push(`/admin/signup?dept=${dept}`);
-        }
-    };
-
-    const [agreedToTerms, setAgreedToTerms] = useState(false);
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setError('');
-
-        if (formData.password !== formData.confirmPassword) {
-            setError("Passwords mismatch.");
-            setIsLoading(false);
+        if (formData.password !== formData.passwordConfirm) {
+            toast('Passwords do not match', 'error');
             return;
         }
 
         if (!agreedToTerms) {
-            setError("You must agree to the Terms and Privacy Policy (NDPA Compliant).");
-            setIsLoading(false);
+            toast('You must agree to the terms', 'error');
             return;
         }
 
-        const isMerchant = ['student_seller', 'dealer'].includes(role);
-
-        if (isMerchant && (!formData.university && !missingUniName)) {
-            setError("Please specify your university.");
-            setIsLoading(false);
-            return;
-        }
-
-        if (isMerchant && !formData.matricNumber) {
-            setError("Matriculation or Staff ID number is required for verification.");
-            setIsLoading(false);
-            return;
-        }
-
-        if (isMerchant) {
-            if (!formData.studentIdUrl) {
-                setError("Please upload your Student ID Card for verification.");
-                setIsLoading(false);
-                return;
-            }
-        }
-
-        if (role === 'admin') {
-            const adminEmails = [
-                'operations@marketbridge.com.ng',
-                'technical@marketbridge.com.ng',
-                'marketing@marketbridge.com.ng'
-            ];
-            if (!adminEmails.includes(formData.email.toLowerCase())) {
-                setError("Admin access restricted to official @marketbridge.com.ng emails.");
-                setIsLoading(false);
-                return;
-            }
-        }
-
-        await createAccount();
-    };
-
-    const createAccount = async () => {
+        setIsLoading(true);
         try {
-            const isMerchant = ['student_seller', 'dealer'].includes(role);
-            const emailToUse = normalizeIdentifier(formData.email);
-            const finalUniversity = missingUni ? missingUniName : formData.university;
-
-            const timeoutPromise = new Promise((_, reject) =>
-                setTimeout(() => reject(new Error("Network Timeout: Account creation took too long. Please try again.")), 20000)
-            );
-
-            const signupLogicPromise = (async () => {
-                let authData;
-
-                if (sessionUser) {
-                    authData = { user: sessionUser, session: null };
-                } else {
-                    let referrerId = null;
-                    if (referralCode) {
-                        const { data: refUser } = await supabase
-                            .from('users')
-                            .select('id')
-                            .eq('referral_link_code', referralCode)
-                            .single();
-                        if (refUser) referrerId = refUser.id;
-                    }
-
-                    const { data, error: signUpError } = await supabase.auth.signUp({
-                        email: emailToUse,
-                        password: formData.password,
-                        options: {
-                            data: {
-                                display_name: formData.displayName,
-                                role: role,
-                                location: formData.location,
-                                university: finalUniversity,
-                                matric_number: formData.matricNumber,
-                                phone_number: formData.phoneNumber,
-                                business_name: isMerchant ? formData.businessName : null,
-                                department: formData.department,
-                                verification_method: 'id_card',
-                                student_id_url: isMerchant ? formData.studentIdUrl : null,
-                                is_manual_override: missingUni,
-                                referred_by: referralCode
-                            },
-                        },
-                    });
-
-                    if (signUpError) throw signUpError;
-                    if (!data.user) throw new Error("Account creation protocol failed - No User Returned");
-                    authData = data;
-                }
-
-                const { error: profileError } = await supabase
-                    .from('users')
-                    .upsert({
-                        id: authData.user!.id,
-                        email: emailToUse,
-                        display_name: formData.displayName,
-                        role: role,
-                        location: formData.location,
-                        phone_number: formData.phoneNumber,
-                        business_name: isMerchant ? formData.businessName : null,
-                        university: finalUniversity,
-                        matric_number: isMerchant ? formData.matricNumber : null,
-                        subscription_status: isMerchant ? 'pending_verification' : 'active',
-                        is_verified: false,
-                        referred_by_id: referralCode ? (await supabase.from('users').select('id').eq('referral_link_code', referralCode).single()).data?.id : null,
-                        metadata: {
-                            department: formData.department,
-                            student_id_url: isMerchant ? formData.studentIdUrl : null,
-                            verification_method: 'id_card',
-                            is_manual_override: missingUni,
-                            referred_by: referralCode
-                        }
-                    });
-
-                if (profileError) console.error("Profile establishing error (Non-fatal):", profileError);
-
-                if (referralCode) {
-                    const { data: refUser } = await supabase
-                        .from('users')
-                        .select('id')
-                        .eq('referral_link_code', referralCode)
-                        .single();
-
-                    if (refUser) {
-                        await supabase.rpc('add_coins', {
-                            user_id: authData.user!.id,
-                            amount_to_add: 100,
-                            trans_type: 'referral_welcome',
-                            trans_desc: `Welcome bonus for using referral code: ${referralCode}`
-                        });
-
-                        await supabase.rpc('add_coins', {
-                            user_id: refUser.id,
-                            amount_to_add: 100,
-                            trans_type: 'referral',
-                            trans_desc: `Referral bonus for inviting ${formData.displayName}`
-                        });
+            const normalizedEmail = normalizeIdentifier(formData.email);
+            const { data: authData, error: authError } = await supabase.auth.signUp({
+                email: normalizedEmail,
+                password: formData.password,
+                options: {
+                    data: {
+                        first_name: formData.firstName,
+                        last_name: formData.lastName,
+                        role: role
                     }
                 }
+            });
 
-                if (isMerchant) {
-                    const trialEndDate = new Date();
-                    trialEndDate.setDate(trialEndDate.getDate() + 14);
+            if (authError) throw authError;
+            if (!authData.user) throw new Error('Signup failed - no user returned');
 
-                    const { error: subscriptionError } = await supabase
-                        .from('subscriptions')
-                        .insert({
-                            user_id: authData.user!.id,
-                            plan_id: 'beta_campus_founder',
-                            status: 'trialing',
-                            current_period_start: new Date().toISOString(),
-                            current_period_end: trialEndDate.toISOString(),
-                            trial_end: trialEndDate.toISOString(),
-                            metadata: {
-                                trial_started_at: new Date().toISOString(),
-                                auto_created: true
-                            }
-                        });
+            // 2. Create profile in users table
+            const { error: profileError } = await supabase.from('users').insert({
+                id: authData.user.id,
+                email: normalizedEmail,
+                first_name: formData.firstName,
+                last_name: formData.lastName,
+                role: role,
+                business_name: formData.businessName,
+                phone_number: formData.phoneNumber,
+                university: missingUni ? missingUniName : formData.university,
+                matric_number: formData.matricNumber,
+                department: formData.department,
+                photo_url: formData.studentIdUrl,
+                location: formData.location,
+                status: (role === 'student_seller' || role === 'dealer') ? 'pending' : 'active',
+                email_verified: false
+            });
 
-                    if (subscriptionError) console.error("Trial subscription error (Non-fatal):", subscriptionError);
-                }
+            if (profileError) throw profileError;
 
-                return authData;
-            })();
-
-            const authData = await Promise.race([signupLogicPromise, timeoutPromise]) as any;
-
-            if (authData.session || sessionUser) {
-                await refreshUser(authData.user.id);
-                if (isMerchant) {
-                    router.push('/seller/dashboard');
-                } else if (role === 'ceo') {
-                    router.push('/ceo');
-                } else {
-                    router.push('/listings');
-                }
-            } else {
-                setSuccess(true);
-            }
-
+            toast('Account initialized successfully', 'success');
+            await refreshUser();
+            router.push('/verify-email');
         } catch (err: any) {
-            console.error("Signup Global Error:", err);
-            let message = "Protocol establishing failed.";
-
-            if (err.message) {
-                if (err.message.includes("User already registered")) message = "This email is already in use. Please log in.";
-                else if (err.message.includes("Network Timeout")) message = "Connection is too slow. Please check your internet.";
-                else message = err.message;
-            }
-
-            setError(message);
+            console.error('Signup error:', err);
+            toast(err.message || 'Initialization failed', 'error');
+        } finally {
             setIsLoading(false);
         }
     };
 
-    if (step === 'role') {
-        return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-black overflow-hidden relative">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#FF6200]/5 blur-[120px] rounded-full" />
-
-                <div className="w-full max-w-5xl relative z-10 px-4 py-8">
-                    <div className="text-center mb-10 sm:mb-16">
-                        <Link href="/" className="inline-flex items-center text-zinc-500 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest transition-colors py-3">
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Return to Home
-                        </Link>
-                        <div className="flex justify-center mb-6">
-                            <Logo showText={false} className="scale-110 sm:scale-125" />
-                        </div>
-                        <h1 className="text-4xl sm:text-5xl font-black uppercase tracking-tighter text-white italic mb-3 sm:mb-4">Join MarketBridge</h1>
-                        <p className="text-zinc-500 font-medium lowercase italic text-xs sm:text-base">select your status to begin identity establishment</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-6xl mx-auto">
-                        {[
-                            { id: 'student_buyer', title: 'Buyer', icon: UserIcon, desc: 'Shop within your University', color: 'text-white' },
-                            { id: 'student_seller', title: 'Seller', icon: Briefcase, desc: 'Sell to your University Community', color: 'text-[#FF6200]' },
-                            { id: 'admin', title: 'Team Admin', icon: ShieldCheck, desc: 'Admin Team', color: 'text-zinc-400' },
-                            { id: 'ceo', title: 'CEO/Founder', icon: Lock, desc: 'Founder', color: 'text-[#FF6200]' }
-                        ].map(item => (
-                            <Card
-                                key={item.id}
-                                className={`glass-card border-white/5 rounded-[2rem] p-6 sm:p-8 text-center group cursor-pointer hover:border-[#FF6200]/50 hover:translate-y-[-8px] transition-all duration-500 ${item.id === 'ceo' ? 'border-[#FF6200]/20 shadow-[0_0_30px_rgba(255,98,0,0.1)]' : ''}`}
-                                onClick={() => handleRoleSelect(item.id as any)}
-                            >
-                                <div className={`h-14 w-14 sm:h-16 sm:w-16 glass-card rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 group-hover:scale-110 transition-transform ${item.id === 'ceo' ? 'bg-[#FF6200]/10' : ''}`}>
-                                    <item.icon className={`h-7 w-7 sm:h-8 sm:w-8 ${item.color}`} />
-                                </div>
-                                <h3 className="text-base sm:text-lg font-black text-white uppercase tracking-tight mb-2 italic">{item.title}</h3>
-                                <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">{item.desc}</p>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    if (step === 'admin-code') {
-        return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-black">
-                <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-[1px] bg-[#FF6200]/50 shadow-[0_0_20px_#FF6200]" />
-                    <CardHeader className="p-0 text-center mb-10">
-                        <Button variant="ghost" onClick={() => setStep('role')} className="text-zinc-600 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
-                        <div className="mx-auto h-16 w-16 rounded-2xl border border-[#FF6200]/30 bg-[#FF6200]/5 flex items-center justify-center mb-6">
-                            <Lock className="h-8 w-8 text-[#FF6200]" />
-                        </div>
-                        <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2 text-[#FF6200]">Restricted</CardTitle>
-                        <CardDescription className="text-zinc-500 font-medium italic lowercase">enter access code</CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-0 space-y-6 pb-8">
-                        {error && <div className="bg-[#FF6200]/10 text-[#FF6200] text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-[#FF6200]/20">{error}</div>}
-                        <form onSubmit={handleAdminCodeSubmit} className="space-y-6">
-                            <input
-                                type="password"
-                                className="w-full h-16 bg-black border border-white/5 rounded-2xl text-center tracking-[0.5em] font-mono text-xl focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 text-[#FF6200]"
-                                value={adminCode}
-                                onChange={(e) => setAdminCode(e.target.value)}
-                                placeholder="••••••••"
-                                autoFocus
-                                required
-                            />
-                            <Button type="submit" className="w-full h-16 rounded-2xl bg-[#FF6200] text-black font-black uppercase tracking-widest hover:bg-[#FF7A29] shadow-[0_0_30px_rgba(255,98,0,0.3)]">
-                                Unlock
-                            </Button>
-                        </form>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
-
-    if (step === 'admin-dept') {
-        return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-black">
-                <Card className="w-full max-w-3xl glass-card border-none rounded-[3rem] p-12 text-white">
-                    <CardHeader className="p-0 text-center mb-12">
-                        <CardTitle className="text-4xl font-black uppercase italic tracking-tighter mb-2">Admin Duty</CardTitle>
-                        <CardDescription className="text-zinc-500 font-medium italic lowercase">Choose your department</CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {[
-                            { id: 'marketing', title: 'Marketing', icon: Zap, color: 'text-[#FF6200]' },
-                            { id: 'operations', title: 'Operations', icon: Briefcase, desc: 'Escrow Team', color: 'text-white' },
-                            { id: 'technical', title: 'Technical', icon: Loader2, desc: 'Development', color: 'text-[#FF6200]' },
-                            { id: 'ceo', title: 'Central', icon: Lock, desc: 'Main', color: 'text-white' }
-                        ].map(dept => (
-                            <button
-                                key={dept.id}
-                                onClick={() => handleDeptSelect(dept.id as any)}
-                                className={`glass-card p-8 rounded-3xl border-white/5 hover:border-[#FF6200]/50 transition-all group flex flex-col items-center gap-4 text-center ${dept.id === 'ceo' ? 'border-[#FF6200]/20' : ''}`}
-                            >
-                                <div className={`h-14 w-14 rounded-xl bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform ${dept.id === 'ceo' ? 'bg-[#FF6200]/10' : ''}`}>
-                                    <dept.icon className={`h-7 w-7 ${dept.color}`} />
-                                </div>
-                                <div>
-                                    <h4 className="font-black uppercase italic tracking-tight">{dept.title}</h4>
-                                    <p className="text-[10px] text-zinc-600 font-bold uppercase mt-1">{dept.id === 'ceo' ? 'Command' : 'Management'}</p>
-                                </div>
-                            </button>
-                        ))}
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
-
-    if (success) {
-        return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-black">
-                <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF6200] to-transparent" />
-                    <CardHeader className="p-0 text-center mb-10">
-                        <div className="mx-auto h-24 w-24 rounded-full bg-[#FF6200]/10 flex items-center justify-center mb-6 relative">
-                            <Lock className="h-10 w-10 text-[#FF6200] animate-bounce" />
-                            <div className="absolute inset-0 rounded-full border border-[#FF6200]/30 animate-ping opacity-25" />
-                        </div>
-                        <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-4">Code Sent</CardTitle>
-                        <CardDescription className="text-zinc-500 font-medium leading-relaxed">
-                            {loginVerification ? "Verify your email to access your seller account." : "We have sent a verification code to"} <br /><span className="text-white font-bold">{formData.email}</span>.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-0 space-y-6 text-center">
-                        <div className="p-4 bg-zinc-900/50 rounded-2xl border border-white/5">
-                            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mb-1">Verification</p>
-                            <p className="text-sm text-white font-medium">Please enter the code sent to your inbox.</p>
-                        </div>
-
-                        {error && <div className="bg-[#FF6200]/10 text-[#FF6200] text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-[#FF6200]/20">{error}</div>}
-
-                        <form onSubmit={handleVerification} className="space-y-6">
-                            <div className="space-y-2">
-                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600">Verification Code</label>
-                                <input
-                                    value={otpCode}
-                                    onChange={(e) => setOtpCode(e.target.value)}
-                                    placeholder="• • • • • •"
-                                    className="w-full h-16 bg-black border border-white/10 rounded-2xl text-center text-2xl font-black tracking-[1em] text-white focus:border-[#FF6200] outline-none transition-all placeholder:tracking-normal placeholder:text-zinc-800"
-                                    maxLength={6}
-                                />
-                            </div>
-
-                            <Button type="submit" className="w-full h-14 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-zinc-200 transition-all" disabled={isVerifying}>
-                                {isVerifying ? <Loader2 className="animate-spin h-5 w-5" /> : "Finalize Signup"}
-                            </Button>
-                        </form>
-
-                        <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest pt-4">
-                            Didn't receive code? Check spam or <button type="button" onClick={resendCode} className="text-[#FF6200] hover:underline" disabled={isVerifying}>Resend Code</button>
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
-
-    if (step === 'auth-method') {
-        return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-black">
-                <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden">
-                    <div className="absolute top-[-10%] right-[-10%] w-32 h-32 bg-[#FF6200]/5 blur-[40px] rounded-full" />
-                    <CardHeader className="p-0 text-center mb-10">
-                        <Button variant="ghost" onClick={() => initialRole ? router.push('/') : setStep('role')} className="text-zinc-600 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> {initialRole ? 'Cancel' : 'Back'}</Button>
-                        <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2">
-                            {['student_seller', 'dealer'].includes(role) ? 'Become a Seller' : 'How to Join'}
-                        </CardTitle>
-                        <CardDescription className="text-zinc-500 font-medium italic lowercase">
-                            {['student_seller', 'dealer'].includes(role) ? 'set up your account safely' : 'choose how to sign up'}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-0 space-y-6 pb-8">
-                        <div className="space-y-2">
-                            {!['student_seller', 'dealer'].includes(role) && (
-                                <Button
-                                    variant="outline"
-                                    className="w-full h-16 rounded-[1.5rem] border-white/10 hover:bg-white/5 text-white font-bold uppercase tracking-widest group transition-all"
-                                    onClick={() => signInWithGoogle(`${window.location.origin}/auth/callback?next=/signup`)}
-                                >
-                                    <Globe className="mr-3 h-5 w-5 text-zinc-400 group-hover:scale-110 transition-transform" /> Sign up with Google
-                                </Button>
-                            )}
-                            {['student_seller', 'dealer'].includes(role) && (
-                                <p className="text-[10px] text-zinc-500 text-center font-bold uppercase py-4">Sellers should use email and password to stay safe</p>
-                            )}
-                        </div>
-
-                        {!['student_seller', 'dealer'].includes(role) && (
-                            <div className="relative flex items-center justify-center py-4">
-                                <div className="absolute inset-x-0 h-px bg-white/5"></div>
-                                <span className="relative bg-black px-4 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-800">Or</span>
-                            </div>
-                        )}
-                        <Button className="w-full h-16 rounded-[1.5rem] bg-white border border-white/10 text-black font-black uppercase tracking-widest hover:scale-[1.02] transition-all" onClick={() => setStep('details')}>
-                            <Mail className="mr-3 h-5 w-5" /> Use Email & Password
-                        </Button>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
+    const nextStep = () => {
+        if (currentStep === 'profile') {
+            if (!formData.email || !formData.password || !formData.firstName) {
+                toast('Please complete profile fundamentals', 'error');
+                return;
+            }
+            if (role === 'buyer' || role === 'ceo') setCurrentStep('terms');
+            else setCurrentStep('business');
+        } else if (currentStep === 'business') {
+            setCurrentStep('id_check');
+        } else if (currentStep === 'id_check') {
+            if (!formData.studentIdUrl) {
+                toast('ID Card upload required for secondary verification', 'error');
+                return;
+            }
+            setCurrentStep('terms');
+        }
+    };
 
     return (
         <div className="min-h-screen flex items-center justify-center py-10 sm:py-20 px-4 bg-black relative">
-            <div className="absolute top-[10%] right-[10%] w-[30%] h-[30%] bg-[#FF6200]/5 blur-[120px] rounded-full" />
+            <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#FF6200]/5 blur-[120px] rounded-full pointer-events-none" />
 
-            <Card className="w-full max-w-xl glass-card border-none rounded-[2.5rem] sm:rounded-[3rem] p-6 sm:p-12 text-white relative z-10 shadow-2xl">
-                <CardHeader className="p-0 mb-8 text-left">
-                    <div className="flex justify-between items-start mb-6">
-                        <Button variant="ghost" onClick={() => setStep(['student_seller', 'dealer'].includes(role) ? 'role' : 'auth-method')} className="text-zinc-600 hover:text-white p-0 h-auto text-[10px] font-black uppercase tracking-widest"><ArrowLeft className="mr-2 h-3 w-3" /> Back</Button>
-                        <Logo showText={false} className="opacity-50" />
+            <Card className="w-full max-w-2xl glass-card border-none rounded-[3rem] p-6 sm:p-12 text-white shadow-2xl relative z-10">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-[#FF6200]/50 to-transparent" />
+
+                <CardHeader className="p-0 text-center mb-10">
+                    <div className="flex justify-center mb-8">
+                        <Logo showText={false} className="scale-125 saturate-150 drop-shadow-[0_0_20px_rgba(255,102,0,0.3)]" />
                     </div>
-
-                    <StepProgress currentStep={step} role={role} />
-
-                    <CardTitle className="text-3xl sm:text-4xl font-black uppercase italic tracking-tighter mb-2">Join MarketBridge</CardTitle>
-                    <CardDescription className="text-zinc-500 font-medium italic lowercase text-xs sm:text-sm">
-                        {['student_seller', 'dealer'].includes(role) ? `Setting up your seller account` : "Please fill in your details"}
+                    <CardTitle className="text-4xl sm:text-5xl font-black uppercase italic tracking-tighter mb-4 leading-none">
+                        Establish <span className="text-[#FF6200]">Identity</span>
+                    </CardTitle>
+                    <CardDescription className="text-zinc-500 font-medium italic text-xs uppercase tracking-widest bg-white/5 py-2 px-6 rounded-full inline-block">
+                        {role === 'student_seller' ? 'Seller Terminal Authorization' : role === 'buyer' ? 'Client Access Protocol' : role === 'dealer' ? 'Verified Dealer Onboarding' : 'Command Center Access'}
                     </CardDescription>
                 </CardHeader>
 
                 <CardContent className="p-0">
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        {error && <div className="bg-[#FF6200]/10 text-[#FF6200] text-[10px] font-black uppercase tracking-widest p-4 rounded-2xl border border-[#FF6200]/20 text-center mb-6 animate-pulse">{error}</div>}
+                    <StepProgress currentStep={currentStep} role={role} />
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                            <div className="space-y-2">
-                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Full Name</label>
-                                <div className="relative group">
-                                    <UserIcon className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
-                                    <input
-                                        name="displayName"
-                                        value={formData.displayName}
-                                        onChange={handleChange}
-                                        required
-                                        readOnly={!!sessionUser}
-                                        placeholder="Samuel Ade"
-                                        className={`w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all ${sessionUser ? 'opacity-70 cursor-not-allowed' : ''}`}
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <div className="flex justify-between items-center ml-2">
-                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600">
-                                        Email / Phone Identity
-                                    </label>
-                                    {sessionUser && (
-                                        <span className="text-[8px] font-black text-[#FF6200] uppercase tracking-widest bg-[#FF6200]/10 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                            <Globe className="h-2 w-2" /> Connected to Google
-                                        </span>
-                                    )}
-                                </div>
-                                <div className="relative group">
-                                    <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
-                                    <input
-                                        name="email"
-                                        type="text"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        required
-                                        readOnly={!!sessionUser}
-                                        placeholder={['student_seller', 'dealer'].includes(role) ? "staff.name@university.edu.ng..." : "email or phone number"}
-                                        className={`w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all ${sessionUser ? 'opacity-70 cursor-not-allowed' : ''}`}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {!sessionUser && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 animate-in fade-in duration-500">
-                                <div className="space-y-2">
-                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Secure Key</label>
-                                    <div className="relative group">
-                                        <Lock className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
-                                        <input name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleChange} required={!sessionUser} className="w-full h-14 pl-14 pr-14 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold" />
-                                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-800 hover:text-[#FF6200]">{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
+                    <form onSubmit={handleSignup} className="space-y-8">
+                        {currentStep === 'profile' && (
+                            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Official First Name</label>
+                                        <div className="relative group">
+                                            <UserIcon className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
+                                            <input
+                                                name="firstName"
+                                                value={formData.firstName}
+                                                onChange={handleChange}
+                                                required
+                                                className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all"
+                                                placeholder="Emeka"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Official Last Name</label>
+                                        <div className="relative group">
+                                            <UserIcon className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
+                                            <input
+                                                name="lastName"
+                                                value={formData.lastName}
+                                                onChange={handleChange}
+                                                required
+                                                className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all"
+                                                placeholder="Okonkwo"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
+
                                 <div className="space-y-2">
-                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Confirm Key</label>
+                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Access Email Address</label>
                                     <div className="relative group">
-                                        <ShieldCheck className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
-                                        <input name="confirmPassword" type={showPassword ? 'text' : 'password'} value={formData.confirmPassword} onChange={handleChange} required={!sessionUser} className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold" />
+                                        <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
+                                        <input
+                                            name="email"
+                                            type="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all"
+                                            placeholder="operator@marketbridge.com.ng"
+                                        />
                                     </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Security Password</label>
+                                        <div className="relative group">
+                                            <Lock className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
+                                            <input
+                                                name="password"
+                                                type={showPassword ? 'text' : 'password'}
+                                                value={formData.password}
+                                                onChange={handleChange}
+                                                required
+                                                className="w-full h-14 pl-14 pr-14 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all"
+                                                placeholder="••••••••"
+                                            />
+                                            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-6 top-1/2 -translate-y-1/2 text-zinc-800 hover:text-white transition-colors">
+                                                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Confirm Protocol</label>
+                                        <div className="relative group">
+                                            <ShieldCheck className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
+                                            <input
+                                                name="passwordConfirm"
+                                                type={showPassword ? 'text' : 'password'}
+                                                value={formData.passwordConfirm}
+                                                onChange={handleChange}
+                                                required
+                                                className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all"
+                                                placeholder="••••••••"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="pt-4 flex justify-end">
+                                    <Button type="button" onClick={nextStep} className="h-14 px-8 bg-zinc-900 hover:bg-zinc-800 text-white font-black uppercase tracking-widest rounded-2xl border border-white/5 transition-all flex items-center gap-3">
+                                        Next Protocol <ArrowRight className="h-4 w-4" />
+                                    </Button>
                                 </div>
                             </div>
                         )}
 
-                        <div className="space-y-6">
-                            <div className="space-y-2">
-                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Operational Region</label>
-                                <div className="relative group">
-                                    <Globe className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors z-10" />
-                                    <select
-                                        name="location"
-                                        className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold relative appearance-none"
-                                        value={formData.location}
-                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                                            setFormData({ ...formData, location: e.target.value, university: '' });
-                                            setUniSearch('');
-                                        }}
-                                        required
-                                    >
-                                        <option value="" className="bg-zinc-900">Select Node State</option>
-                                        {NIGERIAN_STATES.map(s => <option key={s} value={s} className="bg-zinc-900">{s}</option>)}
-                                    </select>
-                                    <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-600 group-focus-within:text-[#FF6200]">
-                                        <ArrowRight className="h-4 w-4 rotate-90" />
+                        {currentStep === 'business' && (
+                            <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Regional Node (State)</label>
+                                        <div className="relative group">
+                                            <Globe className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
+                                            <select
+                                                name="location"
+                                                value={formData.location}
+                                                onChange={handleChange}
+                                                className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold appearance-none transition-all cursor-pointer"
+                                                required
+                                            >
+                                                <option value="" className="bg-zinc-900">Select Node State</option>
+                                                {NIGERIAN_STATES.map(s => <option key={s} value={s} className="bg-zinc-900">{s}</option>)}
+                                            </select>
+                                            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-600 group-focus-within:text-[#FF6200]">
+                                                <ArrowRight className="h-4 w-4 rotate-90" />
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-                            <div className="space-y-2">
-                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Jurisdiction</label>
-                                <div className="relative group">
-                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center text-lg">🇳🇬</div>
-                                    <select className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-black text-[10px] uppercase tracking-widest appearance-none transition-all cursor-pointer">
-                                        <option>Nigeria</option>
-                                    </select>
-                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
-                                        <ArrowRight className="h-3 w-3 rotate-90" />
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Jurisdiction</label>
+                                        <div className="relative group">
+                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center text-lg">🇳🇬</div>
+                                            <select className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-black text-[10px] uppercase tracking-widest appearance-none transition-all cursor-pointer">
+                                                <option>Nigeria</option>
+                                            </select>
+                                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
+                                                <ArrowRight className="h-3 w-3 rotate-90" />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="md:col-span-2 space-y-2">
-                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Mobile Comms</label>
-                                <div className="relative group">
-                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center gap-2 pr-3 border-r border-white/10">
-                                        <Zap className="h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
-                                        <span className="text-zinc-500 font-black text-[10px] tracking-widest">+234</span>
-                                    </div>
-                                    <input
-                                        name="phoneNumber"
-                                        type="tel"
-                                        value={formData.phoneNumber}
-                                        onChange={handleChange}
-                                        required
-                                        placeholder="803 000 0000"
-                                        className="w-full h-14 pl-24 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold text-xs transition-all"
-                                    />
-                                </div>
-                            </div>
-                        </div>
 
-                        {['student_seller', 'dealer'].includes(role) && (
-                            <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
+                                <div className="space-y-2">
+                                    <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Mobile Comms</label>
+                                    <div className="relative group">
+                                        <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center gap-2 pr-3 border-r border-white/10">
+                                            <Zap className="h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
+                                            <span className="text-zinc-500 font-black text-[10px] tracking-widest">+234</span>
+                                        </div>
+                                        <input
+                                            name="phoneNumber"
+                                            type="tel"
+                                            value={formData.phoneNumber}
+                                            onChange={handleChange}
+                                            required
+                                            placeholder="803 000 0000"
+                                            className="w-full h-14 pl-24 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold text-xs transition-all"
+                                        />
+                                    </div>
+                                </div>
+
                                 <div className="space-y-2">
                                     <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Business / Brand Name</label>
                                     <div className="relative group">
@@ -844,6 +402,7 @@ function SignupContent() {
                                             name="businessName"
                                             value={formData.businessName}
                                             onChange={handleChange}
+                                            required
                                             className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all"
                                             placeholder="Campus Kicks"
                                         />
@@ -946,91 +505,131 @@ function SignupContent() {
                                             <p className="text-[8px] text-zinc-600 italic">Admin will review and enable this node within 24 hours.</p>
                                         </div>
                                     )}
+                                </div>
 
-                                    <div className="space-y-4 pt-4">
-                                        <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                                            <div className="flex items-center justify-between ml-2">
-                                                <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 block">Upload Institution ID Card</label>
-                                                {formData.studentIdUrl && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setFormData({ ...formData, studentIdUrl: '' })}
-                                                        className="text-[8px] font-black text-white uppercase tracking-widest hover:underline"
-                                                    >
-                                                        Reset Upload
-                                                    </button>
-                                                )}
-                                            </div>
+                                <div className="pt-4 flex justify-between">
+                                    <Button type="button" onClick={() => setCurrentStep('profile')} variant="ghost" className="text-zinc-600 hover:text-white font-black uppercase tracking-widest text-[10px]">
+                                        <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                                    </Button>
+                                    <Button type="button" onClick={nextStep} className="h-14 px-8 bg-zinc-900 hover:bg-zinc-800 text-white font-black uppercase tracking-widest rounded-2xl border border-white/5 transition-all flex items-center gap-3">
+                                        Identity Verification <ArrowRight className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
 
-                                            <div className="glass-card rounded-[2rem] border border-white/10 p-4 group hover:border-[#FF6200]/30 transition-colors bg-zinc-950/50 mt-2">
-                                                <ImageUpload
-                                                    onImagesSelected={(urls: string[]) => {
-                                                        if (urls && urls.length > 0) setFormData({ ...formData, studentIdUrl: urls[0] });
-                                                        else setFormData({ ...formData, studentIdUrl: '' });
-                                                    }}
-                                                    defaultImages={formData.studentIdUrl ? [formData.studentIdUrl] : []}
-                                                    maxImages={1}
-                                                    bucketName="identity"
-                                                    isIDCard={true}
-                                                />
-                                            </div>
+                        {currentStep === 'id_check' && (
+                            <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                                <div className="space-y-4">
+                                    <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                        <div className="flex items-center justify-between ml-2">
+                                            <label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 block">Upload Institution ID Card</label>
+                                            {formData.studentIdUrl && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, studentIdUrl: '' })}
+                                                    className="text-[8px] font-black text-white uppercase tracking-widest hover:underline"
+                                                >
+                                                    Reset Upload
+                                                </button>
+                                            )}
                                         </div>
+
+                                        <div className="glass-card rounded-[2rem] border border-white/10 p-4 group hover:border-[#FF6200]/30 transition-colors bg-zinc-950/50 mt-2">
+                                            <ImageUpload
+                                                onImagesSelected={(urls: string[]) => {
+                                                    if (urls && urls.length > 0) setFormData({ ...formData, studentIdUrl: urls[0] });
+                                                    else setFormData({ ...formData, studentIdUrl: '' });
+                                                }}
+                                                defaultImages={formData.studentIdUrl ? [formData.studentIdUrl] : []}
+                                                maxImages={1}
+                                                bucketName="identity"
+                                                isIDCard={true}
+                                            />
+                                        </div>
+                                        <p className="mt-4 text-[9px] text-zinc-500 font-bold uppercase leading-relaxed text-center px-6">
+                                            Please upload a clear, horizontal photo of your current university ID card. Digital or expired IDs are not accepted.
+                                        </p>
                                     </div>
                                 </div>
-                            </div>
-                        )}
 
-                        {['student_seller', 'dealer'].includes(role) && (
-                            <div className="space-y-6 pt-6 border-t border-white/5 animate-in fade-in duration-700 delay-100">
-                                <div className="glass-card p-6 sm:p-8 rounded-[2rem] border border-white/5 text-center bg-gradient-to-b from-[#FF6200]/5 to-transparent relative overflow-hidden">
-                                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF6200]/20 to-transparent" />
-                                    <Sparkles className="h-6 w-6 text-[#FF6200] mx-auto mb-4" />
-                                    <p className="text-[10px] uppercase font-black text-[#FF6200] mb-2 tracking-[0.2em]">Verification Protocol</p>
-                                    <p className="text-zinc-500 text-[9px] font-bold uppercase leading-relaxed">
-                                        Your account will enter a PENDING status for admin security oversight. Once verified, your node will be activated.
-                                    </p>
+                                <div className="pt-4 flex justify-between">
+                                    <Button type="button" onClick={() => setCurrentStep('business')} variant="ghost" className="text-zinc-600 hover:text-white font-black uppercase tracking-widest text-[10px]">
+                                        <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                                    </Button>
+                                    <Button type="button" onClick={nextStep} className="h-14 px-8 bg-[#FF6200] text-black hover:bg-[#FF7A29] font-black uppercase tracking-widest rounded-2xl border-none transition-all flex items-center gap-3">
+                                        Confirm Terms <ArrowRight className="h-4 w-4" />
+                                    </Button>
                                 </div>
                             </div>
                         )}
 
-                        <div className="flex items-start gap-4 pt-6 border-t border-white/5">
-                            <input
-                                type="checkbox"
-                                id="terms"
-                                checked={agreedToTerms}
-                                onChange={(e) => setAgreedToTerms(e.target.checked)}
-                                className="mt-1 h-5 w-5 rounded-lg border-white/10 bg-zinc-950 checked:bg-[#FF6200] checked:text-black focus:ring-[#FF6200]/50 transition-all cursor-pointer"
-                            />
-                            <label htmlFor="terms" className="text-[11px] text-zinc-500 font-bold leading-tight cursor-pointer">
-                                I verify compliance with the <Link href="/terms" target="_blank" className="text-zinc-300 hover:text-white underline decoration-[#FF6200]/40 decoration-1 underline-offset-4 transition-colors">Terms of Engagement</Link> & <Link href="/privacy" target="_blank" className="text-zinc-300 hover:text-white underline decoration-[#FF6200]/40 decoration-1 underline-offset-4 transition-colors">Privacy Protocol</Link>.
-                            </label>
-                        </div>
+                        {currentStep === 'terms' && (
+                            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <div className="space-y-6">
+                                    <div className="glass-card p-6 sm:p-8 rounded-[2rem] border border-white/5 text-center bg-gradient-to-b from-[#FF6200]/5 to-transparent relative overflow-hidden">
+                                        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF6200]/20 to-transparent" />
+                                        <Sparkles className="h-6 w-6 text-[#FF6200] mx-auto mb-4" />
+                                        <p className="text-[10px] uppercase font-black text-[#FF6200] mb-2 tracking-[0.2em]">Verification Protocol</p>
+                                        <p className="text-zinc-500 text-[9px] font-bold uppercase leading-relaxed">
+                                            {(role === 'student_seller' || role === 'dealer')
+                                                ? "Your account will enter a PENDING status for admin security oversight. Once verified, your node will be activated."
+                                                : "By initializing this account, you agree to our fair-trade policies and campus safety protocols."}
+                                        </p>
+                                    </div>
 
-                        <Button type="submit" className="w-full h-16 sm:h-18 bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black uppercase tracking-widest rounded-[1.5rem] shadow-[0_0_30px_rgba(255,102,0,0.3)] border-none mt-4 text-[10px] sm:text-xs group transition-all" disabled={isLoading}>
-                            {isLoading ? <Loader2 className="animate-spin h-6 w-6" /> : (
-                                <span className="flex items-center gap-3">
-                                    {['student_seller', 'dealer'].includes(role) ? 'Initialize Beta Node' : role === 'ceo' ? 'Establish Command' : 'Enter MarketBridge'}
-                                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                                </span>
-                            )}
-                        </Button>
+                                    <div className="flex items-start gap-4 p-6 bg-zinc-950/50 rounded-3xl border border-white/5">
+                                        <div className="pt-1">
+                                            <input
+                                                type="checkbox"
+                                                id="terms"
+                                                checked={agreedToTerms}
+                                                onChange={(e) => setAgreedToTerms(e.target.checked)}
+                                                className="h-5 w-5 rounded-lg border-white/10 bg-black checked:bg-[#FF6200] checked:text-black focus:ring-[#FF6200]/50 transition-all cursor-pointer accent-[#FF6200]"
+                                            />
+                                        </div>
+                                        <label htmlFor="terms" className="text-[11px] text-zinc-500 font-bold leading-tight cursor-pointer">
+                                            I verify compliance with the <Link href="/terms" target="_blank" className="text-zinc-300 hover:text-white underline decoration-[#FF6200]/40 decoration-1 underline-offset-4 transition-colors">Terms of Engagement</Link> & <Link href="/privacy" target="_blank" className="text-zinc-300 hover:text-white underline decoration-[#FF6200]/40 decoration-1 underline-offset-4 transition-colors">Privacy Protocol</Link>.
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div className="pt-4 space-y-4">
+                                    <Button type="submit" disabled={isLoading || !agreedToTerms} className="w-full h-18 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest rounded-[1.5rem] shadow-[0_20px_40px_rgba(255,102,0,0.2)] border-none text-xs group transition-all">
+                                        {isLoading ? <Loader2 className="animate-spin h-6 w-6 mx-auto" /> : (
+                                            <span className="flex items-center justify-center gap-3">
+                                                {['student_seller', 'dealer'].includes(role) ? 'Initialize Beta Node' : role === 'ceo' ? 'Establish Command' : 'Enter MarketBridge'}
+                                                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                            </span>
+                                        )}
+                                    </Button>
+                                    <Button type="button" onClick={() => setCurrentStep(role === 'buyer' || role === 'ceo' ? 'profile' : 'id_check')} variant="ghost" className="w-full text-zinc-600 hover:text-white font-black uppercase tracking-widest text-[10px]">
+                                        <ArrowLeft className="mr-2 h-4 w-4" /> Review Information
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </form>
 
-                    <div className="mt-8 pt-6 border-t border-white/5 text-center">
-                        <p className="text-[9px] sm:text-[10px] text-zinc-600 font-medium leading-relaxed">
+                    <div className="mt-12 pt-8 border-t border-white/5 text-center">
+                        <p className="text-[9px] sm:text-[10px] text-zinc-700 font-medium leading-relaxed uppercase tracking-wider">
                             Beta platform – technical problems? Email <a href="mailto:support@marketbridge.com.ng" className="text-[#FF6200] hover:underline">support@marketbridge.com.ng</a><br />
                             Refunds or seller questions? Email <a href="mailto:ops-support@marketbridge.com.ng" className="text-[#FF6200] hover:underline">ops-support@marketbridge.com.ng</a>
                         </p>
                     </div>
                 </CardContent>
             </Card>
+
+            <div className="fixed bottom-8 left-1/2 -translate-x-1/2 text-center opacity-30 select-none pointer-events-none">
+                <p className="text-[8px] font-black uppercase tracking-[0.5em] text-zinc-800">Secure Protocol v2.4.1 // MarketBridge Alpha</p>
+            </div>
         </div>
     );
 }
 
 export default function SignupPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-black"><Loader2 className="h-8 w-8 animate-spin text-[#FF6200]" /></div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-black"><Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" /></div>}>
             <SignupContent />
         </Suspense>
     );

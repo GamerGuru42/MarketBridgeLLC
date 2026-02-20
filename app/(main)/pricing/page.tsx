@@ -187,16 +187,16 @@ export default function PricingPage() {
                                 Annual
                             </span>
                             {isAnnual && (
-                                <Badge className="bg-[#00FF85]/10 text-[#00FF85] border-[#00FF85]/20 text-[8px] font-black uppercase tracking-widest">
+                                <Badge className="bg-[#FF6200]/10 text-[#FF6200] border-[#FF6200]/20 text-[8px] font-black uppercase tracking-widest">
                                     Save 10%
                                 </Badge>
                             )}
                         </div>
 
                         {['student_seller', 'dealer'].includes(user?.role || '') ? (
-                            <div className="flex items-center gap-2 px-6 py-2 bg-[#00FF85]/10 border border-[#00FF85]/20 rounded-full animate-in fade-in zoom-in duration-500">
-                                <ShieldCheck className="h-3 w-3 text-[#00FF85]" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00FF85]">Merchant Status Verified: Terminal Unlocked</span>
+                            <div className="flex items-center gap-2 px-6 py-2 bg-[#FF6200]/10 border border-[#FF6200]/20 rounded-full animate-in fade-in zoom-in duration-500">
+                                <ShieldCheck className="h-3 w-3 text-[#FF6200]" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF6200]">Merchant Status Verified: Terminal Unlocked</span>
                             </div>
                         ) : (
                             <div className="flex items-center gap-2 px-6 py-2 bg-[#FF6200]/10 border border-[#FF6200]/20 rounded-full animate-pulse">
@@ -272,7 +272,7 @@ export default function PricingPage() {
                                                         </span>
                                                     </div>
                                                     {isAnnual && savings > 0 && (
-                                                        <p className="text-[10px] text-[#00FF85] font-black uppercase tracking-widest mt-2">
+                                                        <p className="text-[10px] text-[#FF6200] font-black uppercase tracking-widest mt-2">
                                                             Save ₦{savings.toLocaleString()}/year
                                                         </p>
                                                     )}
@@ -285,8 +285,7 @@ export default function PricingPage() {
                                         <ul className="space-y-4">
                                             {plan.features.map((feature, idx) => (
                                                 <li key={idx} className="flex items-start gap-3">
-                                                    <Check className={`h-4 w-4 mt-0.5 flex-shrink-0 ${isPro ? 'text-[#FF6200]' : 'text-[#00FF85]'
-                                                        }`} />
+                                                    <Check className={`h-4 w-4 mt-0.5 flex-shrink-0 text-[#FF6200]`} />
                                                     <span className="text-xs text-zinc-400 font-medium leading-relaxed">
                                                         {feature}
                                                     </span>

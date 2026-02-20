@@ -485,7 +485,7 @@ export default function ListingDetailContent() {
                             {listing.title}
                         </h1>
                         <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-zinc-500">
-                            <span className="flex items-center gap-1.5 text-[#00FF85]"><Activity className="h-3 w-3" /> Active Protocol</span>
+                            <span className="flex items-center gap-1.5 text-[#FF6200]"><Activity className="h-3 w-3" /> Active Protocol</span>
                             <span className="w-1 h-1 rounded-full bg-zinc-700" />
                             <span className="text-white">{listing.category}</span>
                             <span className="w-1 h-1 rounded-full bg-zinc-700" />
@@ -567,7 +567,7 @@ export default function ListingDetailContent() {
                                     {listing.current_offered_price && listing.current_offered_price !== listing.price && (
                                         <div className="flex items-center gap-2">
                                             <span className="text-sm text-zinc-500 line-through font-bold">₦{listing.price.toLocaleString()}</span>
-                                            <Badge className="bg-[#00FF85]/10 text-[#00FF85] border-none text-[8px] font-black uppercase tracking-widest">Negotiated Rate</Badge>
+                                            <Badge className="bg-[#FF6200]/10 text-[#FF6200] border-none text-[8px] font-black uppercase tracking-widest">Negotiated Rate</Badge>
                                         </div>
                                     )}
                                 </div>
@@ -606,7 +606,7 @@ export default function ListingDetailContent() {
                                             <Button onClick={handleContactDealer} variant="outline" className="h-12 rounded-xl border-white/10 bg-transparent text-zinc-400 hover:text-white hover:bg-white/5 text-[10px] uppercase font-bold tracking-widest">
                                                 <MessageCircle className="mr-2 h-3 w-3" /> Secure Chat
                                             </Button>
-                                            <Button onClick={handleWhatsAppDealer} variant="outline" className="h-12 rounded-xl border-green-500/20 bg-green-500/5 text-green-500 hover:bg-green-500/10 text-[10px] uppercase font-bold tracking-widest col-span-2">
+                                            <Button onClick={handleWhatsAppDealer} variant="outline" className="h-12 rounded-xl border-[#FF6200]/20 bg-[#FF6200]/5 text-[#FF6200] hover:bg-[#FF6200]/10 text-[10px] uppercase font-bold tracking-widest col-span-2">
                                                 <Phone className="mr-2 h-3 w-3" /> WhatsApp Fallback (Pay In-App)
                                             </Button>
                                         </div>

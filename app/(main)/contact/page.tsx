@@ -93,7 +93,7 @@ export default function ContactPage() {
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="h-10 w-10 bg-[#00FF85]/10 rounded-full flex items-center justify-center text-[#00FF85] flex-shrink-0">
+                                    <div className="h-10 w-10 bg-[#FF6200]/10 rounded-full flex items-center justify-center text-[#FF6200] flex-shrink-0">
                                         <Mail className="h-5 w-5" />
                                     </div>
                                     <div>
