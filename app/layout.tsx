@@ -4,8 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
-import { AiAssistant } from "@/components/AiAssistant";
-import { CookieConsent } from "@/components/CookieConsent";
+import { GlobalWidgets } from "@/components/GlobalWidgets";
 import { LocationChecker } from "@/components/location-checker";
 import { LocationProvider } from "@/contexts/LocationContext";
 import { ToastProvider } from "@/contexts/ToastContext";
@@ -26,8 +25,8 @@ const siteUrl = process.env.NEXT_PUBLIC_CLIENT_URL || 'https://marketbridge.com.
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "MarketBridge - Nigeria's Most Trusted Business Marketplace",
-  description: "Starting with new and used cars, MarketBridge connects verified dealers with customers through escrow-protected transactions. From small businesses to large enterprises, shop with confidence.",
+  title: "MarketBridge Official - Nigeria's Most Trusted Campus Marketplace",
+  description: "The official hyper-local student marketplace for Abuja universities. Nigeria 2026 Campus Beta. Trade safely within your university terminal.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -93,8 +92,7 @@ export default function RootLayout({
                 <ToastProvider>
                   {children}
                 </ToastProvider>
-                <AiAssistant />
-                <CookieConsent />
+                <GlobalWidgets />
               </CartProvider>
             </LocationProvider>
           </AuthProvider>

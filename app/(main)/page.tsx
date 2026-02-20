@@ -48,9 +48,12 @@ export default function HomePage() {
             {/* ── Minimal Header ── */}
             <header className="flex items-center justify-between px-6 py-6 border-b border-white/5 bg-black">
                 <Logo />
-                <div className="flex items-center gap-6">
-                    <a href="mailto:support@marketbridge.com.ng" className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] hover:text-white transition-colors">
-                        Tech Support
+                <div className="flex items-center gap-8">
+                    <a href="mailto:support@marketbridge.com.ng" className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] hover:text-white transition-all">
+                        Technical Support
+                    </a>
+                    <a href="mailto:ops-support@marketbridge.com.ng" className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] hover:text-white transition-all">
+                        Operations Support
                     </a>
                 </div>
             </header>

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { MessageCircle, X, Send, Bot, User, ShoppingBag, Phone, Search, AlertCircle } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, ShoppingBag, Search, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { brain } from '@/lib/ai_brain';
@@ -40,7 +40,6 @@ interface SupportTicket {
 
 export function AiAssistant() {
     const [isOpen, setIsOpen] = useState(false);
-
     const [messages, setMessages] = useState<Message[]>([
         {
             id: '1',
@@ -61,10 +60,8 @@ export function AiAssistant() {
         scrollToBottom();
     }, [messages, isOpen]);
 
-    // Use the new AI Brain
-    const generateResponse = (input: string): { content: string; searchResults?: SearchResult[]; productDetail?: SearchResult; supportTicket?: SupportTicket } => {
+    const generateResponse = (input: string) => {
         const response = brain.processInput(input);
-
         let supportTicket: SupportTicket | undefined;
         if (response.action === 'escalate_tech') {
             supportTicket = { ticketId: `TECH-${Date.now()}`, status: 'escalated', department: 'technical' };
@@ -95,7 +92,6 @@ export function AiAssistant() {
         setInputValue('');
         setIsTyping(true);
 
-        // Simulate AI processing time
         setTimeout(() => {
             const response = generateResponse(userMessage.content);
             const botMessage: Message = {
@@ -114,7 +110,6 @@ export function AiAssistant() {
 
     return (
         <>
-            {/* Floating Toggle Button */}
             <Button
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
@@ -126,7 +121,6 @@ export function AiAssistant() {
                 {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
             </Button>
 
-            {/* Chat Window */}
             <div
                 className={cn(
                     "fixed bottom-24 right-4 sm:right-6 z-[110] w-[calc(100vw-2rem)] sm:w-[400px] transition-all duration-300 ease-in-out origin-bottom-right",
@@ -171,8 +165,7 @@ export function AiAssistant() {
                                             ) : (
                                                 <>
                                                     <AvatarImage src="/user-avatar.png" />
-                                                    <AvatarFallback className="bg-muted text-muted-foreground"><User className="h-4 w-4" /></AvatarFallback>
-                                                </>
+                                                    <AvatarFallback className="bg-muted text-muted-foreground"><User className="h-4 w-4" /></AvatarFallback>                                                </>
                                             )}
                                         </Avatar>
                                         <div className="flex flex-col gap-2 flex-1 min-w-0">
@@ -187,7 +180,6 @@ export function AiAssistant() {
                                                 {msg.content}
                                             </div>
 
-                                            {/* Product Details Card (Single Item) */}
                                             {msg.productDetail && (
                                                 <div className="rounded-xl border border-primary/20 bg-card overflow-hidden shadow-lg animate-in fade-in zoom-in-95 duration-300">
                                                     <div className="h-48 bg-muted relative">
@@ -201,12 +193,11 @@ export function AiAssistant() {
                                                                 }}
                                                             />
                                                         ) : (
-                                                            /* Placeholder for image */
                                                             <div className="absolute inset-0 flex items-center justify-center bg-zinc-800 text-zinc-500">
                                                                 <ShoppingBag className="h-8 w-8 opacity-20" />
                                                             </div>
                                                         )}
-                                                        <Badge className="absolute top-2 right-2 bg-[#FF6600] text-black">
+                                                        <Badge className="absolute top-2 right-2 bg-[#FF6200] text-black">
                                                             {msg.productDetail.category}
                                                         </Badge>
                                                     </div>
@@ -221,7 +212,7 @@ export function AiAssistant() {
                                                                 <Search className="h-3 w-3 mr-1" /> {msg.productDetail.location}
                                                             </div>
                                                         </div>
-                                                        <Button className="w-full font-bold uppercase tracking-widest bg-[#FF6600] text-black hover:bg-[#CC5200] transition-colors" asChild>
+                                                        <Button className="w-full font-bold uppercase tracking-widest bg-[#FF6200] text-black hover:bg-white transition-colors" asChild>
                                                             <Link href={`/listings/${msg.productDetail.id}`}>
                                                                 View Full Listing
                                                             </Link>
@@ -230,7 +221,6 @@ export function AiAssistant() {
                                                 </div>
                                             )}
 
-                                            {/* Search Results List */}
                                             {msg.searchResults && msg.searchResults.length > 0 && (
                                                 <div className="space-y-2">
                                                     {msg.searchResults.map((result) => (
@@ -241,17 +231,16 @@ export function AiAssistant() {
                                                         >
                                                             <div className="flex items-start justify-between gap-2">
                                                                 <div className="flex-1">
-                                                                    <p className="font-medium text-sm line-clamp-1 group-hover:text-primary transition-colors">{result.title}</p>
-                                                                    <p className="text-xs text-muted-foreground">{result.location}</p>
+                                                                    <p className="font-medium text-sm line-clamp-1 group-hover:text-primary transition-colors">{result.title}</p>                                                                    <p className="text-xs text-muted-foreground">{result.location}</p>
                                                                 </div>
-                                                                <Badge variant="secondary" className="text-xs shrink-0 group-hover:bg-[#FF6600] group-hover:text-black transition-colors">
+                                                                <Badge variant="secondary" className="text-xs shrink-0 group-hover:bg-[#FF6200] group-hover:text-black transition-colors">
                                                                     ₦{result.price.toLocaleString()}
                                                                 </Badge>
                                                             </div>
                                                         </div>
                                                     ))}
                                                     <Link href="/listings" className="block pt-2">
-                                                        <Button variant="outline" size="sm" className="w-full">
+                                                        <Button variant="outline" size="sm" className="w-full font-bold uppercase tracking-widest text-[10px]">
                                                             <Search className="h-3 w-3 mr-2" />
                                                             Browse All Marketplace
                                                         </Button>
@@ -259,7 +248,6 @@ export function AiAssistant() {
                                                 </div>
                                             )}
 
-                                            {/* Support Ticket */}
                                             {msg.supportTicket && (
                                                 <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
                                                     <div className="flex items-start gap-2">
@@ -315,7 +303,7 @@ export function AiAssistant() {
                                 <button
                                     key={chip}
                                     onClick={() => handleSendMessage(chip)}
-                                    className="whitespace-nowrap px-3 py-1.5 rounded-full bg-white/5 hover:bg-[#FF6600] hover:text-black border border-white/10 text-[10px] font-bold uppercase tracking-wide transition-all text-zinc-400"
+                                    className="whitespace-nowrap px-3 py-1.5 rounded-full bg-white/5 hover:bg-[#FF6200] hover:text-black border border-white/10 text-[10px] font-bold uppercase tracking-wide transition-all text-zinc-400"
                                 >
                                     {chip}
                                 </button>
