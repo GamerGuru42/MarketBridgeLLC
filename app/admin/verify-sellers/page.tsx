@@ -2,7 +2,7 @@ import React from 'react'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 
 export default async function AdminVerifySellers() {
-  const supabase = createServerSupabaseClient({})
+  const supabase = await createServerSupabaseClient()
   const { data } = await supabase.from('seller_verification_requests').select('id,user_id,email,status,created_at').eq('status', 'pending').order('created_at', { ascending: true }).limit(100)
   const rows = data || []
 

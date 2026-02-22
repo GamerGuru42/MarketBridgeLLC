@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 
 export async function GET(request: Request) {
-  const supabase = createServerSupabaseClient({})
+  const supabase = await createServerSupabaseClient()
 
   // expect a logged-in user (server-side)
   const { data: { user } = {} } = await supabase.auth.getUser()
