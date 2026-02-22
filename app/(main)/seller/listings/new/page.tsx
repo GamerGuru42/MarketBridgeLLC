@@ -45,6 +45,14 @@ export default function NewListingPage() {
             return;
         }
 
+        // SELLER VERIFICATION: student sellers must be verified before creating listings
+        if (user.role === 'student_seller' && !user.is_verified_seller) {
+            // Show message and redirect to verification flow
+            alert('Listing creation is restricted to verified student sellers. Please complete verification.');
+            router.push('/verify-seller');
+            return;
+        }
+
         const allowedRoles = ['dealer', 'student_seller', 'ceo', 'admin', 'technical_admin'];
         if (!allowedRoles.includes(user.role)) {
             console.warn("Access Denied: Role mismatch for listing deployment", user.role);

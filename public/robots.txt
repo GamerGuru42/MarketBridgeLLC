@@ -1,5 +1,7 @@
 User-agent: *
 Disallow: /public/
+User-agent: *
+Disallow: /public/
 Disallow: /admin/
 Disallow: /api/
 

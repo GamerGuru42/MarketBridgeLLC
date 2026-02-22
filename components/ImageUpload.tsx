@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Loader2, Upload, X, Image as ImageIcon, AlertCircle, RefreshCw, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import { useToast } from '@/contexts/ToastContext';
 
 interface ImageUploadProps {
     onImagesSelected: (urls: string[]) => void;
@@ -30,6 +31,7 @@ export function ImageUpload({
     isIDCard = false
 }: ImageUploadProps) {
     const supabase = createClient();
+    const { toast } = useToast();
     const [slots, setSlots] = useState<UploadSlot[]>(() =>
         defaultImages.map(url => ({ id: url, url, status: 'success' as const }))
     );
@@ -113,7 +115,10 @@ export function ImageUpload({
 
         } catch (err: any) {
             console.error('Upload error:', err);
-            updateSlot(slotId, { status: 'error', errorMsg: err.message || 'Upload failed' });
+            const message = err?.message || 'Upload failed';
+            updateSlot(slotId, { status: 'error', errorMsg: message });
+            // Show toast for immediate feedback
+            try { toast(message, 'error'); } catch (e) { /* swallow if toast unavailable */ }
         }
     };
 
@@ -123,7 +128,7 @@ export function ImageUpload({
 
         const successCount = slots.filter(s => s.status === 'success').length;
         if (successCount + files.length > maxImages) {
-            alert(`You can only upload a maximum of ${maxImages} images. You already have ${successCount}.`);
+            try { toast(`You can only upload a maximum of ${maxImages} images. You already have ${successCount}.`, 'error'); } catch (e) {}
             if (fileInputRef.current) fileInputRef.current.value = '';
             return;
         }
@@ -139,6 +144,8 @@ export function ImageUpload({
 
         // Upload each file
         await Promise.all(newSlots.map((slot, i) => uploadFile(files[i], slot.id)));
+        // After all attempts, show success toast summarizing state
+        try { toast('Images uploaded (or queued) successfully.', 'success'); } catch (e) {}
     };
 
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {

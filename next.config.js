@@ -6,6 +6,10 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
+    env: {
+        // Expose public toggle to the client. Server middleware still uses ENABLE_PUBLIC_SECTION.
+        NEXT_PUBLIC_ENABLE_PUBLIC_SECTION: process.env.ENABLE_PUBLIC_SECTION || 'false',
+    },
     typescript: {
         ignoreBuildErrors: true,
     },

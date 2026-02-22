@@ -191,6 +191,20 @@ function SignupContent() {
 
             if (profileError) throw profileError;
 
+            // 3. Capture referral code from query string (if present)
+            try {
+                const refCode = searchParams.get('ref') || searchParams.get('referral') || null;
+                if (refCode) {
+                    await fetch('/api/referrals/record', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ refCode, referredUserId: authData.user.id })
+                    });
+                }
+            } catch (e) {
+                console.warn('Referral capture failed', e);
+            }
+
             toast('Account initialized successfully', 'success');
             await refreshUser();
             router.push('/verify-email');

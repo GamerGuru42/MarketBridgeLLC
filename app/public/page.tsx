@@ -1,3 +1,57 @@
+import { notFound } from 'next/navigation'
+import React from 'react'
+import Link from 'next/link'
+import { supabaseAdmin } from '@/lib/supabase/admin'
+
+export default async function PublicIndexPage() {
+    // Server-side guard: enforce env var + DB flag
+    const envEnabled = process.env.ENABLE_PUBLIC_SECTION === 'true'
+    if (!envEnabled) return notFound()
+
+    try {
+        const { data, error } = await supabaseAdmin
+            .from('site_settings')
+            .select('value')
+            .eq('key', 'public_section_enabled')
+            .limit(1)
+
+        if (error) {
+            console.error('Public index DB check failed', error)
+            return notFound()
+        }
+
+        const dbEnabled = data?.[0]?.value === true || data?.[0]?.value === 'true'
+        if (!dbEnabled) return notFound()
+    } catch (e) {
+        console.error('Public index guard error', e)
+        return notFound()
+    }
+
+    return (
+        <div style={{ minHeight: '100vh', background: '#000000', color: '#FFFFFF', fontFamily: 'Inter, system-ui, sans-serif' }}>
+            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px' }}>
+                <div style={{ fontWeight: 700, color: '#FF6200', fontSize: 20 }}>MarketBridge</div>
+            </header>
+
+            <main style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '48px 20px' }}>
+                <h1 style={{ color: '#FF6200', background: '#000000', fontSize: 28, fontWeight: 800, textAlign: 'center' }}>Public Marketplace</h1>
+                <p style={{ color: '#FFFFFF', opacity: 0.85, marginTop: 12 }}>Open to all Nigerians</p>
+
+                <div style={{ marginTop: 28, display: 'flex', gap: 12 }}>
+                    <Link href="/public/listings" style={{ background: '#FF6200', color: '#000000', padding: '10px 16px', borderRadius: 8, textDecoration: 'none', fontWeight: 800 }}>Browse Listings</Link>
+                    <Link href="/public/onboarding" style={{ background: '#111111', color: '#FFFFFF', padding: '10px 16px', borderRadius: 8, textDecoration: 'none', border: '1px solid #222' }}>Become a Seller</Link>
+                </div>
+            </main>
+
+            <footer style={{ padding: 18, textAlign: 'center', borderTop: '1px solid #111', marginTop: 40 }}>
+                <div>
+                    <a href="mailto:support@marketbridge.com.ng" style={{ color: '#FF6200', textDecoration: 'none', marginRight: 12 }}>Tech Support: support@marketbridge.com.ng</a>
+                    <a href="mailto:ops-support@marketbridge.com.ng" style={{ color: '#FF6200', textDecoration: 'none' }}>Ops Support: ops-support@marketbridge.com.ng</a>
+                </div>
+            </footer>
+        </div>
+    )
+}
 'use client';
 
 import React, { useEffect, useState } from 'react';
