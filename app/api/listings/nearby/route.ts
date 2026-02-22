@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '../../../../lib/supabase/server'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { haversineDistance } from '../../../../lib/geo/utils'
 
 export async function GET(request: Request) {

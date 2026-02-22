@@ -1,5 +1,5 @@
 import React from 'react'
-import { createServerSupabaseClient } from '../../../../lib/supabase/server'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 
 export default async function AdminVerifySellers() {
   const supabase = createServerSupabaseClient({})

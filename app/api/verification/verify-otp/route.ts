@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { verifyOtpAndCreateRequest } from '../../../../../../lib/verification/server'
+import { verifyOtpAndCreateRequest } from '@/lib/verification/server'
 
 export async function POST(req: Request) {
   const body = await req.json()
