@@ -209,8 +209,11 @@ export default function AboutPage() {
                         </Button>
                     </div>
 
-                    <div className="pt-20 opacity-20">
-                        <p className="text-[8px] font-black uppercase tracking-[1em] text-zinc-500">ESTABLISHED IN ABUJA 2024</p>
+                    <div className="pt-20 opacity-20 text-center">
+                        <p className="text-[8px] font-black uppercase tracking-[1em] text-zinc-500 mb-4">ESTABLISHED IN ABUJA 2024</p>
+                        <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest font-sans">
+                            MarketBridge NG Limited is a company registered in Nigeria under CAMA 2020. RC [RC number]. Registered office: [your Abuja address].
+                        </p>
                     </div>
                 </div>
             </div>

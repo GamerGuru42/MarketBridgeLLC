@@ -12,13 +12,13 @@ export const Footer = () => {
                         <Logo />
                         <p className="text-zinc-500 text-xs font-medium leading-relaxed">
                             <strong>MarketBridge Campus Beta</strong><br />
-                            <a href="mailto:support@marketbridge.com.ng?subject=Tech%20Support" className="hover:text-[#FF6200] transition-colors">
+                            <a href="mailto:support@marketbridge.com.ng?subject=Tech%20Support" className="text-[#FF6200] hover:text-white transition-colors">
                                 Tech Support: support@marketbridge.com.ng
                             </a><br />
-                            <a href="mailto:ops-support@marketbridge.com.ng?subject=Ops%20Support" className="hover:text-[#FF6200] transition-colors">
+                            <a href="mailto:ops-support@marketbridge.com.ng?subject=Ops%20Support" className="text-[#FF6200] hover:text-white transition-colors">
                                 Ops / Refunds / Account Help: ops-support@marketbridge.com.ng
                             </a><br />
-                            Website: <a href="https://marketbridge.com.ng" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">https://marketbridge.com.ng</a><br />
+                            Website: <a href="https://marketbridge.com.ng" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF6200] transition-colors text-white">https://marketbridge.com.ng</a><br />
                             <span className="text-[10px] text-zinc-600 mt-2 block">
                                 <Link href="/terms" className="hover:text-white">Terms</Link> | <Link href="/privacy" className="hover:text-white">Privacy</Link> | <Link href="/refund" className="hover:text-white">Refund</Link> | <Link href="/disclaimer" className="hover:text-white">Disclaimer</Link>
                             </span>
@@ -61,7 +61,10 @@ export const Footer = () => {
                 </div>
 
                 <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-zinc-700 font-black uppercase tracking-[0.2em]">
-                    <p>&copy; {new Date().getFullYear()} MarketBridge Limited (Beta). All rights reserved.</p>
+                    <div className="flex flex-col gap-2 items-center md:items-start text-center md:text-left">
+                        <p>&copy; {new Date().getFullYear()} MarketBridge Limited (Beta). All rights reserved.</p>
+                        <p className="text-white normal-case tracking-normal">MarketBridge NG Limited | RC [RC number] | Registered in Abuja, Nigeria</p>
+                    </div>
                     <div className="flex gap-8">
                         <span className="text-[#FF6200] flex items-center gap-2">
                             <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200] animate-pulse" />

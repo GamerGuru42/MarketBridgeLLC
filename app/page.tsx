@@ -3,18 +3,31 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { useLocation } from '@/contexts/LocationContext'
+import Image from 'next/image'
+import { ABUJA_UNIVERSITIES } from '@/lib/location'
 
 export default function HomePage() {
     const router = useRouter()
     const publicEnabled = process.env.NEXT_PUBLIC_ENABLE_PUBLIC_SECTION === 'true'
 
-    const [consentVisible, setConsentVisible] = useState(true)
-    const [userLocation, setUserLocation] = useState<{ city?: string; region?: string; lat?: number; lon?: number } | null>(null)
-    const [highlightCampus, setHighlightCampus] = useState(false)
+    const {
+        isAbuja,
+        loading: locationLoading,
+        consentStatus,
+        requestLocation,
+        denyConsent,
+        setManualLocation,
+        city,
+        region
+    } = useLocation()
 
+    // Local state for the consent modal explicitly on this page
+    const [showConsentModal, setShowConsentModal] = useState(false)
+    const [showManualDropdown, setShowManualDropdown] = useState(false)
     // Auto-redirect logged in users to appropriate section
     useEffect(() => {
-        ;(async () => {
+        ; (async () => {
             try {
                 const supabase = createClient()
                 const { data: sessionData } = await supabase.auth.getSession()
@@ -50,123 +63,182 @@ export default function HomePage() {
         })()
     }, [router, publicEnabled])
 
-    // Location detection flow triggered when consent modal accepted
     useEffect(() => {
-        let cancelled = false
-        const runIpLookup = async () => {
-            try {
-                const res = await fetch('https://ipapi.co/json')
-                const data = await res.json()
-                if (!cancelled) setUserLocation({ city: data.city, region: data.region, lat: Number(data.latitude), lon: Number(data.longitude) })
-            } catch (e) {
-                if (!cancelled) setUserLocation(null)
-            }
+        if (!locationLoading && consentStatus === 'prompt') {
+            setShowConsentModal(true)
+        } else {
+            setShowConsentModal(false)
         }
 
-        if (!consentVisible) {
-            // try browser geolocation first
-            if (navigator?.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (p) => {
-                        if (cancelled) return
-                        setUserLocation({ lat: p.coords.latitude, lon: p.coords.longitude })
-                    },
-                    () => runIpLookup(),
-                    { maximumAge: 1000 * 60 * 5, timeout: 5000 }
-                )
-            } else {
-                runIpLookup()
-            }
+        if (!locationLoading && consentStatus === 'denied') {
+            setShowManualDropdown(true)
         }
+    }, [consentStatus, locationLoading])
 
-        return () => { cancelled = true }
-    }, [consentVisible])
+    const handleAllowLocation = async () => {
+        setShowConsentModal(false)
+        await requestLocation()
+    }
 
-    // If location is Abuja or near known campuses, emphasize campus card
-    useEffect(() => {
-        if (!userLocation) return
-        const city = (userLocation.city || '').toLowerCase()
-        if (city.includes('abuja') || city.includes('fct') || city.includes('federal capital')) {
-            setHighlightCampus(true)
-            return
-        }
-
-        // simple radius check around Abuja center
-        if (userLocation.lat && userLocation.lon) {
-            const dLat = Math.abs(userLocation.lat - 9.0765)
-            const dLon = Math.abs(userLocation.lon - 7.3986)
-            if (dLat <= 0.5 && dLon <= 0.8) setHighlightCampus(true)
-        }
-    }, [userLocation])
+    const handleDenyLocation = () => {
+        setShowConsentModal(false)
+        denyConsent()
+        setShowManualDropdown(true)
+    }
 
     return (
-        <div style={{ minHeight: '100vh', background: '#000000', color: '#FFFFFF', fontFamily: 'Inter, system-ui, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <main style={{ width: '100%', maxWidth: 1100, padding: 28 }}>
-                <h1 style={{ color: '#FF6200', fontSize: 36, fontWeight: 900, textAlign: 'center', marginBottom: 24 }}>CHOOSE YOUR MARKETPLACE</h1>
+        <div className="min-h-screen bg-black text-white font-sans flex flex-col selection:bg-[#FF6200] selection:text-black">
+            {/* Minimal Header */}
+            <header className="w-full p-6 flex justify-center md:justify-start items-center border-b border-white/10 shrink-0">
+                <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded shrink-0 bg-[#FF6200] flex items-center justify-center">
+                        <span className="font-black text-black text-xl">M</span>
+                    </div>
+                    <span className="text-[#FF6200] font-black text-2xl tracking-tighter">
+                        MarketBridge
+                    </span>
+                </div>
+            </header>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 16 }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
-                        <div
-                            role="button"
-                            onClick={() => router.push('/campus')}
-                            aria-label="Enter Campus Marketplace"
-                            style={{
-                                background: '#000',
-                                border: `2px solid ${highlightCampus ? '#FF6200' : '#222'}`,
-                                padding: 28,
-                                borderRadius: 12,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: 12,
-                                cursor: 'pointer',
-                            }}
-                        >
-                            <div style={{ fontSize: 20, fontWeight: 800, color: '#FFFFFF' }}>Campus Marketplace (Students Only)</div>
-                            <div style={{ color: '#FFFFFF', opacity: 0.9 }}>Buy & sell safely with verified student sellers in Abuja universities</div>
-                            <div style={{ marginTop: 8 }}>
-                                <button style={{ background: '#FF6200', color: '#FFFFFF', border: 'none', padding: '12px 16px', borderRadius: 8, cursor: 'pointer', fontWeight: 800 }}>ENTER CAMPUS</button>
+            {/* Main Content */}
+            <main className="flex-1 w-full max-w-5xl mx-auto px-6 py-12 md:py-24 flex flex-col justify-center gap-12">
+
+                <h1 className="text-[#FF6200] text-4xl md:text-6xl font-black text-center uppercase tracking-tight 
+                               drop-shadow-[0_0_15px_rgba(255,98,0,0.5)] leading-tight">
+                    Choose Your Marketplace
+                </h1>
+
+                {/* Location Detection Area */}
+                <div className="w-full flex justify-center text-sm font-semibold uppercase tracking-widest text-zinc-500 min-h-[40px] items-center">
+                    {locationLoading ? (
+                        <div className="flex items-center gap-3 animate-pulse">
+                            <div className="w-4 h-4 rounded-full border-2 border-[#FF6200] border-t-transparent animate-spin" />
+                            Detecting Signal...
+                        </div>
+                    ) : (city || region) ? (
+                        <div className="flex items-center gap-2 text-white">
+                            <span className="text-[#FF6200]">●</span> Detected Area: {city ? `${city}, ` : ''}{region}
+                        </div>
+                    ) : showManualDropdown ? (
+                        <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-md">
+                            <span className="shrink-0 text-[#FF6200]">Set Area:</span>
+                            <select
+                                className="w-full bg-black border border-white/20 text-white p-3 rounded-xl outline-none focus:border-[#FF6200] transition-colors appearance-none text-center sm:text-left cursor-pointer font-bold"
+                                onChange={(e) => {
+                                    if (e.target.value === 'public') {
+                                        setManualLocation('global');
+                                    } else {
+                                        const uni = ABUJA_UNIVERSITIES.find(u => u.id === e.target.value);
+                                        if (uni) setManualLocation(uni);
+                                    }
+                                }}
+                                defaultValue=""
+                            >
+                                <option value="" disabled>Select your location</option>
+                                <optgroup label="Abuja Campuses">
+                                    {ABUJA_UNIVERSITIES.map(u => (
+                                        <option key={u.id} value={u.id}>{u.name}</option>
+                                    ))}
+                                </optgroup>
+                                <optgroup label="Other Hubs">
+                                    <option value="public">Other / Nationwide</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    ) : null}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl mx-auto">
+                    {/* Campus Card - Always Visible */}
+                    <div
+                        role="button"
+                        onClick={() => router.push('/campus')}
+                        className={`group relative flex flex-col justify-between p-8 rounded-3xl bg-black border-2 cursor-pointer transition-all duration-300
+                            ${isAbuja ? 'border-[#FF6200] shadow-[0_0_40px_rgba(255,98,0,0.15)] ring-1 ring-[#FF6200]/50' : 'border-white/10 hover:border-[#FF6200]/50 hover:shadow-[0_0_30px_rgba(255,98,0,0.1)]'}
+                        `}
+                    >
+                        {isAbuja && (
+                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#FF6200] text-black text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-[0_0_15px_rgba(255,98,0,0.5)]">
+                                SIGNAL MATCH
                             </div>
+                        )}
+                        <div className="space-y-4">
+                            <h2 className="text-2xl font-black uppercase tracking-tight text-white group-hover:text-[#FF6200] transition-colors">
+                                Campus Marketplace
+                            </h2>
+                            <p className="text-zinc-400 font-medium leading-relaxed">
+                                Buy & sell safely with verified student sellers in Abuja universities.
+                            </p>
+                        </div>
+                        <div className="pt-8">
+                            <button className="w-full bg-[#FF6200] text-black font-black uppercase tracking-widest py-4 rounded-xl hover:bg-white hover:text-black transition-all duration-300 active:scale-95 shadow-[0_0_20px_rgba(255,98,0,0.3)]">
+                                Enter Campus
+                            </button>
                         </div>
                     </div>
 
+                    {/* Public Card - Conditional */}
                     {publicEnabled && (
                         <div
                             role="button"
                             onClick={() => router.push('/public')}
-                            aria-label="Enter Public Marketplace"
-                            style={{
-                                background: '#000',
-                                border: '2px solid #222',
-                                padding: 28,
-                                borderRadius: 12,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: 12,
-                                cursor: 'pointer',
-                            }}
+                            className="group relative flex flex-col justify-between p-8 rounded-3xl bg-black border-2 border-white/10 hover:border-[#FF6200]/50 cursor-pointer transition-all duration-300 hover:shadow-[0_0_30px_rgba(255,98,0,0.1)]"
                         >
-                            <div style={{ fontSize: 20, fontWeight: 800, color: '#FFFFFF' }}>Public Marketplace</div>
-                            <div style={{ color: '#FFFFFF', opacity: 0.9 }}>Buy & sell anything in Nigeria – open to everyone</div>
-                            <div style={{ marginTop: 8 }}>
-                                <button style={{ background: '#FF6200', color: '#FFFFFF', border: 'none', padding: '12px 16px', borderRadius: 8, cursor: 'pointer', fontWeight: 800 }}>ENTER PUBLIC</button>
+                            <div className="space-y-4">
+                                <h2 className="text-2xl font-black uppercase tracking-tight text-white group-hover:text-[#FF6200] transition-colors">
+                                    Public Marketplace
+                                </h2>
+                                <p className="text-zinc-400 font-medium leading-relaxed">
+                                    Buy & sell anything in Nigeria — open to everyone.
+                                </p>
+                            </div>
+                            <div className="pt-8">
+                                <button className="w-full bg-[#FF6200] text-black font-black uppercase tracking-widest py-4 rounded-xl hover:bg-white hover:text-black transition-all duration-300 active:scale-95 shadow-[0_0_20px_rgba(255,98,0,0.3)]">
+                                    Enter Public
+                                </button>
                             </div>
                         </div>
                     )}
                 </div>
 
-                {/* Consent modal (simple, no extra text) */}
-                {consentVisible && (
-                    <div style={{ position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)' }}>
-                        <div style={{ background: '#000', border: '2px solid #FF6200', padding: 20, borderRadius: 12, width: 480, maxWidth: '94%' }}>
-                            <div style={{ fontWeight: 800, color: '#FF6200', marginBottom: 8 }}>Allow location to show nearby campus listings?</div>
-                            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
-                                <button onClick={() => setConsentVisible(false)} style={{ background: '#111', color: '#FFFFFF', padding: '8px 12px', borderRadius: 8, border: '1px solid #222' }}>Deny</button>
-                                <button onClick={() => setConsentVisible(false)} style={{ background: '#FF6200', color: '#FFFFFF', padding: '8px 12px', borderRadius: 8 }}>Allow</button>
+                {/* Consent Modal Overlay */}
+                {showConsentModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+                        <div className="bg-black border-2 border-[#FF6200] rounded-3xl p-8 max-w-sm w-full shadow-[0_0_50px_rgba(255,98,0,0.2)]">
+                            <h3 className="text-[#FF6200] text-xl font-black uppercase tracking-tight mb-4 text-center">Location Request</h3>
+                            <p className="text-zinc-300 text-center mb-8 font-medium">
+                                Allow location access to automatically connect you to the nearest campus marketplace?
+                            </p>
+                            <div className="flex flex-col gap-3">
+                                <button
+                                    onClick={handleAllowLocation}
+                                    className="w-full bg-[#FF6200] text-black font-black uppercase tracking-widest py-4 rounded-xl hover:bg-white transition-colors"
+                                >
+                                    Allow Access
+                                </button>
+                                <button
+                                    onClick={handleDenyLocation}
+                                    className="w-full bg-transparent border-2 border-white/20 text-white font-bold uppercase tracking-widest py-4 rounded-xl hover:bg-white/5 transition-colors"
+                                >
+                                    Deny / Manual
+                                </button>
                             </div>
                         </div>
                     </div>
                 )}
             </main>
+
+            {/* Minimal Footer */}
+            <footer className="w-full p-6 text-center border-t border-white/10 shrink-0 mt-auto">
+                <p className="text-zinc-500 font-medium text-sm flex flex-col md:flex-row justify-center items-center gap-1 md:gap-4">
+                    <span>Tech Support: <a href="mailto:support@marketbridge.com.ng" className="text-[#FF6200] hover:text-white transition-colors">support@marketbridge.com.ng</a></span>
+                    <span className="hidden md:inline">|</span>
+                    <span>Ops Support: <a href="mailto:ops-support@marketbridge.com.ng" className="text-[#FF6200] hover:text-white transition-colors">ops-support@marketbridge.com.ng</a></span>
+                </p>
+                <p className="text-white font-medium text-sm mt-4">
+                    MarketBridge NG Limited | RC [RC number] | Registered in Abuja, Nigeria
+                </p>
+            </footer>
         </div>
     )
 }

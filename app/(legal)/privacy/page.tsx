@@ -26,6 +26,9 @@ export default function PrivacyPage() {
                     <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs">
                         Last Updated: February 16, 2026 | Version: 1.0 (Beta)
                     </p>
+                    <p className="text-white text-sm font-medium mt-2">
+                        MarketBridge NG Limited (RC [RC number]) is the data controller under NDPA 2023.
+                    </p>
                 </div>
 
                 <div className="prose prose-invert prose-orange max-w-none space-y-8 text-zinc-300 font-medium">
