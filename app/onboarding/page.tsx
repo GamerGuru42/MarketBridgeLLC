@@ -192,12 +192,12 @@ function OnboardingContent() {
                                 <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic">
                                     Account <span className="text-[#FF6200]">Restriction</span>
                                 </h1>
-                                <p className="text-white/60 text-lg max-w-lg mx-auto leading-relaxed px-8">
-                                    To maintain account security, <span className="text-white font-bold">Buyer Accounts</span> cannot be transitioned into Seller accounts.
+                                <p className="text-white/60 text-lg max-w-lg mx-auto leading-relaxed px-8 font-bold text-[#FF6200]">
+                                    Campus selling is for verified students only. Verify your student status.
                                 </p>
                                 <div className="space-y-4 pt-6">
                                     <p className="text-xs text-[#FF6200] font-black uppercase tracking-widest">Action Required:</p>
-                                    <p className="text-sm text-white/40 max-w-sm mx-auto">Please logout and create a <span className="text-white">New Seller Account</span> using your student merchant credentials.</p>
+                                    <p className="text-sm text-white/40 max-w-sm mx-auto">Please logout and create a <span className="text-white">New Seller Account</span> using your student merchant credentials and a valid university email domain (.edu.ng).</p>
                                     <div className="pt-8">
                                         <Button
                                             onClick={async () => {

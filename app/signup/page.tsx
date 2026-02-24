@@ -153,9 +153,16 @@ function SignupContent() {
             return;
         }
 
+        const normalizedEmail = normalizeIdentifier(formData.email);
+
+        // Enforce university email for sellers
+        if (['student_seller', 'dealer'].includes(role) && !normalizedEmail.endsWith('.edu.ng') && !normalizedEmail.endsWith('.edu')) {
+            toast('Campus selling requires a verified university email (.edu.ng/.edu)', 'error');
+            return;
+        }
+
         setIsLoading(true);
         try {
-            const normalizedEmail = normalizeIdentifier(formData.email);
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email: normalizedEmail,
                 password: formData.password,
