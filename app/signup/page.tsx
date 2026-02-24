@@ -250,6 +250,20 @@ function SignupContent() {
             <Card className="w-full max-w-2xl glass-card border-none rounded-[3rem] p-6 sm:p-12 text-white shadow-2xl relative z-10">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-[#FF6200]/50 to-transparent" />
 
+                {/* Top Navigation */}
+                <div className="flex justify-start mb-8">
+                    <Button
+                        asChild
+                        variant="ghost"
+                        className="text-white/40 hover:text-[#FF6200] flex items-center gap-2 px-0 transition-colors group"
+                    >
+                        <Link href="/">
+                            <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+                            <span className="text-[10px] font-black uppercase tracking-widest">Return to Home</span>
+                        </Link>
+                    </Button>
+                </div>
+
                 <CardHeader className="p-0 text-center mb-10">
                     <div className="flex justify-center mb-8">
                         <Logo showText={false} className="scale-125 saturate-150 drop-shadow-[0_0_20px_rgba(255,102,0,0.3)]" />
