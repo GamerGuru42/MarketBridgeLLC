@@ -274,10 +274,9 @@ function ListingsContent() {
                             onChange={(e) => setLocation(e.target.value)}
                             className="w-full bg-white/5 border border-white/10 px-6 h-16 text-white focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
                         >
-                            <option value="" className="bg-black text-white">All Campuss</option>
-                            <option value="Abuja" className="bg-black text-white">Abuja</option>
-                            <option value="Lagos" className="bg-black text-white">Lagos</option>
-                            <option value="Port Harcourt" className="bg-black text-white">Port Harcourt</option>
+                            <option value="" className="bg-black text-white">All Terminals</option>
+                            <option value="Abuja" className="bg-black text-white">Abuja (Main Node)</option>
+                            <option value="Global" className="bg-black text-white">Global Access</option>
                         </select>
                     </div>
 

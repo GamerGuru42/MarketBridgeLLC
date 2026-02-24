@@ -82,6 +82,14 @@ const PLATFORM_KNOWLEDGE = {
             for: ["Refunds", "Subscriptions", "Seller questions", "Payments", "Account help", "General assistance"],
             description: "Operations support for refunds, subscriptions, seller questions, and account help"
         }
+    },
+    rewards: {
+        marketcoins: "Earn 1 coin per ₦100 spent (Buyer) or 1 coin per ₦200 sold (Seller). 1 coin = ₦1 discount at checkout.",
+        referral: "Earn ₦300 credit (coins) for every friend who makes their first purchase of ₦5,000 or more."
+    },
+    branding: {
+        colors: ["#FF6200 Orange", "#000000 Black", "#FFFFFF White"],
+        vibe: "Mobile-first, hyper-local, student-focused commerce."
     }
 };
 
@@ -176,6 +184,18 @@ class AiBrain {
                     `• **Founding Seller (Beta)**: ${PLATFORM_KNOWLEDGE.pricing.founding}\n` +
                     `• **Enterprise**: ${PLATFORM_KNOWLEDGE.pricing.enterprise}\n\n` +
                     `Would you like me to take you to the Pricing page?`
+            };
+        }
+
+        // MarketCoins & Rewards
+        if (this.matchAny(lowerInput, ['coin', 'marketcoin', 'reward', 'point', 'earn', 'discount', 'refer', 'referral', 'bonus'])) {
+            if (lowerInput.includes('refer') || lowerInput.includes('bonus')) {
+                return {
+                    content: `Earning is easy! ${PLATFORM_KNOWLEDGE.rewards.referral} You can track your referrals in your profile dashboard.`
+                };
+            }
+            return {
+                content: `Our **MarketCoins** loyalty engine lets you save big. ${PLATFORM_KNOWLEDGE.rewards.marketcoins} You can apply them at checkout for instant discounts!`
             };
         }
 

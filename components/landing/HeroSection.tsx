@@ -144,6 +144,11 @@ export const HeroSection = () => {
                                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                             </Link>
                         </Button>
+                        <Button size="lg" variant="outline" asChild className="h-14 md:h-16 px-8 md:px-10 border-white/20 text-white font-black uppercase tracking-widest hover:bg-white hover:text-black rounded-[2rem] transition-all w-full sm:w-auto">
+                            <Link href="/onboarding?role=student_seller">
+                                Become a Seller
+                            </Link>
+                        </Button>
                     </motion.div>
                 </motion.div>
 
