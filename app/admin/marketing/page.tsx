@@ -85,7 +85,7 @@ export default function MarketingAdminPage() {
                 <h1 className="text-4xl font-black uppercase tracking-tighter italic">
                     Marketing <span className="text-[#FF6200]">Vector</span>
                 </h1>
-                <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">
+                <p className="text-white/40 text-xs font-bold uppercase tracking-widest">
                     Ambassadors & Growth Metrics
                 </p>
             </div>
@@ -94,30 +94,30 @@ export default function MarketingAdminPage() {
                 <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm group hover:border-[#FF6200]/20 transition-all">
                     <CardContent className="p-6 flex items-center justify-between">
                         <div>
-                            <p className="text-zinc-500 text-[10px] uppercase font-black tracking-widest">Total Referrals</p>
+                            <p className="text-white/40 text-[10px] uppercase font-black tracking-widest">Total Referrals</p>
                             <p className="text-4xl font-black text-white font-heading italic">{stats.totalReferrals}</p>
                         </div>
-                        <Users className="h-8 w-8 text-zinc-700 group-hover:text-[#FF6200] transition-colors" />
+                        <Users className="h-8 w-8 text-white/20 group-hover:text-[#FF6200] transition-colors" />
                     </CardContent>
                 </Card>
 
                 <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm group hover:border-[#FF6200]/20 transition-all">
                     <CardContent className="p-6 flex items-center justify-between">
                         <div>
-                            <p className="text-zinc-500 text-[10px] uppercase font-black tracking-widest">Active Nodes</p>
+                            <p className="text-white/40 text-[10px] uppercase font-black tracking-widest">Active Campuss</p>
                             <p className="text-4xl font-black text-[#FF6200] font-heading italic">{stats.activeSellers}</p>
                         </div>
-                        <Target className="h-8 w-8 text-zinc-700 group-hover:text-[#FF6200] transition-colors" />
+                        <Target className="h-8 w-8 text-white/20 group-hover:text-[#FF6200] transition-colors" />
                     </CardContent>
                 </Card>
 
                 <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm group hover:border-[#FF6200]/20 transition-all">
                     <CardContent className="p-6 flex items-center justify-between">
                         <div>
-                            <p className="text-zinc-500 text-[10px] uppercase font-black tracking-widest">Waitlist Velocity</p>
+                            <p className="text-white/40 text-[10px] uppercase font-black tracking-widest">Waitlist Velocity</p>
                             <p className="text-4xl font-black text-white font-heading italic">+24%</p>
                         </div>
-                        <Rocket className="h-8 w-8 text-zinc-700 group-hover:text-[#FF6200] transition-colors" />
+                        <Rocket className="h-8 w-8 text-white/20 group-hover:text-[#FF6200] transition-colors" />
                     </CardContent>
                 </Card>
             </div>
@@ -130,22 +130,22 @@ export default function MarketingAdminPage() {
                     <Table>
                         <TableHeader>
                             <TableRow className="border-white/5 hover:bg-white/5">
-                                <TableHead className="text-zinc-500 uppercase font-black text-[10px] w-12">Rank</TableHead>
-                                <TableHead className="text-zinc-500 uppercase font-black text-[10px]">Name</TableHead>
-                                <TableHead className="text-zinc-500 uppercase font-black text-[10px]">Referrals</TableHead>
-                                <TableHead className="text-zinc-500 uppercase font-black text-[10px]">Status</TableHead>
+                                <TableHead className="text-white/40 uppercase font-black text-[10px] w-12">Rank</TableHead>
+                                <TableHead className="text-white/40 uppercase font-black text-[10px]">Name</TableHead>
+                                <TableHead className="text-white/40 uppercase font-black text-[10px]">Referrals</TableHead>
+                                <TableHead className="text-white/40 uppercase font-black text-[10px]">Status</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {leaderboard.map((user, idx) => (
                                 <TableRow key={idx} className="border-white/5 hover:bg-white/5">
-                                    <TableCell className="text-zinc-500 font-black italic">#{idx + 1}</TableCell>
+                                    <TableCell className="text-white/40 font-black italic">#{idx + 1}</TableCell>
                                     <TableCell className="text-white font-bold">{user.name}</TableCell>
                                     <TableCell className="text-[#FF6200] font-black">{user.refCount}</TableCell>
                                     <TableCell>
                                         <Badge className={`uppercase text-[8px] font-black tracking-widest border-none ${user.tier === 'Gold' ? 'bg-[#FF6200] text-black' :
                                             user.tier === 'Silver' ? 'bg-zinc-400 text-black' :
-                                                'bg-zinc-800 text-zinc-400'
+                                                'bg-zinc-800 text-white/60'
                                             }`}>
                                             {user.tier}
                                         </Badge>

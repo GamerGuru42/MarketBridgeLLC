@@ -98,7 +98,7 @@ export default function AdminPayoutsPage() {
                     <h1 className="text-4xl font-black uppercase tracking-tighter italic mb-2">
                         Seller <span className="text-[#FF6200]">Payouts</span>
                     </h1>
-                    <p className="text-zinc-500 font-mono text-sm">Review pending transfers to sellers.</p>
+                    <p className="text-white/40 font-mono text-sm">Review pending transfers to sellers.</p>
                 </div>
 
                 <Card className="bg-zinc-900 border-white/10">
@@ -109,7 +109,7 @@ export default function AdminPayoutsPage() {
                         {loading ? (
                             <div className="flex justify-center py-12"><Loader2 className="animate-spin text-[#FF6200]" /></div>
                         ) : orders.length === 0 ? (
-                            <div className="text-center py-12 text-zinc-600 font-mono">No pending payouts found</div>
+                            <div className="text-center py-12 text-white/30 font-mono">No pending payouts found</div>
                         ) : (
                             <div className="grid gap-6">
                                 {orders.map((order) => {
@@ -122,8 +122,8 @@ export default function AdminPayoutsPage() {
                                             {/* Order Info */}
                                             <div className="space-y-2 min-w-[200px]">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-zinc-500 text-xs font-mono">Order: {order.id.slice(0, 8)}</span>
-                                                    <Badge variant="outline" className="text-[10px] text-zinc-400 border-zinc-700">{order.status}</Badge>
+                                                    <span className="text-white/40 text-xs font-mono">Order: {order.id.slice(0, 8)}</span>
+                                                    <Badge variant="outline" className="text-[10px] text-white/60 border-zinc-700">{order.status}</Badge>
                                                 </div>
                                                 <div className="text-sm font-bold text-white">{new Date(order.created_at).toLocaleDateString()}</div>
                                             </div>
@@ -132,22 +132,22 @@ export default function AdminPayoutsPage() {
                                             <div className="flex-1 space-y-2 border-l border-white/5 pl-6">
                                                 <div className="text-xs font-black uppercase tracking-widest text-[#FF6200]">Pay To: {seller?.display_name || 'Unknown Seller'}</div>
                                                 {hasBankDetails ? (
-                                                    <div className="grid grid-cols-2 gap-4 text-sm font-mono text-zinc-300">
+                                                    <div className="grid grid-cols-2 gap-4 text-sm font-mono text-white/70">
                                                         <div>
-                                                            <span className="text-zinc-600 block text-[10px] uppercase">Bank</span>
+                                                            <span className="text-white/30 block text-[10px] uppercase">Bank</span>
                                                             {seller.bank_name}
                                                         </div>
                                                         <div>
-                                                            <span className="text-zinc-600 block text-[10px] uppercase">Account</span>
+                                                            <span className="text-white/30 block text-[10px] uppercase">Account</span>
                                                             <span className="select-all text-white font-bold">{seller.account_number}</span>
                                                         </div>
                                                         <div className="col-span-2">
-                                                            <span className="text-zinc-600 block text-[10px] uppercase">Account Name</span>
+                                                            <span className="text-white/30 block text-[10px] uppercase">Account Name</span>
                                                             {seller.account_name}
                                                         </div>
                                                     </div>
                                                 ) : (
-                                                    <div className="flex items-center gap-2 text-zinc-500 bg-white/5 p-2 rounded-lg">
+                                                    <div className="flex items-center gap-2 text-white/40 bg-white/5 p-2 rounded-lg">
                                                         <AlertTriangle className="h-4 w-4 text-[#FF6200]" />
                                                         <span className="text-xs font-bold uppercase">Missing Bank Details</span>
                                                     </div>
@@ -157,7 +157,7 @@ export default function AdminPayoutsPage() {
                                             {/* Amount & Action */}
                                             <div className="flex flex-col items-end gap-4 min-w-[150px]">
                                                 <div className="text-right">
-                                                    <span className="text-[10px] uppercase font-bold text-zinc-500 block">Payout Amount</span>
+                                                    <span className="text-[10px] uppercase font-bold text-white/40 block">Payout Amount</span>
                                                     <span className="text-2xl font-black text-white tracking-tight">₦{order.seller_receives.toLocaleString()}</span>
                                                 </div>
                                                 <Button

@@ -12,7 +12,7 @@ export default function PrivacyPage() {
                 <Button
                     asChild
                     variant="ghost"
-                    className="text-zinc-500 hover:text-white pl-0 gap-2 mb-8"
+                    className="text-white/40 hover:text-white pl-0 gap-2 mb-8"
                 >
                     <Link href="/">
                         <ArrowLeft className="h-4 w-4" /> Back to MarketBridge
@@ -23,7 +23,7 @@ export default function PrivacyPage() {
                     <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic">
                         Privacy <span className="text-[#FF6200]">Policy</span>
                     </h1>
-                    <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs">
+                    <p className="text-white/40 font-bold uppercase tracking-widest text-xs">
                         Last Updated: February 16, 2026 | Version: 1.0 (Beta)
                     </p>
                     <p className="text-white text-sm font-medium mt-2">
@@ -31,7 +31,7 @@ export default function PrivacyPage() {
                     </p>
                 </div>
 
-                <div className="prose prose-invert prose-orange max-w-none space-y-8 text-zinc-300 font-medium">
+                <div className="prose prose-invert prose-orange max-w-none space-y-8 text-white/70 font-medium">
                     <section className="glass-card p-8 rounded-3xl border-white/5 bg-zinc-900/50">
                         <h2 className="text-xl font-bold text-white uppercase tracking-widest mb-4">1. Data Collection</h2>
                         <p>
@@ -40,7 +40,7 @@ export default function PrivacyPage() {
                         <ul className="list-disc pl-5 space-y-2 mt-2">
                             <li>Identity Data: Name, email, and university affiliation.</li>
                             <li>Financial Data: Transaction history (processed securely via Paystack).</li>
-                            <li>Technical Data: IP address and location (for Abuja terminal routing).</li>
+                            <li>Technical Data: IP address and location (for Abuja Dashboard routing).</li>
                         </ul>
                     </section>
 
@@ -64,16 +64,16 @@ export default function PrivacyPage() {
                         <h2 className="text-lg font-bold text-white uppercase tracking-widest mb-4">4. Security Layers</h2>
                         <p>
                             All data is encrypted in transit and at rest using industry-standard protocols.
-                            Administrative access is restricted to authorized personnel via secure terminal nodes.
+                            Administrative access is restricted to authorized personnel via secure Dashboard Campuss.
                         </p>
                     </section>
 
                     <section className="pt-8 border-t border-white/10">
-                        <p className="text-xs text-zinc-500 uppercase tracking-widest italic flex items-center gap-2">
+                        <p className="text-xs text-white/40 uppercase tracking-widest italic flex items-center gap-2">
                             <Shield className="h-4 w-4 text-[#FF6200]" />
                             Your data privacy is secured by MarketBridge Systems.
                         </p>
-                        <p className="text-[10px] text-zinc-600 uppercase tracking-widest mt-4">
+                        <p className="text-[10px] text-white/30 uppercase tracking-widest mt-4">
                             Contact Data Protection Officer: dpo@marketbridge.com.ng
                         </p>
                     </section>

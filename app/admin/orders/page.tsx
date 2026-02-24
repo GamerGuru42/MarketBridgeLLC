@@ -61,8 +61,8 @@ export default function AdminOrdersPage() {
         switch (status) {
             case 'paid': return 'bg-white/10 text-white border-white/20';
             case 'pending_verification': return 'bg-[#FF6200]/10 text-[#FF6200] border-[#FF6200]/20';
-            case 'cancelled': return 'bg-white/5 text-zinc-400 border-zinc-700';
-            default: return 'bg-zinc-800 text-zinc-400 border-zinc-700';
+            case 'cancelled': return 'bg-white/5 text-white/60 border-zinc-700';
+            default: return 'bg-zinc-800 text-white/60 border-zinc-700';
         }
     };
 
@@ -74,7 +74,7 @@ export default function AdminOrdersPage() {
                     <h1 className="text-4xl font-black uppercase tracking-tighter italic mb-2">
                         Order <span className="text-[#FF6200]">Verification</span>
                     </h1>
-                    <p className="text-zinc-500 font-mono text-sm">Review manual payments and manage orders</p>
+                    <p className="text-white/40 font-mono text-sm">Review manual payments and manage orders</p>
                 </div>
 
                 <Card className="bg-zinc-900 border-white/10">
@@ -87,12 +87,12 @@ export default function AdminOrdersPage() {
                                 <Loader2 className="animate-spin text-[#FF6200] h-8 w-8" />
                             </div>
                         ) : orders.length === 0 ? (
-                            <div className="text-center py-12 text-zinc-600 font-mono">No orders found</div>
+                            <div className="text-center py-12 text-white/30 font-mono">No orders found</div>
                         ) : (
                             <div className="overflow-x-auto">
                                 <table className="w-full">
                                     <thead>
-                                        <tr className="border-b border-white/5 text-xs font-black uppercase text-zinc-500 tracking-wider">
+                                        <tr className="border-b border-white/5 text-xs font-black uppercase text-white/40 tracking-wider">
                                             <th className="text-left py-4 px-4">Date</th>
                                             <th className="text-left py-4 px-4">Customer</th>
                                             <th className="text-left py-4 px-4">Items</th>
@@ -106,20 +106,20 @@ export default function AdminOrdersPage() {
                                     <tbody>
                                         {orders.map((order) => (
                                             <tr key={order.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                                                <td className="py-4 px-4 text-xs font-mono text-zinc-400">
+                                                <td className="py-4 px-4 text-xs font-mono text-white/60">
                                                     {new Date(order.created_at).toLocaleDateString()}
                                                 </td>
                                                 <td className="py-4 px-4">
                                                     <div className="text-sm font-bold text-white">{order.user?.display_name || 'Guest'}</div>
-                                                    <div className="text-xs text-zinc-500">{order.user?.email}</div>
+                                                    <div className="text-xs text-white/40">{order.user?.email}</div>
                                                 </td>
-                                                <td className="py-4 px-4 text-xs text-zinc-400">
+                                                <td className="py-4 px-4 text-xs text-white/60">
                                                     {order.items?.map(i => `${i.quantity}x ${i.listing?.title}`).join(', ')}
                                                 </td>
                                                 <td className="py-4 px-4 text-sm font-black text-[#FF6200]">
                                                     ₦{order.amount.toLocaleString()}
                                                 </td>
-                                                <td className="py-4 px-4 text-xs font-mono text-zinc-400">
+                                                <td className="py-4 px-4 text-xs font-mono text-white/60">
                                                     Ref: <span className="text-white">{order.payment_reference || '-'}</span>
                                                 </td>
                                                 <td className="py-4 px-4 text-center">
@@ -134,7 +134,7 @@ export default function AdminOrdersPage() {
                                                             <FileText className="h-4 w-4" />
                                                         </a>
                                                     ) : (
-                                                        <span className="text-zinc-600">-</span>
+                                                        <span className="text-white/30">-</span>
                                                     )}
                                                 </td>
                                                 <td className="py-4 px-4 text-center">

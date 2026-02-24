@@ -163,12 +163,12 @@ export default function SettingsPage() {
                         <h1 className="text-4xl font-black uppercase tracking-tighter italic">
                             Profile <span className="text-[#FF6200]">Settings</span>
                         </h1>
-                        <p className="text-zinc-500 mt-2 font-medium">
+                        <p className="text-white/40 mt-2 font-medium">
                             Account status: {user.isVerified ? 'Verified' : 'Pending Verification'}
                         </p>
                         <Button
                             variant="ghost"
-                            className="text-zinc-500 hover:text-white mt-4 p-0 h-auto font-mono text-xs uppercase tracking-widest flex items-center gap-2"
+                            className="text-white/40 hover:text-white mt-4 p-0 h-auto font-mono text-xs uppercase tracking-widest flex items-center gap-2"
                             onClick={() => {
                                 if (user.role === 'ceo') window.location.href = '/ceo';
                                 else if (user.role === 'admin' || user.role.includes('_admin')) window.location.href = '/admin';
@@ -221,12 +221,12 @@ export default function SettingsPage() {
                         <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
                             <CardHeader className="p-8 pb-4">
                                 <CardTitle className="text-xl font-black uppercase tracking-tight">Personal Information</CardTitle>
-                                <CardDescription className="text-zinc-500 uppercase text-[9px] font-bold tracking-widest">Update your public profile details</CardDescription>
+                                <CardDescription className="text-white/20 uppercase text-[9px] font-bold tracking-widest">Update your public profile details</CardDescription>
                             </CardHeader>
                             <CardContent className="p-8 space-y-8">
                                 <div className="flex flex-col md:flex-row gap-12 items-start">
                                     <div className="space-y-4">
-                                        <Label className="text-[10px] uppercase font-black tracking-widest text-zinc-600">Profile Picture</Label>
+                                        <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Profile Picture</Label>
                                         <div className="w-40 h-40 relative group">
                                             <div className="absolute inset-0 bg-gradient-to-br from-[#FF6200] to-orange-400 rounded-3xl blur opacity-20 group-hover:opacity-40 transition-opacity" />
                                             <div className="relative h-full w-full rounded-3xl overflow-hidden border border-white/10 bg-black">
@@ -242,12 +242,12 @@ export default function SettingsPage() {
 
                                     <div className="flex-1 grid gap-8 w-full">
                                         <div className="grid gap-3">
-                                            <Label htmlFor="displayName" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Full Name</Label>
+                                            <Label htmlFor="displayName" className="text-[10px] uppercase font-black tracking-widest text-white/40 ml-1">Full Name</Label>
                                             <div className="relative group">
-                                                <User className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6200] transition-colors" />
+                                                <User className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/10 group-focus-within:text-[#FF6200] transition-colors" />
                                                 <Input
                                                     id="displayName"
-                                                    className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus-visible:ring-[#FF6200] focus-visible:border-[#FF6200] focus-visible:ring-1 font-bold text-white uppercase placeholder:text-zinc-800"
+                                                    className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus-visible:ring-[#FF6200] focus-visible:border-[#FF6200] focus-visible:ring-1 font-bold text-white uppercase placeholder:text-white/10"
                                                     value={formData.displayName}
                                                     onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
                                                 />
@@ -256,9 +256,9 @@ export default function SettingsPage() {
 
                                         <div className="grid md:grid-cols-2 gap-8">
                                             <div className="grid gap-3">
-                                                <Label htmlFor="phone" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Phone Number</Label>
+                                                <Label htmlFor="phone" className="text-[10px] uppercase font-black tracking-widest text-white/30 ml-1">Phone Number</Label>
                                                 <div className="relative group">
-                                                    <Phone className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6200] transition-colors" />
+                                                    <Phone className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/10 group-focus-within:text-[#FF6200] transition-colors" />
                                                     <Input
                                                         id="phone"
                                                         className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus-visible:ring-[#FF6200] focus-visible:border-[#FF6200] focus-visible:ring-1 font-bold text-white"
@@ -268,18 +268,18 @@ export default function SettingsPage() {
                                                 </div>
                                             </div>
                                             <div className="grid gap-3">
-                                                <Label htmlFor="location" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Location / State</Label>
+                                                <Label htmlFor="location" className="text-[10px] uppercase font-black tracking-widest text-white/40 ml-1">Location / State</Label>
                                                 <div className="relative group">
-                                                    <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6200] transition-colors z-10" />
+                                                    <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/10 group-focus-within:text-[#FF6200] transition-colors z-10" />
                                                     <select
                                                         id="location"
                                                         className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-1 focus:ring-[#FF6200] focus:border-[#FF6200] outline-none font-bold uppercase appearance-none"
                                                         value={formData.location}
                                                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                                                     >
-                                                        <option value="" className="bg-zinc-900">Select Location</option>
+                                                        <option value="" className="bg-black">Select Location</option>
                                                         {NIGERIAN_STATES.map((state: string) => (
-                                                            <option key={state} value={state} className="bg-zinc-900">{state === 'FCT - Abuja' ? 'FCT (Abuja)' : state}</option>
+                                                            <option key={state} value={state} className="bg-black">{state === 'FCT - Abuja' ? 'FCT (Abuja)' : state}</option>
                                                         ))}
                                                     </select>
                                                 </div>
@@ -303,14 +303,14 @@ export default function SettingsPage() {
                             <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
                                 <CardHeader className="p-8 pb-4">
                                     <CardTitle className="text-xl font-black uppercase tracking-tight">Business Details</CardTitle>
-                                    <CardDescription className="text-zinc-500 uppercase text-[9px] font-bold tracking-widest">Update your business information</CardDescription>
+                                    <CardDescription className="text-white/40 uppercase text-[9px] font-bold tracking-widest">Update your business information</CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-8 space-y-8">
                                     <div className="grid md:grid-cols-2 gap-8">
                                         <div className="grid gap-3">
-                                            <Label htmlFor="businessName" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Business Name</Label>
+                                            <Label htmlFor="businessName" className="text-[10px] uppercase font-black tracking-widest text-white/30 ml-1">Business Name</Label>
                                             <div className="relative group">
-                                                <Building className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6200] transition-colors" />
+                                                <Building className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-[#FF6200] transition-colors" />
                                                 <Input
                                                     id="businessName"
                                                     className="h-14 pl-14 bg-black border-white/10 rounded-2xl focus-visible:ring-[#FF6200] focus-visible:border-[#FF6200] focus-visible:ring-1 font-bold text-white"
@@ -320,7 +320,7 @@ export default function SettingsPage() {
                                             </div>
                                         </div>
                                         <div className="grid gap-3">
-                                            <Label htmlFor="storeType" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Store Type</Label>
+                                            <Label htmlFor="storeType" className="text-[10px] uppercase font-black tracking-widest text-white/30 ml-1">Store Type</Label>
                                             <select
                                                 id="storeType"
                                                 className="w-full h-14 px-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-1 focus:ring-[#FF6200] focus:border-[#FF6200] outline-none font-bold uppercase appearance-none"
@@ -350,14 +350,14 @@ export default function SettingsPage() {
                             <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
                                 <CardHeader className="p-8 pb-4">
                                     <CardTitle className="text-xl font-black uppercase tracking-tight">Bank Details</CardTitle>
-                                    <CardDescription className="text-zinc-500 uppercase text-[9px] font-bold tracking-widest">Where you want to receive payments</CardDescription>
+                                    <CardDescription className="text-white/40 uppercase text-[9px] font-bold tracking-widest">Where you want to receive payments</CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-8 space-y-8">
                                     <div className="grid md:grid-cols-2 gap-8">
                                         <div className="grid gap-3">
-                                            <Label htmlFor="bankName" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Bank Name</Label>
+                                            <Label htmlFor="bankName" className="text-[10px] uppercase font-black tracking-widest text-white/30 ml-1">Bank Name</Label>
                                             <div className="relative group">
-                                                <Landmark className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6200] transition-colors" />
+                                                <Landmark className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-[#FF6200] transition-colors" />
                                                 <Input
                                                     id="bankName"
                                                     placeholder="e.g. GTBank, Kuda, Moniepoint"
@@ -368,9 +368,9 @@ export default function SettingsPage() {
                                             </div>
                                         </div>
                                         <div className="grid gap-3">
-                                            <Label htmlFor="accountNumber" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Account Number</Label>
+                                            <Label htmlFor="accountNumber" className="text-[10px] uppercase font-black tracking-widest text-white/30 ml-1">Account Number</Label>
                                             <div className="relative group">
-                                                <Banknote className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6200] transition-colors" />
+                                                <Banknote className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-[#FF6200] transition-colors" />
                                                 <Input
                                                     id="accountNumber"
                                                     placeholder="10-digit NUBAN"
@@ -382,9 +382,9 @@ export default function SettingsPage() {
                                         </div>
                                     </div>
                                     <div className="grid gap-3">
-                                        <Label htmlFor="accountName" className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-1">Account Name</Label>
+                                        <Label htmlFor="accountName" className="text-[10px] uppercase font-black tracking-widest text-white/30 ml-1">Account Name</Label>
                                         <div className="relative group">
-                                            <User className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within:text-[#FF6200] transition-colors" />
+                                            <User className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-[#FF6200] transition-colors" />
                                             <Input
                                                 id="accountName"
                                                 placeholder="Matching Bank Account Name"
@@ -411,35 +411,35 @@ export default function SettingsPage() {
                             <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
                                 <CardHeader className="p-8">
                                     <CardTitle className="text-xl font-black uppercase tracking-tight">Account Security</CardTitle>
-                                    <CardDescription className="text-zinc-500 uppercase text-[9px] font-bold tracking-widest">Status and access control</CardDescription>
+                                    <CardDescription className="text-white/40 uppercase text-[9px] font-bold tracking-widest">Status and access control</CardDescription>
                                 </CardHeader>
                                 <CardContent className="px-8 pb-8 space-y-6">
                                     <div className="flex items-center justify-between p-6 bg-black border border-white/5 rounded-2xl">
                                         <div className="space-y-1">
-                                            <p className="text-[10px] uppercase font-black text-zinc-600 tracking-[0.2em]">Current Role</p>
+                                            <p className="text-[10px] uppercase font-black text-white/30 tracking-[0.2em]">Current Role</p>
                                             <p className="font-bold text-white uppercase tracking-wider">{user.role}</p>
                                         </div>
                                         <Shield className="h-6 w-6 text-[#FF6200] opacity-50" />
                                     </div>
                                     <div className="flex items-center justify-between p-6 bg-black border border-white/5 rounded-2xl">
                                         <div className="space-y-1">
-                                            <p className="text-[10px] uppercase font-black text-zinc-600 tracking-[0.2em]">Verification Status</p>
-                                            <p className={`font-black uppercase tracking-wider ${user.isVerified ? 'text-[#FF6200]' : 'text-zinc-500'}`}>
+                                            <p className="text-[10px] uppercase font-black text-white/30 tracking-[0.2em]">Verification Status</p>
+                                            <p className={`font-black uppercase tracking-wider ${user.isVerified ? 'text-[#FF6200]' : 'text-white/40'}`}>
                                                 {user.isVerified ? 'Verified' : 'Pending'}
                                             </p>
                                         </div>
-                                        <CheckCircle className={`h-6 w-6 ${user.isVerified ? 'text-[#FF6200]' : 'text-zinc-700'}`} />
+                                        <CheckCircle className={`h-6 w-6 ${user.isVerified ? 'text-[#FF6200]' : 'text-white/20'}`} />
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            <Card className="border border-red-500/20 rounded-[2rem] overflow-hidden bg-red-500/5">
+                            <Card className="border-[#FF6200]/20 rounded-[2rem] overflow-hidden bg-[#FF6200]/5">
                                 <CardHeader className="p-8 pb-4">
-                                    <CardTitle className="text-xl font-black uppercase tracking-tight text-red-500">Danger Zone</CardTitle>
-                                    <CardDescription className="text-red-500/40 uppercase text-[9px] font-bold tracking-widest">Permanent actions</CardDescription>
+                                    <CardTitle className="text-xl font-black uppercase tracking-tight text-white">Danger Zone</CardTitle>
+                                    <CardDescription className="text-white/20 uppercase text-[9px] font-bold tracking-widest">Permanent actions</CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-8">
-                                    <Button variant="outline" className="border-red-500/50 text-red-500 hover:bg-red-500 hover:text-black font-bold uppercase tracking-widest rounded-xl transition-all h-12">
+                                    <Button variant="outline" className="border-white/20 text-white/40 hover:bg-[#FF6200] hover:text-black font-bold uppercase tracking-widest rounded-xl transition-all h-12">
                                         Delete Account
                                     </Button>
                                 </CardContent>
@@ -452,23 +452,23 @@ export default function SettingsPage() {
                         <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
                             <CardHeader className="p-8">
                                 <CardTitle className="text-xl font-black uppercase tracking-tight">Notifications</CardTitle>
-                                <CardDescription className="text-zinc-500 uppercase text-[9px] font-bold tracking-widest">Manage how we contact you</CardDescription>
+                                <CardDescription className="text-white/40 uppercase text-[9px] font-bold tracking-widest">Manage how we contact you</CardDescription>
                             </CardHeader>
                             <CardContent className="px-8 pb-8 space-y-4">
                                 <div className="flex items-center justify-between p-6 bg-black border border-white/5 rounded-2xl">
                                     <div className="space-y-1">
                                         <p className="font-bold text-white uppercase tracking-wider">Order Updates</p>
-                                        <p className="text-xs text-zinc-500 font-medium">Order status and essential updates</p>
+                                        <p className="text-xs text-white/40 font-medium">Order status and essential updates</p>
                                     </div>
                                     <div className="px-3 py-1 bg-[#FF6200]/10 text-[#FF6200] text-[9px] font-black uppercase rounded-full border border-[#FF6200]/20 tracking-tighter">On</div>
                                 </div>
                                 <div className="border-t border-zinc-800 my-2" />
                                 <div className="flex items-center justify-between p-6 bg-white/5 border border-white/5 rounded-2xl opacity-40">
                                     <div className="space-y-1">
-                                        <p className="font-bold text-zinc-500 uppercase tracking-wider">Marketing Emails</p>
-                                        <p className="text-xs text-zinc-700 font-medium">Promotions and news</p>
+                                        <p className="font-bold text-white/40 uppercase tracking-wider">Marketing Emails</p>
+                                        <p className="text-xs text-white/20 font-medium">Promotions and news</p>
                                     </div>
-                                    <div className="px-3 py-1 bg-zinc-800 text-zinc-600 text-[9px] font-black uppercase rounded-full border border-white/5 tracking-tighter">Off</div>
+                                    <div className="px-3 py-1 bg-white/5 text-white/10 text-[9px] font-black uppercase rounded-full border border-white/5 tracking-tighter">Off</div>
                                 </div>
                             </CardContent>
                         </Card>

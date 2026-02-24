@@ -23,7 +23,7 @@ import { DashboardHeader } from '@/components/dashboard-header';
 export default function AdminLayout({
     children,
 }: {
-    children: React.ReactNode;
+    children: React.ReactCampus;
 }) {
     const { user, loading } = useAuth();
     const pathname = usePathname();
@@ -63,7 +63,7 @@ export default function AdminLayout({
         }
         if (role === 'technical_admin') {
             return [
-                { label: 'Technical Node', href: '/admin/technical', icon: Server },
+                { label: 'Technical Campus', href: '/admin/technical', icon: Server },
                 { label: 'Users Manager', href: '/admin/users', icon: Users },
                 ...basicItems
             ];
@@ -82,7 +82,7 @@ export default function AdminLayout({
         // Super Admin (or fallback) gets everything
         return [
             { label: 'Mission Control', href: '/admin', icon: LayoutDashboard },
-            { label: 'Technical Node', href: '/admin/technical', icon: Server },
+            { label: 'Technical Campus', href: '/admin/technical', icon: Server },
             { label: 'Operations Hub', href: '/admin/operations', icon: Activity },
             { label: 'Marketing Growth', href: '/admin/marketing', icon: BarChart3 },
             { label: 'Strategic Proposal', href: '/admin/proposals/new', icon: Zap },

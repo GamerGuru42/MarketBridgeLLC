@@ -128,7 +128,7 @@ export default function AdminSubscriptionVerification() {
                     <div>
                         <div className="flex items-center gap-3 mb-2">
                             <ShieldCheck className="h-5 w-5 text-[#FF6200]" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 font-heading">Operations Command</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 font-heading">Operations Command</span>
                         </div>
                         <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading">
                             Sub <span className="text-[#FF6200]">Verification</span>
@@ -138,7 +138,7 @@ export default function AdminSubscriptionVerification() {
                         onClick={fetchPendingVerifications}
                         variant="ghost"
                         size="sm"
-                        className="text-zinc-500 hover:text-[#FF6200] hover:bg-[#FF6200]/10 font-mono text-xs uppercase tracking-widest border border-white/10"
+                        className="text-white/40 hover:text-[#FF6200] hover:bg-[#FF6200]/10 font-mono text-xs uppercase tracking-widest border border-white/10"
                     >
                         <RefreshCw className="mr-2 h-3 w-3" /> Sync Database
                     </Button>
@@ -146,13 +146,13 @@ export default function AdminSubscriptionVerification() {
 
                 {loading ? (
                     <div className="flex justify-center py-24">
-                        <Loader2 className="h-12 w-12 animate-spin text-zinc-800" />
+                        <Loader2 className="h-12 w-12 animate-spin text-white/10" />
                     </div>
                 ) : verifications.length === 0 ? (
                     <div className="bg-zinc-900/50 border border-dashed border-white/10 p-24 rounded-3xl text-center">
-                        <ShieldCheck className="h-16 w-16 text-zinc-800 mx-auto mb-6" />
-                        <h3 className="text-zinc-500 font-black uppercase tracking-widest text-sm font-heading">All Clear</h3>
-                        <p className="text-zinc-600 text-xs font-mono mt-2">No pending manual verifications in the queue.</p>
+                        <ShieldCheck className="h-16 w-16 text-white/10 mx-auto mb-6" />
+                        <h3 className="text-white/40 font-black uppercase tracking-widest text-sm font-heading">All Clear</h3>
+                        <p className="text-white/30 text-xs font-mono mt-2">No pending manual verifications in the queue.</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 gap-6">
@@ -162,7 +162,7 @@ export default function AdminSubscriptionVerification() {
                                 <div className="flex flex-col lg:flex-row justify-between gap-8">
                                     <div className="space-y-6 flex-1">
                                         <div className="flex items-center gap-4">
-                                            <div className="h-12 w-12 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center font-bold text-zinc-500">
+                                            <div className="h-12 w-12 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center font-bold text-white/40">
                                                 {verification.user?.first_name?.charAt(0) || verification.user?.email?.charAt(0)}
                                             </div>
                                             <div>
@@ -174,25 +174,25 @@ export default function AdminSubscriptionVerification() {
                                                         {plans[verification.plan_id]?.name || 'Unknown Plan'}
                                                     </Badge>
                                                 </div>
-                                                <p className="text-sm text-zinc-500 font-mono">{verification.user?.email}</p>
+                                                <p className="text-sm text-white/40 font-mono">{verification.user?.email}</p>
                                             </div>
                                         </div>
 
                                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 bg-white/5 rounded-xl p-6 border border-white/5">
                                             <div>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600 font-heading mb-1">Payer Name</p>
-                                                <p className="text-sm text-zinc-300 font-mono">{verification.metadata?.sender_name || 'N/A'}</p>
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-white/30 font-heading mb-1">Payer Name</p>
+                                                <p className="text-sm text-white/70 font-mono">{verification.metadata?.sender_name || 'N/A'}</p>
                                             </div>
                                             <div>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600 font-heading mb-1">Reference ID</p>
-                                                <p className="text-sm text-zinc-300 font-mono">{verification.metadata?.manual_payment_ref || 'N/A'}</p>
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-white/30 font-heading mb-1">Reference ID</p>
+                                                <p className="text-sm text-white/70 font-mono">{verification.metadata?.manual_payment_ref || 'N/A'}</p>
                                             </div>
                                             <div>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600 font-heading mb-1">Timestamp</p>
-                                                <p className="text-sm text-zinc-300 font-mono">{new Date(verification.metadata?.submitted_at || verification.created_at).toLocaleDateString()}</p>
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-white/30 font-heading mb-1">Timestamp</p>
+                                                <p className="text-sm text-white/70 font-mono">{new Date(verification.metadata?.submitted_at || verification.created_at).toLocaleDateString()}</p>
                                             </div>
                                             <div>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600 font-heading mb-1">Amount Due</p>
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-white/30 font-heading mb-1">Amount Due</p>
                                                 <p className="text-xl font-black text-[#FF6200] font-heading">
                                                     {formatCurrency(plans[verification.plan_id]?.price_monthly || 0)}
                                                 </p>

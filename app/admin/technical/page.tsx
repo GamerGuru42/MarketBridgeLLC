@@ -126,7 +126,7 @@ export default function TechnicalAdminPage() {
                 <h1 className="text-4xl font-black uppercase tracking-tighter italic">
                     Technical <span className="text-[#FF6200]">Command</span>
                 </h1>
-                <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">
+                <p className="text-white/40 text-xs font-bold uppercase tracking-widest">
                     System Health Monitoring & Logs
                 </p>
             </div>
@@ -136,37 +136,37 @@ export default function TechnicalAdminPage() {
                 <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm">
                     <CardContent className="p-6 flex items-center justify-between">
                         <div>
-                            <p className="text-zinc-500 text-[10px] uppercase font-black tracking-widest">Uptime</p>
+                            <p className="text-white/40 text-[10px] uppercase font-black tracking-widest">Uptime</p>
                             <p className="text-2xl font-black text-white">{stats.uptime}</p>
                         </div>
-                        <Server className="h-8 w-8 text-zinc-700" />
+                        <Server className="h-8 w-8 text-white/20" />
                     </CardContent>
                 </Card>
                 <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm">
                     <CardContent className="p-6 flex items-center justify-between">
                         <div>
-                            <p className="text-zinc-500 text-[10px] uppercase font-black tracking-widest">API Latency</p>
+                            <p className="text-white/40 text-[10px] uppercase font-black tracking-widest">API Latency</p>
                             <p className="text-2xl font-black text-[#FF6200]">{stats.apiLatency}</p>
                         </div>
-                        <Database className="h-8 w-8 text-zinc-700" />
+                        <Database className="h-8 w-8 text-white/20" />
                     </CardContent>
                 </Card>
                 <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm">
                     <CardContent className="p-6 flex items-center justify-between">
                         <div>
-                            <p className="text-zinc-500 text-[10px] uppercase font-black tracking-widest">Error Rate</p>
+                            <p className="text-white/40 text-[10px] uppercase font-black tracking-widest">Error Rate</p>
                             <p className="text-2xl font-black text-white">{stats.errorRate}</p>
                         </div>
-                        <AlertTriangle className="h-8 w-8 text-zinc-700" />
+                        <AlertTriangle className="h-8 w-8 text-white/20" />
                     </CardContent>
                 </Card>
                 <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm">
                     <CardContent className="p-6 flex items-center justify-between">
                         <div>
-                            <p className="text-zinc-500 text-[10px] uppercase font-black tracking-widest">Webhooks</p>
+                            <p className="text-white/40 text-[10px] uppercase font-black tracking-widest">Webhooks</p>
                             <p className="text-2xl font-black text-white">{stats.webhookHealth}</p>
                         </div>
-                        <Activity className="h-8 w-8 text-zinc-700" />
+                        <Activity className="h-8 w-8 text-white/20" />
                     </CardContent>
                 </Card>
             </div>
@@ -182,7 +182,7 @@ export default function TechnicalAdminPage() {
                             <CardTitle className="text-lg font-black uppercase italic tracking-widest text-[#FF6200]">
                                 Public Section Control
                             </CardTitle>
-                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-0.5">
+                            <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest mt-0.5">
                                 Super Admin Only – Hard Kill-Switch
                             </p>
                         </div>
@@ -191,8 +191,8 @@ export default function TechnicalAdminPage() {
                 <CardContent className="p-6">
                     {!isSuperAdmin ? (
                         <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/10">
-                            <Shield className="h-5 w-5 text-zinc-500" />
-                            <p className="text-xs text-zinc-500 font-black uppercase tracking-widest">
+                            <Shield className="h-5 w-5 text-white/40" />
+                            <p className="text-xs text-white/40 font-black uppercase tracking-widest">
                                 Access Restricted – Super Admin (CEO / Technical Admin) role required
                             </p>
                         </div>
@@ -203,12 +203,12 @@ export default function TechnicalAdminPage() {
                                     <span className={`h-2.5 w-2.5 rounded-full animate-pulse ${publicEnabled ? 'bg-[#FF6200]' : 'bg-zinc-600'}`} />
                                     <span className="font-black uppercase tracking-widest text-sm">
                                         Public Marketplace is currently{' '}
-                                        <span className={publicEnabled ? 'text-[#FF6200]' : 'text-zinc-400'}>
+                                        <span className={publicEnabled ? 'text-[#FF6200]' : 'text-white/60'}>
                                             {publicEnabled ? 'ENABLED' : 'DISABLED (LOCKED)'}
                                         </span>
                                     </span>
                                 </div>
-                                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest max-w-lg">
+                                <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest max-w-lg">
                                     {publicEnabled
                                         ? 'Public routes /public/* are accessible. Both this DB flag AND the ENABLE_PUBLIC_SECTION env var must be "true" simultaneously.'
                                         : 'Public routes /public/* return 404 for all users. No public card, text, or hint is visible on the homepage.'}
@@ -244,29 +244,29 @@ export default function TechnicalAdminPage() {
                     <Table>
                         <TableHeader>
                             <TableRow className="border-white/5 hover:bg-white/5">
-                                <TableHead className="text-zinc-500 uppercase font-black text-[10px]">Time</TableHead>
-                                <TableHead className="text-zinc-500 uppercase font-black text-[10px]">Action</TableHead>
-                                <TableHead className="text-zinc-500 uppercase font-black text-[10px]">Actor</TableHead>
-                                <TableHead className="text-zinc-500 uppercase font-black text-[10px]">Details</TableHead>
+                                <TableHead className="text-white/40 uppercase font-black text-[10px]">Time</TableHead>
+                                <TableHead className="text-white/40 uppercase font-black text-[10px]">Action</TableHead>
+                                <TableHead className="text-white/40 uppercase font-black text-[10px]">Actor</TableHead>
+                                <TableHead className="text-white/40 uppercase font-black text-[10px]">Details</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {logs.length > 0 ? logs.map((log) => (
                                 <TableRow key={log.id} className="border-white/5 hover:bg-white/5">
-                                    <TableCell className="text-zinc-300 text-xs font-mono">{new Date(log.created_at).toLocaleString()}</TableCell>
+                                    <TableCell className="text-white/70 text-xs font-mono">{new Date(log.created_at).toLocaleString()}</TableCell>
                                     <TableCell>
                                         <Badge variant="outline" className="text-[#FF6200] border-[#FF6200]/20 bg-[#FF6200]/5 text-[10px] uppercase">
                                             {log.action_type}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell className="text-zinc-400 text-xs">{log.actor_id?.slice(0, 8)}...</TableCell>
-                                    <TableCell className="text-zinc-500 text-xs truncate max-w-[200px]">
+                                    <TableCell className="text-white/60 text-xs">{log.actor_id?.slice(0, 8)}...</TableCell>
+                                    <TableCell className="text-white/40 text-xs truncate max-w-[200px]">
                                         {JSON.stringify(log.details)}
                                     </TableCell>
                                 </TableRow>
                             )) : (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="text-center py-8 text-zinc-500 italic">No logs recorded yet.</TableCell>
+                                    <TableCell colSpan={4} className="text-center py-8 text-white/40 italic">No logs recorded yet.</TableCell>
                                 </TableRow>
                             )}
                         </TableBody>

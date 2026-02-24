@@ -84,7 +84,7 @@ export default function ContactPage() {
                                     <div>
                                         <h3 className="font-semibold mb-1 text-white">Tech Support</h3>
                                         <p className="text-sm text-muted-foreground">support@marketbridge.com.ng</p>
-                                        <p className="text-[10px] text-zinc-600 mt-1">App bugs, login issues, errors</p>
+                                        <p className="text-[10px] text-white/30 mt-1">App bugs, login issues, errors</p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -99,7 +99,7 @@ export default function ContactPage() {
                                     <div>
                                         <h3 className="font-semibold mb-1 text-white">Ops Support</h3>
                                         <p className="text-sm text-muted-foreground">ops-support@marketbridge.com.ng</p>
-                                        <p className="text-[10px] text-zinc-600 mt-1">Refunds, payments, seller questions</p>
+                                        <p className="text-[10px] text-white/30 mt-1">Refunds, payments, seller questions</p>
                                     </div>
                                 </div>
                             </CardContent>

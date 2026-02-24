@@ -79,7 +79,7 @@ export default function SellerProfilePage() {
             <div className="min-h-screen bg-black flex items-center justify-center">
                 <div className="text-center space-y-4">
                     <div className="h-12 w-12 border-4 border-[#FF6600] border-t-transparent rounded-full animate-spin mx-auto" />
-                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Loading Seller Node...</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/30">Loading Seller Campus...</p>
                 </div>
             </div>
         );
@@ -89,9 +89,9 @@ export default function SellerProfilePage() {
         return (
             <div className="min-h-screen bg-black flex items-center justify-center">
                 <div className="text-center space-y-6 max-w-md">
-                    <ShieldCheck className="h-16 w-16 text-zinc-800 mx-auto" />
-                    <h2 className="text-2xl font-black uppercase tracking-tighter text-zinc-500">Seller Node Not Found</h2>
-                    <p className="text-zinc-600 text-sm">This seller profile does not exist or has been deactivated.</p>
+                    <ShieldCheck className="h-16 w-16 text-white/10 mx-auto" />
+                    <h2 className="text-2xl font-black uppercase tracking-tighter text-white/40">Seller Campus Not Found</h2>
+                    <p className="text-white/30 text-sm">This seller profile does not exist or has been deactivated.</p>
                     <Button onClick={() => router.push('/sellers')} className="bg-[#FF6600] text-black font-black uppercase tracking-widest">
                         Return to Sellers
                     </Button>
@@ -123,7 +123,7 @@ export default function SellerProfilePage() {
                             {seller.photo_url ? (
                                 <img src={seller.photo_url} alt={seller.display_name} className="h-full w-full object-cover" />
                             ) : (
-                                <Building className="h-12 w-12 text-zinc-700" />
+                                <Building className="h-12 w-12 text-white/20" />
                             )}
                         </div>
 
@@ -136,7 +136,7 @@ export default function SellerProfilePage() {
                                     </h1>
                                     <VerificationBadge isVerified={seller.is_verified} showText={false} />
                                 </div>
-                                <div className="flex items-center gap-4 text-zinc-500">
+                                <div className="flex items-center gap-4 text-white/40">
                                     <div className="flex items-center gap-2">
                                         <MapPin className="h-4 w-4 text-[#FF6200]" />
                                         <span className="text-[10px] font-black uppercase tracking-widest">{seller.location}</span>
@@ -178,14 +178,14 @@ export default function SellerProfilePage() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
                     {[
                         { label: 'Active Listings', value: listings.length, icon: Package },
-                        { label: 'Verified Node', value: seller.is_verified ? 'YES' : 'PENDING', icon: ShieldCheck },
+                        { label: 'Verified Campus', value: seller.is_verified ? 'YES' : 'PENDING', icon: ShieldCheck },
                         { label: 'Member Since', value: new Date(seller.created_at).getFullYear(), icon: Clock },
                         { label: 'Response Time', value: '< 2H', icon: Zap }
                     ].map((stat, i) => (
                         <div key={i} className="glass-card p-6 rounded-2xl border-white/5">
                             <div className="flex items-center gap-3 mb-3">
                                 <stat.icon className="h-4 w-4 text-[#FF6200]" />
-                                <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600">{stat.label}</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest text-white/30">{stat.label}</span>
                             </div>
                             <p className="text-2xl font-black uppercase tracking-tighter italic">{stat.value}</p>
                         </div>
@@ -195,7 +195,7 @@ export default function SellerProfilePage() {
                 {/* Seller Listings */}
                 <div>
                     <h2 className="text-3xl font-black uppercase tracking-tighter italic mb-8">
-                        Active <span className="text-zinc-500">Inventory</span>
+                        Active <span className="text-white/40">Inventory</span>
                     </h2>
 
                     {listings.length > 0 ? (
@@ -208,14 +208,14 @@ export default function SellerProfilePage() {
                                                 <img src={listing.images[0]} alt={listing.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center">
-                                                    <Package className="h-12 w-12 text-zinc-800" />
+                                                    <Package className="h-12 w-12 text-white/10" />
                                                 </div>
                                             )}
                                         </div>
                                         <CardContent className="p-6">
                                             <h3 className="text-lg font-black uppercase tracking-tighter italic mb-2 line-clamp-1">{listing.title}</h3>
                                             <p className="text-2xl font-black text-[#FF6200] mb-4">₦{listing.price?.toLocaleString()}</p>
-                                            <div className="flex items-center gap-2 text-[10px] font-black text-zinc-600 uppercase tracking-widest">
+                                            <div className="flex items-center gap-2 text-[10px] font-black text-white/30 uppercase tracking-widest">
                                                 <MapPin className="h-3 w-3" />
                                                 {listing.location}
                                             </div>
@@ -226,9 +226,9 @@ export default function SellerProfilePage() {
                         </div>
                     ) : (
                         <div className="glass-card p-20 rounded-[3rem] border-dashed border-white/5 text-center">
-                            <Package className="h-16 w-16 text-zinc-800 mx-auto mb-6 opacity-20" />
-                            <h3 className="text-xl font-black text-zinc-500 uppercase tracking-widest mb-2">No Active Listings</h3>
-                            <p className="text-zinc-600 text-sm">This seller currently has no active inventory.</p>
+                            <Package className="h-16 w-16 text-white/10 mx-auto mb-6 opacity-20" />
+                            <h3 className="text-xl font-black text-white/40 uppercase tracking-widest mb-2">No Active Listings</h3>
+                            <p className="text-white/30 text-sm">This seller currently has no active inventory.</p>
                         </div>
                     )}
                 </div>

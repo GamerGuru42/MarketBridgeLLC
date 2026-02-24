@@ -83,7 +83,7 @@ export default function WishlistPage() {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="flex items-center gap-2 mb-8">
-                <Heart className="h-8 w-8 text-red-500 fill-red-500" />
+                <Heart className="h-8 w-8 text-[#FF6200] fill-red-500" />
                 <h1 className="text-3xl font-bold">My Wishlist</h1>
             </div>
 

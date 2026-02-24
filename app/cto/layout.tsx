@@ -2,22 +2,22 @@
 
 import React from 'react';
 import { Sidebar } from '@/components/sidebar';
-import { Terminal, Database, ShieldAlert, Cpu, HardDrive, Zap } from 'lucide-react';
+import { Dashboard, Database, ShieldAlert, Cpu, HardDrive, Zap } from 'lucide-react';
 
 const ctoItems = [
-    { label: 'System Root', href: '/cto', icon: Terminal },
+    { label: 'System Root', href: '/cto', icon: Dashboard },
     { label: 'Infrastructure', href: '/cto/infrastructure', icon: Cpu },
     { label: 'Storage & Media', href: '/cto/storage', icon: HardDrive },
     { label: 'DB Performance', href: '/admin/page', icon: Database },
     { label: 'Security Center', href: '/cto/security', icon: ShieldAlert },
     { label: 'API Latency', href: '/cto/api', icon: Zap },
-    { label: 'Executive Terminal', href: '/admin/executive-chat', icon: Terminal },
+    { label: 'Executive Dashboard', href: '/admin/executive-chat', icon: Dashboard },
 ];
 
 export default function CTOLayout({
     children,
 }: {
-    children: React.ReactNode;
+    children: React.ReactCampus;
 }) {
     return (
         <div className="flex min-h-screen">

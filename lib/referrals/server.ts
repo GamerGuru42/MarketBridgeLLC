@@ -30,15 +30,31 @@ export async function tryAwardReferralBonusForUser(referredUserId: string) {
 
         if (total >= PURCHASE_THRESHOLD) {
             // Get referral record
-            const { data: ref } = await supabaseAdmin.from('referrals').select('id,referrer_id,bonus_paid').eq('referred_id', referredUserId).limit(1).single();
+            const { data: ref } = await supabaseAdmin
+                .from('referrals')
+                .select('id,referrer_id,bonus_paid')
+                .eq('referred_id', referredUserId)
+                .is('bonus_paid', false)
+                .limit(1)
+                .single();
+
             if (ref && !ref.bonus_paid) {
-                // Award bonus to referrer
-                await supabaseAdmin.rpc('add_coins', { user_id: ref.referrer_id, amount_to_add: REFERRAL_BONUS, trans_type: 'referral_bonus', trans_desc: 'Referral bonus for referred user purchase' });
+                // Award bonus to referrer (₦300 worth of coins)
+                const { error: coinErr } = await supabaseAdmin.rpc('add_coins', {
+                    user_id: ref.referrer_id,
+                    amount_to_add: REFERRAL_BONUS,
+                    trans_type: 'referral_bonus',
+                    trans_desc: `Referral bonus for referred user purchase threshold met (₦${PURCHASE_THRESHOLD})`
+                });
 
-                // Mark referral as completed and bonus_paid
-                await supabaseAdmin.from('referrals').update({ status: 'completed', purchase_threshold_met: true, bonus_paid: true }).eq('id', ref.id);
-
-                // Also add coins transaction row exists via RPC
+                if (!coinErr) {
+                    // Mark referral as completed and bonus_paid
+                    await supabaseAdmin.from('referrals').update({
+                        status: 'completed',
+                        purchase_threshold_met: true,
+                        bonus_paid: true
+                    }).eq('id', ref.id);
+                }
             }
         }
     } catch (e) {

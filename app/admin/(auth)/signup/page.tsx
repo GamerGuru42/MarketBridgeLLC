@@ -184,15 +184,15 @@ function AdminSignupContent() {
                         <CardTitle className="text-3xl font-black tracking-[0.3em] text-white uppercase italic">
                             Admin Onboarding
                         </CardTitle>
-                        <CardDescription className="text-zinc-500 font-medium italic text-sm mt-2 lowercase">
-                            secure registration | administrative terminal node
+                        <CardDescription className="text-white/40 font-medium italic text-sm mt-2 lowercase">
+                            secure registration | administrative Dashboard Campus
                         </CardDescription>
                     </div>
                 </CardHeader>
 
                 <CardContent className="px-10">
                     {error && (
-                        <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 mb-8 text-center text-xs text-red-400 font-mono">
+                        <div className="bg-[#FF6200]/10 border border-[#FF6200]/20 rounded-2xl p-4 mb-8 text-center text-xs text-[#FF6200] font-mono">
                             [ERROR]: {error}
                         </div>
                     )}
@@ -200,14 +200,14 @@ function AdminSignupContent() {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="displayName" className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Full Name</Label>
+                                <Label htmlFor="displayName" className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] ml-2">Full Name</Label>
                                 <div className="relative group/input">
-                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within/input:text-[#FF6200] transition-colors" />
+                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within/input:text-[#FF6200] transition-colors" />
                                     <input
                                         id="displayName"
                                         name="displayName"
                                         type="text"
-                                        className="w-full h-12 pl-11 pr-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium text-xs"
+                                        className="w-full h-12 pl-11 pr-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium text-xs"
                                         value={formData.displayName}
                                         onChange={handleChange}
                                         required
@@ -216,7 +216,7 @@ function AdminSignupContent() {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="role" className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Leadership Post</Label>
+                                <Label htmlFor="role" className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] ml-2">Leadership Post</Label>
                                 <Select value={role} onValueChange={(v: any) => setRole(v)}>
                                     <SelectTrigger className="w-full h-12 bg-black border border-white/10 rounded-xl text-[#FF6200] font-black italic text-xs focus:ring-2 focus:ring-[#FF6200]/50">
                                         <SelectValue placeholder="Select Department" />
@@ -232,14 +232,14 @@ function AdminSignupContent() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Admin Email</Label>
+                            <Label htmlFor="email" className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] ml-2">Admin Email</Label>
                             <div className="relative group/input">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within/input:text-[#FF6200] transition-colors" />
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within/input:text-[#FF6200] transition-colors" />
                                 <input
                                     id="email"
                                     name="email"
                                     type="email"
-                                    className="w-full h-12 pl-11 pr-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium text-xs"
+                                    className="w-full h-12 pl-11 pr-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium text-xs"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
@@ -249,14 +249,14 @@ function AdminSignupContent() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="secretKey" className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Secret Admin Code <span className="text-red-500">*</span></Label>
+                            <Label htmlFor="secretKey" className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] ml-2">Secret Admin Code <span className="text-[#FF6200]">*</span></Label>
                             <div className="relative group/input">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-700 group-focus-within/input:text-[#FF6200] transition-colors" />
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within/input:text-[#FF6200] transition-colors" />
                                 <input
                                     id="secretKey"
                                     name="secretKey"
                                     type="password"
-                                    className="w-full h-12 pl-11 pr-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium text-xs"
+                                    className="w-full h-12 pl-11 pr-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium text-xs"
                                     value={formData.secretKey}
                                     onChange={handleChange}
                                     required
@@ -267,11 +267,11 @@ function AdminSignupContent() {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="password" title="Password" className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Password</Label>
+                                <Label htmlFor="password" title="Password" className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] ml-2">Password</Label>
                                 <PasswordInput
                                     id="password"
                                     name="password"
-                                    className="w-full h-12 px-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium text-xs"
+                                    className="w-full h-12 px-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium text-xs"
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
@@ -280,11 +280,11 @@ function AdminSignupContent() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="confirmPassword" title="Confirm Password" className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Confirm Password</Label>
+                                <Label htmlFor="confirmPassword" title="Confirm Password" className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] ml-2">Confirm Password</Label>
                                 <PasswordInput
                                     id="confirmPassword"
                                     name="confirmPassword"
-                                    className="w-full h-12 px-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium text-xs"
+                                    className="w-full h-12 px-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium text-xs"
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
                                     required
@@ -307,12 +307,12 @@ function AdminSignupContent() {
                 </CardContent>
 
                 <CardFooter className="flex flex-col items-center gap-4 py-10 relative z-10 border-t border-white/5">
-                    <p className="text-center text-[10px] text-zinc-600 font-bold uppercase tracking-widest">
+                    <p className="text-center text-[10px] text-white/30 font-bold uppercase tracking-widest">
                         Authorized personnel only. All access attempts are logged.
                     </p>
-                    <div className="flex justify-center gap-6 text-[10px] text-zinc-500 font-black uppercase tracking-widest">
+                    <div className="flex justify-center gap-6 text-[10px] text-white/40 font-black uppercase tracking-widest">
                         <Link href="/admin/login" className="hover:text-[#FF6200] transition-colors underline">Existing Login</Link>
-                        <Link href="/" className="hover:text-white transition-colors">Return to Terminal</Link>
+                        <Link href="/" className="hover:text-white transition-colors">Return to Dashboard</Link>
                     </div>
                 </CardFooter>
             </Card>

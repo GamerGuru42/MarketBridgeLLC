@@ -1,35 +1,50 @@
-import { NextRequest } from 'next/server'
-import { createPaystackSubaccount } from '@/lib/paystack/server'
+import { NextRequest, NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
+import { createPaystackSubaccount } from '@/lib/paystack';
 
 export async function POST(req: NextRequest) {
     try {
-        const body = await req.json()
-        const { businessName, bankCode, accountNumber, userId, primaryContact, primaryContactEmail } = body
+        const { businessName, bankCode, accountNumber, userId } = await req.json();
 
-        if (!businessName || !bankCode || !accountNumber) {
-            return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 400 })
+        if (!businessName || !bankCode || !accountNumber || !userId) {
+            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
-        // Attempt creation (wrap to provide friendly error handling)
-        try {
-            const result = await createPaystackSubaccount({
+        // 1. Create Subaccount on Paystack
+        const subaccountCode = await createPaystackSubaccount(
+            businessName,
+            bankCode,
+            accountNumber,
+            5.3 // Commission Rate
+        );
+
+        if (!subaccountCode) {
+            return NextResponse.json({ error: 'Failed to create Paystack subaccount' }, { status: 500 });
+        }
+
+        // 2. Update User Profile with Subaccount Code
+        const { error: updateError } = await supabaseAdmin
+            .from('users')
+            .update({
+                paystack_subaccount_code: subaccountCode,
                 business_name: businessName,
-                settlement_bank: bankCode,
                 account_number: accountNumber,
-                primary_contact: primaryContact,
-                primary_contact_email: primaryContactEmail,
-                userId,
+                bank_name: bankCode,
             })
+            .eq('id', userId);
 
-            return new Response(JSON.stringify({ ok: true, data: result }), { status: 200 })
-        } catch (e: any) {
-            console.error('Paystack subaccount creation failed:', e)
-            return new Response(JSON.stringify({ error: e?.message || 'Paystack error' }), { status: 502 })
+        if (updateError) {
+            console.error('Error updating profile with subaccount:', updateError);
+            return NextResponse.json({ error: 'Failed to update user profile' }, { status: 500 });
         }
 
-    } catch (e: any) {
-        console.error('Invalid request to Paystack subaccount API', e)
-        return new Response(JSON.stringify({ error: 'Invalid request body' }), { status: 400 })
+        return NextResponse.json({
+            status: 'success',
+            subaccount_code: subaccountCode
+        });
+
+    } catch (err: any) {
+        console.error('Subaccount API error:', err);
+        return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
     }
 }
-// consolidated single handler above

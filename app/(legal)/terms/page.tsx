@@ -12,7 +12,7 @@ export default function TermsPage() {
                 <Button
                     asChild
                     variant="ghost"
-                    className="text-zinc-500 hover:text-white pl-0 gap-2 mb-8"
+                    className="text-white/40 hover:text-white pl-0 gap-2 mb-8"
                 >
                     <Link href="/">
                         <ArrowLeft className="h-4 w-4" /> Back to MarketBridge
@@ -23,7 +23,7 @@ export default function TermsPage() {
                     <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic">
                         Terms of <span className="text-[#FF6200]">Service</span>
                     </h1>
-                    <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs">
+                    <p className="text-white/40 font-bold uppercase tracking-widest text-xs">
                         Last Updated: February 16, 2026 | Version: 1.0 (Beta)
                     </p>
                     <p className="text-white text-sm font-medium mt-2">
@@ -31,7 +31,7 @@ export default function TermsPage() {
                     </p>
                 </div>
 
-                <div className="prose prose-invert prose-orange max-w-none space-y-8 text-zinc-300 font-medium">
+                <div className="prose prose-invert prose-orange max-w-none space-y-8 text-white/70 font-medium">
                     <section className="glass-card p-8 rounded-3xl border-white/5 bg-zinc-900/50">
                         <h2 className="text-xl font-bold text-white uppercase tracking-widest mb-4">1. Beta Testing Acknowledgment</h2>
                         <p>
@@ -88,7 +88,7 @@ export default function TermsPage() {
                     </section>
 
                     <section className="pt-8 border-t border-white/10">
-                        <p className="text-xs text-zinc-500 uppercase tracking-widest">
+                        <p className="text-xs text-white/40 uppercase tracking-widest">
                             Contact Legal: legal@marketbridge.com.ng | Abuja, FCT
                         </p>
                     </section>

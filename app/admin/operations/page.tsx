@@ -81,28 +81,28 @@ export default function OperationsAdminPage() {
             <div className="relative z-10 space-y-2">
                 <div className="flex items-center gap-3">
                     <ShieldCheck className="h-5 w-5 text-[#FF6200]" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading">Operations Terminal</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 font-heading">Operations Dashboard</span>
                 </div>
                 <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading">
                     Operations <span className="text-[#FF6200]">Control</span>
                 </h1>
-                <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest leading-relaxed">
-                    Verification Protocol, Subscription Management & Compliance Monitoring
+                <p className="text-white/40 text-xs font-bold uppercase tracking-widest leading-relaxed">
+                    Verification Process, Subscription Management & Compliance Monitoring
                 </p>
             </div>
 
             <Tabs defaultValue="sellers" className="space-y-8 relative z-10 w-full">
                 <TabsList className="bg-zinc-900/50 border border-white/5 rounded-xl p-1 h-14 w-full md:w-auto overflow-x-auto no-scrollbar">
-                    <TabsTrigger value="sellers" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black text-zinc-400 uppercase font-black text-[10px] tracking-widest h-12 rounded-lg transition-all min-w-[120px]">
+                    <TabsTrigger value="sellers" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black text-white/60 uppercase font-black text-[10px] tracking-widest h-12 rounded-lg transition-all min-w-[120px]">
                         Sellers ({pendingSellers.length})
                     </TabsTrigger>
-                    <TabsTrigger value="subscriptions" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black text-zinc-400 uppercase font-black text-[10px] tracking-widest h-12 rounded-lg transition-all min-w-[120px]">
+                    <TabsTrigger value="subscriptions" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black text-white/60 uppercase font-black text-[10px] tracking-widest h-12 rounded-lg transition-all min-w-[120px]">
                         Subs ({subscriptions.length})
                     </TabsTrigger>
-                    <TabsTrigger value="feedback" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black text-zinc-400 uppercase font-black text-[10px] tracking-widest h-12 rounded-lg transition-all min-w-[120px]">
+                    <TabsTrigger value="feedback" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black text-white/60 uppercase font-black text-[10px] tracking-widest h-12 rounded-lg transition-all min-w-[120px]">
                         Feedback
                     </TabsTrigger>
-                    <TabsTrigger value="revenue" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black text-zinc-400 uppercase font-black text-[10px] tracking-widest h-12 rounded-lg transition-all min-w-[120px]">
+                    <TabsTrigger value="revenue" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black text-white/60 uppercase font-black text-[10px] tracking-widest h-12 rounded-lg transition-all min-w-[120px]">
                         Revenue
                     </TabsTrigger>
                 </TabsList>
@@ -121,9 +121,9 @@ export default function OperationsAdminPage() {
                                         </div>
                                         <div>
                                             <p className="text-lg font-black text-white italic font-heading tracking-tight uppercase">{seller.display_name || 'Dealer User'}</p>
-                                            <p className="text-[10px] text-zinc-500 font-mono tracking-widest">{seller.email}</p>
+                                            <p className="text-[10px] text-white/40 font-mono tracking-widest">{seller.email}</p>
                                             <div className="flex gap-4 mt-2">
-                                                <Badge variant="outline" className="border-zinc-800 text-[#FF6200] text-[9px] font-black uppercase tracking-widest">{seller.university || 'Global Node'}</Badge>
+                                                <Badge variant="outline" className="border-zinc-800 text-[#FF6200] text-[9px] font-black uppercase tracking-widest">{seller.university || 'Global Campus'}</Badge>
                                             </div>
                                         </div>
                                     </div>
@@ -131,13 +131,13 @@ export default function OperationsAdminPage() {
                                         onClick={() => handleVerify(seller.id)}
                                         className="bg-[#FF6200] text-black hover:bg-[#FF8533] font-black uppercase text-[10px] tracking-[0.2em] h-12 px-8 rounded-xl"
                                     >
-                                        Authorize Node
+                                        Authorize Campus
                                     </Button>
                                 </div>
                             ))}
                             {pendingSellers.length === 0 && (
                                 <div className="text-center py-20 bg-black/20 rounded-2xl border border-white/5 border-dashed">
-                                    <p className="text-zinc-600 font-black uppercase tracking-[0.3em] text-[10px]">Verification Queues Empty</p>
+                                    <p className="text-white/30 font-black uppercase tracking-[0.3em] text-[10px]">Verification Queues Empty</p>
                                 </div>
                             )}
                         </CardContent>
@@ -153,10 +153,10 @@ export default function OperationsAdminPage() {
                             {subscriptions.map((sub) => (
                                 <div key={sub.id} className="flex items-center justify-between bg-black/40 p-6 rounded-2xl border border-white/5">
                                     <div className="flex items-center gap-6">
-                                        <CreditCard className="h-6 w-6 text-zinc-600" />
+                                        <CreditCard className="h-6 w-6 text-white/30" />
                                         <div>
                                             <p className="text-sm font-black text-white italic font-heading tracking-wide uppercase">{sub.users?.email}</p>
-                                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">Status: <span className="text-[#FF6200]">Operational</span></p>
+                                            <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest mt-1">Status: <span className="text-[#FF6200]">Operational</span></p>
                                         </div>
                                     </div>
                                     <Badge className="bg-[#FF6200] text-black font-black uppercase text-[10px] tracking-widest px-3 py-1 animate-pulse">Active</Badge>
@@ -164,7 +164,7 @@ export default function OperationsAdminPage() {
                             ))}
                             {subscriptions.length === 0 && (
                                 <div className="text-center py-20">
-                                    <p className="text-zinc-600 font-black uppercase tracking-[0.3em] text-[10px]">No Active Subscriptions Found</p>
+                                    <p className="text-white/30 font-black uppercase tracking-[0.3em] text-[10px]">No Active Subscriptions Found</p>
                                 </div>
                             )}
                         </CardContent>
@@ -181,18 +181,18 @@ export default function OperationsAdminPage() {
                                 <div key={item.id} className="bg-black/40 p-6 rounded-3xl border border-white/5 space-y-4 relative overflow-hidden group">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-[#FF6200]/10 transition-colors" />
                                     <div className="flex justify-between items-start relative z-10">
-                                        <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">{item.users?.email}</p>
+                                        <p className="text-[10px] text-white/40 font-black uppercase tracking-widest">{item.users?.email}</p>
                                         <Badge variant="outline" className="text-[#FF6200] border-[#FF6200]/30 italic font-black uppercase tracking-tighter text-[10px]">{item.rating} / 5 SCORE</Badge>
                                     </div>
                                     <p className="text-sm text-white italic leading-relaxed relative z-10">"{item.comments}"</p>
                                     <div className="pt-4 border-t border-white/5 flex justify-between items-center relative z-10">
-                                        <span className="text-[9px] text-zinc-600 uppercase font-black tracking-[0.2em]">Net Promoter Score (NPS): {item.nps_score}</span>
-                                        <span className="text-[9px] text-zinc-700 font-mono italic">ID: {item.id.slice(0, 8)}</span>
+                                        <span className="text-[9px] text-white/30 uppercase font-black tracking-[0.2em]">Net Promoter Score (NPS): {item.nps_score}</span>
+                                        <span className="text-[9px] text-white/20 font-mono italic">ID: {item.id.slice(0, 8)}</span>
                                     </div>
                                 </div>
                             ))}
                             {feedback.length === 0 && (
-                                <p className="text-center text-zinc-600 font-black uppercase tracking-[0.3em] text-[10px] py-20">Diagnostic Feedback Loop Empty</p>
+                                <p className="text-center text-white/30 font-black uppercase tracking-[0.3em] text-[10px] py-20">Diagnostic Feedback Loop Empty</p>
                             )}
                         </CardContent>
                     </Card>
@@ -203,7 +203,7 @@ export default function OperationsAdminPage() {
                         <Card className="bg-zinc-900/50 border-white/5 rounded-[2rem] relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-3xl -mr-12 -mt-12" />
                             <CardContent className="p-10">
-                                <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.4em] mb-4">Gross Asset Flow</p>
+                                <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.4em] mb-4">Gross Asset Flow</p>
                                 <p className="text-4xl md:text-5xl font-black text-white italic font-heading tracking-tighter leading-none">
                                     ₦{revenue.totalVolume.toLocaleString()}
                                 </p>
@@ -212,7 +212,7 @@ export default function OperationsAdminPage() {
                         <Card className="bg-zinc-900/50 border-white/5 rounded-[2rem] relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-24 h-24 bg-[#FF6200]/5 rounded-full blur-3xl -mr-12 -mt-12" />
                             <CardContent className="p-10">
-                                <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.4em] mb-4">Platform Yield (Commission)</p>
+                                <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.4em] mb-4">Platform Yield (Commission)</p>
                                 <p className="text-4xl md:text-5xl font-black text-[#FF6200] italic font-heading tracking-tighter leading-none">
                                     ₦{revenue.totalCommission.toLocaleString()}
                                 </p>
@@ -229,15 +229,15 @@ export default function OperationsAdminPage() {
                                 {revenue.transactions.map((txn) => (
                                     <div key={txn.id} className="grid grid-cols-1 md:grid-cols-4 gap-6 bg-black/40 p-6 rounded-2xl border border-white/5 items-center">
                                         <div className="space-y-1">
-                                            <span className="text-[9px] text-zinc-600 uppercase font-black tracking-widest">Protocol Ref</span>
+                                            <span className="text-[9px] text-white/30 uppercase font-black tracking-widest">System Ref</span>
                                             <p className="text-xs text-white font-mono truncate">#{txn.paystack_reference}</p>
                                         </div>
                                         <div className="space-y-1">
-                                            <span className="text-[9px] text-zinc-600 uppercase font-black tracking-widest">Node ID</span>
-                                            <p className="text-xs text-white italic truncate font-bold font-heading">{txn.seller?.display_name || 'Anonymous Node'}</p>
+                                            <span className="text-[9px] text-white/30 uppercase font-black tracking-widest">Campus ID</span>
+                                            <p className="text-xs text-white italic truncate font-bold font-heading">{txn.seller?.display_name || 'Anonymous Campus'}</p>
                                         </div>
                                         <div className="space-y-1">
-                                            <span className="text-[9px] text-zinc-600 uppercase font-black tracking-widest">Asset Value / Net</span>
+                                            <span className="text-[9px] text-white/30 uppercase font-black tracking-widest">Asset Value / Net</span>
                                             <p className="text-xs text-white font-black italic">
                                                 ₦{txn.amount_total.toLocaleString()} / <span className="text-[#FF6200]">₦{txn.amount_platform.toLocaleString()}</span>
                                             </p>
@@ -249,7 +249,7 @@ export default function OperationsAdminPage() {
                                 ))}
                                 {revenue.transactions.length === 0 && (
                                     <div className="text-center py-20">
-                                        <p className="text-zinc-600 font-black uppercase tracking-[0.3em] text-[10px]">Financial Stream Idle</p>
+                                        <p className="text-white/30 font-black uppercase tracking-[0.3em] text-[10px]">Financial Stream Idle</p>
                                     </div>
                                 )}
                             </div>
@@ -258,7 +258,7 @@ export default function OperationsAdminPage() {
                 </TabsContent>
             </Tabs>
 
-            <div className="text-center py-10 text-zinc-800 text-[9px] font-black uppercase tracking-[0.5em] font-heading relative z-10">
+            <div className="text-center py-10 text-white/10 text-[9px] font-black uppercase tracking-[0.5em] font-heading relative z-10">
                 Data Stream End-to-End Encrypted // MarketBridge Alpha Control
             </div>
         </div>

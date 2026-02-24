@@ -7,10 +7,10 @@ import { Footer } from '@/components/footer';
 export default function PublicLayout({
     children,
 }: {
-    children: React.ReactNode;
+    children: React.ReactCampus;
 }) {
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-blue-500 selection:text-white">
+        <div className="min-h-screen bg-black text-white selection:bg-[#FF6200] selection:text-white">
             <Header />
             <main className="pt-20">
                 {children}

@@ -148,19 +148,19 @@ export default function AdminLoginPage() {
         return (
             <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-black overflow-hidden relative">
                 <div className="absolute inset-0 bg-[#3a0000] pointer-events-none opacity-20 animate-pulse"></div>
-                <Card className="w-full max-w-lg glass-card border border-red-500/30 shadow-[0_0_80px_rgba(220,38,38,0.2)] bg-black relative overflow-hidden">
+                <Card className="w-full max-w-lg glass-card border border-[#FF6200]/30 shadow-[0_0_80px_rgba(220,38,38,0.2)] bg-black relative overflow-hidden">
                     <CardHeader className="text-center pt-12 pb-8">
-                        <div className="mx-auto h-24 w-24 rounded-full border-2 border-red-500 bg-red-950/30 flex items-center justify-center mb-6 animate-in fade-in zoom-in duration-300">
-                            <ShieldAlert className="h-12 w-12 text-red-500" />
+                        <div className="mx-auto h-24 w-24 rounded-full border-2 border-[#FF6200] bg-red-950/30 flex items-center justify-center mb-6 animate-in fade-in zoom-in duration-300">
+                            <ShieldAlert className="h-12 w-12 text-[#FF6200]" />
                         </div>
-                        <h2 className="text-2xl font-black text-red-500 tracking-[0.2em] uppercase">Access Denied</h2>
-                        <p className="text-zinc-500 text-xs font-mono mt-4 uppercase tracking-widest">
-                            Security Protocol Override Failed
+                        <h2 className="text-2xl font-black text-[#FF6200] tracking-[0.2em] uppercase">Access Denied</h2>
+                        <p className="text-white/40 text-xs font-mono mt-4 uppercase tracking-widest">
+                            Security System Override Failed
                         </p>
                     </CardHeader>
                     <CardContent className="px-10 text-center space-y-8">
                         <div className="bg-red-950/20 border border-red-900/50 p-6 rounded-xl">
-                            <p className="text-red-400 text-sm font-medium">
+                            <p className="text-[#FF6200] text-sm font-medium">
                                 "{error}"
                             </p>
                         </div>
@@ -172,7 +172,7 @@ export default function AdminLoginPage() {
                         </Button>
                     </CardContent>
                     <CardFooter className="justify-center pb-8">
-                        <Link href="/" className="text-[10px] text-zinc-600 hover:text-white uppercase tracking-widest transition-colors">
+                        <Link href="/" className="text-[10px] text-white/30 hover:text-white uppercase tracking-widest transition-colors">
                             Return to Public Portal
                         </Link>
                     </CardFooter>
@@ -197,7 +197,7 @@ export default function AdminLoginPage() {
                         <CardTitle className="text-3xl font-black tracking-[0.3em] text-white uppercase italic">
                             Admin Login
                         </CardTitle>
-                        <CardDescription className="text-zinc-500 font-medium italic text-sm mt-2 lowercase">
+                        <CardDescription className="text-white/40 font-medium italic text-sm mt-2 lowercase">
                             secure area | authorized personnel only
                         </CardDescription>
                     </div>
@@ -206,13 +206,13 @@ export default function AdminLoginPage() {
                 <CardContent className="px-12">
                     <form onSubmit={handleSubmit} className="space-y-8">
                         <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Email Address</Label>
+                            <Label className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] ml-2">Email Address</Label>
                             <div className="relative group/input">
-                                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-700 group-focus-within/input:text-[#FF6200] transition-colors" />
+                                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-white/20 group-focus-within/input:text-[#FF6200] transition-colors" />
                                 <input
                                     name="email"
                                     type="email"
-                                    className="w-full h-16 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
+                                    className="w-full h-16 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
@@ -222,13 +222,13 @@ export default function AdminLoginPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-2">Password</Label>
+                            <Label className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] ml-2">Password</Label>
                             <div className="relative group/input">
-                                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-700 group-focus-within/input:text-[#FF6200] transition-colors" />
+                                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-white/20 group-focus-within/input:text-[#FF6200] transition-colors" />
                                 <input
                                     name="password"
                                     type={showPassword ? 'text' : 'password'}
-                                    className="w-full h-16 pl-14 pr-14 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
+                                    className="w-full h-16 pl-14 pr-14 bg-black border border-white/10 rounded-2xl text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
@@ -237,7 +237,7 @@ export default function AdminLoginPage() {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-800 hover:text-[#FF6200] transition-colors"
+                                    className="absolute right-5 top-1/2 -translate-y-1/2 text-white/10 hover:text-[#FF6200] transition-colors"
                                 >
                                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                 </button>
@@ -263,9 +263,9 @@ export default function AdminLoginPage() {
 
                 <CardFooter className="flex flex-col items-center gap-6 py-12 relative z-10">
                     <div className="flex items-center gap-8">
-                        <Link href="/login" className="text-[9px] font-bold text-zinc-600 hover:text-white uppercase tracking-widest transition-colors">Staff Login</Link>
-                        <Link href="/admin/signup" className="text-[9px] font-bold text-zinc-600 hover:text-[#FF6200] uppercase tracking-widest transition-colors underline">Create Account</Link>
-                        <Link href="/" className="text-[9px] font-bold text-zinc-600 hover:text-white uppercase tracking-widest transition-colors">Public Home</Link>
+                        <Link href="/login" className="text-[9px] font-bold text-white/30 hover:text-white uppercase tracking-widest transition-colors">Staff Login</Link>
+                        <Link href="/admin/signup" className="text-[9px] font-bold text-white/30 hover:text-[#FF6200] uppercase tracking-widest transition-colors underline">Create Account</Link>
+                        <Link href="/" className="text-[9px] font-bold text-white/30 hover:text-white uppercase tracking-widest transition-colors">Public Home</Link>
                     </div>
                 </CardFooter>
             </Card>

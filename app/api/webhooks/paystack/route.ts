@@ -32,6 +32,10 @@ export async function POST(req: NextRequest) {
             const reference = data.reference || data.trxref || data.id
             const metadata = data.metadata || {}
             const subscriptionId = metadata?.subscription_id || metadata?.subscriptionId || null
+            const orderId = metadata?.order_id || metadata?.orderId || null
+            const buyerId = metadata?.user_id || metadata?.userId || data?.customer?.id || null
+            const sellerId = metadata?.seller_id || null
+            const amount = data.amount / 100 // Convert from kobo
 
             if (subscriptionId) {
                 // Mark subscription active
@@ -51,20 +55,45 @@ export async function POST(req: NextRequest) {
                 // Update user subscription_status
                 const { data: sub } = await supabaseAdmin.from('subscriptions').select('user_id,plan_id').eq('id', subscriptionId).single()
                 if (sub?.user_id) {
-                    await supabaseAdmin.from('users').update({ subscription_status: 'active', subscription_start_date: periodStart }).eq('id', sub.user_id)
+                    await supabaseAdmin.from('users').update({
+                        subscription_status: 'active',
+                        subscription_start_date: periodStart
+                    }).eq('id', sub.user_id)
                 }
             }
 
-            // Record payment in payments table if exists
+            // Handle Order Success
+            if (orderId) {
+                // Award coins to buyer
+                if (buyerId) {
+                    const { earnCoinsBuyer } = await import('@/lib/coins')
+                    await earnCoinsBuyer(buyerId, amount, orderId)
+                }
+                // Award coins to seller
+                if (sellerId) {
+                    const { earnCoinsSeller } = await import('@/lib/coins')
+                    await earnCoinsSeller(sellerId, amount, orderId)
+                }
+
+                // Update order status if possible
+                try {
+                    await supabaseAdmin.from('orders').update({ status: 'paid', transaction_ref: reference }).eq('id', orderId)
+                } catch (e) { }
+            }
+
+            // Record payment and check referral bonus
             try {
-                const payment = { processor: 'paystack', reference: reference, amount: data.amount / 100, metadata: data, user_id: data?.customer?.id || data?.customer || metadata?.user_id || null }
+                const payment = {
+                    processor: 'paystack',
+                    reference: reference,
+                    amount: amount,
+                    metadata: data,
+                    user_id: buyerId
+                }
                 await supabaseAdmin.from('payments').insert([payment])
 
-                // If this payment belongs to a referred user, check referral threshold
-                const paidUserId = payment.user_id
-                if (paidUserId) {
-                    // Try awarding referral bonus when threshold reached
-                    await tryAwardReferralBonusForUser(paidUserId)
+                if (buyerId) {
+                    await tryAwardReferralBonusForUser(buyerId)
                 }
             } catch (e) { /* ignore if payments table absent */ }
         }

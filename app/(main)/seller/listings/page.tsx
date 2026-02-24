@@ -204,7 +204,7 @@ export default function SellerListingsPage() {
         <div className="container mx-auto py-10 px-4 space-y-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">Inventory Node</h1>
+                    <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">Inventory Campus</h1>
                     <p className="text-muted-foreground mt-2">Manage your marketplace assets and deployment status.</p>
                 </div>
                 <Button asChild className="bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest italic shadow-xl shadow-[#FF6200]/20 rounded-xl">
@@ -245,12 +245,12 @@ export default function SellerListingsPage() {
                                     />
                                 ) : (
                                     <div className="absolute inset-0 flex items-center justify-center text-muted-foreground font-mono text-xs uppercase tracking-widest">
-                                        No Visual Signal
+                                        No Visual Notice
                                     </div>
                                 )}
                                 <div className="absolute top-3 right-3 flex flex-col gap-2">
                                     <Badge
-                                        className={`font-black uppercase tracking-tighter shadow-lg ${listing.status === 'active' ? 'bg-[#FF6200] text-black hover:bg-[#FF7A29]' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}
+                                        className={`font-black uppercase tracking-tighter shadow-lg ${listing.status === 'active' ? 'bg-[#FF6200] text-black hover:bg-[#FF7A29]' : 'bg-zinc-800 text-white/60 hover:bg-zinc-700'}`}
                                     >
                                         {listing.status}
                                     </Badge>

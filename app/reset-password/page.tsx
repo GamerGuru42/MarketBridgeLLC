@@ -61,8 +61,8 @@ function ResetPasswordContent() {
                 </div>
                 <div className="space-y-2">
                     <h2 className="text-3xl font-black uppercase italic tracking-tighter text-white">Access <span className="text-[#FF6200]">Restored</span></h2>
-                    <p className="text-zinc-500 font-bold uppercase text-[10px] tracking-widest max-w-[240px] mx-auto leading-relaxed">
-                        Your security protocols have been updated. Redirecting to login...
+                    <p className="text-white/40 font-bold uppercase text-[10px] tracking-widest max-w-[240px] mx-auto leading-relaxed">
+                        Your Security Systems have been updated. Redirecting to login...
                     </p>
                 </div>
             </div>
@@ -73,27 +73,27 @@ function ResetPasswordContent() {
         <div className="space-y-10">
             <div className="text-center space-y-4">
                 <h2 className="text-4xl font-black uppercase italic tracking-tighter text-white">Reset <span className="text-[#FF6200]">Security</span></h2>
-                <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Establish new encrypted credentials</p>
+                <p className="text-white/40 text-[10px] font-black uppercase tracking-widest">Establish new encrypted credentials</p>
             </div>
 
             <form onSubmit={handleReset} className="space-y-8">
                 <div className="space-y-6">
                     <div className="space-y-2">
-                        <Label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">New Password</Label>
+                        <Label className="text-[9px] uppercase font-black tracking-widest text-white/30 ml-2">New Password</Label>
                         <div className="relative group">
-                            <Lock className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
+                            <Lock className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-white/10 group-focus-within:text-[#FF6200] transition-colors" />
                             <Input
                                 type={showPassword ? 'text' : 'password'}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
-                                className="w-full h-16 pl-14 pr-14 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold"
+                                className="w-full h-16 pl-14 pr-14 bg-black border border-white/10 rounded-2xl text-white placeholder:text-white/5 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold"
                                 required
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-6 top-1/2 -translate-y-1/2 text-zinc-800 hover:text-white transition-colors"
+                                className="absolute right-6 top-1/2 -translate-y-1/2 text-white/10 hover:text-white transition-colors"
                             >
                                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </button>
@@ -101,15 +101,15 @@ function ResetPasswordContent() {
                     </div>
 
                     <div className="space-y-2">
-                        <Label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Confirm New Password</Label>
+                        <Label className="text-[9px] uppercase font-black tracking-widest text-white/30 ml-2">Confirm New Password</Label>
                         <div className="relative group">
-                            <ShieldCheck className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
+                            <ShieldCheck className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-white/10 group-focus-within:text-[#FF6200] transition-colors" />
                             <Input
                                 type={showPassword ? 'text' : 'password'}
                                 value={passwordConfirm}
                                 onChange={(e) => setPasswordConfirm(e.target.value)}
                                 placeholder="••••••••"
-                                className="w-full h-16 pl-14 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold"
+                                className="w-full h-16 pl-14 bg-black border border-white/10 rounded-2xl text-white placeholder:text-white/5 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold"
                                 required
                             />
                         </div>

@@ -192,51 +192,51 @@ export default function ExecutiveChatPage() {
         }
     };
 
-    if (authLoading) return <div className="flex h-[calc(100vh-140px)] items-center justify-center bg-slate-950 rounded-xl border border-slate-800"><Loader2 className="animate-spin text-primary" /></div>;
+    if (authLoading) return <div className="flex h-[calc(100vh-140px)] items-center justify-center bg-black rounded-xl border border-white/10"><Loader2 className="animate-spin text-primary" /></div>;
 
     if (!activeChannel && !loadingMessages) {
         return (
-            <div className="flex h-[calc(100vh-140px)] flex-col items-center justify-center bg-slate-950 rounded-xl border border-slate-800 text-center p-8">
-                <MessageSquare className="h-12 w-12 text-slate-800 mb-4" />
+            <div className="flex h-[calc(100vh-140px)] flex-col items-center justify-center bg-black rounded-xl border border-white/10 text-center p-8">
+                <MessageSquare className="h-12 w-12 text-white/10 mb-4" />
                 <h3 className="text-xl font-bold text-white mb-2">No Comm Channels Found</h3>
-                <p className="text-slate-500 max-w-md">Initialize the admin infrastructure using the provided SQL script to activate executive communication.</p>
+                <p className="text-white/40 max-w-md">Initialize the admin infrastructure using the provided SQL script to activate executive communication.</p>
             </div>
         );
     }
 
-    if (!activeChannel) return <div className="flex h-[calc(100vh-140px)] items-center justify-center bg-slate-950 rounded-xl border border-slate-800"><Loader2 className="animate-spin text-primary" /></div>;
+    if (!activeChannel) return <div className="flex h-[calc(100vh-140px)] items-center justify-center bg-black rounded-xl border border-white/10"><Loader2 className="animate-spin text-primary" /></div>;
 
     // Filter logic not needed on client side as we fetch per channel
     // but we reuse the variable for render
     const filteredMessages = messages;
 
     return (
-        <div className="flex h-[calc(100vh-140px)] bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-2xl">
+        <div className="flex h-[calc(100vh-140px)] bg-black rounded-xl border border-white/10 overflow-hidden shadow-2xl">
             {/* Sidebar */}
-            <div className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col">
-                <div className="p-4 bg-slate-950/50 border-b border-slate-800 flex items-center justify-between">
+            <div className="w-64 bg-black border-r border-white/10 flex flex-col">
+                <div className="p-4 bg-black/50 border-b border-white/10 flex items-center justify-between">
                     <h2 className="text-white font-black italic tracking-tighter flex items-center gap-2">
                         <AtSign className="h-4 w-4 text-primary" />
                         COLLAB
                     </h2>
-                    <Badge variant="outline" className="text-[8px] border-slate-700 text-slate-400">HQ</Badge>
+                    <Badge variant="outline" className="text-[8px] border-white/20 text-white/60">HQ</Badge>
                 </div>
 
                 <div className="flex-1 overflow-y-auto py-4">
                     <div className="px-4 mb-6">
                         <div className="relative">
-                            <Search className="absolute left-2 top-2.5 h-3 w-3 text-slate-500" />
-                            <input className="w-full bg-slate-800 border-none rounded-md py-2 pl-7 pr-3 text-[10px] text-white outline-none focus:ring-1 focus:ring-primary" placeholder="Jump to..." />
+                            <Search className="absolute left-2 top-2.5 h-3 w-3 text-white/40" />
+                            <input className="w-full bg-white/10 border-none rounded-md py-2 pl-7 pr-3 text-[10px] text-white outline-none focus:ring-1 focus:ring-primary" placeholder="Jump to..." />
                         </div>
                     </div>
 
                     <div className="space-y-1 px-2">
-                        <p className="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Channels</p>
+                        <p className="px-3 text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2">Channels</p>
                         {channels.filter(ch => !ch.is_dm).map(ch => (
                             <button
                                 key={ch.id}
                                 onClick={() => setActiveChannel(ch)}
-                                className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${activeChannel.id === ch.id ? 'bg-primary text-white font-bold' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+                                className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${activeChannel.id === ch.id ? 'bg-primary text-white font-bold' : 'text-white/60 hover:bg-white/10 hover:text-white'}`}
                             >
                                 {ch.type === 'private' ? <Lock className="h-3 w-3" /> : <Hash className="h-3 w-3" />}
                                 {ch.name}
@@ -245,15 +245,15 @@ export default function ExecutiveChatPage() {
                     </div>
 
                     <div className="mt-8 space-y-1 px-2">
-                        <p className="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Direct Messages</p>
+                        <p className="px-3 text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2">Direct Messages</p>
                         {channels.filter(ch => ch.is_dm).map((ch: any) => (
                             <button
                                 key={ch.id}
                                 onClick={() => setActiveChannel(ch)}
-                                className={`w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs transition-colors ${activeChannel.id === ch.id ? 'bg-primary/20 text-white font-bold border border-primary/30' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+                                className={`w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs transition-colors ${activeChannel.id === ch.id ? 'bg-primary/20 text-white font-bold border border-primary/30' : 'text-white/60 hover:bg-white/10 hover:text-white'}`}
                             >
                                 <div className="flex items-center gap-2">
-                                    <Circle className={`h-2 w-2 ${activeChannel.id === ch.id ? 'fill-primary text-primary' : 'fill-green-500 text-green-500'}`} />
+                                    <Circle className={`h-2 w-2 ${activeChannel.id === ch.id ? 'fill-primary text-primary' : 'fill-green-500 text-[#FF6200]'}`} />
                                     <span>{ch.label || ch.name}</span>
                                 </div>
                                 {activeChannel.id === ch.id && <ChevronRight className="h-3 w-3 text-primary" />}
@@ -262,32 +262,32 @@ export default function ExecutiveChatPage() {
                     </div>
                 </div>
 
-                <div className="p-4 bg-slate-950/30 border-t border-slate-800">
+                <div className="p-4 bg-black/30 border-t border-white/10">
                     <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8 border border-primary/30">
                             <AvatarFallback delayMs={1000}>{user?.displayName?.[0] || 'A'}</AvatarFallback>
                         </Avatar>
                         <div className="overflow-hidden">
                             <p className="text-[10px] font-bold text-white truncate">{user?.displayName}</p>
-                            <p className="text-[8px] text-slate-500 uppercase font-bold tracking-tighter">{user?.role}</p>
+                            <p className="text-[8px] text-white/40 uppercase font-bold tracking-tighter">{user?.role}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Chat Area */}
-            <div className="flex-1 flex flex-col bg-slate-950">
-                <div className="h-14 border-b border-slate-800 flex items-center justify-between px-6 bg-slate-900/20">
+            <div className="flex-1 flex flex-col bg-black">
+                <div className="h-14 border-b border-white/10 flex items-center justify-between px-6 bg-black/20">
                     <div className="flex items-center gap-2">
-                        <Hash className="h-4 w-4 text-slate-400" />
+                        <Hash className="h-4 w-4 text-white/60" />
                         <h3 className="font-bold text-white text-sm">{(activeChannel as any).label || activeChannel.name}</h3>
-                        <Separator orientation="vertical" className="h-4 bg-slate-800 mx-2" />
-                        <span className="text-[10px] text-slate-500 font-medium">Internal Coordination Terminal</span>
+                        <Separator orientation="vertical" className="h-4 bg-white/10 mx-2" />
+                        <span className="text-[10px] text-white/40 font-medium">Internal Coordination Dashboard</span>
                     </div>
-                    {error && <span className="text-red-500 text-xs font-bold animate-pulse">{error}</span>}
+                    {error && <span className="text-[#FF6200] text-xs font-bold animate-pulse">{error}</span>}
                     <div className="flex items-center gap-4">
-                        <Users className="h-4 w-4 text-slate-500 cursor-pointer hover:text-white" />
-                        <Button variant="outline" size="sm" className="h-7 text-[10px] border-slate-700 bg-transparent text-slate-300 hover:bg-slate-800">
+                        <Users className="h-4 w-4 text-white/40 cursor-pointer hover:text-white" />
+                        <Button variant="outline" size="sm" className="h-7 text-[10px] border-white/20 bg-transparent text-white/70 hover:bg-white/10">
                             Archive Session
                         </Button>
                     </div>
@@ -306,18 +306,18 @@ export default function ExecutiveChatPage() {
                     ) : null}
                     {filteredMessages.map((msg) => (
                         <div key={msg.id} className={`flex gap-4 group ${msg.author === (user?.displayName || 'Unknown') ? 'flex-row-reverse' : ''}`}>
-                            <Avatar className="h-9 w-9 shrink-0 ring-2 ring-slate-800 group-hover:ring-primary/40 transition-all">
+                            <Avatar className="h-9 w-9 shrink-0 ring-2 ring-white/10 group-hover:ring-primary/40 transition-all">
                                 <AvatarFallback>{msg.author[0]}</AvatarFallback>
                             </Avatar>
                             <div className={`flex flex-col gap-1 max-w-[70%] ${msg.author === (user?.displayName || 'Unknown') ? 'items-end' : ''}`}>
                                 <div className="flex items-center gap-2 flex-wrap">
                                     <span className="text-[10px] font-bold text-white uppercase tracking-tighter">{msg.author}</span>
-                                    <Badge variant="outline" className={`text-[8px] h-3 px-1 font-black ${msg.role === 'ceo' ? 'border-primary text-primary' : 'border-slate-700 text-slate-500'}`}>
+                                    <Badge variant="outline" className={`text-[8px] h-3 px-1 font-black ${msg.role === 'ceo' ? 'border-primary text-primary' : 'border-white/20 text-white/40'}`}>
                                         {msg.role}
                                     </Badge>
-                                    <span className="text-[8px] text-slate-600">{msg.timestamp}</span>
+                                    <span className="text-[8px] text-white/30">{msg.timestamp}</span>
                                 </div>
-                                <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${msg.author === (user?.displayName || 'Unknown') ? 'bg-primary text-white rounded-tr-none shadow-[0_4px_12px_rgba(var(--primary-rgb),0.3)]' : 'bg-slate-800/80 text-slate-200 rounded-tl-none border border-slate-700/50'}`}>
+                                <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${msg.author === (user?.displayName || 'Unknown') ? 'bg-primary text-white rounded-tr-none shadow-[0_4px_12px_rgba(var(--primary-rgb),0.3)]' : 'bg-white/10/80 text-slate-200 rounded-tl-none border border-white/20/50'}`}>
                                     {msg.content}
                                 </div>
                             </div>
@@ -326,11 +326,11 @@ export default function ExecutiveChatPage() {
                     <div ref={chatEndRef} />
                 </div>
 
-                <div className="p-4 bg-slate-900/20 border-t border-slate-800">
+                <div className="p-4 bg-black/20 border-t border-white/10">
                     <div className="max-w-4xl mx-auto flex gap-3">
                         <div className="relative flex-1">
                             <Input
-                                className="bg-slate-900 border-slate-800 text-slate-200 h-11 pr-12 focus-visible:ring-primary placeholder:text-slate-600"
+                                className="bg-black border-white/10 text-slate-200 h-11 pr-12 focus-visible:ring-primary placeholder:text-white/30"
                                 placeholder={`Message ${(activeChannel as any).label ? '@' + (activeChannel as any).label : '#' + activeChannel.name}`}
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
@@ -340,7 +340,7 @@ export default function ExecutiveChatPage() {
                             <Button
                                 size="icon"
                                 variant="ghost"
-                                className="absolute right-1 top-1 h-9 w-9 text-slate-500 hover:text-primary transition-colors"
+                                className="absolute right-1 top-1 h-9 w-9 text-white/40 hover:text-primary transition-colors"
                                 onClick={handleSend}
                                 disabled={!!error}
                             >

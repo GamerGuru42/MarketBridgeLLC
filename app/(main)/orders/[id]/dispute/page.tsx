@@ -132,9 +132,9 @@ export default function DisputePage() {
     if (!order) {
         return (
             <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4 text-center">
-                <AlertTriangle className="h-16 w-16 text-red-500 mb-6" />
-                <h1 className="text-2xl font-black text-white uppercase tracking-tighter mb-2 font-heading">Signal Lost</h1>
-                <p className="text-zinc-500 mb-8 max-w-sm">Order record not found in the secure database.</p>
+                <AlertTriangle className="h-16 w-16 text-[#FF6200] mb-6" />
+                <h1 className="text-2xl font-black text-white uppercase tracking-tighter mb-2 font-heading">Notice Lost</h1>
+                <p className="text-white/40 mb-8 max-w-sm">Order record not found in the secure database.</p>
                 <Button asChild variant="outline" className="border-white/10 text-white font-mono uppercase tracking-widest text-xs">
                     <Link href="/orders">Return to Orders</Link>
                 </Button>
@@ -148,9 +148,9 @@ export default function DisputePage() {
             <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4 text-center">
                 <ShieldAlert className="h-16 w-16 text-yellow-500 mb-6" />
                 <h1 className="text-2xl font-black text-white uppercase tracking-tighter mb-2 font-heading">Action Denied</h1>
-                <p className="text-zinc-500 mb-8 max-w-sm">
+                <p className="text-white/40 mb-8 max-w-sm">
                     Disputes can only be filed for active orders currently in escrow.
-                    <br /><span className="mt-2 block text-xs uppercase tracking-widest text-zinc-700">Current Status: {order.status}</span>
+                    <br /><span className="mt-2 block text-xs uppercase tracking-widest text-white/20">Current Status: {order.status}</span>
                 </p>
                 <Button asChild variant="outline" className="border-white/10 text-white font-mono uppercase tracking-widest text-xs">
                     <Link href="/orders">Return to Orders</Link>
@@ -160,29 +160,29 @@ export default function DisputePage() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white p-6 font-sans selection:bg-red-500/30 selection:text-white">
+        <div className="min-h-screen bg-black text-white p-6 font-sans selection:bg-[#FF6200]/30 selection:text-white">
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
             <div className="max-w-2xl mx-auto relative z-10">
                 <Button variant="ghost" asChild className="mb-8 pl-0 hover:bg-transparent hover:text-[#FF6600] transition-colors group">
-                    <Link href="/orders" className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-zinc-500">
+                    <Link href="/orders" className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-white/40">
                         <ArrowLeft className="h-3 w-3 group-hover:-translate-x-1 transition-transform" /> Abort Sequence
                     </Link>
                 </Button>
 
-                <div className="glass-card border border-red-500/20 bg-red-500/[0.02] p-8 md:p-12 relative overflow-hidden">
+                <div className="glass-card border border-[#FF6200]/20 bg-[#FF6200]/[0.02] p-8 md:p-12 relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-50" />
 
                     <div className="flex items-center gap-4 mb-8">
-                        <div className="h-16 w-16 rounded-full bg-red-500/10 flex items-center justify-center border border-red-500/20 shrink-0 animate-pulse">
-                            <ShieldAlert className="h-8 w-8 text-red-500" />
+                        <div className="h-16 w-16 rounded-full bg-[#FF6200]/10 flex items-center justify-center border border-[#FF6200]/20 shrink-0 animate-pulse">
+                            <ShieldAlert className="h-8 w-8 text-[#FF6200]" />
                         </div>
                         <div>
                             <h1 className="text-3xl font-black uppercase tracking-tighter italic font-heading text-white">
-                                File <span className="text-red-500">Dispute</span>
+                                File <span className="text-[#FF6200]">Dispute</span>
                             </h1>
-                            <p className="text-xs font-mono text-zinc-500 uppercase tracking-widest mt-1">
+                            <p className="text-xs font-mono text-white/40 uppercase tracking-widest mt-1">
                                 Escrow Hold Initiation
                             </p>
                         </div>
@@ -190,17 +190,17 @@ export default function DisputePage() {
 
                     <div className="bg-black/50 border border-white/5 rounded-xl p-4 mb-8 flex items-center justify-between">
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600 font-heading">Transaction Value</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-white/30 font-heading">Transaction Value</p>
                             <p className="text-2xl font-black text-white font-heading">₦{order.amount.toLocaleString()}</p>
                         </div>
                         <div className="text-right">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600 font-heading">Order Ref</p>
-                            <p className="text-sm font-mono text-zinc-400">#{order.id.slice(0, 8).toUpperCase()}</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-white/30 font-heading">Order Ref</p>
+                            <p className="text-sm font-mono text-white/60">#{order.id.slice(0, 8).toUpperCase()}</p>
                         </div>
                     </div>
 
                     {error && (
-                        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-8 text-xs font-mono text-red-500 flex items-center gap-3">
+                        <div className="bg-[#FF6200]/10 border border-[#FF6200]/20 rounded-lg p-4 mb-8 text-xs font-mono text-[#FF6200] flex items-center gap-3">
                             <AlertTriangle className="h-4 w-4 shrink-0" />
                             {error}
                         </div>
@@ -208,15 +208,15 @@ export default function DisputePage() {
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-2">
-                            <Label htmlFor="reason" className="text-xs font-black uppercase tracking-widest text-zinc-500 font-heading">Nature of Issue</Label>
+                            <Label htmlFor="reason" className="text-xs font-black uppercase tracking-widest text-white/40 font-heading">Nature of Issue</Label>
                             <Select
                                 value={formData.reason}
                                 onValueChange={(value) => setFormData(prev => ({ ...prev, reason: value }))}
                             >
-                                <SelectTrigger className="bg-black border-white/10 h-12 text-zinc-300 focus:ring-red-500/50 focus:border-red-500/50">
+                                <SelectTrigger className="bg-black border-white/10 h-12 text-white/70 focus:ring-red-500/50 focus:border-[#FF6200]/50">
                                     <SelectValue placeholder="Select Reason for Dispute" />
                                 </SelectTrigger>
-                                <SelectContent className="bg-zinc-950 border-white/10 text-zinc-300">
+                                <SelectContent className="bg-zinc-950 border-white/10 text-white/70">
                                     {DISPUTE_REASONS.map((reason) => (
                                         <SelectItem key={reason} value={reason} className="focus:bg-white/5 cursor-pointer">
                                             {reason}
@@ -227,7 +227,7 @@ export default function DisputePage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="description" className="text-xs font-black uppercase tracking-widest text-zinc-500 font-heading">Evidence / Statement</Label>
+                            <Label htmlFor="description" className="text-xs font-black uppercase tracking-widest text-white/40 font-heading">Evidence / Statement</Label>
                             <Textarea
                                 id="description"
                                 placeholder="Describe the issue in detail. Why are you filing this dispute?"
@@ -235,9 +235,9 @@ export default function DisputePage() {
                                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                                 rows={6}
                                 required
-                                className="bg-black border-white/10 text-zinc-300 placeholder:text-zinc-700 resize-none focus:ring-red-500/50 focus:border-red-500/50"
+                                className="bg-black border-white/10 text-white/70 placeholder:text-white/20 resize-none focus:ring-red-500/50 focus:border-[#FF6200]/50"
                             />
-                            <p className="text-[10px] font-mono text-zinc-600">
+                            <p className="text-[10px] font-mono text-white/30">
                                 NOTICE: Filing a false dispute may result in account termination. All evidence will be reviewed by MarketBridge Operation Command.
                             </p>
                         </div>
@@ -249,7 +249,7 @@ export default function DisputePage() {
                                     Encrypting & Submitting...
                                 </>
                             ) : (
-                                'Initiate Dispute Protocol'
+                                'Initiate Dispute System'
                             )}
                         </Button>
                     </form>

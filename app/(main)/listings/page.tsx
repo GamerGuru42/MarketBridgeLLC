@@ -61,11 +61,11 @@ function ListingsContent() {
     const [condition, setCondition] = useState('all');
 
     useEffect(() => {
-        // Sync with active node if no explicit location parameter is provided
+        // Sync with active Campus if no explicit location parameter is provided
         if (!initialLocation) {
-            const savedNode = localStorage.getItem('mb-preferred-node');
-            if (savedNode && savedNode !== 'global') {
-                setLocation(savedNode);
+            const savedCampus = localStorage.getItem('mb-preferred-Campus');
+            if (savedCampus && savedCampus !== 'global') {
+                setLocation(savedCampus);
             }
         }
     }, [initialLocation]);
@@ -192,7 +192,7 @@ function ListingsContent() {
                         Unlock Exclusive <span className="text-[#FF6200]">Details</span>
                     </h1>
 
-                    <p className="text-zinc-400 text-lg md:text-xl font-medium max-w-xl">
+                    <p className="text-white/60 text-lg md:text-xl font-medium max-w-xl">
                         Join thousands of students trading securely. Sign up to view prices, contact sellers, and access verified campus listings.
                     </p>
 
@@ -232,26 +232,26 @@ function ListingsContent() {
                 <div className="space-y-4">
                     <div className="flex items-center gap-3">
                         <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading">Global Asset Index</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 font-heading">Global Asset Index</span>
                     </div>
                     <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
                         Market<span className="text-[#FF6200]">Place</span>
                     </h1>
-                    <p className="text-zinc-500 font-medium italic">
-                        Scanning <span className="text-white font-bold">{listings.length} live signals</span> across the network.
+                    <p className="text-white/40 font-medium italic">
+                        Scanning <span className="text-white font-bold">{listings.length} live Notices</span> across the network.
                     </p>
                 </div>
 
                 {/* Search & Filters */}
                 <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-12 gap-4">
                     <div className="md:col-span-5 relative group">
-                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-600 group-focus-within:text-[#FF6200] transition-colors" />
+                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30 group-focus-within:text-[#FF6200] transition-colors" />
                         <input
                             type="text"
-                            placeholder="Search active signals..."
+                            placeholder="Search active Notices..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 pl-16 pr-6 h-16 text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-medium italic text-sm transition-all"
+                            className="w-full bg-white/5 border border-white/10 pl-16 pr-6 h-16 text-white placeholder:text-white/30 focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-medium italic text-sm transition-all"
                         />
                     </div>
 
@@ -274,7 +274,7 @@ function ListingsContent() {
                             onChange={(e) => setLocation(e.target.value)}
                             className="w-full bg-white/5 border border-white/10 px-6 h-16 text-white focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
                         >
-                            <option value="" className="bg-black text-white">All Nodes</option>
+                            <option value="" className="bg-black text-white">All Campuss</option>
                             <option value="Abuja" className="bg-black text-white">Abuja</option>
                             <option value="Lagos" className="bg-black text-white">Lagos</option>
                             <option value="Port Harcourt" className="bg-black text-white">Port Harcourt</option>
@@ -295,7 +295,7 @@ function ListingsContent() {
 
                 {/* Error */}
                 {error && (
-                    <div className="bg-red-500/10 border border-red-500/20 p-6 text-red-400 font-mono text-sm">
+                    <div className="bg-[#FF6200]/10 border border-[#FF6200]/20 p-6 text-[#FF6200] font-mono text-sm">
                         {error}
                     </div>
                 )}
@@ -304,16 +304,16 @@ function ListingsContent() {
                 {!loading && !error && listings.length === 0 && (
                     <div className="text-center py-40 bg-white/5 border border-white/10 rounded-[3rem] space-y-8">
                         <div className="h-28 w-28 rounded-full bg-[#FF6200]/5 border border-[#FF6200]/20 flex items-center justify-center mx-auto">
-                            <Search className="h-10 w-10 text-zinc-800" />
+                            <Search className="h-10 w-10 text-white/10" />
                         </div>
                         <div className="space-y-2">
                             <h3 className="text-2xl font-black uppercase tracking-tighter italic font-heading">Zero Matches Found</h3>
-                            <p className="text-zinc-500 font-medium italic">Adjust your parameters to re-scan the marketplace.</p>
+                            <p className="text-white/40 font-medium italic">Adjust your parameters to re-scan the marketplace.</p>
                         </div>
                         <Button
                             onClick={() => { setSearch(''); window.location.href = '/listings'; }}
                             variant="outline"
-                            className="h-12 px-8 border-white/10 text-zinc-500 hover:text-white rounded-xl font-black uppercase tracking-widest text-[10px]"
+                            className="h-12 px-8 border-white/10 text-white/40 hover:text-white rounded-xl font-black uppercase tracking-widest text-[10px]"
                         >
                             Reset Network Scan
                         </Button>
@@ -336,7 +336,7 @@ function ListingsContent() {
                                             />
                                         ) : (
                                             <div className="flex items-center justify-center h-full">
-                                                <Store className="h-12 w-12 text-zinc-800" />
+                                                <Store className="h-12 w-12 text-white/10" />
                                             </div>
                                         )}
 
@@ -369,19 +369,19 @@ function ListingsContent() {
                                             <div className="flex items-center gap-2 mb-1">
                                                 <span className="text-[9px] font-black text-[#FF6200] uppercase tracking-widest">{listing.category.toUpperCase()}</span>
                                                 <span className="h-1 w-1 rounded-full bg-zinc-700" />
-                                                <span className="text-[9px] font-medium text-zinc-500 italic">{listing.location || 'Remote'}</span>
+                                                <span className="text-[9px] font-medium text-white/40 italic">{listing.location || 'Remote'}</span>
                                             </div>
                                             <h3 className="text-xl font-black uppercase tracking-tighter italic font-heading line-clamp-1 group-hover:text-[#FF6200] transition-colors leading-tight">
                                                 {listing.title}
                                             </h3>
-                                            <p className="text-zinc-500 text-xs font-medium italic line-clamp-2 leading-relaxed">
+                                            <p className="text-white/40 text-xs font-medium italic line-clamp-2 leading-relaxed">
                                                 {listing.description}
                                             </p>
                                         </div>
 
                                         <div className="pt-6 border-t border-white/5 flex justify-between items-center">
                                             <div className="flex flex-col">
-                                                <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest">Pricing Unit</span>
+                                                <span className="text-[8px] font-black text-white/30 uppercase tracking-widest">Pricing Unit</span>
                                                 <span className="text-2xl font-black text-white italic font-heading tracking-tighter">₦{listing.price.toLocaleString()}</span>
                                             </div>
                                             <div className="flex items-center gap-3">

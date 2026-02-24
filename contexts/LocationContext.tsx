@@ -28,6 +28,8 @@ const ABUJA_ALIASES = [
     'abuja', 'fct', 'federal capital territory', 'abuja municipal',
     'garki', 'wuse', 'maitama', 'gwarinpa', 'kubwa', 'kuje',
     'bwari', 'gwagwalada', 'nyanya', 'lugbe', 'lokogoma',
+    'asokoro', 'durumi', 'jabi', 'utako', 'apo', 'karu', 'kado',
+    'central area', 'central business district'
 ];
 
 function isAbujaCity(city: string | null, region: string | null): boolean {

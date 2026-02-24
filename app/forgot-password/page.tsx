@@ -28,7 +28,7 @@ export default function ForgotPasswordPage() {
 
             if (error) throw error;
             setIsSent(true);
-            toast('Recovery signal transmitted', 'success');
+            toast('Recovery Code Sent', 'success');
         } catch (err: any) {
             toast(err.message || 'Transmission failed', 'error');
         } finally {
@@ -56,37 +56,37 @@ export default function ForgotPasswordPage() {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <h2 className="text-3xl font-black uppercase italic tracking-tighter">Signal <span className="text-[#FF6200]">Transmitted</span></h2>
-                                <p className="text-zinc-500 font-bold uppercase text-[10px] tracking-widest max-w-[240px] mx-auto leading-relaxed">
-                                    Encrypted recovery link has been sent to your terminal mailbox.
+                                <h2 className="text-3xl font-black uppercase italic tracking-tighter">Notice <span className="text-[#FF6200]">Transmitted</span></h2>
+                                <p className="text-white/40 font-bold uppercase text-[10px] tracking-widest max-w-[240px] mx-auto leading-relaxed">
+                                    Encrypted recovery link has been sent to your Dashboard mailbox.
                                 </p>
                             </div>
                             <Button
                                 onClick={() => setIsSent(false)}
                                 variant="ghost"
-                                className="text-zinc-600 hover:text-white font-black uppercase tracking-widest text-[10px]"
+                                className="text-white/30 hover:text-white font-black uppercase tracking-widest text-[10px]"
                             >
-                                <ArrowLeft className="mr-2 h-4 w-4" /> Resend Protocol
+                                <ArrowLeft className="mr-2 h-4 w-4" /> Resend System
                             </Button>
                         </div>
                     ) : (
                         <div className="space-y-10">
                             <div className="text-center space-y-4">
                                 <h2 className="text-4xl font-black uppercase italic tracking-tighter">Recover <span className="text-[#FF6200]">Access</span></h2>
-                                <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Transmit reset link to verified email</p>
+                                <p className="text-white/40 text-[10px] font-black uppercase tracking-widest">Transmit reset link to verified email</p>
                             </div>
 
                             <form onSubmit={handleReset} className="space-y-8">
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] uppercase font-black tracking-widest text-zinc-600 ml-2">Verification Email</Label>
+                                    <Label className="text-[9px] uppercase font-black tracking-widest text-white/30 ml-2">Verification Email</Label>
                                     <div className="relative group">
-                                        <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-800 group-focus-within:text-[#FF6200] transition-colors" />
+                                        <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-white/10 group-focus-within:text-[#FF6200] transition-colors" />
                                         <Input
                                             type="email"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             placeholder="operator@marketbridge.com.ng"
-                                            className="w-full h-16 pl-14 bg-black border border-white/10 rounded-2xl text-white placeholder:text-zinc-900 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold"
+                                            className="w-full h-16 pl-14 bg-black border border-white/10 rounded-2xl text-white placeholder:text-white/5 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold"
                                             required
                                         />
                                     </div>
@@ -109,7 +109,7 @@ export default function ForgotPasswordPage() {
                             <div className="text-center">
                                 <Link
                                     href="/login"
-                                    className="text-[9px] font-black uppercase tracking-widest text-zinc-600 hover:text-white transition-colors flex items-center justify-center gap-2"
+                                    className="text-[9px] font-black uppercase tracking-widest text-white/30 hover:text-white transition-colors flex items-center justify-center gap-2"
                                 >
                                     <ArrowLeft className="h-3 w-3" /> Return to Base
                                 </Link>

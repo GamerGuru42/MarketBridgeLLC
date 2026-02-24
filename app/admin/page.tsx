@@ -59,7 +59,7 @@ export default function AdminPage() {
         fetchGlobalStats();
     }, []);
 
-    const operationalNodes = [
+    const operationalCampuss = [
         {
             title: 'Technical',
             label: 'System Health & Logs',
@@ -91,47 +91,47 @@ export default function AdminPage() {
                 <div className="space-y-6">
                     <div className="flex items-center gap-3">
                         <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">Secure Administrative Uplink</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Secure Administrative Uplink</span>
                     </div>
                     <div>
                         <h1 className="text-6xl md:text-8xl font-black text-white uppercase tracking-tighter italic">
                             Admin <span className="text-[#FF6200]">Control</span>
                         </h1>
-                        <p className="text-zinc-500 font-medium italic lowercase mt-4 max-w-2xl">
+                        <p className="text-white/40 font-medium italic lowercase mt-4 max-w-2xl">
                             Authorized Access: <span className="text-white font-bold">{user.displayName}</span> //
-                            Protocol: <span className="text-[#FF6200] font-black">{user.role.replace('_', ' ')} terminal</span> //
+                            System: <span className="text-[#FF6200] font-black">{user.role.replace('_', ' ')} Dashboard</span> //
                             Status: <span className="text-white font-black">Online</span>
                         </p>
                     </div>
                 </div>
 
-                {/* Operational Nodes Grid */}
+                {/* Operational Campuss Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {operationalNodes.map((node) => (
-                        <Link key={node.title} href={node.href} className="group">
+                    {operationalCampuss.map((Campus) => (
+                        <Link key={Campus.title} href={Campus.href} className="group">
                             <div className="glass-card p-8 h-full flex flex-col space-y-8 transition-all duration-500 hover:translate-y-[-8px] hover:border-[#FF6200]/20">
                                 <div className="flex justify-between items-start">
                                     <div className="h-14 w-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-[#FF6200]/30 transition-colors">
-                                        <node.icon className={cn('h-7 w-7', node.color)} />
+                                        <Campus.icon className={cn('h-7 w-7', Campus.color)} />
                                     </div>
-                                    <ArrowRight className="h-5 w-5 text-zinc-700 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                                    <ArrowRight className="h-5 w-5 text-white/20 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                                 </div>
                                 <div className="space-y-1">
                                     <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter">
-                                        {node.title}
+                                        {Campus.title}
                                     </h3>
-                                    <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.2em]">
-                                        {node.label}
+                                    <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em]">
+                                        {Campus.label}
                                     </p>
                                 </div>
                                 <div className="pt-4 mt-auto">
                                     <div className="p-4 rounded-xl bg-black/40 border border-white/5 flex flex-col gap-3">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-[10px] font-black text-zinc-400 uppercase italic tracking-widest">{node.status}</span>
-                                            {node.isNew && <Badge className="bg-[#FF6200] text-black font-black text-[8px] border-none px-2 rounded-sm italic">Required</Badge>}
+                                            <span className="text-[10px] font-black text-white/60 uppercase italic tracking-widest">{Campus.status}</span>
+                                            {Campus.isNew && <Badge className="bg-[#FF6200] text-black font-black text-[8px] border-none px-2 rounded-sm italic">Required</Badge>}
                                         </div>
                                         <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                                            <div className="h-full bg-[#FF6200] transition-all duration-1000" style={{ width: `${node.health}%` }} />
+                                            <div className="h-full bg-[#FF6200] transition-all duration-1000" style={{ width: `${Campus.health}%` }} />
                                         </div>
                                     </div>
                                 </div>
@@ -146,8 +146,8 @@ export default function AdminPage() {
                     <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-12 relative z-10">
                         <div className="space-y-8 flex-1">
                             <div className="space-y-2">
-                                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500 italic">// Strategic Subsystems</h3>
-                                <p className="text-zinc-500 text-sm italic lowercase">High-priority terminal routes for core asset management.</p>
+                                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 italic">// Strategic Subsystems</h3>
+                                <p className="text-white/40 text-sm italic lowercase">High-priority Dashboard routes for core asset management.</p>
                             </div>
                             <div className="flex flex-wrap gap-4">
                                 {[
@@ -155,7 +155,7 @@ export default function AdminPage() {
                                     { label: 'Asset Ledger', href: '/admin/listings' },
                                     { label: 'Order Verification', href: '/admin/orders' },
                                     { label: 'Seller Payouts', href: '/admin/payouts' },
-                                    { label: 'Resolution Node', href: '/admin/disputes' },
+                                    { label: 'Resolution Campus', href: '/admin/disputes' },
                                     { label: 'System Logs', href: '/admin/logs' }
                                 ].map(link => (
                                     <Button key={link.label} asChild variant="outline" className="border-white/10 text-white rounded-xl uppercase text-[10px] font-black tracking-widest h-14 px-8 hover:bg-white/5 hover:border-[#FF6200]/30 transition-all whitespace-nowrap bg-black/20">
@@ -166,11 +166,11 @@ export default function AdminPage() {
                         </div>
                         <div className="flex flex-col gap-6 items-end shrink-0">
                             <div className="text-right space-y-1">
-                                <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Encryption Status</p>
+                                <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">Encryption Status</p>
                                 <div className="text-white font-black italic text-sm tracking-tighter">MIL-SPEC AES-256 / SHA-3</div>
                             </div>
                             <div className="flex flex-col gap-2 text-right">
-                                <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Protocol Status</p>
+                                <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">System Status</p>
                                 <div className="flex items-center gap-2 text-[#FF6200] font-black italic tracking-tighter">
                                     <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-ping" />
                                     CORE NETWORK ACTIVE
@@ -187,12 +187,12 @@ export default function AdminPage() {
                             <div className="space-y-4 max-w-xl">
                                 <div className="flex items-center gap-2 text-[#FF6200]">
                                     <Shield className="h-5 w-5" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.4em]">Security Protocol 7</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.4em]">Security System 7</span>
                                 </div>
                                 <h3 className="text-3xl font-black uppercase tracking-tighter italic">
                                     Public Expansion <span className="text-[#FF6200]">Kill-Switch</span>
                                 </h3>
-                                <p className="text-zinc-500 text-sm leading-relaxed italic">
+                                <p className="text-white/40 text-sm leading-relaxed italic">
                                     Emergency override for the national marketplace. Disabling this instantly locks the <span className="text-white">/public</span> route. Use during maintenance or security events.
                                 </p>
                             </div>
@@ -228,15 +228,15 @@ export default function AdminPage() {
                                         {isThinking ? (
                                             <Loader2 className="h-4 w-4 animate-spin text-black" />
                                         ) : (
-                                            <Globe className={cn('h-4 w-4', publicSectionEnabled ? 'text-[#FF6200]' : 'text-zinc-400')} />
+                                            <Globe className={cn('h-4 w-4', publicSectionEnabled ? 'text-[#FF6200]' : 'text-white/60')} />
                                         )}
                                     </div>
                                 </button>
                                 <span className={cn(
                                     'text-[10px] font-black uppercase tracking-[0.2em]',
-                                    publicSectionEnabled ? 'text-[#FF6200]' : 'text-zinc-500'
+                                    publicSectionEnabled ? 'text-[#FF6200]' : 'text-white/40'
                                 )}>
-                                    {publicSectionEnabled ? 'Broadcast Active' : 'Signal Jammed'}
+                                    {publicSectionEnabled ? 'Public Access Enabled' : 'Service Unavailable'}
                                 </span>
                             </div>
                         </div>
@@ -245,7 +245,7 @@ export default function AdminPage() {
                         <div className="space-y-4">
                             <Cpu className="h-8 w-8 text-[#FF6200]" />
                             <h3 className="text-xl font-black uppercase tracking-tighter italic">Handshake Logic</h3>
-                            <p className="text-zinc-500 text-[10px] leading-relaxed uppercase tracking-widest font-bold">
+                            <p className="text-white/40 text-[10px] leading-relaxed uppercase tracking-widest font-bold">
                                 Middleware checks <span className="text-[#FF6200]">ENABLE_PUBLIC_SECTION</span> env first,
                                 then falls back to this DB-level switch.
                             </p>
@@ -259,7 +259,7 @@ export default function AdminPage() {
                 </div>
 
                 {/* Footer */}
-                <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.3em] text-zinc-700 italic">
+                <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.3em] text-white/20 italic">
                     <div>MarketBridge Technical Division // 2026</div>
                     <div className="flex items-center gap-4">
                         <span>Latency: 14ms</span>

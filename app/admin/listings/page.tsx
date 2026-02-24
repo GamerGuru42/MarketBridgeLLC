@@ -93,7 +93,7 @@ export default function AdminListingsPage() {
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'active': return <Badge className="bg-[#FF6200]/10 text-[#FF6200] border-[#FF6200]/20">Active</Badge>;
-            case 'pending': return <Badge className="bg-zinc-800 text-zinc-400 border-zinc-700">Pending</Badge>;
+            case 'pending': return <Badge className="bg-zinc-800 text-white/60 border-zinc-700">Pending</Badge>;
             case 'sold': return <Badge variant="secondary">Sold</Badge>;
             default: return <Badge variant="outline">{status}</Badge>;
         }
@@ -104,10 +104,10 @@ export default function AdminListingsPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h2 className="text-2xl font-black uppercase tracking-tighter italic text-white">Market <span className="text-[#FF6200]">Surveillance</span></h2>
-                    <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Global Listing Observation Terminal</p>
+                    <p className="text-white/40 text-[10px] font-black uppercase tracking-widest">Global Listing Observation Dashboard</p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" className="border-white/10 bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 gap-2 font-black uppercase tracking-widest text-[10px]">
+                    <Button variant="outline" className="border-white/10 bg-white/5 text-white/60 hover:text-white hover:bg-white/10 gap-2 font-black uppercase tracking-widest text-[10px]">
                         <Filter className="h-4 w-4" /> Filter Stream
                     </Button>
                 </div>
@@ -116,10 +116,10 @@ export default function AdminListingsPage() {
             <Card className="border-white/10 bg-zinc-900/30 backdrop-blur">
                 <CardHeader className="pb-3 px-4">
                     <div className="relative w-full md:w-96">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
                         <Input
                             placeholder="Identify asset by title or dealer..."
-                            className="pl-10 bg-black border-white/10 h-10 text-white placeholder:text-zinc-700 focus:border-[#FF6200]/50"
+                            className="pl-10 bg-black border-white/10 h-10 text-white placeholder:text-white/20 focus:border-[#FF6200]/50"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -129,10 +129,10 @@ export default function AdminListingsPage() {
                     <Table>
                         <TableHeader className="bg-black/50">
                             <TableRow className="border-white/5 hover:bg-transparent">
-                                <TableHead className="w-[400px] uppercase text-[10px] font-black tracking-widest text-zinc-500 font-heading">Asset Data</TableHead>
-                                <TableHead className="uppercase text-[10px] font-black tracking-widest text-zinc-500 font-heading">Origin/Dealer</TableHead>
-                                <TableHead className="uppercase text-[10px] font-black tracking-widest text-zinc-500 font-heading">Status</TableHead>
-                                <TableHead className="uppercase text-[10px] font-black tracking-widest text-zinc-500 text-right pr-8 font-heading">Valuation</TableHead>
+                                <TableHead className="w-[400px] uppercase text-[10px] font-black tracking-widest text-white/40 font-heading">Asset Data</TableHead>
+                                <TableHead className="uppercase text-[10px] font-black tracking-widest text-white/40 font-heading">Origin/Dealer</TableHead>
+                                <TableHead className="uppercase text-[10px] font-black tracking-widest text-white/40 font-heading">Status</TableHead>
+                                <TableHead className="uppercase text-[10px] font-black tracking-widest text-white/40 text-right pr-8 font-heading">Valuation</TableHead>
                                 <TableHead className="w-16"></TableHead>
                             </TableRow>
                         </TableHeader>
@@ -141,14 +141,14 @@ export default function AdminListingsPage() {
                                 <TableRow>
                                     <TableCell colSpan={5} className="h-64 text-center">
                                         <Loader2 className="h-8 w-8 animate-spin mx-auto text-[#FF6200]" />
-                                        <p className="mt-2 text-zinc-500 font-mono text-[10px] uppercase tracking-[0.2em] italic">Reconstructing Inventory...</p>
+                                        <p className="mt-2 text-white/40 font-mono text-[10px] uppercase tracking-[0.2em] italic">Reconstructing Inventory...</p>
                                     </TableCell>
                                 </TableRow>
                             ) : filteredListings.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={5} className="h-64 text-center">
-                                        <ShoppingBag className="h-10 w-10 mx-auto text-zinc-800 mb-2 opacity-30" />
-                                        <p className="text-zinc-500 font-mono text-xs uppercase tracking-widest italic">Zero active signals detected.</p>
+                                        <ShoppingBag className="h-10 w-10 mx-auto text-white/10 mb-2 opacity-30" />
+                                        <p className="text-white/40 font-mono text-xs uppercase tracking-widest italic">Zero active Notices detected.</p>
                                     </TableCell>
                                 </TableRow>
                             ) : (
@@ -165,7 +165,7 @@ export default function AdminListingsPage() {
                                                             className="object-cover transition-transform group-hover:scale-110"
                                                         />
                                                     ) : (
-                                                        <div className="h-full w-full flex items-center justify-center text-zinc-800 font-bold italic text-xs">
+                                                        <div className="h-full w-full flex items-center justify-center text-white/10 font-bold italic text-xs">
                                                             IMG
                                                         </div>
                                                     )}
@@ -173,8 +173,8 @@ export default function AdminListingsPage() {
                                                 <div className="flex flex-col gap-1 overflow-hidden">
                                                     <span className="font-bold text-white line-clamp-1 group-hover:text-[#FF6200] transition-colors">{listing.title}</span>
                                                     <div className="flex items-center gap-3">
-                                                        <span className="text-[10px] font-black uppercase text-zinc-500 bg-white/5 px-1.5 py-0.5 rounded">{listing.category}</span>
-                                                        <span className="text-[10px] text-zinc-600 italic font-mono flex items-center gap-1">
+                                                        <span className="text-[10px] font-black uppercase text-white/40 bg-white/5 px-1.5 py-0.5 rounded">{listing.category}</span>
+                                                        <span className="text-[10px] text-white/30 italic font-mono flex items-center gap-1">
                                                             <Clock className="h-3 w-3" /> {new Date(listing.created_at).toLocaleDateString()}
                                                         </span>
                                                     </div>
@@ -186,7 +186,7 @@ export default function AdminListingsPage() {
                                                 <div className="h-6 w-6 rounded-full bg-[#FF6200]/10 flex items-center justify-center text-[10px] text-[#FF6200] font-bold border border-[#FF6200]/20">
                                                     {listing.dealer?.display_name?.[0] || 'U'}
                                                 </div>
-                                                <span className="text-xs font-bold text-zinc-400">{listing.dealer?.display_name}</span>
+                                                <span className="text-xs font-bold text-white/60">{listing.dealer?.display_name}</span>
                                             </div>
                                         </TableCell>
                                         <TableCell>
@@ -205,12 +205,12 @@ export default function AdminListingsPage() {
                                         <TableCell>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-600 hover:text-white">
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-white/30 hover:text-white">
                                                         <MoreHorizontal className="h-4 w-4" />
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end" className="bg-zinc-950 border-white/10 text-white w-48">
-                                                    <DropdownMenuLabel className="text-[10px] font-black uppercase text-zinc-600">Asset Control</DropdownMenuLabel>
+                                                    <DropdownMenuLabel className="text-[10px] font-black uppercase text-white/30">Asset Control</DropdownMenuLabel>
                                                     <DropdownMenuItem className="gap-2 cursor-pointer focus:bg-white/10">
                                                         <Eye className="h-4 w-4" /> Inspect Asset
                                                     </DropdownMenuItem>
@@ -221,7 +221,7 @@ export default function AdminListingsPage() {
                                                         <AlertTriangle className="h-4 w-4 text-[#FF6200]" /> Flag Violation
                                                     </DropdownMenuItem>
                                                     <DropdownMenuSeparator className="bg-white/10" />
-                                                    <DropdownMenuItem className="gap-2 cursor-pointer text-zinc-400 hover:text-white">
+                                                    <DropdownMenuItem className="gap-2 cursor-pointer text-white/60 hover:text-white">
                                                         <XCircle className="h-4 w-4" /> Decommission
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>

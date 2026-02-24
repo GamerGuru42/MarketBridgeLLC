@@ -10,13 +10,13 @@ const cooItems = [
     { label: 'Verifications', href: '/admin/operations/verifications', icon: ShieldCheck },
     { label: 'Logistics Control', href: '/coo/logistics', icon: Truck },
     { label: 'Active Disputes', href: '/admin/disputes', icon: AlertTriangle },
-    { label: 'Executive Terminal', href: '/admin/executive-chat', icon: Users },
+    { label: 'Executive Dashboard', href: '/admin/executive-chat', icon: Users },
 ];
 
 export default function COOLayout({
     children,
 }: {
-    children: React.ReactNode;
+    children: React.ReactCampus;
 }) {
     return (
         <div className="flex min-h-screen">

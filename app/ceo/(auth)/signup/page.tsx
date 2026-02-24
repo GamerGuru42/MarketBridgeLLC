@@ -115,7 +115,7 @@ export default function CEOSignupPage() {
                         </div>
                     </div>
                     <CardTitle className="text-2xl font-bold text-white mb-2">Welcome, Founding Partner</CardTitle>
-                    <CardDescription className="text-zinc-400">Initializing your executive environment...</CardDescription>
+                    <CardDescription className="text-white/60">Initializing your executive environment...</CardDescription>
                     <div className="mt-8 flex justify-center">
                         <Loader2 className="h-8 w-8 animate-spin text-[#d4af37]" />
                     </div>
@@ -140,16 +140,16 @@ export default function CEOSignupPage() {
                         <CardTitle className="text-2xl font-black tracking-[0.2em] uppercase italic text-white">
                             Executive Onboarding
                         </CardTitle>
-                        <CardDescription className="text-zinc-500 font-serif italic text-sm">
-                            MarketBridge Foundry | Founding Partner Protocol
+                        <CardDescription className="text-white/40 font-serif italic text-sm">
+                            MarketBridge Platform | Founding Partner System
                         </CardDescription>
                     </div>
                 </CardHeader>
 
                 <CardContent className="px-10">
                     {error && (
-                        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-5 mb-6 text-center space-y-3">
-                            <p className="text-xs text-red-500 font-bold uppercase tracking-widest leading-relaxed">
+                        <div className="bg-[#FF6200]/10 border border-[#FF6200]/20 rounded-lg p-5 mb-6 text-center space-y-3">
+                            <p className="text-xs text-[#FF6200] font-bold uppercase tracking-widest leading-relaxed">
                                 {error}
                             </p>
                             {error.includes('already registered') && (
@@ -164,9 +164,9 @@ export default function CEOSignupPage() {
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="space-y-1">
-                            <Label className="text-[10px] font-bold uppercase text-zinc-500 tracking-widest ml-1">Full Legal Name</Label>
+                            <Label className="text-[10px] font-bold uppercase text-white/40 tracking-widest ml-1">Full Legal Name</Label>
                             <div className="relative">
-                                <Mail className="absolute left-3 top-3 h-4 w-4 text-zinc-700" />
+                                <Mail className="absolute left-3 top-3 h-4 w-4 text-white/20" />
                                 <Input
                                     name="displayName"
                                     className="bg-transparent border-zinc-800 h-11 pl-10 focus:ring-0 focus:border-[#d4af37] text-white"
@@ -179,9 +179,9 @@ export default function CEOSignupPage() {
                         </div>
 
                         <div className="space-y-1">
-                            <Label className="text-[10px] font-bold uppercase text-zinc-500 tracking-widest ml-1">Executive Email</Label>
+                            <Label className="text-[10px] font-bold uppercase text-white/40 tracking-widest ml-1">Executive Email</Label>
                             <div className="relative">
-                                <Mail className="absolute left-3 top-3 h-4 w-4 text-zinc-700" />
+                                <Mail className="absolute left-3 top-3 h-4 w-4 text-white/20" />
                                 <Input
                                     name="email"
                                     type="email"
@@ -196,9 +196,9 @@ export default function CEOSignupPage() {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
-                                <Label className="text-[10px] font-bold uppercase text-zinc-500 tracking-widest ml-1">Access Key</Label>
+                                <Label className="text-[10px] font-bold uppercase text-white/40 tracking-widest ml-1">Access Key</Label>
                                 <div className="relative">
-                                    <Lock className="absolute left-3 top-3 h-4 w-4 text-zinc-700" />
+                                    <Lock className="absolute left-3 top-3 h-4 w-4 text-white/20" />
                                     <Input
                                         name="password"
                                         type={showPassword ? 'text' : 'password'}
@@ -212,7 +212,7 @@ export default function CEOSignupPage() {
                                 </div>
                             </div>
                             <div className="space-y-1">
-                                <Label className="text-[10px] font-bold uppercase text-zinc-500 tracking-widest ml-1">Verify Key</Label>
+                                <Label className="text-[10px] font-bold uppercase text-white/40 tracking-widest ml-1">Verify Key</Label>
                                 <Input
                                     name="confirmPassword"
                                     type={showPassword ? 'text' : 'password'}
@@ -243,10 +243,10 @@ export default function CEOSignupPage() {
                 </CardContent>
 
                 <CardFooter className="flex flex-col gap-4 py-10">
-                    <Link href="/ceo/login" className="text-[10px] font-bold text-zinc-500 hover:text-[#d4af37] uppercase tracking-widest transition-colors">
+                    <Link href="/ceo/login" className="text-[10px] font-bold text-white/40 hover:text-[#d4af37] uppercase tracking-widest transition-colors">
                         Return to Command Center
                     </Link>
-                    <Link href="/" className="text-[10px] font-medium text-zinc-700 hover:text-white uppercase tracking-widest transition-colors">
+                    <Link href="/" className="text-[10px] font-medium text-white/20 hover:text-white uppercase tracking-widest transition-colors">
                         Public Portal
                     </Link>
                 </CardFooter>

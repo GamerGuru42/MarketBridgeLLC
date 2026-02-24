@@ -97,7 +97,7 @@ export default function HomePage() {
 
             {/* ── Minimal Header ── */}
             <header className="flex items-center justify-center sm:justify-start px-6 py-8 z-10 shrink-0">
-                <Logo />
+                <div className="text-[#FF6200] font-black text-2xl uppercase tracking-tighter">MarketBridge</div>
             </header>
 
             {/* ── Main Choice Screen ── */}
@@ -118,7 +118,7 @@ export default function HomePage() {
                         </div>
                     ) : consentStatus === 'prompt' ? (
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 bg-black/60 backdrop-blur-md border border-[#FF6200]/30 p-4 rounded-2xl animate-in fade-in slide-in-from-bottom-2 w-full max-w-md shadow-[0_0_30px_rgba(255,98,0,0.1)]">
-                            <p className="text-xs font-medium text-white text-center sm:text-left leading-relaxed">Allow location to show nearby campus listings? <br /><span className="text-zinc-500">(Deny = manual entry)</span></p>
+                            <p className="text-xs font-medium text-white text-center sm:text-left leading-relaxed">Allow location to show nearby campus listings? <br /><span className="text-white/40">(Deny = manual entry)</span></p>
                             <div className="flex gap-2 shrink-0">
                                 <button onClick={() => { denyConsent(); setShowManualDropdown(true); }} className="px-5 py-2.5 rounded-xl bg-transparent border border-white/20 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/5 transition-all">Deny</button>
                                 <button onClick={requestLocation} className="px-5 py-2.5 rounded-xl bg-[#FF6200] text-black text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_15px_rgba(255,98,0,0.4)]">Allow</button>
@@ -127,15 +127,15 @@ export default function HomePage() {
                     ) : (city || region) ? (
                         <div className="flex items-center justify-center gap-2 bg-black/40 backdrop-blur-sm border border-[#FF6200]/30 px-6 py-3 rounded-full animate-in fade-in zoom-in shadow-[0_0_20px_rgba(255,98,0,0.1)]">
                             <MapPin className="h-4 w-4 text-[#FF6200]" />
-                            <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-400">
-                                Detected: <span className="text-white ml-2">{city ? `${city}, ` : ''}{region}</span>
+                            <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-white/60">
+                                <span className="text-white/60 ml-2">{city ? `${city}, ` : ''}{region}</span>
                             </span>
                         </div>
                     ) : showManualDropdown ? (
                         <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-md bg-black/60 backdrop-blur-md border border-white/10 p-5 rounded-3xl animate-in fade-in slide-in-from-bottom-2">
                             <div className="flex items-center gap-2 shrink-0">
                                 <MapPin className="h-4 w-4 text-[#FF6200]" />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Select Region:</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Select Region:</span>
                             </div>
                             <select
                                 className="w-full bg-white/5 border border-white/20 text-white p-3 rounded-xl outline-none focus:border-[#FF6200] transition-colors appearance-none text-center sm:text-left cursor-pointer font-bold text-sm"
@@ -170,14 +170,9 @@ export default function HomePage() {
                     <div
                         className={`
                             group relative flex flex-col bg-black/40 backdrop-blur-xl border-2 rounded-[2.5rem] overflow-hidden transition-all duration-500 p-8 sm:p-12
-                            ${isInAbujaCampus ? 'border-[#FF6200] shadow-[0_0_50px_rgba(255,98,0,0.15)] ring-1 ring-[#FF6200]/50' : 'border-white/10 hover:border-[#FF6200]/40 hover:shadow-[0_0_40px_rgba(255,98,0,0.1)]'}
+                            ${isInAbujaCampus ? 'border-[#FF6200] shadow-[0_0_50px_rgba(255,98,0,0.15)]' : 'border-white/10 hover:border-[#FF6200]/40'}
                         `}
                     >
-                        {isInAbujaCampus && (
-                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FF6200] text-black text-[10px] font-black uppercase tracking-widest px-6 py-1.5 rounded-full shadow-[0_0_20px_rgba(255,98,0,0.4)] z-20 whitespace-nowrap">
-                                SIGNAL MATCH
-                            </div>
-                        )}
                         <div className="mb-8 relative z-10 flex-1 flex flex-col justify-center">
                             <div className="h-16 w-16 rounded-2xl bg-[#FF6200]/10 flex items-center justify-center mb-8 border border-[#FF6200]/20 group-hover:scale-110 transition-transform duration-500">
                                 <GraduationCap className="h-8 w-8 text-[#FF6200]" />
@@ -185,7 +180,7 @@ export default function HomePage() {
                             <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tighter text-white mb-4">
                                 Campus Marketplace
                             </h2>
-                            <p className="text-zinc-400 text-sm font-medium leading-relaxed max-w-xs">
+                            <p className="text-white/60 text-sm font-medium leading-relaxed max-w-xs">
                                 Buy & sell safely with verified student sellers in Abuja universities
                             </p>
                         </div>
@@ -211,7 +206,7 @@ export default function HomePage() {
                                 <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tighter text-white mb-4">
                                     Public Marketplace
                                 </h2>
-                                <p className="text-zinc-400 text-sm font-medium leading-relaxed max-w-xs">
+                                <p className="text-white/60 text-sm font-medium leading-relaxed max-w-xs">
                                     Buy & sell anything in Nigeria – open to everyone
                                 </p>
                             </div>
@@ -233,22 +228,19 @@ export default function HomePage() {
                 <div className="max-w-7xl mx-auto flex flex-col items-center justify-center gap-4 text-center px-6">
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-[10px] font-black uppercase tracking-widest mb-2">
                         <div className="flex items-center gap-2">
-                            <span className="text-zinc-600">Tech Support:</span>
+                            <span className="text-white/40">Tech Support:</span>
                             <a href="mailto:support@marketbridge.com.ng" className="text-[#FF6200] hover:text-white transition-colors">
                                 support@marketbridge.com.ng
                             </a>
                         </div>
                         <span className="hidden sm:inline text-white/10">|</span>
                         <div className="flex items-center gap-2">
-                            <span className="text-zinc-600">Ops Support:</span>
+                            <span className="text-white/40">Ops Support:</span>
                             <a href="mailto:ops-support@marketbridge.com.ng" className="text-[#FF6200] hover:text-white transition-colors">
                                 ops-support@marketbridge.com.ng
                             </a>
                         </div>
                     </div>
-                    <p className="text-zinc-500 text-[10px] font-medium tracking-wide">
-                        MarketBridge NG Limited | RC [RC number] | Registered in Abuja, Nigeria
-                    </p>
                 </div>
             </footer>
         </div>

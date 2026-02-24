@@ -72,7 +72,7 @@ export default function PricingPage() {
 
         // MANDATORY EMAIL VERIFICATION CHECK
         if (['student_seller', 'dealer'].includes(user.role) && !user.email_verified) {
-            toast('Please verify your email terminal before subscribing.', 'error');
+            toast('Please verify your email Dashboard before subscribing.', 'error');
             router.push('/verify-email');
             return;
         }
@@ -110,7 +110,7 @@ export default function PricingPage() {
                     subscription_plan_id: 'free'
                 }).eq('id', user.id);
 
-                toast('Free Terminal Activated. Trade freely.', 'success');
+                toast('Free Dashboard Activated. Trade freely.', 'success');
                 router.push('/seller/dashboard');
             } catch (err) {
                 console.error('Activation failed:', err);
@@ -167,7 +167,7 @@ export default function PricingPage() {
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic leading-none">
                             Power Your <span className="text-[#FF6200]">Campus Empire</span>
                         </h1>
-                        <p className="text-zinc-400 text-lg md:text-xl font-medium leading-relaxed italic max-w-3xl mx-auto">
+                        <p className="text-white/60 text-lg md:text-xl font-medium leading-relaxed italic max-w-3xl mx-auto">
                             Choose the plan that scales with your ambition. <span className="text-white">No hidden fees.</span> Cancel anytime.
                         </p>
                     </div>
@@ -175,7 +175,7 @@ export default function PricingPage() {
                     {/* Annual/Monthly Toggle & Merchant Note */}
                     <div className="flex flex-col items-center gap-6">
                         <div className="flex items-center justify-center gap-4 glass-card p-4 rounded-3xl border-white/5 inline-flex">
-                            <span className={`text-sm font-black uppercase tracking-widest transition-colors ${!isAnnual ? 'text-white' : 'text-zinc-600'}`}>
+                            <span className={`text-sm font-black uppercase tracking-widest transition-colors ${!isAnnual ? 'text-white' : 'text-white/30'}`}>
                                 Monthly
                             </span>
                             <Switch
@@ -183,7 +183,7 @@ export default function PricingPage() {
                                 onCheckedChange={setIsAnnual}
                                 className="data-[state=checked]:bg-[#FF6200]"
                             />
-                            <span className={`text-sm font-black uppercase tracking-widest transition-colors ${isAnnual ? 'text-white' : 'text-zinc-600'}`}>
+                            <span className={`text-sm font-black uppercase tracking-widest transition-colors ${isAnnual ? 'text-white' : 'text-white/30'}`}>
                                 Annual
                             </span>
                             {isAnnual && (
@@ -196,7 +196,7 @@ export default function PricingPage() {
                         {['student_seller', 'dealer'].includes(user?.role || '') ? (
                             <div className="flex items-center gap-2 px-6 py-2 bg-[#FF6200]/10 border border-[#FF6200]/20 rounded-full animate-in fade-in zoom-in duration-500">
                                 <ShieldCheck className="h-3 w-3 text-[#FF6200]" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF6200]">Merchant Status Verified: Terminal Unlocked</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF6200]">Merchant Status Verified: Dashboard Unlocked</span>
                             </div>
                         ) : (
                             <div className="flex items-center gap-2 px-6 py-2 bg-[#FF6200]/10 border border-[#FF6200]/20 rounded-full animate-pulse">
@@ -211,7 +211,7 @@ export default function PricingPage() {
                 {loading ? (
                     <div className="text-center py-20">
                         <Loader2 className="h-12 w-12 animate-spin text-[#FF6200] mx-auto mb-6" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Loading Plans...</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-white/30">Loading Plans...</p>
                     </div>
                 ) : (
                     <div className="flex flex-wrap justify-center gap-8 mb-20">
@@ -243,7 +243,7 @@ export default function PricingPage() {
 
                                         <div className={`h-14 w-14 rounded-2xl flex items-center justify-center mb-6 ${isPro ? 'bg-[#FF6200]/20 border-[#FF6200]/50' : 'bg-white/5 border-white/10'
                                             } border`}>
-                                            <div className={isPro ? 'text-[#FF6200]' : 'text-zinc-500'}>
+                                            <div className={isPro ? 'text-[#FF6200]' : 'text-white/40'}>
                                                 {getPlanIcon(plan.id)}
                                             </div>
                                         </div>
@@ -252,7 +252,7 @@ export default function PricingPage() {
                                             {plan.name}
                                         </CardTitle>
 
-                                        <CardDescription className="text-zinc-500 text-sm font-medium italic">
+                                        <CardDescription className="text-white/40 text-sm font-medium italic">
                                             {plan.description}
                                         </CardDescription>
 
@@ -267,7 +267,7 @@ export default function PricingPage() {
                                                         <span className="text-4xl font-black text-[#FF6200]">
                                                             ₦{price.toLocaleString()}
                                                         </span>
-                                                        <span className="text-zinc-600 text-sm font-black uppercase">
+                                                        <span className="text-white/30 text-sm font-black uppercase">
                                                             /{isAnnual ? 'year' : 'month'}
                                                         </span>
                                                     </div>
@@ -286,7 +286,7 @@ export default function PricingPage() {
                                             {plan.features.map((feature, idx) => (
                                                 <li key={idx} className="flex items-start gap-3">
                                                     <Check className={`h-4 w-4 mt-0.5 flex-shrink-0 text-[#FF6200]`} />
-                                                    <span className="text-xs text-zinc-400 font-medium leading-relaxed">
+                                                    <span className="text-xs text-white/60 font-medium leading-relaxed">
                                                         {feature}
                                                     </span>
                                                 </li>
@@ -298,7 +298,7 @@ export default function PricingPage() {
                                         {isCurrentPlan ? (
                                             <Button
                                                 disabled
-                                                className="w-full h-14 rounded-2xl bg-white/5 border border-white/10 text-zinc-600 font-black uppercase tracking-widest cursor-not-allowed"
+                                                className="w-full h-14 rounded-2xl bg-white/5 border border-white/10 text-white/30 font-black uppercase tracking-widest cursor-not-allowed"
                                             >
                                                 Current Plan
                                             </Button>
@@ -323,7 +323,7 @@ export default function PricingPage() {
                 {/* Features Comparison */}
                 <div className="glass-card p-12 rounded-[3.5rem] border-white/5 mb-20">
                     <h2 className="text-3xl font-black uppercase tracking-tighter italic mb-8 text-center">
-                        Why Upgrade? <span className="text-zinc-500">The Numbers</span>
+                        Why Upgrade? <span className="text-white/40">The Numbers</span>
                     </h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -357,7 +357,7 @@ export default function PricingPage() {
                                 <div className="text-sm font-black uppercase tracking-widest text-white">
                                     {item.label}
                                 </div>
-                                <p className="text-xs text-zinc-500 font-medium italic">
+                                <p className="text-xs text-white/40 font-medium italic">
                                     {item.description}
                                 </p>
                             </div>
@@ -368,7 +368,7 @@ export default function PricingPage() {
                 {/* FAQ Section */}
                 <div className="text-center space-y-8">
                     <h2 className="text-3xl font-black uppercase tracking-tighter italic">
-                        Frequently Asked <span className="text-zinc-500">Questions</span>
+                        Frequently Asked <span className="text-white/40">Questions</span>
                     </h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
@@ -394,7 +394,7 @@ export default function PricingPage() {
                                 <h3 className="text-sm font-black uppercase tracking-widest text-white mb-3">
                                     {faq.q}
                                 </h3>
-                                <p className="text-xs text-zinc-500 font-medium leading-relaxed">
+                                <p className="text-xs text-white/40 font-medium leading-relaxed">
                                     {faq.a}
                                 </p>
                             </div>

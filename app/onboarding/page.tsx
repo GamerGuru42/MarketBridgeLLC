@@ -15,13 +15,14 @@ import { Check, Zap, Crown, Rocket, ArrowLeft, Sparkles, Shield, TrendingUp, Loa
 import { ImageUpload } from '@/components/ImageUpload';
 import { cn } from '@/lib/utils';
 import { NIGERIAN_BANKS } from '@/lib/banks';
+import { ABUJA_UNIVERSITIES } from '@/lib/location';
 
 function OnboardingContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const forcedRole = searchParams.get('role');
-    const selectedPlan = searchParams.get('plan');
-    const selectedCycle = searchParams.get('billing') || 'monthly';
+    const forcedRole = searchParams?.get('role');
+    const selectedPlan = searchParams?.get('plan');
+    const selectedCycle = searchParams?.get('billing') || 'monthly';
     const { user, sessionUser, loading: authLoading, refreshUser } = useAuth();
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState(1);
@@ -48,15 +49,21 @@ function OnboardingContent() {
 
         if (user) {
             // Get detected location for pre-fill
-            const detectedNode = localStorage.getItem('mb-preferred-node');
+            const detectedCampus = localStorage.getItem('mb-preferred-Campus');
+            let prefUniversity = '';
+
+            if (detectedCampus && detectedCampus !== 'global') {
+                const foundUni = ABUJA_UNIVERSITIES.find(u => u.id === detectedCampus);
+                if (foundUni) prefUniversity = foundUni.name;
+            }
 
             setFormData({
                 displayName: user.displayName || user.email?.split('@')[0] || '',
-                location: user.location || (detectedNode !== 'global' ? detectedNode : '') || '',
+                location: user.location || (detectedCampus !== 'global' ? detectedCampus : '') || '',
                 photoURL: user.photoURL || '',
                 role: forcedRole || (user.role as any) || 'student_buyer',
                 businessName: user.businessName || '',
-                university: (user as any).university || '',
+                university: (user as any).university || prefUniversity || '',
                 matricNumber: (user as any).matricNumber || '',
                 storeType: (user.storeType as 'physical' | 'online' | 'both') || 'online',
                 bankCode: (user as any).bank_name || '',
@@ -170,7 +177,7 @@ function OnboardingContent() {
                             <Button
                                 variant="ghost"
                                 onClick={() => router.push('/')}
-                                className="text-zinc-500 hover:text-white flex items-center gap-2 px-0"
+                                className="text-white/40 hover:text-white flex items-center gap-2 px-0"
                             >
                                 <ArrowLeft className="h-4 w-4" />
                                 <span className="text-[10px] font-black uppercase tracking-widest">Return to Home</span>
@@ -183,14 +190,14 @@ function OnboardingContent() {
                                     <ShieldCheck className="h-10 w-10 text-[#FF6200]" />
                                 </div>
                                 <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic">
-                                    Account <span className="text-[#FF6200]">Separation</span>
+                                    Account <span className="text-[#FF6200]">Restriction</span>
                                 </h1>
-                                <p className="text-zinc-400 text-lg max-w-lg mx-auto leading-relaxed px-8">
-                                    To maintain protocol security, <span className="text-white font-bold">Buyer Accounts</span> cannot be transitioned into Merchant accounts.
+                                <p className="text-white/60 text-lg max-w-lg mx-auto leading-relaxed px-8">
+                                    To maintain account security, <span className="text-white font-bold">Buyer Accounts</span> cannot be transitioned into Seller accounts.
                                 </p>
                                 <div className="space-y-4 pt-6">
                                     <p className="text-xs text-[#FF6200] font-black uppercase tracking-widest">Action Required:</p>
-                                    <p className="text-sm text-zinc-500 max-w-sm mx-auto">Please logout and create a <span className="text-white">New Seller Account</span> using your student merchant credentials.</p>
+                                    <p className="text-sm text-white/40 max-w-sm mx-auto">Please logout and create a <span className="text-white">New Seller Account</span> using your student merchant credentials.</p>
                                     <div className="pt-8">
                                         <Button
                                             onClick={async () => {
@@ -209,14 +216,14 @@ function OnboardingContent() {
                                 <div className="text-center space-y-8">
                                     <div className="flex items-center justify-center gap-3">
                                         <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#FF6200]" />
-                                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#FF6200] font-heading drop-shadow-[0_0_10px_rgba(255,98,0,0.5)]">Protocol Shift Initiated</span>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#FF6200] font-heading">Account Setup</span>
                                         <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#FF6200]" />
                                     </div>
                                     <h1 className="text-7xl md:text-9xl font-black uppercase tracking-tighter italic font-heading leading-none">
-                                        Start <span className="text-[#FF6200] drop-shadow-[0_0_30px_rgba(255,98,0,0.3)]">Selling.</span>
+                                        Start <span className="text-[#FF6200]">Selling.</span>
                                     </h1>
-                                    <p className="text-zinc-400 text-lg max-w-lg mx-auto leading-relaxed italic border-x border-white/5 px-8">
-                                        You are about to upgrade your profile to <span className="text-white font-bold underline decoration-[#FF6200] decoration-2 underline-offset-4">STUDENT MERCHANT</span>. Unlock the terminal and claim your campus node.
+                                    <p className="text-white/60 text-lg max-w-lg mx-auto leading-relaxed italic border-x border-white/5 px-8">
+                                        You are about to upgrade your profile to <span className="text-white font-bold underline decoration-[#FF6200] decoration-2 underline-offset-4">STUDENT SELLER</span>.
                                     </p>
                                 </div>
 
@@ -228,15 +235,15 @@ function OnboardingContent() {
                                             <div className="h-10 w-10 rounded-xl bg-[#FF6200]/10 flex items-center justify-center">
                                                 <Zap className="h-5 w-5 text-[#FF6200]" />
                                             </div>
-                                            <h4 className="text-xs font-black uppercase tracking-widest text-white">Merchant Tools</h4>
-                                            <p className="text-[10px] text-zinc-500 leading-relaxed uppercase tracking-wider font-bold">Inventory command & analytics terminal.</p>
+                                            <h4 className="text-xs font-black uppercase tracking-widest text-white">Sales Tools</h4>
+                                            <p className="text-[10px] text-white/40 leading-relaxed uppercase tracking-wider font-bold">Manage listings and view analytics.</p>
                                         </div>
                                         <div className="space-y-3 p-6 bg-white/5 rounded-[2rem] border border-white/5 hover:border-[#FF6200]/30 transition-all">
                                             <div className="h-10 w-10 rounded-xl bg-[#FF6200]/10 flex items-center justify-center">
                                                 <ShieldCheck className="h-5 w-5 text-[#FF6200]" />
                                             </div>
-                                            <h4 className="text-xs font-black uppercase tracking-widest text-white">Trust Protocol</h4>
-                                            <p className="text-[10px] text-zinc-500 leading-relaxed uppercase tracking-wider font-bold">Verified merchant badge encryption.</p>
+                                            <h4 className="text-xs font-black uppercase tracking-widest text-white">Verified Seller</h4>
+                                            <p className="text-[10px] text-white/40 leading-relaxed uppercase tracking-wider font-bold">Get a verified badge for your profile.</p>
                                         </div>
                                     </div>
 
@@ -249,8 +256,8 @@ function OnboardingContent() {
                                         </Button>
                                         <div className="flex items-center justify-center gap-4 mt-8">
                                             <div className="h-[1px] flex-1 bg-white/5" />
-                                            <p className="text-[8px] text-zinc-600 uppercase tracking-widest font-black italic">
-                                                Merchant Code of Conduct Applies
+                                            <p className="text-[8px] text-white/30 uppercase tracking-widest font-black italic">
+                                                Seller Agreement Applies
                                             </p>
                                             <div className="h-[1px] flex-1 bg-white/5" />
                                         </div>
@@ -264,13 +271,13 @@ function OnboardingContent() {
                         <div className="text-center space-y-4">
                             <div className="flex items-center justify-center gap-3">
                                 <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading">Protocol Identification</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 font-heading">Account Setup</span>
                             </div>
                             <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
-                                {forcedRole === 'student_seller' ? 'Merchant' : 'Establish'} <span className="text-[#FF6200]">{forcedRole === 'student_seller' ? 'Terminal' : 'Profile'}</span>
+                                {forcedRole === 'student_seller' ? 'Seller' : 'Create'} <span className="text-[#FF6200]">{forcedRole === 'student_seller' ? 'Account' : 'Profile'}</span>
                             </h1>
-                            <p className="text-zinc-500 font-medium italic">
-                                Initialize your operational parameters for the Abuja Pilot Phase.
+                            <p className="text-white/40 font-medium italic">
+                                Fill in your details for the Abuja Pilot Phase.
                             </p>
                         </div>
 
@@ -278,7 +285,7 @@ function OnboardingContent() {
                             <Button
                                 variant="ghost"
                                 onClick={() => forcedRole === 'student_seller' ? setConfirmedUpgrade(false) : router.push('/')}
-                                className="text-zinc-500 hover:text-white flex items-center gap-2 px-0"
+                                className="text-white/40 hover:text-white flex items-center gap-2 px-0"
                             >
                                 <ArrowLeft className="h-4 w-4" />
                                 <span className="text-[10px] font-black uppercase tracking-widest">{forcedRole === 'student_seller' ? 'Back to Confirmation' : 'Return to Home'}</span>
@@ -292,7 +299,7 @@ function OnboardingContent() {
                                     <div className="space-y-8">
                                         <div className="flex justify-center mb-10">
                                             <div className="w-40 space-y-4">
-                                                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-center block font-heading">Digital Identity Avatar</Label>
+                                                <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 text-center block font-heading">Profile Photo</Label>
                                                 <div className="glass-card rounded-[2rem] p-2 hover:border-[#FF6200]/30 transition-all">
                                                     <ImageUpload
                                                         onImagesSelected={(urls) => setFormData({ ...formData, photoURL: urls[0] || '' })}
@@ -306,19 +313,19 @@ function OnboardingContent() {
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="space-y-3">
-                                                <Label htmlFor="displayName" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2 font-heading">Display Alias *</Label>
+                                                <Label htmlFor="displayName" className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-2 font-heading">Display Name *</Label>
                                                 <Input
                                                     id="displayName"
                                                     value={formData.displayName}
                                                     onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
-                                                    placeholder="OPERATIVE NAME"
+                                                    placeholder="NAME"
                                                     required
                                                     className="h-16 bg-white/5 border-white/10 rounded-2xl focus:border-[#FF6200]/50 transition-all font-heading uppercase tracking-widest text-xs"
                                                 />
                                             </div>
 
                                             <div className="space-y-3">
-                                                <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2 font-heading">Operational Sector</Label>
+                                                <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-2 font-heading">Location</Label>
                                                 <Input
                                                     id="location"
                                                     value={formData.location}
@@ -331,7 +338,7 @@ function OnboardingContent() {
 
                                         {forcedRole !== 'student_seller' ? (
                                             <div className="space-y-4 pt-4">
-                                                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2 font-heading">Deployment Protocol *</Label>
+                                                <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-2 font-heading">Account Type *</Label>
                                                 <RadioGroup
                                                     value={formData.role}
                                                     onValueChange={(value) => setFormData({ ...formData, role: value })}
@@ -344,7 +351,7 @@ function OnboardingContent() {
                                                         <RadioGroupItem value="student_buyer" id="student_buyer" className="hidden" />
                                                         <Label htmlFor="student_buyer" className="cursor-pointer flex-1 space-y-1">
                                                             <div className="font-black uppercase tracking-widest italic font-heading">Student Buyer</div>
-                                                            <div className={cn("text-[10px] italic font-medium", formData.role === 'student_buyer' || formData.role === 'customer' ? "text-black/60" : "text-zinc-500")}>
+                                                            <div className={cn("text-[10px] italic font-medium", formData.role === 'student_buyer' || formData.role === 'customer' ? "text-black/60" : "text-white/40")}>
                                                                 Acquire verified campus assets
                                                             </div>
                                                         </Label>
@@ -355,9 +362,9 @@ function OnboardingContent() {
                                                     )} onClick={() => setFormData({ ...formData, role: 'student_seller' })}>
                                                         <RadioGroupItem value="student_seller" id="student_seller" className="hidden" />
                                                         <Label htmlFor="student_seller" className="cursor-pointer flex-1 space-y-1">
-                                                            <div className="font-black uppercase tracking-widest italic font-heading">Student Merchant</div>
-                                                            <div className={cn("text-[10px] italic font-medium", formData.role === 'student_seller' || formData.role === 'dealer' ? "text-black/60" : "text-zinc-500")}>
-                                                                Command a campus business terminal
+                                                            <div className="font-black uppercase tracking-widest italic font-heading">Student Seller</div>
+                                                            <div className={cn("text-[10px] italic font-medium", formData.role === 'student_seller' || formData.role === 'dealer' ? "text-black/60" : "text-white/40")}>
+                                                                Start your campus business
                                                             </div>
                                                         </Label>
                                                     </div>
@@ -369,7 +376,7 @@ function OnboardingContent() {
                                             <div className="space-y-6 pt-6 border-t border-white/5 animate-in fade-in slide-in-from-top-4 duration-500">
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                     <div className="space-y-3">
-                                                        <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2 font-heading">Merchant Identity *</Label>
+                                                        <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-2 font-heading">Business Name *</Label>
                                                         <Input
                                                             id="businessName"
                                                             value={formData.businessName}
@@ -381,7 +388,7 @@ function OnboardingContent() {
                                                     </div>
 
                                                     <div className="space-y-3">
-                                                        <Label htmlFor="university" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2 font-heading">Campus Node *</Label>
+                                                        <Label htmlFor="university" className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-2 font-heading">University *</Label>
                                                         <Input
                                                             id="university"
                                                             value={formData.university}
@@ -394,7 +401,7 @@ function OnboardingContent() {
                                                 </div>
 
                                                 <div className="space-y-3">
-                                                    <Label htmlFor="matricNumber" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2 font-heading">Matriculation Entry *</Label>
+                                                    <Label htmlFor="matricNumber" className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-2 font-heading">Matric Number *</Label>
                                                     <Input
                                                         id="matricNumber"
                                                         value={formData.matricNumber}
@@ -407,7 +414,7 @@ function OnboardingContent() {
 
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
                                                     <div className="space-y-3">
-                                                        <Label htmlFor="bankName" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2 font-heading">Settlement Bank *</Label>
+                                                        <Label htmlFor="bankName" className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-2 font-heading">Settlement Bank *</Label>
                                                         <select
                                                             id="bankName"
                                                             value={formData.bankCode}
@@ -423,7 +430,7 @@ function OnboardingContent() {
                                                     </div>
 
                                                     <div className="space-y-3">
-                                                        <Label htmlFor="accountNumber" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2 font-heading">Account Number *</Label>
+                                                        <Label htmlFor="accountNumber" className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-2 font-heading">Account Number *</Label>
                                                         <Input
                                                             id="accountNumber"
                                                             value={formData.accountNumber}
@@ -437,7 +444,7 @@ function OnboardingContent() {
                                                 </div>
 
                                                 <div className="space-y-4">
-                                                    <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2 font-heading">Store Architecture *</Label>
+                                                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-2 font-heading">Store Setup *</Label>
                                                     <RadioGroup
                                                         value={formData.storeType}
                                                         onValueChange={(value: 'physical' | 'online' | 'both') => setFormData({ ...formData, storeType: value })}
@@ -458,12 +465,12 @@ function OnboardingContent() {
                                             {loading ? (
                                                 <>
                                                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                                                    {forcedRole === 'student_seller' ? 'INITIALIZING TERMINAL...' : 'SYNCING PROFILE...'}
+                                                    {forcedRole === 'student_seller' ? 'SETTING UP...' : 'SAVING...'}
                                                 </>
                                             ) : (
                                                 <>
                                                     <CheckCircle className="mr-2 h-5 w-5" />
-                                                    {forcedRole === 'student_seller' ? 'DECODE MERCHANT STATUS' : 'COMPLETE AUTHORIZATION'}
+                                                    {forcedRole === 'student_seller' ? 'COMPLETE SETUP' : 'FINISH'}
                                                 </>
                                             )}
                                         </Button>
@@ -484,14 +491,14 @@ function OnboardingContent() {
                             <div className="h-16 w-16 rounded-2xl bg-[#FF6200]/10 border border-[#FF6200]/20 flex items-center justify-center mb-2">
                                 <AlertCircle className="h-8 w-8 text-[#FF6200]" />
                             </div>
-                            <h2 className="text-3xl font-black uppercase tracking-tighter italic italic">Protocol <span className="text-[#FF6200]">Shift</span></h2>
-                            <p className="text-zinc-400 text-sm leading-relaxed">
-                                You are about to upgrade your profile to <span className="text-white font-bold">STUDENT MERCHANT</span>.
-                                This will grant you access to listing assets and managing orders.
+                            <h2 className="text-3xl font-black uppercase tracking-tighter italic italic">Account <span className="text-[#FF6200]">Upgrade</span></h2>
+                            <p className="text-white/60 text-sm leading-relaxed">
+                                You are about to upgrade your profile to <span className="text-white font-bold">STUDENT SELLER</span>.
+                                This will grant you access to listing items and managing orders.
                             </p>
                             <div className="p-4 bg-white/5 border border-white/10 rounded-2xl w-full">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] mb-1">Authorization Required</p>
-                                <p className="text-xs text-zinc-500">You may be required to choose a subscription plan to activate your terminal.</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] mb-1">Subscription Required</p>
+                                <p className="text-xs text-white/40">You may be required to choose a subscription plan to activate your account.</p>
                             </div>
                         </div>
                         <div className="flex flex-col gap-3">
@@ -505,7 +512,7 @@ function OnboardingContent() {
                             <Button
                                 variant="ghost"
                                 onClick={() => setShowConfirmSwitch(false)}
-                                className="w-full h-14 text-zinc-500 hover:text-white font-black uppercase tracking-widest rounded-xl"
+                                className="w-full h-14 text-white/40 hover:text-white font-black uppercase tracking-widest rounded-xl"
                             >
                                 ABORT
                             </Button>

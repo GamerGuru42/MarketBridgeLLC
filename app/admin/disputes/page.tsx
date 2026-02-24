@@ -146,7 +146,7 @@ export default function DisputesPage() {
         <div className="min-h-screen bg-black flex items-center justify-center text-white">
             <div className="text-center">
                 <div className="animate-spin h-12 w-12 border-2 border-[#FF6200] border-t-transparent rounded-full mx-auto mb-4" />
-                <p className="font-mono text-zinc-500 uppercase tracking-widest text-xs">Loading Jurisdictions...</p>
+                <p className="font-mono text-white/40 uppercase tracking-widest text-xs">Loading Jurisdictions...</p>
             </div>
         </div>
     );
@@ -159,10 +159,10 @@ export default function DisputesPage() {
                     <div className="space-y-2">
                         <div className="flex items-center gap-3">
                             <ShieldCheck className="h-5 w-5 text-[#FF6200]" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 font-heading">Operations Command</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 font-heading">Operations Command</span>
                         </div>
                         <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading">
-                            Dispute <span className="text-red-500">Tribunal</span>
+                            Dispute <span className="text-[#FF6200]">Tribunal</span>
                         </h1>
                     </div>
                 </div>
@@ -176,8 +176,8 @@ export default function DisputesPage() {
                     <TabsContent value="active" className="space-y-4">
                         {disputes.filter(d => ['open', 'under_review'].includes(d.status)).length === 0 ? (
                             <div className="py-24 text-center border border-dashed border-white/10 rounded-3xl bg-white/5">
-                                <Gavel className="h-16 w-16 text-zinc-700 mx-auto mb-6" />
-                                <p className="text-zinc-500 font-black uppercase tracking-widest text-sm font-heading">No active disputes in jurisdiction</p>
+                                <Gavel className="h-16 w-16 text-white/20 mx-auto mb-6" />
+                                <p className="text-white/40 font-black uppercase tracking-widest text-sm font-heading">No active disputes in jurisdiction</p>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 gap-4">
@@ -194,7 +194,7 @@ export default function DisputesPage() {
                 <DialogContent className="max-w-2xl bg-zinc-950 border-white/10 text-white p-0 overflow-hidden">
                     <DialogHeader className="p-6 border-b border-white/10 bg-white/5">
                         <DialogTitle className="text-xl font-black uppercase tracking-tighter italic font-heading flex items-center gap-3">
-                            <AlertTriangle className="h-5 w-5 text-red-500" />
+                            <AlertTriangle className="h-5 w-5 text-[#FF6200]" />
                             Case #{selectedDispute?.id.slice(0, 8).toUpperCase()}
                         </DialogTitle>
                     </DialogHeader>
@@ -203,7 +203,7 @@ export default function DisputesPage() {
                         <div className="p-6 space-y-6">
                             <div className="grid grid-cols-2 gap-4 bg-white/5 p-4 rounded-xl border border-white/10">
                                 <div>
-                                    <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest font-heading mb-1">Plaintiff</p>
+                                    <p className="text-[10px] font-black text-white/40 uppercase tracking-widest font-heading mb-1">Plaintiff</p>
                                     <div className="flex items-center gap-2">
                                         <div className="h-6 w-6 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold">
                                             {selectedDispute.filed_by?.display_name.charAt(0)}
@@ -212,7 +212,7 @@ export default function DisputesPage() {
                                     </div>
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest font-heading mb-1">Dispute Value</p>
+                                    <p className="text-[10px] font-black text-white/40 uppercase tracking-widest font-heading mb-1">Dispute Value</p>
                                     <p className="text-xl font-black text-[#FF6200] font-heading">
                                         ₦{(selectedDispute.order?.amount || selectedDispute.escrow_agreement?.amount || 0).toLocaleString()}
                                     </p>
@@ -220,8 +220,8 @@ export default function DisputesPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest font-heading">Incident Report</p>
-                                <div className="bg-black border border-white/10 p-4 rounded-xl text-sm font-medium text-zinc-300 leading-relaxed font-mono">
+                                <p className="text-[10px] font-black text-white/40 uppercase tracking-widest font-heading">Incident Report</p>
+                                <div className="bg-black border border-white/10 p-4 rounded-xl text-sm font-medium text-white/70 leading-relaxed font-mono">
                                     "{selectedDispute.description}"
                                 </div>
                             </div>
@@ -229,12 +229,12 @@ export default function DisputesPage() {
                             {['open', 'under_review'].includes(selectedDispute.status) && (
                                 <div className="space-y-4 pt-4 border-t border-white/10">
                                     <div className="space-y-2">
-                                        <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest font-heading">Tribunal Verdict</p>
+                                        <p className="text-[10px] font-black text-white/40 uppercase tracking-widest font-heading">Tribunal Verdict</p>
                                         <Textarea
                                             placeholder="Enter final verdict notes..."
                                             value={resolutionNotes}
                                             onChange={(e) => setResolutionNotes(e.target.value)}
-                                            className="bg-black border-white/10 text-white placeholder:text-zinc-700 min-h-[100px]"
+                                            className="bg-black border-white/10 text-white placeholder:text-white/20 min-h-[100px]"
                                         />
                                     </div>
                                     <div className="flex gap-3 justify-end">
@@ -250,7 +250,7 @@ export default function DisputesPage() {
                                             variant="destructive"
                                             onClick={() => handleStatusUpdate('rejected')}
                                             disabled={actionLoading || !resolutionNotes}
-                                            className="bg-red-500/20 text-red-500 hover:bg-red-500/30 border border-red-500/50"
+                                            className="bg-[#FF6200]/20 text-[#FF6200] hover:bg-[#FF6200]/30 border border-[#FF6200]/50"
                                         >
                                             <XCircle className="h-4 w-4 mr-2" /> Reject
                                         </Button>
@@ -272,12 +272,12 @@ function DisputeCard({ dispute, onView }: { dispute: Dispute, onView: () => void
 
     return (
         <div className="group glass-card p-6 flex flex-col md:flex-row gap-6 items-center border border-white/5 hover:border-[#FF6200]/30 transition-all bg-white/[0.02]">
-            <div className="h-12 w-12 rounded-full bg-red-500/10 flex items-center justify-center border border-red-500/20 shrink-0">
-                <AlertTriangle className="h-5 w-5 text-red-500" />
+            <div className="h-12 w-12 rounded-full bg-[#FF6200]/10 flex items-center justify-center border border-[#FF6200]/20 shrink-0">
+                <AlertTriangle className="h-5 w-5 text-[#FF6200]" />
             </div>
             <div className="flex-1 min-w-0 space-y-1 text-center md:text-left">
                 <div className="flex items-center justify-center md:justify-start gap-2">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 font-heading">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40 font-heading">
                         Case #{dispute.id.slice(0, 8).toUpperCase()}
                     </span>
                     <span className="w-1 h-1 rounded-full bg-zinc-700" />

@@ -20,7 +20,7 @@ import { DashboardHeader } from '@/components/dashboard-header';
 export default function CEOLayout({
     children,
 }: {
-    children: React.ReactNode;
+    children: React.ReactCampus;
 }) {
     const { user, loading } = useAuth();
     const pathname = usePathname();

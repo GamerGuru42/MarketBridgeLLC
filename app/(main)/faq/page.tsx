@@ -54,7 +54,7 @@ export default function FAQPage() {
                 {/* Header */}
                 <div className="text-center mb-12">
                     <h1 className="text-4xl font-black uppercase tracking-tighter italic mb-4 text-white">Frequently Asked <span className="text-[#FF6200]">Questions</span></h1>
-                    <p className="text-lg text-zinc-500 font-medium italic">
+                    <p className="text-lg text-white/40 font-medium italic">
                         Everything you need to know about trading on MarketBridge
                     </p>
                 </div>
@@ -65,21 +65,21 @@ export default function FAQPage() {
                         <CardContent className="p-6 text-center">
                             <Shield className="h-8 w-8 mx-auto mb-3 text-[#FF6200]" />
                             <h3 className="font-bold uppercase tracking-widest text-white mb-1">Verified Dealers</h3>
-                            <p className="text-xs text-zinc-500">All dealers go through verification</p>
+                            <p className="text-xs text-white/40">All dealers go through verification</p>
                         </CardContent>
                     </Card>
                     <Card className="bg-zinc-900/50 border-white/5">
                         <CardContent className="p-6 text-center">
                             <Eye className="h-8 w-8 mx-auto mb-3 text-[#FF6200]" />
                             <h3 className="font-bold uppercase tracking-widest text-white mb-1">Full Transparency</h3>
-                            <p className="text-xs text-zinc-500">See ratings and reviews before buying</p>
+                            <p className="text-xs text-white/40">See ratings and reviews before buying</p>
                         </CardContent>
                     </Card>
                     <Card className="bg-zinc-900/50 border-white/5">
                         <CardContent className="p-6 text-center">
                             <Lock className="h-8 w-8 mx-auto mb-3 text-[#FF6200]" />
                             <h3 className="font-bold uppercase tracking-widest text-white mb-1">Secure Payments</h3>
-                            <p className="text-xs text-zinc-500">Pay on delivery for your protection</p>
+                            <p className="text-xs text-white/40">Pay on delivery for your protection</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -90,7 +90,7 @@ export default function FAQPage() {
                         <Card key={index} className="bg-zinc-900/30 border-white/5">
                             <CardContent className="p-6">
                                 <h3 className="text-lg font-black uppercase tracking-tighter italic text-white mb-3">{faq.question}</h3>
-                                <p className="text-zinc-400 leading-relaxed text-sm font-medium">{faq.answer}</p>
+                                <p className="text-white/60 leading-relaxed text-sm font-medium">{faq.answer}</p>
                             </CardContent>
                         </Card>
                     ))}

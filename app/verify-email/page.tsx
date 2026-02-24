@@ -24,7 +24,7 @@ function VerifyEmailContent() {
     const { user, refreshUser } = useAuth();
     const supabase = createClient();
 
-    const email = searchParams.get('email') || user?.email;
+    const email = searchParams?.get('email') || user?.email;
 
     useEffect(() => {
         if (countdown > 0) {
@@ -100,7 +100,7 @@ function VerifyEmailContent() {
                 </div>
                 <div className="space-y-2">
                     <h2 className="text-3xl font-black uppercase italic tracking-tighter">Access <span className="text-[#FF6200]">Granted</span></h2>
-                    <p className="text-zinc-500 font-bold uppercase text-[10px] tracking-widest">Redirecting to Seller Dashboard...</p>
+                    <p className="text-white/40 font-bold uppercase text-[10px] tracking-widest">Redirecting to Seller Dashboard...</p>
                 </div>
             </div>
         );
@@ -116,7 +116,7 @@ function VerifyEmailContent() {
                 </div>
                 <div className="text-center space-y-2">
                     <h2 className="text-3xl font-black uppercase italic tracking-tighter">Enter <span className="text-[#FF6200]">Access Code</span></h2>
-                    <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Encoded signal sent to {email}</p>
+                    <p className="text-white/40 text-[10px] font-black uppercase tracking-widest">Verification code sent to {email}</p>
                 </div>
             </div>
 
@@ -128,7 +128,7 @@ function VerifyEmailContent() {
                         value={otp}
                         onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                         placeholder="000 000"
-                        className="w-full bg-black border-2 border-white/10 rounded-[1.5rem] h-20 text-center text-4xl font-black tracking-[0.5em] text-[#FF6200] placeholder:text-zinc-900 focus:border-[#FF6200] focus:ring-4 focus:ring-[#FF6200]/10 outline-none transition-all"
+                        className="w-full bg-black border-2 border-white/10 rounded-[1.5rem] h-20 text-center text-4xl font-black tracking-[0.5em] text-[#FF6200] placeholder:text-white/5 focus:border-[#FF6200] focus:ring-4 focus:ring-[#FF6200]/10 outline-none transition-all"
                         required
                     />
                     <div className="flex justify-between items-center px-2">
@@ -139,9 +139,9 @@ function VerifyEmailContent() {
                             className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 group disabled:opacity-30"
                         >
                             {isResending ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3 group-hover:rotate-180 transition-transform duration-500" />}
-                            {countdown > 0 ? `Resend Signal in ${countdown}s` : 'Resend Signal'}
+                            {countdown > 0 ? `Resend Code in ${countdown}s` : 'Resend Code'}
                         </button>
-                        <ShieldCheck className="h-4 w-4 text-zinc-800" />
+                        <ShieldCheck className="h-4 w-4 text-white/10" />
                     </div>
                 </div>
 
@@ -162,7 +162,7 @@ function VerifyEmailContent() {
             <div className="text-center pt-4">
                 <button
                     onClick={() => router.push('/login')}
-                    className="text-[9px] font-black uppercase tracking-widest text-zinc-600 hover:text-white transition-colors"
+                    className="text-[9px] font-black uppercase tracking-widest text-white/30 hover:text-white transition-colors"
                 >
                     Return to Login Base
                 </button>

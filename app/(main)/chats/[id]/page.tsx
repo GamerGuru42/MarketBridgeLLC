@@ -445,7 +445,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
             <div className="container mx-auto px-4 py-8 min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <Loader2 className="animate-spin h-12 w-12 text-[#FF6600] mx-auto" />
-                    <p className="mt-4 text-zinc-500 font-mono text-xs tracking-widest uppercase">Decrypting Stream...</p>
+                    <p className="mt-4 text-white/40 font-mono text-xs tracking-widest uppercase">Decrypting Stream...</p>
                 </div>
             </div>
         );
@@ -454,8 +454,8 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
     if (!chat) {
         return (
             <div className="container mx-auto px-4 py-8">
-                <div className="text-center text-zinc-500">Chat Not Found</div>
-                <Button asChild className="mt-4"><Link href="/chats">Return to Terminal</Link></Button>
+                <div className="text-center text-white/40">Chat Not Found</div>
+                <Button asChild className="mt-4"><Link href="/chats">Return to Dashboard</Link></Button>
             </div>
         );
     }
@@ -466,14 +466,14 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                 <CardHeader className="border-b border-white/5 bg-white/5 py-4 shrink-0">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                            <Button variant="ghost" size="icon" asChild className="text-zinc-400 hover:text-white hover:bg-white/10">
+                            <Button variant="ghost" size="icon" asChild className="text-white/60 hover:text-white hover:bg-white/10">
                                 <Link href="/chats">
                                     <ArrowLeft className="h-5 w-5" />
                                 </Link>
                             </Button>
                             <Avatar className="h-10 w-10 border border-white/10">
                                 <AvatarImage src={chat.other_user?.photo_url || ''} />
-                                <AvatarFallback className="bg-zinc-800 text-zinc-500 font-black uppercase">
+                                <AvatarFallback className="bg-zinc-800 text-white/40 font-black uppercase">
                                     {chat.other_user?.display_name?.charAt(0).toUpperCase()}
                                 </AvatarFallback>
                             </Avatar>
@@ -481,7 +481,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                                 <CardTitle className="text-base text-white font-bold tracking-wide">
                                     {chat.other_user?.display_name}
                                 </CardTitle>
-                                <Badge variant="secondary" className="mt-1 bg-white/5 text-zinc-400 border border-white/5 text-[10px] uppercase tracking-wider">
+                                <Badge variant="secondary" className="mt-1 bg-white/5 text-white/60 border border-white/5 text-[10px] uppercase tracking-wider">
                                     {['dealer', 'student_seller'].includes(chat.other_user?.role || '') ? 'Verified Merchant' : 'User'}
                                 </Badge>
                             </div>
@@ -516,7 +516,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                                         {!isOwn && (
                                             <Avatar className="h-8 w-8 mt-1 border border-white/10 hidden sm:block">
                                                 <AvatarImage src={message.sender?.photo_url || ''} />
-                                                <AvatarFallback className="text-[10px] bg-zinc-800 text-zinc-500">
+                                                <AvatarFallback className="text-[10px] bg-zinc-800 text-white/40">
                                                     {message.sender?.display_name?.charAt(0)}
                                                 </AvatarFallback>
                                             </Avatar>
@@ -524,7 +524,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                                         <div className={`space-y-1 ${isOwn ? 'items-end' : 'items-start'} flex flex-col`}>
                                             <div className={`rounded-2xl px-4 py-3 text-sm shadow-sm ${isOwn
                                                     ? 'bg-[#FF6600] text-black font-medium rounded-tr-none'
-                                                    : 'bg-white/10 text-zinc-200 border border-white/5 rounded-tl-none'
+                                                    : 'bg-white/10 text-white/80 border border-white/5 rounded-tl-none'
                                                 }`}>
                                                 {message.image_url && (
                                                     <div className="mb-2">
@@ -535,7 +535,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                                                     <p>{message.content}</p>
                                                 )}
                                             </div>
-                                            <p className="text-[10px] text-zinc-600 px-1 font-mono">
+                                            <p className="text-[10px] text-white/30 px-1 font-mono">
                                                 {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </p>
                                         </div>
@@ -551,7 +551,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                         {imagePreview && (
                             <div className="mb-3 relative inline-block">
                                 <img src={imagePreview} alt="Preview" className="h-16 w-16 object-cover rounded-md border border-[#FF6600]/50" />
-                                <button onClick={() => { setSelectedImage(null); setImagePreview(null); }} className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 text-white hover:bg-red-600"><X className="h-3 w-3" /></button>
+                                <button onClick={() => { setSelectedImage(null); setImagePreview(null); }} className="absolute -top-2 -right-2 bg-[#FF6200] rounded-full p-1 text-white hover:bg-red-600"><X className="h-3 w-3" /></button>
                             </div>
                         )}
                         <form onSubmit={sendMessage} className="flex gap-3 items-end">
@@ -566,7 +566,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                                 type="button"
                                 variant="outline"
                                 size="icon"
-                                className="h-12 w-12 rounded-xl border-white/10 bg-white/5 text-zinc-400 hover:text-[#FF6600] hover:bg-[#FF6600]/10 hover:border-[#FF6600]/30 shrink-0 transition-all"
+                                className="h-12 w-12 rounded-xl border-white/10 bg-white/5 text-white/60 hover:text-[#FF6600] hover:bg-[#FF6600]/10 hover:border-[#FF6600]/30 shrink-0 transition-all"
                                 onClick={() => fileInputRef.current?.click()}
                             >
                                 <ImageIcon className="h-5 w-5" />
@@ -576,7 +576,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                                 placeholder="Transmit secure message..."
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
-                                className="h-12 bg-black/50 border-white/10 rounded-xl text-white placeholder:text-zinc-600 focus:ring-[#FF6600]/50 focus:border-[#FF6600]/50 font-medium"
+                                className="h-12 bg-black/50 border-white/10 rounded-xl text-white placeholder:text-white/30 focus:ring-[#FF6600]/50 focus:border-[#FF6600]/50 font-medium"
                                 disabled={sending}
                             />
 

@@ -44,13 +44,13 @@ export default function COOPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">2.4 Hours</div>
-                        <p className="text-xs text-green-600 font-medium">15% improvement</p>
+                        <p className="text-xs text-[#FF6200] font-medium">15% improvement</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium italic">Pending Listings</CardTitle>
-                        <BarChart3 className="h-4 w-4 text-orange-500" />
+                        <BarChart3 className="h-4 w-4 text-[#FF6200]" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">18</div>
@@ -60,7 +60,7 @@ export default function COOPage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium italic">Delivery Success</CardTitle>
-                        <Truck className="h-4 w-4 text-green-500" />
+                        <Truck className="h-4 w-4 text-[#FF6200]" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">99.4%</div>
@@ -70,11 +70,11 @@ export default function COOPage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium italic">Active Dealers</CardTitle>
-                        <Users className="h-4 w-4 text-blue-500" />
+                        <Users className="h-4 w-4 text-[#FF6200]" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">412</div>
-                        <p className="text-xs text-blue-600 font-medium">+12 this week</p>
+                        <p className="text-xs text-[#FF6200] font-medium">+12 this week</p>
                     </CardContent>
                 </Card>
             </div>
@@ -143,19 +143,19 @@ export default function COOPage() {
                             </div>
                             <div className="p-4 rounded-xl bg-orange-50 border border-orange-100">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <Clock className="h-5 w-5 text-orange-500" />
+                                    <Clock className="h-5 w-5 text-[#FF6200]" />
                                     <h4 className="font-bold text-sm italic">Expiring Soon</h4>
                                 </div>
                                 <p className="text-2xl font-black">34</p>
-                                <p className="text-[10px] text-orange-600 uppercase font-bold mt-1">Last 3 Days of Trial</p>
+                                <p className="text-[10px] text-[#FF6200] uppercase font-bold mt-1">Last 3 Days of Trial</p>
                             </div>
                             <div className="p-4 rounded-xl bg-slate-100 border border-slate-200">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <CreditCard className="h-5 w-5 text-slate-700" />
+                                    <CreditCard className="h-5 w-5 text-white/20" />
                                     <h4 className="font-bold text-sm italic">Premium Active</h4>
                                 </div>
                                 <p className="text-2xl font-black">250</p>
-                                <p className="text-[10px] text-slate-500 uppercase font-bold mt-1">Paid Subscriptions</p>
+                                <p className="text-[10px] text-white/40 uppercase font-bold mt-1">Paid Subscriptions</p>
                             </div>
                         </div>
                         <div className="mt-6 flex items-center justify-between p-4 bg-muted/30 rounded-lg">
@@ -178,7 +178,7 @@ export default function COOPage() {
                 <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="p-4 rounded-xl bg-muted/20 border border-muted-foreground/10">
                         <h4 className="font-bold mb-2 flex items-center gap-2">
-                            <Clock className="h-4 w-4 text-blue-500" />
+                            <Clock className="h-4 w-4 text-[#FF6200]" />
                             Instant Verification
                         </h4>
                         <p className="text-xs text-muted-foreground">Rolling out auto-ID verification for premium dealers to reduce wait time to under 15 minutes.</p>
@@ -192,7 +192,7 @@ export default function COOPage() {
                     </div>
                     <div className="p-4 rounded-xl bg-muted/20 border border-muted-foreground/10">
                         <h4 className="font-bold mb-2 flex items-center gap-2">
-                            <Settings className="h-4 w-4 text-orange-500" />
+                            <Settings className="h-4 w-4 text-[#FF6200]" />
                             Abuja Hub Deployment
                         </h4>
                         <p className="text-xs text-muted-foreground">Finalizing physical inspection centers in Garki and Maitama for car handovers.</p>

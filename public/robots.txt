@@ -1,11 +1,10 @@
 User-agent: *
 Disallow: /public/
-User-agent: *
-Disallow: /public/
 Disallow: /admin/
 Disallow: /api/
 
-# Campus marketplace is public-indexed
+# Campus marketplace is public-indexed for launch
+Allow: /campus/
 Allow: /listings/
 Allow: /about
 Allow: /pricing

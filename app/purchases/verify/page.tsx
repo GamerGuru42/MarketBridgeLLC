@@ -43,7 +43,7 @@ function VerifyContent() {
                         </div>
                         <div className="space-y-4">
                             <h1 className="text-2xl font-black uppercase tracking-tighter italic font-heading">Verifying Purchase</h1>
-                            <p className="text-zinc-500 text-sm font-medium italic">{message}</p>
+                            <p className="text-white/40 text-sm font-medium italic">{message}</p>
                         </div>
                     </>
                 )}
@@ -54,14 +54,14 @@ function VerifyContent() {
                             <CheckCircle className="h-10 w-10 text-[#FF6200]" />
                         </div>
                         <div className="space-y-4">
-                            <h1 className="text-2xl font-black uppercase tracking-tighter italic font-heading text-[#FF6200]">Protocol Secure</h1>
-                            <p className="text-zinc-400 text-sm font-medium italic">{message}</p>
+                            <h1 className="text-2xl font-black uppercase tracking-tighter italic font-heading text-[#FF6200]">System Secure</h1>
+                            <p className="text-white/60 text-sm font-medium italic">{message}</p>
                         </div>
                         <div className="pt-4 flex flex-col gap-3">
                             <Button asChild className="h-14 bg-[#FF6200] text-black hover:bg-[#FF7A29] rounded-2xl font-black uppercase tracking-widest text-xs font-heading italic shadow-xl shadow-[#FF6200]/10 border-none">
                                 <Link href="/purchases">View My Assets <ArrowRight className="ml-2 h-4 w-4" /></Link>
                             </Button>
-                            <Button variant="ghost" asChild className="text-zinc-500 hover:text-white text-[10px] uppercase font-black tracking-widest">
+                            <Button variant="ghost" asChild className="text-white/40 hover:text-white text-[10px] uppercase font-black tracking-widest">
                                 <Link href="/listings">Continue Shopping</Link>
                             </Button>
                         </div>
@@ -70,12 +70,12 @@ function VerifyContent() {
 
                 {status === 'failed' && (
                     <>
-                        <div className="h-24 w-24 rounded-3xl bg-red-500/10 border-2 border-red-500/20 flex items-center justify-center mx-auto">
-                            <XCircle className="h-10 w-10 text-red-500" />
+                        <div className="h-24 w-24 rounded-3xl bg-[#FF6200]/10 border-2 border-[#FF6200]/20 flex items-center justify-center mx-auto">
+                            <XCircle className="h-10 w-10 text-[#FF6200]" />
                         </div>
                         <div className="space-y-4">
-                            <h1 className="text-2xl font-black uppercase tracking-tighter italic font-heading text-red-500">Signal Dropped</h1>
-                            <p className="text-zinc-400 text-sm font-medium italic">{message}</p>
+                            <h1 className="text-2xl font-black uppercase tracking-tighter italic font-heading text-[#FF6200]">Error Occurred</h1>
+                            <p className="text-white/60 text-sm font-medium italic">{message}</p>
                         </div>
                         <Button onClick={() => router.push('/listings')} className="h-14 w-full bg-white/5 border border-white/10 text-white hover:bg-white/10 rounded-2xl font-black uppercase tracking-widest text-xs font-heading italic">
                             Back to Stream

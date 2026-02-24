@@ -41,7 +41,7 @@ export default function AboutPage() {
                             </h1>
                         </div>
                         <div className="max-w-xl">
-                            <p className="text-zinc-400 text-lg md:text-2xl font-medium leading-relaxed italic border-l-2 border-[#FF6200] pl-8">
+                            <p className="text-white/60 text-lg md:text-2xl font-medium leading-relaxed italic border-l-2 border-[#FF6200] pl-8">
                                 MarketBridge is a <span className="text-white">secure payment platform</span> built to protect every transaction within Nigeria's university communities.
                             </p>
                         </div>
@@ -63,7 +63,7 @@ export default function AboutPage() {
                                 <div className="h-1 w-20 bg-[#FF6200]" />
                             </div>
 
-                            <div className="space-y-8 text-zinc-400 text-lg font-medium leading-relaxed max-w-2xl">
+                            <div className="space-y-8 text-white/60 text-lg font-medium leading-relaxed max-w-2xl">
                                 <p>
                                     In many online marketplaces, it's hard to know who to trust. MarketBridge was started in Abuja with a simple rule: <span className="text-white italic font-bold">"You only pay when you get exactly what you ordered."</span>
                                 </p>
@@ -92,7 +92,7 @@ export default function AboutPage() {
                                 <Target className="h-10 w-10 text-[#FF6200]" />
                             </div>
                             <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white mb-4">Focused on <br />You</h3>
-                            <p className="text-sm text-zinc-500 leading-relaxed uppercase tracking-wider font-bold">
+                            <p className="text-sm text-white/40 leading-relaxed uppercase tracking-wider font-bold">
                                 We focus on verified university members and campus shops, making sure everyone is checked before they can join.
                             </p>
                         </div>
@@ -138,7 +138,7 @@ export default function AboutPage() {
                                     <item.icon className={`h-8 w-8 ${item.color}`} />
                                 </div>
                                 <h3 className="text-2xl font-black uppercase tracking-tighter text-white mb-6 italic font-heading leading-tight">{item.title}</h3>
-                                <p className="text-sm text-zinc-500 font-medium leading-relaxed">{item.desc}</p>
+                                <p className="text-sm text-white/40 font-medium leading-relaxed">{item.desc}</p>
                                 <div className="absolute bottom-12 right-12 opacity-5 scale-150 rotate-[-15deg]">
                                     <item.icon className="h-20 w-20 text-white" />
                                 </div>
@@ -160,7 +160,7 @@ export default function AboutPage() {
                                     <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#FF6200]">Security Policy</span>
                                 </div>
                                 <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading text-white">Problem <span className="text-[#FF6200]">Solving</span></h2>
-                                <p className="text-zinc-400 text-lg font-medium leading-relaxed italic border-l border-[#FF6200]/30 pl-8">
+                                <p className="text-white/60 text-lg font-medium leading-relaxed italic border-l border-[#FF6200]/30 pl-8">
                                     If an item isn't what it was supposed to be, the payment is automatically frozen. Our team will review the details to make sure the right person gets their money back.
                                 </p>
                             </div>
@@ -173,7 +173,7 @@ export default function AboutPage() {
                                 ].map((stat, s) => (
                                     <div key={s} className="bg-black/40 border border-white/5 p-6 rounded-[2rem] text-center space-y-2">
                                         <stat.icon className="h-5 w-5 text-[#FF6200] mx-auto opacity-50" />
-                                        <p className="text-[8px] font-black uppercase tracking-widest text-zinc-500">{stat.label}</p>
+                                        <p className="text-[8px] font-black uppercase tracking-widest text-white/40">{stat.label}</p>
                                         <p className="text-xs font-black uppercase tracking-tighter text-white">{stat.val}</p>
                                     </div>
                                 ))}
@@ -195,7 +195,7 @@ export default function AboutPage() {
                             The Future of <br />
                             <span className="text-[#FF6200]">Campus Shopping.</span>
                         </h2>
-                        <p className="text-zinc-500 text-lg font-medium italic max-w-2xl mx-auto">
+                        <p className="text-white/40 text-lg font-medium italic max-w-2xl mx-auto">
                             We are building more than a marketplace. We are building a safer way for the next generation of Nigerian university members and sellers to connect.
                         </p>
                     </div>
@@ -210,8 +210,8 @@ export default function AboutPage() {
                     </div>
 
                     <div className="pt-20 opacity-20 text-center">
-                        <p className="text-[8px] font-black uppercase tracking-[1em] text-zinc-500 mb-4">ESTABLISHED IN ABUJA 2024</p>
-                        <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest font-sans">
+                        <p className="text-[8px] font-black uppercase tracking-[1em] text-white/40 mb-4">ESTABLISHED IN ABUJA 2024</p>
+                        <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest font-sans">
                             MarketBridge NG Limited is a company registered in Nigeria under CAMA 2020. RC [RC number]. Registered office: [your Abuja address].
                         </p>
                     </div>

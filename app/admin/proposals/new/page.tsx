@@ -95,7 +95,7 @@ export default function SubmitProposalPage() {
         return (
             <div className="container max-w-2xl mx-auto py-20 px-4 text-center">
                 <div className="mb-6 flex justify-center">
-                    <div className="h-20 w-20 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                    <div className="h-20 w-20 rounded-full bg-[#FF6200]/10 flex items-center justify-center text-[#FF6200]">
                         <CheckCircle2 className="h-12 w-12" />
                     </div>
                 </div>
@@ -134,12 +134,12 @@ export default function SubmitProposalPage() {
                             </CardHeader>
 
                             {error && (
-                                <div className="mx-6 mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
+                                <div className="mx-6 mb-4 p-4 bg-[#FF6200]/10 border border-[#FF6200]/20 rounded-lg">
                                     <div className="flex items-start gap-3">
-                                        <ShieldAlert className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+                                        <ShieldAlert className="h-5 w-5 text-[#FF6200] shrink-0 mt-0.5" />
                                         <div>
-                                            <p className="font-semibold text-red-500 text-sm">Submission Failed</p>
-                                            <p className="text-red-400 text-xs mt-1">{error}</p>
+                                            <p className="font-semibold text-[#FF6200] text-sm">Submission Failed</p>
+                                            <p className="text-[#FF6200] text-xs mt-1">{error}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -148,7 +148,7 @@ export default function SubmitProposalPage() {
                             <CardContent className="space-y-6">
                                 <div className="space-y-2">
                                     <Label htmlFor="title">Proposal Title</Label>
-                                    <Input id="title" value={formData.title} onChange={handleChange} placeholder="e.g. Abuja Node Infrastructure Expansion" required />
+                                    <Input id="title" value={formData.title} onChange={handleChange} placeholder="e.g. Abuja Campus Infrastructure Expansion" required />
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
@@ -211,14 +211,14 @@ export default function SubmitProposalPage() {
                 </div>
 
                 <div className="space-y-6">
-                    <Card className="bg-slate-900 text-white border-none shadow-lg">
+                    <Card className="bg-black text-white border-none shadow-lg">
                         <CardHeader>
                             <CardTitle className="text-sm flex items-center gap-2">
-                                <ShieldAlert className="h-4 w-4 text-orange-400" />
+                                <ShieldAlert className="h-4 w-4 text-[#FF6200]" />
                                 {user?.role === 'ceo' ? 'Directive Integrity' : 'Submission Integrity'}
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="text-xs space-y-4 text-slate-300 leading-relaxed">
+                        <CardContent className="text-xs space-y-4 text-white/70 leading-relaxed">
                             {user?.role === 'ceo' ? (
                                 <>
                                     <p>Directives logged here are immediately broadcast to the relevant department queues for execution.</p>
@@ -226,11 +226,11 @@ export default function SubmitProposalPage() {
                                 </>
                             ) : (
                                 <>
-                                    <p>Proposals submitted through this terminal are logged with high-integrity audit trails.</p>
+                                    <p>Proposals submitted through this Dashboard are logged with high-integrity audit trails.</p>
                                     <p>The CEO will receive an immediate notification in their <span className="text-primary font-bold">Vision Command Queue</span>.</p>
                                 </>
                             )}
-                            <div className="p-3 bg-slate-800 rounded-lg border border-slate-700">
+                            <div className="p-3 bg-white/10 rounded-lg border border-white/20">
                                 <p className="font-bold text-white mb-1">Status Tracking:</p>
                                 <ul className="space-y-1 list-disc pl-4">
                                     <li>Pending Review</li>
@@ -256,7 +256,7 @@ export default function SubmitProposalPage() {
                                             <FileText className="h-3 w-3 text-primary shrink-0" />
                                             <span className="text-[10px] font-medium truncate max-w-[120px]">{prop.title}</span>
                                         </div>
-                                        <Badge variant="outline" className={`text-[8px] h-4 ${prop.status === 'approved' ? 'bg-green-100 text-green-800' : 'text-zinc-500'}`}>{prop.status.toUpperCase()}</Badge>
+                                        <Badge variant="outline" className={`text-[8px] h-4 ${prop.status === 'approved' ? 'bg-[#FF6200]/10 text-[#FF6200]' : 'text-white/40'}`}>{prop.status.toUpperCase()}</Badge>
                                     </div>
                                 ))
                             )}

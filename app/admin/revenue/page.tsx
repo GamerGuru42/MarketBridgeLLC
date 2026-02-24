@@ -133,7 +133,7 @@ export default function RevenueManagementPage() {
     const getTypeBadge = (type: string) => {
         switch (type) {
             case 'order_fee': return <Badge className="bg-[#FF6200]/10 text-[#FF6200] border-[#FF6200]/20 font-black uppercase text-[10px]">Order Fee</Badge>;
-            case 'subscription': return <Badge className="bg-zinc-800 text-zinc-400 border-zinc-700 font-black uppercase text-[10px]">Plan</Badge>;
+            case 'subscription': return <Badge className="bg-zinc-800 text-white/60 border-zinc-700 font-black uppercase text-[10px]">Plan</Badge>;
             default: return <Badge variant="outline" className="font-black uppercase text-[10px]">{type.replace('_', ' ')}</Badge>;
         }
     };
@@ -141,7 +141,7 @@ export default function RevenueManagementPage() {
     const getStatusBadge = (record: RevenueRecord) => {
         if (record.refund_status === 'processed') {
             return (
-                <Badge className="bg-white/10 text-zinc-500 border-white/5 text-[10px] font-black italic">
+                <Badge className="bg-white/10 text-white/40 border-white/5 text-[10px] font-black italic">
                     REFUNDED
                 </Badge>
             );
@@ -149,7 +149,7 @@ export default function RevenueManagementPage() {
         return (
             <Badge className={`text-[10px] font-black uppercase tracking-widest ${record.status === 'collected'
                 ? 'bg-[#FF6200] text-black'
-                : 'bg-zinc-800 text-zinc-500 border-zinc-700'
+                : 'bg-zinc-800 text-white/40 border-zinc-700'
                 }`}>
                 {record.status}
             </Badge>
@@ -165,7 +165,7 @@ export default function RevenueManagementPage() {
                         <h1 className="text-5xl font-black uppercase tracking-tighter italic mb-2">
                             Revenue <span className="text-[#FF6200]">Analytics</span>
                         </h1>
-                        <p className="text-zinc-500 font-mono text-sm uppercase tracking-widest">
+                        <p className="text-white/40 font-mono text-sm uppercase tracking-widest">
                             Platform fee tracking & commission analytics
                         </p>
                     </div>
@@ -174,7 +174,7 @@ export default function RevenueManagementPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                     <Card className="bg-zinc-900 border-white/10 border-l-4 border-l-[#FF6200]">
                         <CardHeader className="pb-3">
-                            <CardTitle className="text-zinc-500 text-xs uppercase tracking-wider font-extrabold flex items-center gap-2">
+                            <CardTitle className="text-white/40 text-xs uppercase tracking-wider font-extrabold flex items-center gap-2">
                                 <TrendingUp className="h-4 w-4" />
                                 Total Revenue
                             </CardTitle>
@@ -183,13 +183,13 @@ export default function RevenueManagementPage() {
                             <div className="text-3xl font-black text-white italic tracking-tighter">
                                 ₦{stats.totalRevenue.toLocaleString()}
                             </div>
-                            <p className="text-[10px] text-zinc-600 mt-1 font-mono uppercase">All-time earnings</p>
+                            <p className="text-[10px] text-white/30 mt-1 font-mono uppercase">All-time earnings</p>
                         </CardContent>
                     </Card>
 
                     <Card className="bg-zinc-900 border-white/10 border-l-4 border-l-white">
                         <CardHeader className="pb-3">
-                            <CardTitle className="text-zinc-500 text-xs uppercase tracking-wider font-extrabold flex items-center gap-2">
+                            <CardTitle className="text-white/40 text-xs uppercase tracking-wider font-extrabold flex items-center gap-2">
                                 <Calendar className="h-4 w-4" />
                                 This Month
                             </CardTitle>
@@ -198,13 +198,13 @@ export default function RevenueManagementPage() {
                             <div className="text-3xl font-black text-white italic tracking-tighter">
                                 ₦{stats.monthRevenue.toLocaleString()}
                             </div>
-                            <p className="text-[10px] text-zinc-600 mt-1 font-mono uppercase">Current period</p>
+                            <p className="text-[10px] text-white/30 mt-1 font-mono uppercase">Current period</p>
                         </CardContent>
                     </Card>
 
                     <Card className="bg-zinc-900 border-white/10 border-l-4 border-l-[#FF6200]">
                         <CardHeader className="pb-3">
-                            <CardTitle className="text-zinc-500 text-xs uppercase tracking-wider font-extrabold flex items-center gap-2">
+                            <CardTitle className="text-white/40 text-xs uppercase tracking-wider font-extrabold flex items-center gap-2">
                                 <ShoppingCart className="h-4 w-4" />
                                 Volume
                             </CardTitle>
@@ -213,13 +213,13 @@ export default function RevenueManagementPage() {
                             <div className="text-3xl font-black text-white italic tracking-tighter">
                                 {stats.totalTransactions}
                             </div>
-                            <p className="text-[10px] text-zinc-600 mt-1 font-mono uppercase">Fee events</p>
+                            <p className="text-[10px] text-white/30 mt-1 font-mono uppercase">Fee events</p>
                         </CardContent>
                     </Card>
 
                     <Card className="bg-zinc-900 border-white/10 border-l-4 border-l-zinc-700">
                         <CardHeader className="pb-3">
-                            <CardTitle className="text-zinc-500 text-xs uppercase tracking-wider font-extrabold flex items-center gap-2">
+                            <CardTitle className="text-white/40 text-xs uppercase tracking-wider font-extrabold flex items-center gap-2">
                                 <DollarSign className="h-4 w-4" />
                                 Avg Rate
                             </CardTitle>                        </CardHeader>
@@ -227,7 +227,7 @@ export default function RevenueManagementPage() {
                             <div className="text-3xl font-black text-white italic tracking-tighter">
                                 ₦{stats.averageCommission.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                             </div>
-                            <p className="text-[10px] text-zinc-600 mt-1 font-mono uppercase">Per transaction</p>
+                            <p className="text-[10px] text-white/30 mt-1 font-mono uppercase">Per transaction</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -239,7 +239,7 @@ export default function RevenueManagementPage() {
                             onClick={() => setFilter(type)}
                             className={`px-6 py-3 font-black text-[10px] uppercase tracking-[0.2em] transition-all border italic ${filter === type
                                 ? 'bg-[#FF6200] text-black border-[#FF6200]'
-                                : 'bg-transparent text-zinc-500 border-white/10 hover:border-[#FF6200]'
+                                : 'bg-transparent text-white/40 border-white/10 hover:border-[#FF6200]'
                                 }`}
                         >
                             {type.replace('_', ' ')}
@@ -257,14 +257,14 @@ export default function RevenueManagementPage() {
                         {loading ? (
                             <div className="flex justify-center py-20"><Loader2 className="animate-spin text-[#FF6200]" /></div>
                         ) : records.length === 0 ? (
-                            <div className="text-center py-20 text-zinc-600 font-black uppercase text-xs italic">
-                                Zero signals detected
+                            <div className="text-center py-20 text-white/30 font-black uppercase text-xs italic">
+                                Zero Notices detected
                             </div>
                         ) : (
                             <div className="overflow-x-auto">
                                 <table className="w-full">
                                     <thead>
-                                        <tr className="bg-black/50 text-[10px] font-black uppercase text-zinc-500 tracking-widest italic">
+                                        <tr className="bg-black/50 text-[10px] font-black uppercase text-white/40 tracking-widest italic">
                                             <th className="text-left py-6 px-6">Timestamp</th>
                                             <th className="text-left py-6 px-6">Event</th>
                                             <th className="text-left py-6 px-6">Participants</th>
@@ -276,7 +276,7 @@ export default function RevenueManagementPage() {
                                     <tbody className="divide-y divide-white/5">
                                         {records.map((record) => (
                                             <tr key={record.id} className="hover:bg-white/5 transition-colors group">
-                                                <td className="py-6 px-6 text-[10px] font-mono text-zinc-500">
+                                                <td className="py-6 px-6 text-[10px] font-mono text-white/40">
                                                     {new Date(record.created_at).toLocaleString()}
                                                 </td>
                                                 <td className="py-6 px-6">
@@ -285,13 +285,13 @@ export default function RevenueManagementPage() {
                                                 <td className="py-6 px-6">
                                                     <div className="flex flex-col gap-1">
                                                         <span className="text-xs font-bold text-white line-clamp-1">{record.seller?.display_name || 'Dealer'}</span>
-                                                        <span className="text-[10px] text-zinc-600 italic">Target: {record.buyer?.display_name || 'Buyer'}</span>
+                                                        <span className="text-[10px] text-white/30 italic">Target: {record.buyer?.display_name || 'Buyer'}</span>
                                                     </div>
                                                 </td>
                                                 <td className="py-6 px-6 text-right">
                                                     <div className="flex flex-col gap-1">
                                                         <span className="text-xl font-black text-white italic tracking-tighter">₦{parseFloat(record.amount.toString()).toLocaleString()}</span>
-                                                        {record.percentage_fee && <span className="text-[10px] text-zinc-600 font-bold">{record.percentage_fee}% Fee</span>}
+                                                        {record.percentage_fee && <span className="text-[10px] text-white/30 font-bold">{record.percentage_fee}% Fee</span>}
                                                     </div>
                                                 </td>
                                                 <td className="py-6 px-6 text-center">
@@ -302,7 +302,7 @@ export default function RevenueManagementPage() {
                                                         <Button
                                                             variant="ghost"
                                                             size="sm"
-                                                            className="h-8 w-8 p-0 text-zinc-500 hover:text-red-500 hover:bg-red-500/10"
+                                                            className="h-8 w-8 p-0 text-white/40 hover:text-[#FF6200] hover:bg-[#FF6200]/10"
                                                             onClick={() => handleRefund(record.id)}
                                                             disabled={processingRefund === record.id}
                                                         >

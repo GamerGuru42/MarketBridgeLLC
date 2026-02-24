@@ -175,12 +175,12 @@ export default function VerificationsPage() {
                                     </div>
                                 )}
                                 <div className="absolute top-2 right-2">
-                                    <Badge className="bg-orange-500">Pending Review</Badge>
+                                    <Badge className="bg-[#FF6200]">Pending Review</Badge>
                                 </div>
                                 {listing.videos && listing.videos.length > 0 && (
                                     <div className="absolute bottom-2 right-2">
                                         <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm border-primary/20 flex items-center gap-1">
-                                            <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse"></div>
+                                            <div className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse"></div>
                                             Video Available
                                         </Badge>
                                     </div>

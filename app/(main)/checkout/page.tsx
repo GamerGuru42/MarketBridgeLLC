@@ -159,12 +159,12 @@ export default function CheckoutPage() {
                 <div className="text-center space-y-6 mb-16">
                     <div className="flex items-center justify-center gap-3">
                         <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200] animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading leading-tight">Secure Handshake Protocol</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 font-heading leading-tight">Secure Handshake System</span>
                     </div>
                     <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
                         Order <span className="text-[#FF6200]">Verification</span>
                     </h1>
-                    <p className="text-zinc-500 font-medium max-w-2xl mx-auto italic lowercase leading-relaxed">
+                    <p className="text-white/40 font-medium max-w-2xl mx-auto italic lowercase leading-relaxed">
                         To guarantee 0% transaction fees, please transfer the exact amount directly to our secure escrow account.
                     </p>
                 </div>
@@ -183,10 +183,10 @@ export default function CheckoutPage() {
                                     <h3 className="text-xs font-black uppercase tracking-widest text-[#FF6200]">MarketBridge Escrow Account</h3>
                                     <div className="space-y-1">
                                         <p className="text-3xl font-black tracking-tighter text-white">{bankDetails.account_number}</p>
-                                        <p className="text-sm font-bold text-zinc-400">{bankDetails.bank_name}</p>
+                                        <p className="text-sm font-bold text-white/60">{bankDetails.bank_name}</p>
                                     </div>
                                     <div className="pt-4 border-t border-white/5">
-                                        <p className="text-[10px] font-mono text-zinc-500 uppercase">Account Name</p>
+                                        <p className="text-[10px] font-mono text-white/40 uppercase">Account Name</p>
                                         <p className="text-sm font-bold text-white">{bankDetails.account_name}</p>
                                     </div>
                                 </div>
@@ -200,7 +200,7 @@ export default function CheckoutPage() {
 
                                 <div className="space-y-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="ref" className="text-xs uppercase font-bold text-zinc-500">Transaction Reference / Sender Name</Label>
+                                        <Label htmlFor="ref" className="text-xs uppercase font-bold text-white/40">Transaction Reference / Sender Name</Label>
                                         <Input
                                             id="ref"
                                             value={paymentRef}
@@ -211,7 +211,7 @@ export default function CheckoutPage() {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label className="text-xs uppercase font-bold text-zinc-500">Upload Receipt (Screenshot)</Label>
+                                        <Label className="text-xs uppercase font-bold text-white/40">Upload Receipt (Screenshot)</Label>
                                         <div className="border-2 border-dashed border-white/10 rounded-xl p-8 text-center hover:border-[#FF6200]/50 transition-colors cursor-pointer relative">
                                             <input
                                                 type="file"
@@ -226,10 +226,10 @@ export default function CheckoutPage() {
                                                 <div className="flex flex-col items-center gap-2">
                                                     <CheckCircle2 className="h-8 w-8 text-[#FF6200]" />
                                                     <p className="text-xs font-bold text-[#FF6200]">Receipt Uploaded</p>
-                                                    <a href={proofUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] underline text-zinc-500 z-10 relative">View</a>
+                                                    <a href={proofUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] underline text-white/40 z-10 relative">View</a>
                                                 </div>
                                             ) : (
-                                                <div className="flex flex-col items-center gap-2 text-zinc-500">
+                                                <div className="flex flex-col items-center gap-2 text-white/40">
                                                     <UploadCloud className="h-8 w-8" />
                                                     <p className="text-xs font-bold">Click to upload screenshot</p>
                                                 </div>
@@ -247,7 +247,7 @@ export default function CheckoutPage() {
                                         >
                                             {agreed && <CheckCircle2 className="h-3.5 w-3.5 text-black" />}
                                         </div>
-                                        <p className="text-xs text-zinc-500 cursor-pointer select-none" onClick={() => setAgreed(!agreed)}>
+                                        <p className="text-xs text-white/40 cursor-pointer select-none" onClick={() => setAgreed(!agreed)}>
                                             I confirm I have transferred <span className="text-white font-bold">₦{(useCoins ? total - maxRedeemable : total).toLocaleString()}</span> to the account above.
                                         </p>
                                     </div>
@@ -256,7 +256,7 @@ export default function CheckoutPage() {
                         </div>
 
                         <div className="flex items-center justify-between px-8">
-                            <Button variant="ghost" onClick={() => router.back()} className="text-zinc-600 hover:text-white text-[10px] font-black uppercase tracking-widest">
+                            <Button variant="ghost" onClick={() => router.back()} className="text-white/30 hover:text-white text-[10px] font-black uppercase tracking-widest">
                                 <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
                             </Button>
                         </div>
@@ -272,15 +272,15 @@ export default function CheckoutPage() {
                             <div className="relative z-10 space-y-10">
                                 <div className="space-y-1">
                                     <h3 className="text-2xl font-black uppercase tracking-tighter font-heading italic">Order Summary</h3>
-                                    <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest italic">Manual Verification Node</p>
+                                    <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest italic">Manual Verification Campus</p>
                                 </div>
 
                                 <div className="space-y-6">
-                                    <div className="flex justify-between items-center text-zinc-400">
+                                    <div className="flex justify-between items-center text-white/60">
                                         <span className="text-[10px] font-black uppercase tracking-widest font-heading">Subtotal</span>
                                         <span className="text-sm font-bold">₦{total.toLocaleString()}</span>
                                     </div>
-                                    <div className="flex justify-between items-center text-zinc-400">
+                                    <div className="flex justify-between items-center text-white/60">
                                         <span className="text-[10px] font-black uppercase tracking-widest font-heading">Fees (0%)</span>
                                         <span className="text-sm font-black text-[#FF6200] uppercase tracking-tighter italic">WAIVED</span>
                                     </div>
@@ -290,7 +290,7 @@ export default function CheckoutPage() {
                                             <div className="flex justify-between items-center">
                                                 <div className="flex items-center gap-2">
                                                     <Zap className="h-3 w-3 text-[#FF6200]" />
-                                                    <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Redeem {user.coins_balance} MC</span>
+                                                    <span className="text-[9px] font-black uppercase tracking-widest text-white/60">Redeem {user.coins_balance} MC</span>
                                                 </div>
                                                 <div
                                                     className={cn(
@@ -317,7 +317,7 @@ export default function CheckoutPage() {
                                     <Separator className="bg-white/5" />
 
                                     <div className="flex flex-col space-y-2">
-                                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] font-heading">Total To Send</span>
+                                        <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] font-heading">Total To Send</span>
                                         <span className="text-5xl font-black text-[#FF6200] tracking-tighter italic font-heading">
                                             ₦{(useCoins ? total - maxRedeemable : total).toLocaleString()}
                                         </span>
@@ -339,7 +339,7 @@ export default function CheckoutPage() {
                                             </>
                                         )}
                                     </Button>
-                                    <p className="text-[8px] text-zinc-600 font-bold uppercase tracking-widest text-center mt-6 italic">
+                                    <p className="text-[8px] text-white/30 font-bold uppercase tracking-widest text-center mt-6 italic">
                                         Your order will be processed once payment is confirmed by Admin.
                                     </p>
                                 </div>
@@ -348,7 +348,7 @@ export default function CheckoutPage() {
 
                         {/* Items Preview (Compact) */}
                         <div className="glass-card p-6 rounded-3xl border-white/5 space-y-4">
-                            <h4 className="text-xs font-black uppercase tracking-widest text-zinc-500">Items ({items.length})</h4>
+                            <h4 className="text-xs font-black uppercase tracking-widest text-white/40">Items ({items.length})</h4>
                             <div className="space-y-3 max-h-60 overflow-y-auto pr-2">
                                 {items.map(item => (
                                     <div key={item.listingId} className="flex items-center gap-4">
@@ -357,7 +357,7 @@ export default function CheckoutPage() {
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <p className="text-[10px] font-bold text-white truncate">{item.title}</p>
-                                            <p className="text-[9px] text-zinc-500">Qty: {item.quantity}</p>
+                                            <p className="text-[9px] text-white/40">Qty: {item.quantity}</p>
                                         </div>
                                         <p className="text-xs font-bold text-[#FF6200]">₦{item.price.toLocaleString()}</p>
                                     </div>

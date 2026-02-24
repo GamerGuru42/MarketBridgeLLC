@@ -3,7 +3,7 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Server, Database, Activity, ShieldCheck, Zap, Cpu, HardDrive, Terminal, Lock } from 'lucide-react';
+import { Server, Database, Activity, ShieldCheck, Zap, Cpu, HardDrive, Dashboard, Lock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 
@@ -20,27 +20,27 @@ export default function CTOPage() {
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <Badge variant="outline" className="border-green-500 text-green-600 bg-green-50 font-mono">
+                    <Badge variant="outline" className="border-[#FF6200] text-[#FF6200] bg-green-50 font-mono">
                         CLUSTER: NIGERIA-WEST-1 (OK)
                     </Badge>
-                    <div className="h-3 w-3 rounded-full bg-green-500 animate-pulse"></div>
+                    <div className="h-3 w-3 rounded-full bg-[#FF6200] animate-pulse"></div>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card className="bg-slate-950 text-white border-slate-800">
+                <Card className="bg-black text-white border-white/10">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-mono uppercase text-slate-400 font-bold italic underline">Global System Uptime</CardTitle>
-                        <Server className="h-4 w-4 text-green-400" />
+                        <CardTitle className="text-xs font-mono uppercase text-white/60 font-bold italic underline">Global System Uptime</CardTitle>
+                        <Server className="h-4 w-4 text-[#FF6200]" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-mono font-bold">99.98%</div>
-                        <p className="text-[10px] text-slate-500 mt-1 font-bold">LTM Performance Baseline</p>
+                        <p className="text-[10px] text-white/40 mt-1 font-bold">LTM Performance Baseline</p>
                     </CardContent>
                 </Card>
-                <Card className="bg-slate-950 text-white border-slate-800">
+                <Card className="bg-black text-white border-white/10">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-mono uppercase text-slate-400 font-bold italic underline">Avg API Latency</CardTitle>
+                        <CardTitle className="text-xs font-mono uppercase text-white/60 font-bold italic underline">Avg API Latency</CardTitle>
                         <Zap className="h-4 w-4 text-yellow-400" />
                     </CardHeader>
                     <CardContent>
@@ -48,19 +48,19 @@ export default function CTOPage() {
                         <p className="text-[10px] text-yellow-400/70 mt-1 font-bold">Internal Network Optimized</p>
                     </CardContent>
                 </Card>
-                <Card className="bg-slate-950 text-white border-slate-800">
+                <Card className="bg-black text-white border-white/10">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-mono uppercase text-slate-400 font-bold italic underline">DB Connection Load</CardTitle>
-                        <Database className="h-4 w-4 text-blue-400" />
+                        <CardTitle className="text-xs font-mono uppercase text-white/60 font-bold italic underline">DB Connection Load</CardTitle>
+                        <Database className="h-4 w-4 text-[#FF6200]" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-mono font-bold">14%</div>
-                        <p className="text-[10px] text-slate-500 mt-1 font-bold">1.2M Queries Hourly</p>
+                        <p className="text-[10px] text-white/40 mt-1 font-bold">1.2M Queries Hourly</p>
                     </CardContent>
                 </Card>
-                <Card className="bg-slate-950 text-white border-slate-800">
+                <Card className="bg-black text-white border-white/10">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-mono uppercase text-slate-400 font-bold italic underline">Security Scanning</CardTitle>
+                        <CardTitle className="text-xs font-mono uppercase text-white/60 font-bold italic underline">Security Scanning</CardTitle>
                         <ShieldCheck className="h-4 w-4 text-purple-400" />
                     </CardHeader>
                     <CardContent>
@@ -106,7 +106,7 @@ export default function CTOPage() {
                         </div>
                         <div className="p-4 bg-muted/30 rounded-lg border border-primary/5">
                             <p className="text-xs text-muted-foreground font-mono">
-                                <Terminal className="h-3 w-3 inline mr-2" />
+                                <Dashboard className="h-3 w-3 inline mr-2" />
                                 Video transcoder optimization active. CDN cache hit rate: 94.2%. Video delivery latency in Abuja: 45ms.
                             </p>
                         </div>

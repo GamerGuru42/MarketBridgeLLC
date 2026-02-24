@@ -116,7 +116,7 @@ export default function CEOLoginPage() {
                         <CardTitle className="text-2xl font-black tracking-[0.3em] text-white uppercase italic">
                             Vision Command
                         </CardTitle>
-                        <CardDescription className="text-zinc-500 font-serif italic text-sm mt-2">
+                        <CardDescription className="text-white/40 font-serif italic text-sm mt-2">
                             MarketBridge.io | Executive Authentication Portal
                         </CardDescription>
                     </div>
@@ -124,8 +124,8 @@ export default function CEOLoginPage() {
 
                 <CardContent className="px-12">
                     {error && (
-                        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-8 text-center">
-                            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest leading-relaxed">
+                        <div className="bg-[#FF6200]/10 border border-[#FF6200]/20 rounded-lg p-4 mb-8 text-center">
+                            <p className="text-[10px] text-[#FF6200] font-bold uppercase tracking-widest leading-relaxed">
                                 Security Alert: {error}
                             </p>
                         </div>
@@ -133,13 +133,13 @@ export default function CEOLoginPage() {
 
                     <form onSubmit={handleSubmit} className="space-y-8">
                         <div className="space-y-1">
-                            <Label className="text-[9px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">Master ID</Label>
+                            <Label className="text-[9px] font-black uppercase text-white/40 tracking-[0.2em] ml-1">Master ID</Label>
                             <div className="relative group">
-                                <Mail className="absolute left-3 top-3 h-4 w-4 text-zinc-700 group-focus-within:text-[#d4af37] transition-colors" />
+                                <Mail className="absolute left-3 top-3 h-4 w-4 text-white/20 group-focus-within:text-[#d4af37] transition-colors" />
                                 <Input
                                     name="email"
                                     type="email"
-                                    className="bg-transparent border-b border-zinc-900 border-x-0 border-t-0 rounded-none h-12 text-sm focus:ring-0 focus:border-[#d4af37] transition-all px-10 placeholder:text-zinc-800 text-white"
+                                    className="bg-transparent border-b border-zinc-900 border-x-0 border-t-0 rounded-none h-12 text-sm focus:ring-0 focus:border-[#d4af37] transition-all px-10 placeholder:text-white/10 text-white"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
@@ -149,13 +149,13 @@ export default function CEOLoginPage() {
                         </div>
 
                         <div className="space-y-1 pt-2">
-                            <Label className="text-[9px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">Signature Key</Label>
+                            <Label className="text-[9px] font-black uppercase text-white/40 tracking-[0.2em] ml-1">Signature Key</Label>
                             <div className="relative group">
-                                <Lock className="absolute left-3 top-3 h-4 w-4 text-zinc-700 group-focus-within:text-[#d4af37] transition-colors" />
+                                <Lock className="absolute left-3 top-3 h-4 w-4 text-white/20 group-focus-within:text-[#d4af37] transition-colors" />
                                 <Input
                                     name="password"
                                     type={showPassword ? 'text' : 'password'}
-                                    className="bg-transparent border-b border-zinc-900 border-x-0 border-t-0 rounded-none h-12 text-sm focus:ring-0 focus:border-[#d4af37] transition-all px-10 placeholder:text-zinc-800 text-white"
+                                    className="bg-transparent border-b border-zinc-900 border-x-0 border-t-0 rounded-none h-12 text-sm focus:ring-0 focus:border-[#d4af37] transition-all px-10 placeholder:text-white/10 text-white"
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
@@ -164,7 +164,7 @@ export default function CEOLoginPage() {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-800 hover:text-[#d4af37] transition-colors"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/10 hover:text-[#d4af37] transition-colors"
                                 >
                                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                 </button>
@@ -190,8 +190,8 @@ export default function CEOLoginPage() {
 
                 <CardFooter className="flex flex-col items-center gap-6 py-12 relative z-10">
                     <div className="flex items-center gap-8">
-                        <Link href="/ceo/signup" className="text-[9px] font-bold text-zinc-600 hover:text-[#d4af37] uppercase tracking-widest transition-colors">Apply for Access</Link>
-                        <Link href="/" className="text-[9px] font-bold text-zinc-600 hover:text-white uppercase tracking-widest transition-colors underline">Public Terminal</Link>
+                        <Link href="/ceo/signup" className="text-[9px] font-bold text-white/30 hover:text-[#d4af37] uppercase tracking-widest transition-colors">Apply for Access</Link>
+                        <Link href="/" className="text-[9px] font-bold text-white/30 hover:text-white uppercase tracking-widest transition-colors underline">Public Dashboard</Link>
                     </div>
                 </CardFooter>
             </Card>

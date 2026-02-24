@@ -115,7 +115,7 @@ function PublicOnboardingContent() {
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => step === 'bank' ? setStep('profile') : router.push('/public')}
-                        className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors"
+                        className="flex items-center gap-2 text-white/40 hover:text-white transition-colors"
                     >
                         <ArrowLeft className="h-4 w-4" />
                         <span className="text-[10px] font-black uppercase tracking-widest">Back</span>
@@ -149,7 +149,7 @@ function PublicOnboardingContent() {
                 {step === 'profile' && (
                     <form onSubmit={handleProfileSubmit} className="space-y-6">
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Display Name *</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Display Name *</Label>
                             <Input
                                 value={form.displayName}
                                 onChange={e => setForm(p => ({ ...p, displayName: e.target.value }))}
@@ -159,7 +159,7 @@ function PublicOnboardingContent() {
                             />
                         </div>
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Business / Store Name *</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Business / Store Name *</Label>
                             <Input
                                 value={form.businessName}
                                 onChange={e => setForm(p => ({ ...p, businessName: e.target.value }))}
@@ -169,7 +169,7 @@ function PublicOnboardingContent() {
                             />
                         </div>
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Phone Number</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Phone Number</Label>
                             <Input
                                 value={form.phone}
                                 onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
@@ -179,7 +179,7 @@ function PublicOnboardingContent() {
                             />
                         </div>
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">City / Location</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">City / Location</Label>
                             <Input
                                 value={form.location}
                                 onChange={e => setForm(p => ({ ...p, location: e.target.value }))}
@@ -190,7 +190,7 @@ function PublicOnboardingContent() {
 
                         <div className="bg-[#FF6200]/5 border border-[#FF6200]/20 rounded-2xl p-4">
                             <p className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] mb-1">Subscription</p>
-                            <p className="text-xs text-zinc-400">₦1,000/month or ₦10,000/year · Auto-renew via Paystack · Cancel anytime</p>
+                            <p className="text-xs text-white/60">₦1,000/month or ₦10,000/year · Auto-renew via Paystack · Cancel anytime</p>
                         </div>
 
                         <Button type="submit" className="w-full h-14 bg-[#FF6200] text-black font-black uppercase tracking-widest rounded-2xl hover:bg-[#FF7A29] transition-all">
@@ -203,7 +203,7 @@ function PublicOnboardingContent() {
                 {step === 'bank' && (
                     <form onSubmit={handleBankSubmit} className="space-y-6">
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Settlement Bank *</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Settlement Bank *</Label>
                             <select
                                 value={form.bankCode}
                                 onChange={e => setForm(p => ({ ...p, bankCode: e.target.value }))}
@@ -217,7 +217,7 @@ function PublicOnboardingContent() {
                             </select>
                         </div>
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Account Number *</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Account Number *</Label>
                             <Input
                                 value={form.accountNumber}
                                 onChange={e => setForm(p => ({ ...p, accountNumber: e.target.value.replace(/\D/g, '').slice(0, 10) }))}
@@ -229,8 +229,8 @@ function PublicOnboardingContent() {
                         </div>
 
                         <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1">How Payouts Work</p>
-                            <p className="text-xs text-zinc-400">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">How Payouts Work</p>
+                            <p className="text-xs text-white/60">
                                 After each sale, 94.7% goes directly to your bank account. MarketBridge retains 5.3% commission. Automatic via Paystack.
                             </p>
                         </div>
@@ -263,7 +263,7 @@ function PublicOnboardingContent() {
                         </div>
                         <div className="space-y-3">
                             <h2 className="text-4xl font-black uppercase tracking-tighter text-white">Bank Connected!</h2>
-                            <p className="text-zinc-400 max-w-sm mx-auto">Your seller account is live. Payouts are automatic. Start listing now.</p>
+                            <p className="text-white/60 max-w-sm mx-auto">Your seller account is live. Payouts are automatic. Start listing now.</p>
                         </div>
                         <Button
                             onClick={() => router.push('/seller/listings/new')}
@@ -273,7 +273,7 @@ function PublicOnboardingContent() {
                         </Button>
                         <button
                             onClick={() => router.push('/seller/dashboard')}
-                            className="block text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors mx-auto"
+                            className="block text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors mx-auto"
                         >
                             Go to Dashboard
                         </button>

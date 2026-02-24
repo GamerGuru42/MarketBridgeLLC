@@ -1,6 +1,4 @@
-import { createClient } from './supabase/client';
-
-const supabase = createClient();
+import { supabaseAdmin } from './supabase/admin';
 
 export const COIN_REWARD_RATE_BUYER = 100; // 1 coin per ₦100 spent
 export const COIN_REWARD_RATE_SELLER = 200; // 1 coin per ₦200 sold
@@ -12,7 +10,7 @@ export async function earnCoinsBuyer(userId: string, amountSpent: number, orderI
     const coinsToEarn = Math.floor(amountSpent / COIN_REWARD_RATE_BUYER);
     if (coinsToEarn <= 0) return;
 
-    const { error } = await supabase.rpc('add_coins', {
+    const { error } = await supabaseAdmin.rpc('add_coins', {
         amount_to_add: coinsToEarn,
         user_id: userId,
         trans_type: 'earn_purchase',
@@ -29,7 +27,7 @@ export async function earnCoinsSeller(userId: string, amountSold: number, orderI
     const coinsToEarn = Math.floor(amountSold / COIN_REWARD_RATE_SELLER);
     if (coinsToEarn <= 0) return;
 
-    const { error } = await supabase.rpc('add_coins', {
+    const { error } = await supabaseAdmin.rpc('add_coins', {
         amount_to_add: coinsToEarn,
         user_id: userId,
         trans_type: 'earn_sale',
@@ -43,7 +41,7 @@ export async function earnCoinsSeller(userId: string, amountSold: number, orderI
  * Redeem coins for a discount
  */
 export async function redeemCoins(userId: string, coinsToRedeem: number, orderId: string) {
-    const { error } = await supabase.rpc('subtract_coins', {
+    const { error } = await supabaseAdmin.rpc('subtract_coins', {
         amount_to_subtract: coinsToRedeem,
         user_id: userId,
         trans_type: 'redeem',

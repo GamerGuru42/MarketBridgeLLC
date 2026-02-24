@@ -27,7 +27,7 @@ const siteUrl = process.env.NEXT_PUBLIC_CLIENT_URL || 'https://marketbridge.com.
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: "MarketBridge Official - Nigeria's Most Trusted Campus Marketplace",
-  description: "The official hyper-local student marketplace for Abuja universities. Nigeria 2026 Campus Beta. Trade safely within your university terminal.",
+  description: "The official hyper-local student marketplace for Abuja universities. Nigeria 2026 Campus Beta. Trade safely within your university Dashboard.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -75,7 +75,7 @@ export const viewport: Viewport = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactCampus;
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>

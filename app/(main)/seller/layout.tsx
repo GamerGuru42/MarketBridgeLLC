@@ -30,7 +30,7 @@ const sellerItems = [
 export default function SellerLayout({
     children,
 }: {
-    children: React.ReactNode;
+    children: React.ReactCampus;
 }) {
     const { user, loading } = useAuth();
     const pathname = usePathname();
@@ -54,10 +54,10 @@ export default function SellerLayout({
     return (
         <div className="flex min-h-screen">
             <div className="hidden md:block w-64 fixed h-full z-10">
-                <Sidebar items={sellerItems} title="Merchant Terminal" />
+                <Sidebar items={sellerItems} title="Merchant Dashboard" />
             </div>
             <div className="flex-1 md:ml-64 flex flex-col">
-                <DashboardHeader title="Merchant Terminal" sidebarItems={sellerItems} />
+                <DashboardHeader title="Merchant Dashboard" sidebarItems={sellerItems} />
                 <main className="flex-1">
                     {children}
                 </main>

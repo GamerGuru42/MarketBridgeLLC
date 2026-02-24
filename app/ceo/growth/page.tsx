@@ -35,7 +35,7 @@ export default function CEOGrowthPage() {
                         Real-time growth metrics and expansion vectors.
                     </p>
                 </div>
-                <Badge variant="outline" className="px-3 py-1 bg-green-950/30 text-green-500 border-green-900">
+                <Badge variant="outline" className="px-3 py-1 bg-black text-[#FF6200] border-white/10">
                     <TrendingUp className="h-3 w-3 mr-2" />
                     Growth Status: Active
                 </Badge>
@@ -48,7 +48,7 @@ export default function CEOGrowthPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-3xl font-bold">{stats?.totalUsers.toLocaleString() || 0}</div>
-                        <div className="flex items-center text-xs text-blue-500 mt-1">
+                        <div className="flex items-center text-xs text-[#FF6200] mt-1">
                             <Users className="h-3 w-3 mr-1" />
                             Registered Accounts
                         </div>
@@ -60,7 +60,7 @@ export default function CEOGrowthPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-3xl font-bold">₦{stats?.gmv.toLocaleString() || '0'}</div>
-                        <div className="flex items-center text-xs text-green-500 mt-1">
+                        <div className="flex items-center text-xs text-[#FF6200] mt-1">
                             <DollarSign className="h-3 w-3 mr-1" />
                             Verified Revenue
                         </div>
@@ -72,7 +72,7 @@ export default function CEOGrowthPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-3xl font-bold">{stats?.activeListings.toLocaleString() || 0}</div>
-                        <div className="flex items-center text-xs text-purple-500 mt-1">
+                        <div className="flex items-center text-xs text-[#FF6200] mt-1">
                             <Video className="h-3 w-3 mr-1" />
                             Live Listings
                         </div>
@@ -80,19 +80,19 @@ export default function CEOGrowthPage() {
                 </Card>
             </div>
 
-            <Card className="border-none shadow-lg bg-slate-900/50">
+            <Card className="border-none shadow-lg bg-black/50">
                 <CardHeader>
                     <CardTitle>Regional Distribution</CardTitle>
                     <CardDescription>Dealer density across key operational zones</CardDescription>
                 </CardHeader>
-                <CardContent className="h-[300px] flex items-center justify-center border rounded border-dashed border-slate-700">
+                <CardContent className="h-[300px] flex items-center justify-center border rounded border-dashed border-white/20">
                     <div className="text-center space-y-4">
-                        <BarChart3 className="h-16 w-16 text-slate-700 mx-auto" />
+                        <BarChart3 className="h-16 w-16 text-white/20 mx-auto" />
                         <div className="space-y-1">
-                            <p className="text-2xl font-bold text-slate-400">{stats?.activeDealers || 0}</p>
-                            <p className="text-slate-500 font-mono text-sm uppercase tracking-widest">Verified Dealers Active</p>
+                            <p className="text-2xl font-bold text-white/60">{stats?.activeDealers || 0}</p>
+                            <p className="text-white/40 font-mono text-sm uppercase tracking-widest">Verified Dealers Active</p>
                         </div>
-                        <p className="text-xs text-slate-600 max-w-sm mx-auto">
+                        <p className="text-xs text-white/30 max-w-sm mx-auto">
                             Detailed heatmap requires geolocation data from active sessions. Currently aggregating from user profiles.
                         </p>
                     </div>

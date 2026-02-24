@@ -84,7 +84,7 @@ export default function AdminUsersPage() {
                     message = 'Promoted to Dealer Status';
                     break;
                 case 'ban':
-                    toast('Ban protocol not fully implemented in UI', 'info');
+                    toast('Ban System not fully implemented in UI', 'info');
                     return;
             }
             const { error } = await supabase.from('users').update(updates).eq('id', userId);
@@ -105,10 +105,10 @@ export default function AdminUsersPage() {
 
     const getRoleBadge = (role: string) => {
         switch (role) {
-            case 'admin': return <Badge className="bg-zinc-800 text-zinc-400 border-zinc-700 font-mono uppercase tracking-widest text-[10px]">Admin</Badge>;
+            case 'admin': return <Badge className="bg-zinc-800 text-white/60 border-zinc-700 font-mono uppercase tracking-widest text-[10px]">Admin</Badge>;
             case 'ceo': return <Badge className="bg-[#FF6200]/10 text-[#FF6200] border-[#FF6200]/20 font-mono uppercase tracking-widest text-[10px]">CEO</Badge>;
             case 'dealer': return <Badge className="bg-[#FF6200]/10 text-[#FF6200] border-[#FF6200]/20 font-mono uppercase tracking-widest text-[10px]">Dealer</Badge>;
-            default: return <Badge variant="outline" className="text-zinc-500 border-zinc-800 font-mono uppercase tracking-widest text-[10px]">{role}</Badge>;
+            default: return <Badge variant="outline" className="text-white/40 border-zinc-800 font-mono uppercase tracking-widest text-[10px]">{role}</Badge>;
         }
     };
 
@@ -120,7 +120,7 @@ export default function AdminUsersPage() {
                     <div>
                         <div className="flex items-center gap-3 mb-2">
                             <Users className="h-5 w-5 text-[#FF6200]" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 font-heading">Network Administration</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 font-heading">Network Administration</span>
                         </div>
                         <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading">
                             Identity <span className="text-[#FF6200]">Nexus</span>
@@ -131,10 +131,10 @@ export default function AdminUsersPage() {
                 <div className="glass-card border border-white/10 bg-zinc-900/30 p-1 rounded-xl">
                     <div className="flex flex-col md:flex-row gap-4 justify-between p-4">
                         <div className="relative w-full md:w-96">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
                             <Input
                                 placeholder="Scan for identity signatures..."
-                                className="pl-10 bg-black border-white/10 text-white placeholder:text-zinc-700 h-10 focus:border-[#FF6200]/50"
+                                className="pl-10 bg-black border-white/10 text-white placeholder:text-white/20 h-10 focus:border-[#FF6200]/50"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -148,7 +148,7 @@ export default function AdminUsersPage() {
                                     onClick={() => setFilterRole(role === 'All' ? null : role.toLowerCase())}
                                     className={`text-[10px] font-black uppercase tracking-widest h-10 ${filterRole === (role === 'All' ? null : role.toLowerCase())
                                         ? 'bg-[#FF6200] text-black hover:bg-[#FF6200]/90'
-                                        : 'border-white/10 text-zinc-400 hover:text-white hover:bg-white/5'
+                                        : 'border-white/10 text-white/60 hover:text-white hover:bg-white/5'
                                         }`}
                                 >
                                     {role}s
@@ -161,11 +161,11 @@ export default function AdminUsersPage() {
                         <Table>
                             <TableHeader className="bg-black/50">
                                 <TableRow className="border-white/5 hover:bg-transparent">
-                                    <TableHead className="w-[300px] text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading">Identified Entity</TableHead>
-                                    <TableHead className="text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading">Clearance</TableHead>
-                                    <TableHead className="text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading">Status</TableHead>
-                                    <TableHead className="text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading">Inception</TableHead>
-                                    <TableHead className="text-right text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading px-6">Controls</TableHead>
+                                    <TableHead className="w-[300px] text-white/40 uppercase text-[10px] font-black tracking-widest font-heading">Identified Entity</TableHead>
+                                    <TableHead className="text-white/40 uppercase text-[10px] font-black tracking-widest font-heading">Clearance</TableHead>
+                                    <TableHead className="text-white/40 uppercase text-[10px] font-black tracking-widest font-heading">Status</TableHead>
+                                    <TableHead className="text-white/40 uppercase text-[10px] font-black tracking-widest font-heading">Inception</TableHead>
+                                    <TableHead className="text-right text-white/40 uppercase text-[10px] font-black tracking-widest font-heading px-6">Controls</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -173,13 +173,13 @@ export default function AdminUsersPage() {
                                     <TableRow>
                                         <TableCell colSpan={5} className="h-64 text-center">
                                             <Loader2 className="h-8 w-8 animate-spin mx-auto text-[#FF6200]" />
-                                            <p className="mt-2 text-zinc-500 font-mono text-xs uppercase tracking-widest">Establishing Uplink...</p>                                        </TableCell>
+                                            <p className="mt-2 text-white/40 font-mono text-xs uppercase tracking-widest">Establishing Uplink...</p>                                        </TableCell>
                                     </TableRow>
                                 ) : filteredUsers.length === 0 ? (
                                     <TableRow>
                                         <TableCell colSpan={5} className="h-64 text-center">
-                                            <ShieldAlert className="h-10 w-10 mx-auto text-zinc-800 mb-2" />
-                                            <p className="text-zinc-500 font-mono text-xs uppercase tracking-widest italic">No entities detected in sector.</p>
+                                            <ShieldAlert className="h-10 w-10 mx-auto text-white/10 mb-2" />
+                                            <p className="text-white/40 font-mono text-xs uppercase tracking-widest italic">No entities detected in sector.</p>
                                         </TableCell>
                                     </TableRow>
                                 ) : (
@@ -194,7 +194,7 @@ export default function AdminUsersPage() {
                                                         <span className="font-bold text-white group-hover:text-[#FF6200] transition-colors text-sm truncate">
                                                             {u.display_name || 'Anonymous User'}
                                                         </span>
-                                                        <span className="text-xs text-zinc-600 font-mono italic truncate">{u.email}</span>
+                                                        <span className="text-xs text-white/30 font-mono italic truncate">{u.email}</span>
                                                     </div>
                                                 </div>
                                             </TableCell>
@@ -206,14 +206,14 @@ export default function AdminUsersPage() {
                                                         <span className="text-[10px] uppercase font-black tracking-tighter font-heading">Verified</span>
                                                     </div>
                                                 ) : (
-                                                    <div className="flex items-center gap-1.5 text-zinc-600">
+                                                    <div className="flex items-center gap-1.5 text-white/30">
                                                         <ShieldAlert className="h-3.5 w-3.5" />
                                                         <span className="text-[10px] uppercase font-black tracking-tighter font-heading">Unverified</span>
                                                     </div>
                                                 )}
                                             </TableCell>
                                             <TableCell>
-                                                <span className="text-xs font-mono text-zinc-500">
+                                                <span className="text-xs font-mono text-white/40">
                                                     {new Date(u.created_at).toLocaleDateString()}
                                                 </span>
                                             </TableCell>
@@ -231,12 +231,12 @@ export default function AdminUsersPage() {
                                                     )}
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
-                                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-500 hover:text-white hover:bg-white/10">
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-white/40 hover:text-white hover:bg-white/10">
                                                                 <MoreVertical className="h-4 w-4" />
                                                             </Button>
                                                         </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end" className="w-56 bg-zinc-950 border-white/10 text-zinc-300">
-                                                            <DropdownMenuLabel className="text-[10px] font-black uppercase text-zinc-600 font-heading">Entity Control</DropdownMenuLabel>
+                                                        <DropdownMenuContent align="end" className="w-56 bg-zinc-950 border-white/10 text-white/70">
+                                                            <DropdownMenuLabel className="text-[10px] font-black uppercase text-white/30 font-heading">Entity Control</DropdownMenuLabel>
                                                             {u.is_verified ? (
                                                                 <DropdownMenuItem onClick={() => handleAction(u.id, 'unverify')} className="gap-2 cursor-pointer focus:bg-white/10">
                                                                     <ShieldAlert className="h-4 w-4" /> Revoke Verification

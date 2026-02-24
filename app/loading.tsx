@@ -9,7 +9,7 @@ export default function RootLoading() {
                     <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
                 </div>
                 <div className="space-y-2 text-center">
-                    <h2 className="text-xl font-bold tracking-tight animate-pulse">Initializing Terminal</h2>
+                    <h2 className="text-xl font-bold tracking-tight animate-pulse">Loading Dashboard</h2>
                     <p className="text-sm text-muted-foreground">Accessing MarketBridge Secure Network...</p>
                 </div>
             </div>

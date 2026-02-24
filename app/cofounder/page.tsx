@@ -19,7 +19,7 @@ export default function CoFounderPage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                        <DollarSign className="h-4 w-4 text-green-500" />
+                        <DollarSign className="h-4 w-4 text-[#FF6200]" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">₦45.2M</div>
@@ -39,7 +39,7 @@ export default function CoFounderPage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Growth Rate</CardTitle>
-                        <TrendingUp className="h-4 w-4 text-purple-500" />
+                        <TrendingUp className="h-4 w-4 text-[#FF6200]" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">+12.5%</div>
@@ -49,7 +49,7 @@ export default function CoFounderPage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">System Health</CardTitle>
-                        <Activity className="h-4 w-4 text-green-500" />
+                        <Activity className="h-4 w-4 text-[#FF6200]" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">99.9%</div>

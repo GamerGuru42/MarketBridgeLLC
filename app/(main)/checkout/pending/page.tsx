@@ -72,7 +72,7 @@ function PaymentPendingContent() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 1.2 }}
-                        className="text-zinc-400 text-lg font-medium italic"
+                        className="text-white/60 text-lg font-medium italic"
                     >
                         Success! Your plan has been <span className="text-white font-bold">opened</span> and all premium features are now <span className="text-[#FF6200]">unlocked</span>.
                     </motion.p>
@@ -85,14 +85,14 @@ function PaymentPendingContent() {
                     className="grid grid-cols-2 gap-4 mb-12"
                 >
                     {[
-                        { icon: Trophy, text: "Unlimited Terminal Access" },
+                        { icon: Trophy, text: "Unlimited Dashboard Access" },
                         { icon: Star, text: "Priority Asset Listing" },
                         { icon: ShieldCheck, text: "Verified Merchant Badge" },
                         { icon: Zap, text: "Instant Discovery" }
                     ].map((item, i) => (
                         <div key={i} className="flex items-center gap-3 p-4 bg-white/5 border border-white/5 rounded-2xl text-left">
                             <item.icon className="h-5 w-5 text-[#FF6200]" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-300 leading-tight">{item.text}</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-white/70 leading-tight">{item.text}</span>
                         </div>
                     ))}
                 </motion.div>
@@ -104,7 +104,7 @@ function PaymentPendingContent() {
                         transition={{ delay: 1.8 }}
                         className="bg-black/80 p-5 rounded-2xl border border-white/10 mb-10 group transition-all hover:border-[#FF6200]/30"
                     >
-                        <p className="text-[9px] text-zinc-600 uppercase font-black tracking-[0.3em] mb-2">Secure Signature Reference</p>
+                        <p className="text-[9px] text-white/30 uppercase font-black tracking-[0.3em] mb-2">Secure Signature Reference</p>
                         <p className="font-mono text-sm text-[#FF6200] tracking-widest font-bold">{ref}</p>
                     </motion.div>
                 )}
@@ -120,13 +120,13 @@ function PaymentPendingContent() {
                             className="w-full h-20 bg-[#FF6200] text-black hover:bg-[#FF7A29] font-black uppercase tracking-[0.2em] rounded-[1.5rem] text-sm shadow-[0_20px_50px_rgba(255,98,0,0.2)] hover:scale-[1.02] active:scale-[0.98] transition-all border-none"
                         >
                             <Link href="/seller/dashboard">
-                                Enter Seller Terminal <ArrowRight className="ml-3 h-5 w-5" />
+                                Enter Seller Dashboard <ArrowRight className="ml-3 h-5 w-5" />
                             </Link>
                         </Button>
                     </motion.div>
                     <Link
                         href="/"
-                        className="inline-block text-[10px] text-zinc-600 hover:text-white uppercase font-black tracking-widest transition-colors"
+                        className="inline-block text-[10px] text-white/30 hover:text-white uppercase font-black tracking-widest transition-colors"
                     >
                         Return to Public Floor
                     </Link>
