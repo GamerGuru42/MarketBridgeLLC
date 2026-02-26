@@ -91,10 +91,6 @@ export const Header = () => {
 
                 {/* Desktop Nav */}
                 <nav className="hidden lg:flex items-center gap-8 bg-black/50 border border-white/5 px-8 py-3 rounded-full backdrop-blur-md">
-                    <Link href="/" className={navLinkClass('/')}>
-                        Home
-                        {isActive('/') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6200] rounded-full" />}
-                    </Link>
                     <Link href="/listings" className={navLinkClass('/listings')}>
                         Listings
                         {isActive('/listings') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6200] rounded-full" />}
@@ -232,13 +228,6 @@ export const Header = () => {
                             </div>
 
                             <nav className="flex flex-col gap-8 text-3xl font-black uppercase tracking-tighter italic">
-                                <Link
-                                    href="/"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className={cn("transition-all hover:translate-x-4", isActive('/') ? "text-[#FF6200]" : "text-white/40 hover:text-white")}
-                                >
-                                    Home
-                                </Link>
                                 <Link
                                     href="/listings"
                                     onClick={() => setMobileMenuOpen(false)}
