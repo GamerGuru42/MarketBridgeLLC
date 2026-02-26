@@ -177,50 +177,21 @@ function ListingsContent() {
         fetchListings();
     };
 
-    // Auth Wall: Block access if not logged in
+    // Strict Beta Auth Wall: Redirect non-authenticated users instantly back to Waitlist
+    useEffect(() => {
+        if (!loading && !user) {
+            window.location.href = '/';
+        }
+    }, [user, loading]);
+
     if (!loading && !user) {
         return (
-            <div className="min-h-screen bg-black text-white relative flex flex-col pt-28 pb-20 overflow-hidden">
-                <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
-
-                <div className="container px-6 mx-auto relative z-10 flex flex-col items-center justify-center flex-1 text-center space-y-8">
-                    <div className="h-24 w-24 rounded-3xl bg-gradient-to-br from-[#FF6200]/20 to-black border border-[#FF6200]/30 flex items-center justify-center shadow-[0_0_50px_rgba(255,98,0,0.2)] mb-4">
-                        <Store className="h-12 w-12 text-[#FF6200]" />
-                    </div>
-
-                    <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter max-w-3xl leading-tight">
-                        Unlock Exclusive <span className="text-[#FF6200]">Details</span>
-                    </h1>
-
-                    <p className="text-white/60 text-lg md:text-xl font-medium max-w-xl">
-                        Join thousands of students trading securely. Sign up to view prices, contact sellers, and access verified campus listings.
-                    </p>
-
-                    <div className="flex flex-col sm:flex-row gap-6 w-full max-w-lg pt-10">
-                        <Button size="lg" asChild className="h-20 flex-1 bg-[#FF6200] text-black font-black uppercase tracking-[0.2em] hover:bg-[#FF7A29] rounded-[2rem] border-none shadow-[0_20px_40px_rgba(255,98,0,0.2)]">
-                            <Link href="/signup">
-                                Initialize Account
-                            </Link>
-                        </Button>
-                        <Button size="lg" variant="outline" asChild className="h-20 flex-1 border-white/10 text-white font-black uppercase tracking-[0.2em] hover:bg-white/5 rounded-[2rem]">
-                            <Link href="/login">
-                                Auth Session
-                            </Link>
-                        </Button>
-                    </div>
-
-                    {/* Teaser Background (Blurred Listings) - Real but hidden */}
-                    <div className="absolute inset-x-0 bottom-0 h-64 opacity-30 mask-linear-fade pointer-events-none -z-10 overflow-hidden">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 filter blur-xl transform translate-y-10">
-                            {[1, 2, 3, 4].map((item) => (
-                                <div key={item} className="bg-zinc-900/50 rounded-xl h-48 border border-white/5 mx-2"></div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" />
             </div>
         );
     }
+
 
     return (
         <div className="min-h-screen bg-black text-white relative selection:bg-[#FF6200] selection:text-black flex flex-col pt-28 pb-20">

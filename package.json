@@ -57,6 +57,7 @@
     "react-hook-form": "^7.51.5",
     "react-leaflet": "^4.2.1",
     "react-paystack": "^6.0.0",
+    "react-qr-code": "^2.0.18",
     "resend": "^3.2.0",
     "tailwind-merge": "^2.3.0",
     "uuid": "^9.0.1",

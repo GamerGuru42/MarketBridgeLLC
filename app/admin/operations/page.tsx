@@ -26,10 +26,9 @@ export default function OperationsAdminPage() {
     const fetchOpsData = async () => {
         try {
             const { data: sellers } = await supabase
-                .from('users')
+                .from('seller_applications')
                 .select('*')
-                .eq('role', 'dealer')
-                .eq('is_verified', false)
+                .eq('status', 'pending')
                 .order('created_at', { ascending: false });
 
             const { data: subs } = await supabase
@@ -63,9 +62,28 @@ export default function OperationsAdminPage() {
         }
     };
 
-    const handleVerify = async (userId: string) => {
-        await supabase.from('users').update({ is_verified: true }).eq('id', userId);
-        fetchOpsData();
+    const handleVerify = async (applicationId: string) => {
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) return;
+
+            const res = await fetch('/api/admin/approve-seller', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ applicationId, approverId: session.user.id })
+            });
+
+            if (res.ok) {
+                fetchOpsData();
+            } else {
+                const err = await res.json();
+                console.error('Approval failed:', err);
+                alert(err.error || 'Failed to approve');
+            }
+        } catch (e) {
+            console.error('Approval failed:', e);
+            alert('Failed to approve seller');
+        }
     };
 
     if (loading) return (
@@ -120,19 +138,27 @@ export default function OperationsAdminPage() {
                                             <UserCheck className="h-6 w-6 text-white" />
                                         </div>
                                         <div>
-                                            <p className="text-lg font-black text-white italic font-heading tracking-tight uppercase">{seller.display_name || 'Dealer User'}</p>
-                                            <p className="text-[10px] text-white/40 font-mono tracking-widest">{seller.email}</p>
+                                            <p className="text-lg font-black text-white italic font-heading tracking-tight uppercase">{seller.full_name}</p>
+                                            <p className="text-[10px] text-white/40 font-mono tracking-widest">{seller.student_email}</p>
                                             <div className="flex gap-4 mt-2">
-                                                <Badge variant="outline" className="border-zinc-800 text-[#FF6200] text-[9px] font-black uppercase tracking-widest">{seller.university || 'Global Campus'}</Badge>
+                                                <Badge variant="outline" className="border-zinc-800 text-[#FF6200] text-[9px] font-black uppercase tracking-widest">{seller.university}</Badge>
+                                                <Badge variant="outline" className="border-zinc-800 text-white text-[9px] font-black uppercase tracking-widest">{seller.items_ready} items</Badge>
                                             </div>
                                         </div>
                                     </div>
-                                    <Button
-                                        onClick={() => handleVerify(seller.id)}
-                                        className="bg-[#FF6200] text-black hover:bg-[#FF8533] font-black uppercase text-[10px] tracking-[0.2em] h-12 px-8 rounded-xl"
-                                    >
-                                        Authorize Campus
-                                    </Button>
+                                    <div className="flex flex-col gap-2 items-end">
+                                        {seller.id_card_url && (
+                                            <a href={seller.id_card_url} target="_blank" rel="noreferrer" className="text-[10px] text-[#FF6200] hover:underline uppercase font-black tracking-widest">
+                                                View ID Card
+                                            </a>
+                                        )}
+                                        <Button
+                                            onClick={() => handleVerify(seller.id)}
+                                            className="bg-[#FF6200] text-black hover:bg-[#FF8533] font-black uppercase text-[10px] tracking-[0.2em] h-12 px-8 rounded-xl"
+                                        >
+                                            Approve User
+                                        </Button>
+                                    </div>
                                 </div>
                             ))}
                             {pendingSellers.length === 0 && (

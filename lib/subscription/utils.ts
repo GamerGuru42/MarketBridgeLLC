@@ -113,11 +113,12 @@ export async function canCreateListing(userId: string): Promise<{
     const { subscription, plan } = await getCurrentSubscription(userId);
 
     if (!plan) {
+        // BETA OVERRIDE: Allow sellers to create basic listings even without a plan during beta launch
         return {
-            allowed: false,
-            reason: 'No active subscription found',
+            allowed: true,
+            reason: 'Beta free tier',
             currentCount: 0,
-            maxAllowed: 0,
+            maxAllowed: 10, // Generous free limit for early beta sellers
         };
     }
 

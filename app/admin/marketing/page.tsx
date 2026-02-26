@@ -9,9 +9,9 @@ import { Loader2, TrendingUp, Users, Target, Rocket } from 'lucide-react';
 
 export default function MarketingAdminPage() {
     const [loading, setLoading] = useState(true);
-    const [leaderboard, setLeaderboard] = useState<any[]>([]);
+    const [recentWaitlist, setRecentWaitlist] = useState<any[]>([]);
     const [stats, setStats] = useState({
-        totalReferrals: 0,
+        totalWaitlist: 0,
         activeSellers: 0,
         conversionRate: '0%'
     });
@@ -22,44 +22,19 @@ export default function MarketingAdminPage() {
 
     const fetchMarketingData = async () => {
         try {
-            const { data: referrals } = await supabase
-                .from('referrals')
-                .select('referrer_id');
+            const { data: waitlistData } = await supabase
+                .from('waitlist')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(10);
 
-            let leaderData: any[] = [];
+            if (waitlistData) setRecentWaitlist(waitlistData);
 
-            if (referrals && referrals.length > 0) {
-                const counts: Record<string, number> = {};
-                referrals.forEach((r: any) => {
-                    if (r.referrer_id) counts[r.referrer_id] = (counts[r.referrer_id] || 0) + 1;
-                });
-
-                const board = Object.entries(counts)
-                    .map(([id, count]) => ({ id, count }))
-                    .sort((a, b) => b.count - a.count)
-                    .slice(0, 5);
-
-                if (board.length > 0) {
-                    const { data: users } = await supabase
-                        .from('users')
-                        .select('id, display_name')
-                        .in('id', board.map(b => b.id));
-
-                    leaderData = board.map(b => ({
-                        name: users?.find(u => u.id === b.id)?.display_name || 'Unknown Agent',
-                        refCount: b.count,
-                        tier: b.count >= 15 ? 'Gold' : b.count >= 5 ? 'Silver' : 'Bronze'
-                    }));
-                }
-            }
-
-            setLeaderboard(leaderData);
-
-            const { count: totalReferrals } = await supabase.from('referrals').select('*', { count: 'exact', head: true });
+            const { count: totalWaitlist } = await supabase.from('waitlist').select('*', { count: 'exact', head: true });
             const { count: activeSellers } = await supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'dealer');
 
             setStats({
-                totalReferrals: totalReferrals || 0,
+                totalWaitlist: totalWaitlist || 0,
                 activeSellers: activeSellers || 0,
                 conversionRate: 'N/A'
             });
@@ -94,8 +69,8 @@ export default function MarketingAdminPage() {
                 <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm group hover:border-[#FF6200]/20 transition-all">
                     <CardContent className="p-6 flex items-center justify-between">
                         <div>
-                            <p className="text-white/40 text-[10px] uppercase font-black tracking-widest">Total Referrals</p>
-                            <p className="text-4xl font-black text-white font-heading italic">{stats.totalReferrals}</p>
+                            <p className="text-white/40 text-[10px] uppercase font-black tracking-widest">Total Waitlist</p>
+                            <p className="text-4xl font-black text-white font-heading italic">{stats.totalWaitlist}</p>
                         </div>
                         <Users className="h-8 w-8 text-white/20 group-hover:text-[#FF6200] transition-colors" />
                     </CardContent>
@@ -124,32 +99,23 @@ export default function MarketingAdminPage() {
 
             <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm relative z-10">
                 <CardHeader>
-                    <CardTitle className="text-lg font-black uppercase italic tracking-widest text-[#FF6200]">Ambassador Leaderboard</CardTitle>
+                    <CardTitle className="text-lg font-black uppercase italic tracking-widest text-[#FF6200]">Recent Waitlist Signups</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Table>
                         <TableHeader>
                             <TableRow className="border-white/5 hover:bg-white/5">
-                                <TableHead className="text-white/40 uppercase font-black text-[10px] w-12">Rank</TableHead>
-                                <TableHead className="text-white/40 uppercase font-black text-[10px]">Name</TableHead>
-                                <TableHead className="text-white/40 uppercase font-black text-[10px]">Referrals</TableHead>
-                                <TableHead className="text-white/40 uppercase font-black text-[10px]">Status</TableHead>
+                                <TableHead className="text-white/40 uppercase font-black text-[10px] w-12">#</TableHead>
+                                <TableHead className="text-white/40 uppercase font-black text-[10px]">Email</TableHead>
+                                <TableHead className="text-white/40 uppercase font-black text-[10px]">Joined At</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {leaderboard.map((user, idx) => (
-                                <TableRow key={idx} className="border-white/5 hover:bg-white/5">
-                                    <TableCell className="text-white/40 font-black italic">#{idx + 1}</TableCell>
-                                    <TableCell className="text-white font-bold">{user.name}</TableCell>
-                                    <TableCell className="text-[#FF6200] font-black">{user.refCount}</TableCell>
-                                    <TableCell>
-                                        <Badge className={`uppercase text-[8px] font-black tracking-widest border-none ${user.tier === 'Gold' ? 'bg-[#FF6200] text-black' :
-                                            user.tier === 'Silver' ? 'bg-zinc-400 text-black' :
-                                                'bg-zinc-800 text-white/60'
-                                            }`}>
-                                            {user.tier}
-                                        </Badge>
-                                    </TableCell>
+                            {recentWaitlist.map((user, idx) => (
+                                <TableRow key={user.id} className="border-white/5 hover:bg-white/5">
+                                    <TableCell className="text-white/40 font-black italic">{idx + 1}</TableCell>
+                                    <TableCell className="text-white font-bold">{user.email}</TableCell>
+                                    <TableCell className="text-white/40 text-[10px] font-mono">{new Date(user.created_at).toLocaleString()}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

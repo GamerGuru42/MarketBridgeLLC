@@ -21,11 +21,14 @@ function AdminSignupContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const dept = searchParams.get('dept');
+    const intent = searchParams.get('intent');
+    const prefillEmail = searchParams.get('email');
+    const token = searchParams.get('token');
     const { refreshUser } = useAuth();
 
     const [formData, setFormData] = useState({
         displayName: '',
-        email: '',
+        email: prefillEmail || '',
         password: '',
         confirmPassword: '',
         secretKey: '',
@@ -43,26 +46,29 @@ function AdminSignupContent() {
         setError('');
 
         const identifier = normalizeIdentifier(formData.email);
+        const isSellerInvite = intent === 'sell' && token && prefillEmail;
 
-        // Enforce Secret Key Protection
-        if (formData.secretKey !== 'marketbridge2026') {
-            setError('Access Denied: Invalid Security Signature');
-            setIsLoading(false);
-            return;
-        }
+        if (!isSellerInvite) {
+            // Enforce Secret Key Protection
+            if (formData.secretKey !== 'marketbridge2026') {
+                setError('Access Denied: Invalid Security Signature');
+                setIsLoading(false);
+                return;
+            }
 
-        // Enforce Allowed Admin Emails
-        const allowedAdminEmails = [
-            'operations@marketbridge.com.ng',
-            'technical@marketbridge.com.ng',
-            'marketing@marketbridge.com.ng',
-            'ceo@marketbridge.io'
-        ];
+            // Enforce Allowed Admin Emails
+            const allowedAdminEmails = [
+                'operations@marketbridge.com.ng',
+                'technical@marketbridge.com.ng',
+                'marketing@marketbridge.com.ng',
+                'ceo@marketbridge.io'
+            ];
 
-        if (!allowedAdminEmails.includes(identifier.toLowerCase()) && !identifier.toLowerCase().endsWith('@marketbridge.com.ng')) {
-            setError('Restriction: Official @marketbridge.com.ng email required');
-            setIsLoading(false);
-            return;
+            if (!allowedAdminEmails.includes(identifier.toLowerCase()) && !identifier.toLowerCase().endsWith('@marketbridge.com.ng')) {
+                setError('Restriction: Official @marketbridge.com.ng email required');
+                setIsLoading(false);
+                return;
+            }
         }
 
         if (formData.password !== formData.confirmPassword) {
@@ -81,7 +87,7 @@ function AdminSignupContent() {
                     data: {
                         display_name: formData.displayName,
                         full_name: formData.displayName,
-                        role: role,
+                        role: isSellerInvite ? 'dealer' : role,
                     },
                 },
             });
@@ -117,8 +123,8 @@ function AdminSignupContent() {
                             id: activeUser.id,
                             email: identifier,
                             display_name: formData.displayName,
-                            role: role,
-                            is_verified: true, // Auto-verify admins
+                            role: isSellerInvite ? 'dealer' : role,
+                            is_verified: true, // Auto-verify admins and approved sellers
                         }, {
                             onConflict: 'id'
                         });
@@ -137,16 +143,19 @@ function AdminSignupContent() {
                 await supabase.auth.signOut();
 
                 //Determine the correct login redirect based on role
-                let targetLoginPath = '/admin/login';
-                if (role === 'technical_admin') targetLoginPath = '/admin/login?dept=technical';
-                else if (role === 'operations_admin') targetLoginPath = '/admin/login?dept=operations';
-                else if (role === 'marketing_admin') targetLoginPath = '/admin/login?dept=marketing';
+                let targetLoginPath = '/login'; // default seller login
+                if (!isSellerInvite) {
+                    targetLoginPath = '/admin/login';
+                    if (role === 'technical_admin') targetLoginPath = '/admin/login?dept=technical';
+                    else if (role === 'operations_admin') targetLoginPath = '/admin/login?dept=operations';
+                    else if (role === 'marketing_admin') targetLoginPath = '/admin/login?dept=marketing';
+                }
 
-                console.log(`Admin account created successfully. Redirecting to: ${targetLoginPath}`);
+                console.log(`Account created successfully. Redirecting to: ${targetLoginPath}`);
 
                 // Show success message
                 setError('');
-                alert(`✅ Admin account created successfully!\n\nYou can now log in with your credentials.`);
+                alert(`✅ Account created successfully!\n\nYou can now log in with your credentials.`);
 
                 // Redirect to login page
                 router.push(targetLoginPath);
@@ -182,10 +191,10 @@ function AdminSignupContent() {
                     </div>
                     <div>
                         <CardTitle className="text-3xl font-black tracking-[0.3em] text-white uppercase italic">
-                            Admin Onboarding
+                            {intent === 'sell' ? 'Seller Onboarding' : 'Admin Onboarding'}
                         </CardTitle>
                         <CardDescription className="text-white/40 font-medium italic text-sm mt-2 lowercase">
-                            secure registration | administrative Dashboard Campus
+                            {intent === 'sell' ? 'Welcome to campus crew' : 'secure registration | administrative Dashboard Campus'}
                         </CardDescription>
                     </div>
                 </CardHeader>
@@ -215,55 +224,62 @@ function AdminSignupContent() {
                                     />
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="role" className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] ml-2">Leadership Post</Label>
-                                <Select value={role} onValueChange={(v: any) => setRole(v)}>
-                                    <SelectTrigger className="w-full h-12 bg-black border border-white/10 rounded-xl text-[#FF6200] font-black italic text-xs focus:ring-2 focus:ring-[#FF6200]/50">
-                                        <SelectValue placeholder="Select Department" />
-                                    </SelectTrigger>
-                                    <SelectContent className="bg-zinc-950 border-white/10 text-white">
-                                        <SelectItem value="admin">Super Admin (Mission Control)</SelectItem>
-                                        <SelectItem value="technical_admin">Head of Technical</SelectItem>
-                                        <SelectItem value="operations_admin">Head of Operations</SelectItem>
-                                        <SelectItem value="marketing_admin">Head of Marketing</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                            {intent !== 'sell' && (
+                                <div className="space-y-2">
+                                    <Label htmlFor="role" className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] ml-2">Leadership Post</Label>
+                                    <Select value={role} onValueChange={(v: any) => setRole(v)}>
+                                        <SelectTrigger className="w-full h-12 bg-black border border-white/10 rounded-xl text-[#FF6200] font-black italic text-xs focus:ring-2 focus:ring-[#FF6200]/50">
+                                            <SelectValue placeholder="Select Department" />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-zinc-950 border-white/10 text-white">
+                                            <SelectItem value="admin">Super Admin (Mission Control)</SelectItem>
+                                            <SelectItem value="technical_admin">Head of Technical</SelectItem>
+                                            <SelectItem value="operations_admin">Head of Operations</SelectItem>
+                                            <SelectItem value="marketing_admin">Head of Marketing</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )}
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] ml-2">Admin Email</Label>
+                            <Label htmlFor="email" className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] ml-2">
+                                {intent === 'sell' ? 'Student Email' : 'Admin Email'}
+                            </Label>
                             <div className="relative group/input">
                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within/input:text-[#FF6200] transition-colors" />
                                 <input
                                     id="email"
                                     name="email"
                                     type="email"
-                                    className="w-full h-12 pl-11 pr-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium text-xs"
+                                    className="w-full h-12 pl-11 pr-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium text-xs disabled:opacity-50"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
-                                    placeholder="admin@marketbridge.io"
+                                    disabled={intent === 'sell' && !!prefillEmail}
+                                    placeholder={intent === 'sell' ? "student@university.edu" : "admin@marketbridge.io"}
                                 />
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="secretKey" className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] ml-2">Secret Admin Code <span className="text-[#FF6200]">*</span></Label>
-                            <div className="relative group/input">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within/input:text-[#FF6200] transition-colors" />
-                                <input
-                                    id="secretKey"
-                                    name="secretKey"
-                                    type="password"
-                                    className="w-full h-12 pl-11 pr-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium text-xs"
-                                    value={formData.secretKey}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="Enter the team secret code"
-                                />
+                        {intent !== 'sell' && (
+                            <div className="space-y-2">
+                                <Label htmlFor="secretKey" className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] ml-2">Secret Admin Code <span className="text-[#FF6200]">*</span></Label>
+                                <div className="relative group/input">
+                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within/input:text-[#FF6200] transition-colors" />
+                                    <input
+                                        id="secretKey"
+                                        name="secretKey"
+                                        type="password"
+                                        className="w-full h-12 pl-11 pr-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium text-xs"
+                                        value={formData.secretKey}
+                                        onChange={handleChange}
+                                        required
+                                        placeholder="Enter the team secret code"
+                                    />
+                                </div>
                             </div>
-                        </div>
+                        )}
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
@@ -299,6 +315,8 @@ function AdminSignupContent() {
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                     PROVISIONING...
                                 </>
+                            ) : intent === 'sell' ? (
+                                'COMPLETE SELLER PROFILE'
                             ) : (
                                 'REGISTER AS ADMINISTRATOR'
                             )}

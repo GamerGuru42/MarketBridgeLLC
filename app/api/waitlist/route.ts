@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import { sendEmail } from '@/lib/email';
+import { getWaitlistWelcomeTemplate } from '@/lib/email-templates';
 
 export async function POST(req: Request) {
     try {
@@ -22,6 +24,20 @@ export async function POST(req: Request) {
             console.error('Waitlist insert error:', error);
             return NextResponse.json({ error: error.message }, { status: 500 });
         }
+
+        // Get queue position
+        const { count } = await supabaseAdmin
+            .from('waitlist')
+            .select('*', { count: 'exact', head: true });
+
+        const queuePosition = count || 1;
+
+        // Send Welcome Email
+        await sendEmail(
+            email,
+            'Welcome to the MarketBridge Family! 🚀',
+            getWaitlistWelcomeTemplate(email, queuePosition)
+        );
 
         return NextResponse.json({ success: true }, { status: 200 });
     } catch (error: any) {
