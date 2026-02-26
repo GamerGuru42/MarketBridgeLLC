@@ -62,11 +62,8 @@ export default function WaitlistPage() {
     return (
         <div className="flex flex-col min-h-screen bg-[#000000] text-[#FFFFFF] font-sans selection:bg-[#FF6200] selection:text-white">
             <header className="w-full p-6 flex justify-center absolute top-0 z-50">
-                <div className="flex items-center gap-3">
-                    <Logo className="h-10 w-10" />
-                    <span className="text-3xl font-black italic tracking-widest text-[#FF6200] uppercase">
-                        MarketBridge
-                    </span>
+                <div className="flex items-center">
+                    <Logo size="xl" />
                 </div>
             </header>
 
