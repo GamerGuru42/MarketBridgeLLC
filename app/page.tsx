@@ -5,6 +5,7 @@ import { Mail, CheckCircle, Loader2, Users } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import QRCode from 'react-qr-code';
 import { Logo } from '@/components/logo';
+import Link from 'next/link';
 
 export default function WaitlistPage() {
     const [email, setEmail] = useState('');
@@ -166,9 +167,9 @@ export default function WaitlistPage() {
 
                         <div className="flex justify-center items-center">
                             <div className="bg-white p-6 rounded-3xl shadow-[0_0_50px_rgba(255,255,255,0.1)] inline-flex flex-col items-center gap-6 group hover:scale-[1.02] transition-transform duration-300">
-                                <a href="https://marketbridge.com.ng/seller" className="block relative">
+                                <Link href="/seller" className="block relative">
                                     <QRCode
-                                        value="https://marketbridge.com.ng/seller"
+                                        value="https://www.marketbridge.com.ng/seller"
                                         size={220}
                                         bgColor="#FFFFFF"
                                         fgColor="#000000"
@@ -179,17 +180,17 @@ export default function WaitlistPage() {
                                             Tap to Open
                                         </div>
                                     </div>
-                                </a>
+                                </Link>
                                 <div className="space-y-2 text-center">
                                     <span className="block text-black font-black uppercase tracking-widest text-sm">
                                         Scan to become a Campus Seller
                                     </span>
-                                    <a
-                                        href="https://marketbridge.com.ng/seller"
+                                    <Link
+                                        href="/seller"
                                         className="inline-block text-[#FF6200] hover:text-[#ff7a29] font-bold text-sm underline transition-colors"
                                     >
-                                        Or tap here: marketbridge.com.ng/seller
-                                    </a>
+                                        Or tap here: www.marketbridge.com.ng/seller
+                                    </Link>
                                 </div>
                             </div>
                         </div>

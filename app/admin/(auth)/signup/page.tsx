@@ -139,26 +139,32 @@ function AdminSignupContent() {
                 // Refresh context
                 await refreshUser(activeUser.id);
 
-                // Sign out immediately after creating account to force proper login
-                await supabase.auth.signOut();
-
-                //Determine the correct login redirect based on role
-                let targetLoginPath = '/login'; // default seller login
+                // Determine the correct dashboard redirect based on role
+                let targetDashboardPath = '/seller/dashboard'; // default seller dashboard
                 if (!isSellerInvite) {
-                    targetLoginPath = '/admin/login';
-                    if (role === 'technical_admin') targetLoginPath = '/admin/login?dept=technical';
-                    else if (role === 'operations_admin') targetLoginPath = '/admin/login?dept=operations';
-                    else if (role === 'marketing_admin') targetLoginPath = '/admin/login?dept=marketing';
+                    if (role === 'technical_admin') targetDashboardPath = '/admin/technical';
+                    else if (role === 'operations_admin') targetDashboardPath = '/admin/operations';
+                    else if (role === 'marketing_admin') targetDashboardPath = '/admin/marketing';
+                    else targetDashboardPath = '/admin/operations'; // Super admin fallback for now
                 }
 
-                console.log(`Account created successfully. Redirecting to: ${targetLoginPath}`);
+                console.log(`Account created successfully. Redirecting to: ${targetDashboardPath}`);
 
-                // Show success message
-                setError('');
-                alert(`✅ Account created successfully!\n\nYou can now log in with your credentials.`);
+                // Automatically log them in instead of forcing them out
+                const { error: signInError } = await supabase.auth.signInWithPassword({
+                    email: formData.email,
+                    password: formData.password
+                });
 
-                // Redirect to login page
-                router.push(targetLoginPath);
+                if (signInError) {
+                    console.error("Auto-login failed:", signInError);
+                    alert('Account created, but auto-login failed. Please sign in.');
+                    router.push('/login');
+                    return;
+                }
+
+                // Redirect immediately to their dashboard
+                router.push(targetDashboardPath);
             }
         } catch (err: unknown) {
             console.error("Admin Signup Main Error:", err);
