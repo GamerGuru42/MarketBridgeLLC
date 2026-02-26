@@ -104,7 +104,7 @@ export default function AdminLoginPage() {
             if (role === 'technical_admin') targetPath = '/admin/technical';
             else if (role === 'operations_admin') targetPath = '/admin/operations';
             else if (role === 'marketing_admin') targetPath = '/admin/marketing';
-            else if (role === 'ceo' || role === 'cofounder') targetPath = '/admin';
+            else if (role === 'ceo' || role === 'cofounder') targetPath = '/admin/ceo';
 
             console.log(`Redirecting to ${targetPath}`);
             router.refresh();
@@ -128,7 +128,7 @@ export default function AdminLoginPage() {
                 if (role === 'technical_admin') targetPath = '/admin/technical';
                 else if (role === 'operations_admin') targetPath = '/admin/operations';
                 else if (role === 'marketing_admin') targetPath = '/admin/marketing';
-                else if (role === 'ceo' || role === 'cofounder') targetPath = '/admin';
+                else if (role === 'ceo' || role === 'cofounder') targetPath = '/admin/ceo';
 
                 console.log('Already authenticated as Admin. Redirecting...');
                 router.replace(targetPath);
@@ -195,10 +195,10 @@ export default function AdminLoginPage() {
                     </div>
                     <div>
                         <CardTitle className="text-3xl font-black tracking-[0.3em] text-white uppercase italic">
-                            Admin Login
+                            MarketBridge Admin Portal
                         </CardTitle>
                         <CardDescription className="text-white/40 font-medium italic text-sm mt-2 lowercase">
-                            secure area | authorized personnel only
+                            Sign in with your team account
                         </CardDescription>
                     </div>
                 </CardHeader>

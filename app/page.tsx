@@ -6,6 +6,8 @@ import { createClient } from '@/lib/supabase/client';
 import QRCode from 'react-qr-code';
 import { Logo } from '@/components/logo';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function WaitlistPage() {
     const [email, setEmail] = useState('');
@@ -13,6 +15,8 @@ export default function WaitlistPage() {
     const [message, setMessage] = useState('');
     const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
     const supabase = createClient();
+    const router = useRouter();
+    const { user, loading } = useAuth();
 
     useEffect(() => {
         const fetchWaitlistCount = async () => {
@@ -23,6 +27,17 @@ export default function WaitlistPage() {
         };
         fetchWaitlistCount();
     }, [supabase]);
+
+    useEffect(() => {
+        if (!loading && user) {
+            const role = user.role;
+            if (role === 'ceo' || role === 'cofounder') router.replace('/admin/ceo');
+            else if (role === 'operations_admin') router.replace('/admin/operations');
+            else if (role === 'technical_admin') router.replace('/admin/technical');
+            else if (role === 'marketing_admin') router.replace('/admin/marketing');
+            else if (role === 'admin') router.replace('/admin/operations'); // fallback admin
+        }
+    }, [user, loading, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -195,9 +210,15 @@ export default function WaitlistPage() {
                             </div>
                         </div>
                     </div>
-
                 </div>
             </main>
+
+            {/* Subtle Admin Footer Link */}
+            <div className="w-full pb-6 flex justify-center opacity-30 hover:opacity-100 transition-opacity">
+                <Link href="/admin/login" className="text-white text-[10px] font-medium tracking-widest uppercase hover:text-[#FF6200] transition-colors">
+                    Admin / Team Login &rarr;
+                </Link>
+            </div>
         </div>
     );
 }

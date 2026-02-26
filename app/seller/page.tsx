@@ -138,9 +138,6 @@ export default function SellerOnboardingPage() {
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#FF6200]/10 blur-[150px] rounded-full pointer-events-none" />
 
             <div className="max-w-2xl mx-auto relative z-10">
-                <Link href="/" className="inline-flex items-center text-zinc-400 hover:text-[#FF6200] transition-colors mb-8 text-sm font-bold uppercase tracking-widest">
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
-                </Link>
 
                 <div className="bg-black/40 backdrop-blur-xl border border-white/10 p-8 md:p-12 rounded-[2.5rem] shadow-2xl">
                     {isSuccess ? (

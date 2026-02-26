@@ -1,1 +1,91 @@
-'use client';import React from 'react';import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';import { Button } from '@/components/ui/button';import { Menu, User, Bell, LogOut } from 'lucide-react';import { Sidebar, SidebarItem } from '@/components/sidebar';import { useAuth } from '@/contexts/AuthContext';import {    DropdownMenu,    DropdownMenuContent,    DropdownMenuItem,    DropdownMenuTrigger,} from '@/components/ui/dropdown-menu';import Link from 'next/link';interface DashboardHeaderProps {    title: string;    sidebarItems: SidebarItem[];}export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {    const { user, logout } = useAuth();    return (        <header className="sticky top-0 z-40 flex h-24 w-full items-center justify-between border-b border-white/5 bg-black/40 backdrop-blur-2xl px-6 md:px-12">            <div className="flex items-center gap-6">                <Sheet>                    <SheetTrigger asChild>                        <Button variant="ghost" size="icon" className="md:hidden text-white">                            <Menu className="h-6 w-6" />                            <span className="sr-only">Toggle Menu</span>                        </Button>                    </SheetTrigger>                    <SheetContent side="left" className="p-0 w-72 bg-black border-r border-white/10">                        <Sidebar items={sidebarItems} title={title} className="border-0 shadow-none" />                    </SheetContent>                </Sheet>                <h1 className="text-xl md:text-2xl font-black italic tracking-widest text-[#FF6200] uppercase">                    {title}                </h1>            </div>            <div className="flex items-center gap-4 md:gap-8">                <Button variant="ghost" size="icon" className="relative text-zinc-500 hover:text-[#FF6200] transition-colors">                    <Bell className="h-5 w-5" />                    <span className="absolute top-2.5 right-2.5 flex h-1.5 w-1.5 rounded-full bg-[#FF8A00] animate-pulse"></span>                </Button>                <div className="flex items-center gap-4 pl-6 border-l border-white/5">                    <div className="hidden md:flex flex-col text-right">                        <span className="text-[11px] font-black text-white uppercase italic tracking-wider">                            {user?.displayName || 'Authorized User'}                        </span>                        <span className="text-[9px] text-[#FF6200] font-black uppercase tracking-[0.2em] mt-1 italic">                            {user?.role?.replace('_', ' ')} unit                        </span>                    </div>                    <DropdownMenu>                        <DropdownMenuTrigger asChild>                            <div className="h-10 w-10 rounded-2xl glass-card border-none flex items-center justify-center text-[#FF6200] shadow-[0_0_15px_rgba(255,184,0,0.1)] group cursor-pointer hover:scale-105 transition-transform">                                <User className="h-5 w-5" />                            </div>                        </DropdownMenuTrigger>                        <DropdownMenuContent align="end" sideOffset={15} className="w-64 bg-black border border-white/10 p-2 text-white z-[999] rounded-[2rem] shadow-2xl backdrop-blur-3xl">                            <div className="px-4 py-3 mb-2 border-b border-white/5">                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Protocol Holder</p>                                <p className="text-sm font-black truncate uppercase">{user?.displayName}</p>                            </div>                            <DropdownMenuItem asChild className="focus:bg-white/5 rounded-xl cursor-pointer py-3 group outline-none transition-colors border border-transparent focus:border-white/5">                                <Link href="/settings" className="flex items-center gap-4 w-full px-2">                                    <User className="h-4 w-4 text-zinc-500 group-hover:text-[#FF6200]" />                                    <span className="font-bold uppercase text-[10px] tracking-widest text-zinc-400 group-hover:text-white">Profile Node</span>                                </Link>                            </DropdownMenuItem>                            <DropdownMenuItem onClick={() => { logout(); window.location.href = '/'; }} className="focus:bg-red-500/10 text-red-500 rounded-xl cursor-pointer py-3 group outline-none border border-transparent focus:border-red-500/10">                                <span className="flex items-center gap-4 w-full px-2">                                    <LogOut className="h-4 w-4 text-red-500" />                                    <span className="font-bold uppercase text-[10px] tracking-widest">Disconnect</span>                                </span>                            </DropdownMenuItem>                        </DropdownMenuContent>                    </DropdownMenu>                </div>            </div>        </header>    );}
+'use client';
+import React from 'react';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import { Menu, User, Bell, LogOut, Globe } from 'lucide-react';
+import { Sidebar, SidebarItem } from '@/components/sidebar';
+import { useAuth } from '@/contexts/AuthContext';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
+interface DashboardHeaderProps {
+    title: string;
+    sidebarItems: SidebarItem[];
+}
+
+export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
+    const { user, logout } = useAuth();
+    const router = useRouter();
+
+    return (
+        <header className="sticky top-0 z-40 flex h-24 w-full items-center justify-between border-b border-white/5 bg-black/40 backdrop-blur-2xl px-6 md:px-12">
+            <div className="flex items-center gap-6">
+                <Sheet>
+                    <SheetTrigger asChild>
+                        <Button variant="ghost" size="icon" className="md:hidden text-white">
+                            <Menu className="h-6 w-6" />
+                            <span className="sr-only">Toggle Menu</span>
+                        </Button>
+                    </SheetTrigger>
+                    <SheetContent side="left" className="p-0 w-72 bg-black border-r border-white/10">
+                        <Sidebar items={sidebarItems} title={title} className="border-0 shadow-none" />
+                    </SheetContent>
+                </Sheet>
+                <div className="flex flex-col">
+                    <h1 className="text-xl md:text-2xl font-black italic tracking-widest text-[#FF6200] uppercase">
+                        {title}
+                    </h1>
+                    <span className="text-zinc-400 text-sm hidden md:block">
+                        Welcome back, {user?.displayName || 'Admin'} – {user?.role ? user.role.replace('_', ' ').toUpperCase() : 'ADMIN'} Dashboard
+                    </span>
+                </div>
+            </div>
+
+            <div className="flex items-center gap-4 md:gap-8">
+                <Link href="/" className="hidden md:flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-xs uppercase font-bold tracking-widest bg-white/5 px-4 py-2 rounded-full border border-white/10 hover:border-white/20">
+                    <Globe className="h-4 w-4" />
+                    Back to Public Site
+                </Link>
+
+                <Button variant="outline" className="hidden md:flex items-center gap-2 border-red-500/20 text-red-500 hover:bg-red-500/10 hover:text-red-400 transition-colors uppercase tracking-widest text-[10px] font-black" onClick={async () => { await logout(); router.push('/'); }}>
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                </Button>
+
+                <div className="flex items-center gap-4 pl-6 border-l border-white/5">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <div className="h-10 w-10 rounded-2xl glass-card border-none flex items-center justify-center text-[#FF6200] shadow-[0_0_15px_rgba(255,184,0,0.1)] group cursor-pointer hover:scale-105 transition-transform">
+                                <User className="h-5 w-5" />
+                            </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" sideOffset={15} className="w-64 bg-black border border-white/10 p-2 text-white z-[999] rounded-[2rem] shadow-2xl backdrop-blur-3xl">
+                            <div className="px-4 py-3 mb-2 border-b border-white/5">
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Protocol Holder</p>
+                                <p className="text-sm font-black truncate uppercase">{user?.displayName}</p>
+                            </div>
+                            <DropdownMenuItem asChild className="focus:bg-white/5 rounded-xl cursor-pointer py-3 group outline-none transition-colors border border-transparent focus:border-white/5">
+                                <Link href="/settings" className="flex items-center gap-4 w-full px-2">
+                                    <User className="h-4 w-4 text-zinc-500 group-hover:text-[#FF6200]" />
+                                    <span className="font-bold uppercase text-[10px] tracking-widest text-zinc-400 group-hover:text-white">Profile Node</span>
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={async () => { await logout(); router.push('/'); }} className="focus:bg-red-500/10 text-red-500 rounded-xl cursor-pointer py-3 group outline-none border border-transparent focus:border-red-500/10">
+                                <span className="flex items-center gap-4 w-full px-2">
+                                    <LogOut className="h-4 w-4 text-red-500" />
+                                    <span className="font-bold uppercase text-[10px] tracking-widest text-red-500">Disconnect / Logout</span>
+                                </span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            </div>
+        </header>
+    );
+}
