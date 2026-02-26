@@ -5,6 +5,7 @@ import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { MobileBottomNav } from '@/components/MobileBottomNav';
 import { LocationConsentModal } from '@/components/LocationConsentModal';
+import { FeedbackModal } from '@/components/FeedbackModal';
 import { Badge } from '@/components/ui/badge';
 import { Zap } from 'lucide-react';
 import { usePathname } from 'next/navigation';
@@ -34,6 +35,7 @@ export default function MainLayout({
             <main className={`flex-1 ${!isDashboard && !isHome ? 'pb-16 md:pb-0' : ''}`}>{children}</main>
             {!isDashboard && !isHome && <Footer />}
             {!isDashboard && !isHome && <MobileBottomNav />}
+            <FeedbackModal />
         </div>
     );
 }
