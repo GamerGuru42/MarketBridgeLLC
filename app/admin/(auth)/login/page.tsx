@@ -194,9 +194,14 @@ export default function AdminLoginPage() {
                         <ShieldCheck className="h-12 w-12 text-[#FF6200]" />
                     </div>
                     <div>
-                        <CardTitle className="text-3xl font-black tracking-[0.3em] text-white uppercase italic">
-                            MarketBridge Admin Portal
-                        </CardTitle>
+                        <div className="flex flex-col items-center justify-center">
+                            <CardTitle className="text-3xl font-black tracking-[0.3em] uppercase italic flex flex-wrap justify-center text-center leading-tight">
+                                <span><span className="text-white">MARKET</span><span className="text-[#FF6200]">BRIDGE</span></span>
+                            </CardTitle>
+                            <CardTitle className="text-3xl font-black tracking-[0.3em] uppercase italic text-white mt-1">
+                                Admin Portal
+                            </CardTitle>
+                        </div>
                         <CardDescription className="text-white/40 font-medium italic text-sm mt-2 lowercase">
                             Sign in with your team account
                         </CardDescription>
@@ -261,13 +266,7 @@ export default function AdminLoginPage() {
                     </form>
                 </CardContent>
 
-                <CardFooter className="flex flex-col items-center gap-6 py-12 relative z-10">
-                    <div className="flex items-center gap-8">
-                        <Link href="/login" className="text-[9px] font-bold text-white/30 hover:text-white uppercase tracking-widest transition-colors">Staff Login</Link>
-                        <Link href="/admin/signup" className="text-[9px] font-bold text-white/30 hover:text-[#FF6200] uppercase tracking-widest transition-colors underline">Create Account</Link>
-                        <Link href="/" className="text-[9px] font-bold text-white/30 hover:text-white uppercase tracking-widest transition-colors">Public Home</Link>
-                    </div>
-                </CardFooter>
+                <CardFooter className="py-6 relative z-10" />
             </Card>
         </div>
     );
