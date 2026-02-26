@@ -14,8 +14,7 @@ export default function TechnicalAdminPage() {
     const supabase = createClient();
     const [loading, setLoading] = useState(true);
     const [logs, setLogs] = useState<any[]>([]);
-    const [publicToggleLoading, setPublicToggleLoading] = useState(false);
-    const [publicEnabled, setPublicEnabled] = useState(false);
+
     const [stats, setStats] = useState({
         uptime: '99.98%',
         apiLatency: '45ms',
@@ -42,16 +41,7 @@ export default function TechnicalAdminPage() {
                 webhookHealth: 'Standby'
             });
 
-            // Fetch public section setting
-            const { data: settingsData } = await supabase
-                .from('site_settings')
-                .select('value')
-                .eq('key', 'public_section_enabled')
-                .single();
 
-            if (settingsData) {
-                setPublicEnabled(settingsData.value === 'true' || settingsData.value === true);
-            }
 
             // Fetch Audit Logs
             const { data: logsData } = await supabase
@@ -69,48 +59,7 @@ export default function TechnicalAdminPage() {
         }
     };
 
-    const togglePublicSection = async () => {
-        if (!isSuperAdmin) {
-            alert('Access denied – Super Admin only.');
-            return;
-        }
 
-        setPublicToggleLoading(true);
-        try {
-            const newValue = !publicEnabled;
-
-            const { error } = await supabase
-                .from('site_settings')
-                .upsert({
-                    key: 'public_section_enabled',
-                    value: String(newValue),
-                    updated_at: new Date().toISOString(),
-                    updated_by: user?.id
-                }, { onConflict: 'key' });
-
-            if (error) throw error;
-
-            // Log the action
-            await supabase.from('system_audit_logs').insert({
-                action_type: newValue ? 'public_section_enabled' : 'public_section_disabled',
-                actor_id: user?.id,
-                details: {
-                    changed_by: user?.email,
-                    new_value: newValue,
-                    timestamp: new Date().toISOString()
-                }
-            });
-
-            setPublicEnabled(newValue);
-            alert(`Public Marketplace ${newValue ? 'ENABLED' : 'DISABLED'} successfully.\n\n${newValue ? 'Note: The ENABLE_PUBLIC_SECTION env var must also be set to "true" for full access.' : 'Public routes are now locked.'}`);
-        } catch (err: any) {
-            console.error('Toggle failed:', err);
-            alert('Failed to toggle public section: ' + (err.message || 'Unknown error'));
-        } finally {
-            setPublicToggleLoading(false);
-            fetchData();
-        }
-    };
 
     if (loading) return (
         <div className="flex justify-center items-center h-screen bg-black text-white">
@@ -171,69 +120,7 @@ export default function TechnicalAdminPage() {
                 </Card>
             </div>
 
-            {/* Public Section Kill-Switch */}
-            <Card className="bg-zinc-900/50 border-[#FF6200]/20 backdrop-blur-sm relative z-10">
-                <CardHeader className="border-b border-white/5">
-                    <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-[#FF6200]/10 border border-[#FF6200]/20 flex items-center justify-center">
-                            <Globe className="h-5 w-5 text-[#FF6200]" />
-                        </div>
-                        <div>
-                            <CardTitle className="text-lg font-black uppercase italic tracking-widest text-[#FF6200]">
-                                Public Section Control
-                            </CardTitle>
-                            <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest mt-0.5">
-                                Super Admin Only – Hard Kill-Switch
-                            </p>
-                        </div>
-                    </div>
-                </CardHeader>
-                <CardContent className="p-6">
-                    {!isSuperAdmin ? (
-                        <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/10">
-                            <Shield className="h-5 w-5 text-white/40" />
-                            <p className="text-xs text-white/40 font-black uppercase tracking-widest">
-                                Access Restricted – Super Admin (CEO / Technical Admin) role required
-                            </p>
-                        </div>
-                    ) : (
-                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                            <div className="space-y-2">
-                                <div className="flex items-center gap-3">
-                                    <span className={`h-2.5 w-2.5 rounded-full animate-pulse ${publicEnabled ? 'bg-[#FF6200]' : 'bg-zinc-600'}`} />
-                                    <span className="font-black uppercase tracking-widest text-sm">
-                                        Public Marketplace is currently{' '}
-                                        <span className={publicEnabled ? 'text-[#FF6200]' : 'text-white/60'}>
-                                            {publicEnabled ? 'ENABLED' : 'DISABLED (LOCKED)'}
-                                        </span>
-                                    </span>
-                                </div>
-                                <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest max-w-lg">
-                                    {publicEnabled
-                                        ? 'Public routes /public/* are accessible. Both this DB flag AND the ENABLE_PUBLIC_SECTION env var must be "true" simultaneously.'
-                                        : 'Public routes /public/* return 404 for all users. No public card, text, or hint is visible on the homepage.'}
-                                </p>
-                            </div>
-                            <Button
-                                onClick={togglePublicSection}
-                                disabled={publicToggleLoading}
-                                className={`h-14 px-8 font-black uppercase tracking-widest rounded-xl whitespace-nowrap transition-all ${publicEnabled
-                                        ? 'bg-white text-black hover:bg-zinc-200'
-                                        : 'bg-[#FF6200] text-black hover:bg-[#FF7A29]'
-                                    }`}
-                            >
-                                {publicToggleLoading ? (
-                                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</>
-                                ) : publicEnabled ? (
-                                    <><ToggleRight className="mr-2 h-5 w-5" /> Disable Public Section</>
-                                ) : (
-                                    <><ToggleLeft className="mr-2 h-5 w-5" /> Enable Public Section</>
-                                )}
-                            </Button>
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
+
 
             {/* Logs Table */}
             <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm relative z-10">

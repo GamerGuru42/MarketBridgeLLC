@@ -12,8 +12,8 @@ function PaymentPendingContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { refreshUser, user } = useAuth();
-    const ref = searchParams.get('ref');
-    const status = searchParams.get('status');
+    const ref = searchParams?.get('ref');
+    const status = searchParams?.get('status');
 
     useEffect(() => {
         if (ref || status === 'success') {

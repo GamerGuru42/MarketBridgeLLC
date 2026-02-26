@@ -5,7 +5,7 @@ export async function generateAndSendOtp(email: string) {
   const code = String(Math.floor(100000 + Math.random() * 900000))
   const expiresAt = new Date(Date.now() + 1000 * 60 * 10) // 10 minutes
 
-  const supabase = createServerSupabaseClient({})
+  const supabase = await createServerSupabaseClient()
   await supabase.from('email_otps').insert({ email, code, expires_at: expiresAt.toISOString() })
 
   // Try preferred transactional providers in order: Resend, SendGrid, then fallback to console log
@@ -56,7 +56,7 @@ export async function generateAndSendOtp(email: string) {
 }
 
 export async function verifyOtpAndCreateRequest(email: string, code: string, userId: string) {
-  const supabase = createServerSupabaseClient({})
+  const supabase = await createServerSupabaseClient()
   const { data } = await supabase
     .from('email_otps')
     .select('*')

@@ -30,7 +30,7 @@ const sellerItems = [
 export default function SellerLayout({
     children,
 }: {
-    children: React.ReactCampus;
+    children: React.ReactNode;
 }) {
     const { user, loading } = useAuth();
     const pathname = usePathname();

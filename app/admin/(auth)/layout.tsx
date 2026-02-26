@@ -1,7 +1,7 @@
 export default function AuthLayout({
     children,
 }: {
-    children: React.ReactCampus;
+    children: React.ReactNode;
 }) {
     return <>{children}</>;
 }

@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     }
 
     try {
-        const { listingId } = await req.json();
+        const { listingId, coinsToUse = 0 } = await req.json();
 
         if (!listingId) {
             return NextResponse.json({ error: 'Listing ID is required' }, { status: 400 });
@@ -37,10 +37,19 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Seller has not set up payouts yet. Please contact support.' }, { status: 400 });
         }
 
+        // Verify insufficient coins
+        if (coinsToUse > 0) {
+            const { data: profile } = await supabase.from('users').select('coins_balance').eq('id', user.id).single();
+            if (!profile || (profile.coins_balance || 0) < coinsToUse) {
+                return NextResponse.json({ error: 'Insufficient MarketCoins' }, { status: 400 });
+            }
+        }
+
         // 2. Calculate Commission & Split
-        const commissionPercentage = 7; // Default 7%
+        const commissionPercentage = 5.3; // Strict 5.3%
         const finalPrice = listing.current_offered_price || listing.price;
-        const amountKobo = Math.round(finalPrice * 100);
+        const discountedPrice = Math.max(0, finalPrice - coinsToUse);
+        const amountKobo = Math.round(discountedPrice * 100);
 
         // Generate a unique reference for this transaction
         const reference = `TXNL-${Date.now()}-${listingId.slice(0, 8)}`;
@@ -56,6 +65,8 @@ export async function POST(req: Request) {
                 seller_id: seller.id,
                 buyer_id: user.id,
                 platform_commission_percent: commissionPercentage,
+                coins_used: coinsToUse,
+                original_price: finalPrice,
                 type: 'marketplace_sale'
             },
             subaccount: seller.paystack_subaccount_code,

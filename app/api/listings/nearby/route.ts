@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'lat and lon required' }, { status: 400 })
   }
 
-  const supabase = createServerSupabaseClient({})
+  const supabase = await createServerSupabaseClient()
 
   const { data: listings, error } = await supabase
     .from('listings')

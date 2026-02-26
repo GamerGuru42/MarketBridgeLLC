@@ -438,6 +438,42 @@ export class PaystackWebhookHandler {
 
                     if (transError) console.error('Error recording sales transaction:', transError);
 
+                    // --- MarketCoins Logic ---
+                    const coinsUsed = metadata?.coins_used || 0;
+
+                    if (coinsUsed > 0 && buyerId) {
+                        const { error: deductErr } = await supabaseAdmin.rpc('subtract_coins', {
+                            user_id: buyerId,
+                            amount_to_subtract: coinsUsed,
+                            trans_type: 'redeem_discount',
+                            trans_desc: `Redeemed for listing ${listingId}`
+                        });
+                        if (deductErr) console.error('Error deducting coins:', deductErr);
+                    }
+
+                    const buyerEarned = Math.floor(amountTotal / 100);
+                    if (buyerEarned > 0 && buyerId) {
+                        const { error: earnErr } = await supabaseAdmin.rpc('add_coins', {
+                            user_id: buyerId,
+                            amount_to_add: buyerEarned,
+                            trans_type: 'earn_purchase',
+                            trans_desc: `Earned from purchase of listing ${listingId}`
+                        });
+                        if (earnErr) console.error('Error adding buyer coins:', earnErr);
+                    }
+
+                    const sellerEarned = Math.floor(amountSeller / 200);
+                    if (sellerEarned > 0 && sellerId) {
+                        const { error: sellEarnErr } = await supabaseAdmin.rpc('add_coins', {
+                            user_id: sellerId,
+                            amount_to_add: sellerEarned,
+                            trans_type: 'earn_sale',
+                            trans_desc: `Earned from sale of ${listingId}`
+                        });
+                        if (sellEarnErr) console.error('Error adding seller coins:', sellEarnErr);
+                    }
+                    // --- End MarketCoins Logic ---
+
                     // 3. Reset Negotiation System for this listing
                     await supabaseAdmin
                         .from('listings')

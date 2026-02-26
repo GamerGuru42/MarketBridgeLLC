@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
+import { useToast } from '@/contexts/ToastContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,6 +23,7 @@ export default function CheckoutPage() {
     const router = useRouter();
     const { user, loading: authLoading } = useAuth();
     const { items, total, clearCart } = useCart();
+    const { toast } = useToast();
 
     const [actionLoading, setActionLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -90,7 +92,7 @@ export default function CheckoutPage() {
             setProofUrl(data.publicUrl);
         } catch (error) {
             console.error('Error uploading receipt:', error);
-            alert('Failed to upload receipt. Please try again.');
+            toast('Failed to upload receipt. Please try again.', 'error');
         } finally {
             setUploading(false);
         }
@@ -99,7 +101,7 @@ export default function CheckoutPage() {
     const handleConfirmPayment = async () => {
         if (!user || items.length === 0) return;
         if (!paymentRef || !proofUrl || !agreed) {
-            alert('Please complete all payment verification steps.');
+            toast('Please complete all payment verification steps.', 'error');
             return;
         }
 
@@ -132,12 +134,12 @@ export default function CheckoutPage() {
             const data = await response.json();
 
             clearCart();
-            alert('Order placed successfully! Pending admin verification.');
+            toast('Order placed successfully! Pending admin verification.', 'success');
             router.push(`/orders?new=${data.orderId}`);
 
         } catch (err: any) {
             console.error('Checkout error:', err);
-            alert(err.message || 'Failed to place order. Please try again.');
+            toast(err.message || 'Failed to place order. Please try again.', 'error');
         } finally {
             setActionLoading(false);
         }

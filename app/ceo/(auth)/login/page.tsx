@@ -191,7 +191,6 @@ export default function CEOLoginPage() {
                 <CardFooter className="flex flex-col items-center gap-6 py-12 relative z-10">
                     <div className="flex items-center gap-8">
                         <Link href="/ceo/signup" className="text-[9px] font-bold text-white/30 hover:text-[#d4af37] uppercase tracking-widest transition-colors">Apply for Access</Link>
-                        <Link href="/" className="text-[9px] font-bold text-white/30 hover:text-white uppercase tracking-widest transition-colors underline">Public Dashboard</Link>
                     </div>
                 </CardFooter>
             </Card>

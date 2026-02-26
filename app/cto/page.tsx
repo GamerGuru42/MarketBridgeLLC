@@ -3,7 +3,7 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Server, Database, Activity, ShieldCheck, Zap, Cpu, HardDrive, Dashboard, Lock } from 'lucide-react';
+import { Server, Database, Activity, ShieldCheck, Zap, Cpu, HardDrive, LayoutDashboard, Lock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 
@@ -106,7 +106,7 @@ export default function CTOPage() {
                         </div>
                         <div className="p-4 bg-muted/30 rounded-lg border border-primary/5">
                             <p className="text-xs text-muted-foreground font-mono">
-                                <Dashboard className="h-3 w-3 inline mr-2" />
+                                <LayoutDashboard className="h-3 w-3 inline mr-2" />
                                 Video transcoder optimization active. CDN cache hit rate: 94.2%. Video delivery latency in Abuja: 45ms.
                             </p>
                         </div>

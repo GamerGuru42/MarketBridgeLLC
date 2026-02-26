@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+import { useToast } from '@/contexts/ToastContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,6 +24,7 @@ function OnboardingContent() {
     const forcedRole = searchParams?.get('role');
     const selectedPlan = searchParams?.get('plan');
     const selectedCycle = searchParams?.get('billing') || 'monthly';
+    const { toast } = useToast();
     const { user, sessionUser, loading: authLoading, refreshUser } = useAuth();
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState(1);
@@ -139,6 +141,7 @@ function OnboardingContent() {
             await refreshUser();
 
             // Redirect
+            toast('Account setup complete!', 'success');
             if (['student_seller', 'dealer'].includes(formData.role)) {
                 if (selectedPlan) {
                     router.push(`/checkout/subscription?plan=${selectedPlan}&billing=${selectedCycle}`);
@@ -150,7 +153,7 @@ function OnboardingContent() {
             }
         } catch (err: any) {
             console.error('Onboarding failed:', err);
-            alert(err.message || 'Onboarding failed');
+            toast(err.message || 'Onboarding failed', 'error');
         } finally {
             setLoading(false);
         }

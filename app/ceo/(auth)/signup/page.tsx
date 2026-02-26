@@ -246,9 +246,6 @@ export default function CEOSignupPage() {
                     <Link href="/ceo/login" className="text-[10px] font-bold text-white/40 hover:text-[#d4af37] uppercase tracking-widest transition-colors">
                         Return to Command Center
                     </Link>
-                    <Link href="/" className="text-[10px] font-medium text-white/20 hover:text-white uppercase tracking-widest transition-colors">
-                        Public Portal
-                    </Link>
                 </CardFooter>
             </Card>
         </div>

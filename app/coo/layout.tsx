@@ -16,7 +16,7 @@ const cooItems = [
 export default function COOLayout({
     children,
 }: {
-    children: React.ReactCampus;
+    children: React.ReactNode;
 }) {
     return (
         <div className="flex min-h-screen">

@@ -12,7 +12,7 @@ import { usePathname } from 'next/navigation';
 export default function MainLayout({
     children,
 }: {
-    children: React.ReactCampus;
+    children: React.ReactNode;
 }) {
     const pathname = usePathname();
     const isDashboard = pathname?.startsWith('/dealer') || pathname?.startsWith('/settings');

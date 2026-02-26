@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { createClient } from '@/lib/supabase/client';
 const supabase = createClient();
+import { useToast } from '@/contexts/ToastContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,6 +21,7 @@ import { canCreateListing } from '@/lib/subscription/utils';
 export default function NewListingPage() {
     const router = useRouter();
     const { user, sessionUser, loading: authLoading } = useAuth();
+    const { toast } = useToast();
     const [loading, setLoading] = useState(false);
     const [imageUrls, setImageUrls] = useState<string[]>(['']);
     const [videoUrls, setVideoUrls] = useState<string[]>([]);
@@ -45,10 +47,9 @@ export default function NewListingPage() {
             return;
         }
 
-        // SELLER VERIFICATION: student sellers must be verified before creating listings
-        if (user.role === 'student_seller' && !user.is_verified_seller) {
+        if (user.role === 'student_seller' && !user.isVerified) {
             // Show message and redirect to verification flow
-            alert('Listing creation is restricted to verified student sellers. Please complete verification.');
+            toast('Listing creation is restricted to verified student sellers. Please complete verification.', 'error');
             router.push('/verify-seller');
             return;
         }
@@ -74,7 +75,7 @@ export default function NewListingPage() {
         try {
             const validImages = imageUrls.filter((url: string) => url.trim() !== '');
             if (validImages.length === 0) {
-                alert('Please add at least one image URL');
+                toast('Please add at least one image URL', 'error');
                 setLoading(false);
                 return;
             }
@@ -82,7 +83,7 @@ export default function NewListingPage() {
             // ENFORCE PLAN LIMITS
             const { allowed, reason } = await canCreateListing(user.id);
             if (!allowed) {
-                alert(reason || 'Listing limit reached.');
+                toast(reason || 'Listing limit reached.', 'error');
                 setLoading(false);
                 return;
             }
@@ -108,7 +109,7 @@ export default function NewListingPage() {
         } catch (err: unknown) {
             console.error('Failed to create listing:', err);
             const message = err instanceof Error ? err.message : 'Failed to create listing';
-            alert(message);
+            toast(message, 'error');
         } finally {
             setLoading(false);
         }

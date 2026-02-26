@@ -13,7 +13,7 @@ const cofounderItems = [
 export default function CofounderLayout({
     children,
 }: {
-    children: React.ReactCampus;
+    children: React.ReactNode;
 }) {
     return (
         <div className="flex min-h-screen">

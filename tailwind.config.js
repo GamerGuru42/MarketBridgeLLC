@@ -1,3 +1,5 @@
+const defaultColors = require('tailwindcss/colors');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     darkMode: ["class"],
@@ -9,6 +11,50 @@ module.exports = {
     ],
     prefix: "",
     theme: {
+        colors: {
+            transparent: 'transparent',
+            current: 'currentColor',
+            black: '#000000',
+            white: '#FFFFFF',
+            zinc: defaultColors.zinc, // keeping grayscale as acceptable neutral
+            neutral: defaultColors.neutral,
+            gray: defaultColors.gray,
+            slate: defaultColors.slate,
+            stone: defaultColors.stone,
+            // Core Brand Color
+            orange: {
+                ...defaultColors.orange,
+                50: '#fff0e6',
+                100: '#ffdbbf',
+                200: '#ffc193',
+                300: '#ff9d59',
+                400: '#ff7728',
+                500: '#FF6200', // Our strict brand color
+                600: '#db4b00',
+                700: '#b73700',
+                800: '#922900',
+                900: '#762200',
+                950: '#400e00',
+                DEFAULT: '#FF6200'
+            },
+            // Enforce brand by aliasing other colors used in the codebase to Orange or Grayscale
+            red: { ...defaultColors.orange, 500: '#FF6200', DEFAULT: '#FF6200' },
+            yellow: { ...defaultColors.orange, 500: '#FF6200', DEFAULT: '#FF6200' },
+            green: { ...defaultColors.zinc },
+            blue: { ...defaultColors.zinc },
+            indigo: { ...defaultColors.zinc },
+            purple: { ...defaultColors.zinc },
+            pink: { ...defaultColors.zinc },
+            cyan: { ...defaultColors.zinc },
+            teal: { ...defaultColors.zinc },
+            emerald: { ...defaultColors.zinc },
+            rose: { ...defaultColors.zinc },
+            fuchsia: { ...defaultColors.zinc },
+            violet: { ...defaultColors.zinc },
+            sky: { ...defaultColors.zinc },
+            amber: { ...defaultColors.orange, 500: '#FF6200', DEFAULT: '#FF6200' },
+            lime: { ...defaultColors.zinc }
+        },
         container: {
             center: true,
             padding: "2rem",

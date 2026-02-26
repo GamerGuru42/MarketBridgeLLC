@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   const { requestId, approve, adminId, note } = body || {}
   if (!requestId || typeof approve !== 'boolean') return NextResponse.json({ error: 'requestId and approve required' }, { status: 400 })
 
-  const supabase = createServerSupabaseClient({})
+  const supabase = await createServerSupabaseClient()
 
   // fetch request
   const { data } = await supabase.from('seller_verification_requests').select('*').eq('id', requestId).limit(1)
