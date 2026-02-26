@@ -139,7 +139,7 @@ export default function WaitlistPage() {
                         {waitlistCount !== null && (
                             <div className="flex items-center justify-center gap-2 text-zinc-400 text-sm font-bold mt-6 animate-in fade-in zoom-in">
                                 <Users className="h-5 w-5 text-[#FF6200]" />
-                                Already joined: <span className="text-white bg-white/10 px-3 py-1 rounded-md">{waitlistCount}</span> real students
+                                Already joined: <span className="text-white bg-white/10 px-3 py-1 rounded-md">{waitlistCount}</span> people
                             </div>
                         )}
                     </div>
