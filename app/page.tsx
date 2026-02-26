@@ -61,9 +61,9 @@ export default function WaitlistPage() {
 
     return (
         <div className="flex flex-col min-h-screen bg-[#000000] text-[#FFFFFF] font-sans selection:bg-[#FF6200] selection:text-white">
-            <header className="w-full p-6 flex justify-center absolute top-0 z-50">
+            <header className="w-full p-6 md:p-8 flex justify-center md:justify-start absolute top-0 z-50">
                 <div className="flex items-center">
-                    <Logo size="xl" />
+                    <Logo size="lg" />
                 </div>
             </header>
 
@@ -75,13 +75,13 @@ export default function WaitlistPage() {
 
                     {/* Header Section */}
                     <div className="space-y-6 mt-8">
-                        <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-[#FF6200] leading-[1.1]">
+                        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-[#FF6200] leading-tight">
                             THE WAIT IS ALMOST OVER.
                         </h1>
-                        <h2 className="text-xl md:text-2xl font-medium text-white mx-auto leading-relaxed max-w-3xl">
+                        <h2 className="text-lg md:text-xl font-medium text-white/90 mx-auto leading-relaxed max-w-2xl">
                             MarketBridge is here, a safer, smarter way to buy and sell on campus. Whether you're a student, staff, or part of the community, discover a marketplace built for you.
                         </h2>
-                        <div className="text-[#FF6200] font-bold text-lg md:text-xl pt-2">
+                        <div className="text-[#FF6200] font-bold text-base md:text-lg pt-2">
                             Launching first in Abuja. Coming soon.
                         </div>
                     </div>
