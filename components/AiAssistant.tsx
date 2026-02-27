@@ -38,13 +38,16 @@ interface SupportTicket {
     department: 'technical' | 'operations';
 }
 
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
 export function AiAssistant() {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<Message[]>([
         {
             id: '1',
             role: 'assistant',
-            content: "Hello! I'm Sage, your MarketBridge AI assistant. I'm here to help you shop safely across Abuja campuses. I can help you find products, explain our Paystack escrow system, or help you become a verified dealer. How can I assist your hustle today?",
+            content: "Hello! I'm **Sage**, your MarketBridge AI assistant. I'm trained to help you:\n- **Find products** safely across Abuja campuses\n- **Explain** our Paystack escrow system\n- **Guide** you to become a verified dealer\n\nHow can I assist your hustle today?",
             timestamp: new Date()
         }
     ]);
@@ -92,20 +95,55 @@ export function AiAssistant() {
         setInputValue('');
         setIsTyping(true);
 
+        // Simulate network delay
         setTimeout(() => {
             const response = generateResponse(userMessage.content);
-            const botMessage: Message = {
-                id: (Date.now() + 1).toString(),
+            const botMessageId = (Date.now() + 1).toString();
+
+            // Start with an empty message and streaming state
+            setMessages(prev => [...prev, {
+                id: botMessageId,
                 role: 'assistant',
-                content: response.content,
+                content: '',
                 timestamp: new Date(),
-                searchResults: response.searchResults,
-                productDetail: response.productDetail,
-                supportTicket: response.supportTicket
-            };
-            setMessages(prev => [...prev, botMessage]);
-            setIsTyping(false);
-        }, 800);
+            }]);
+
+            setIsTyping(false); // Hide the "pulsing dots" loader
+
+            // Simulated Streaming Effect
+            const fullContent = response.content;
+            let currentLength = 0;
+            const chunkSize = Math.max(1, Math.floor(fullContent.length / 40));
+
+            const streamInterval = setInterval(() => {
+                currentLength += chunkSize;
+                if (currentLength >= fullContent.length) {
+                    currentLength = fullContent.length;
+                    clearInterval(streamInterval);
+
+                    // Once text finishes streaming, append the rich UI widgets (cards, tickets, etc.)
+                    setMessages(prev => prev.map(msg =>
+                        msg.id === botMessageId ? {
+                            ...msg,
+                            content: fullContent,
+                            searchResults: response.searchResults,
+                            productDetail: response.productDetail,
+                            supportTicket: response.supportTicket
+                        } : msg
+                    ));
+                } else {
+                    // Update streaming text
+                    setMessages(prev => prev.map(msg =>
+                        msg.id === botMessageId ? {
+                            ...msg,
+                            content: fullContent.substring(0, currentLength) + ' ⬤'
+                        } : msg
+                    ));
+                }
+                scrollToBottom();
+            }, 15); // FAST stream 15ms per chunk
+
+        }, 600);
     };
 
     return (
@@ -171,13 +209,19 @@ export function AiAssistant() {
                                         <div className="flex flex-col gap-2 flex-1 min-w-0">
                                             <div
                                                 className={cn(
-                                                    "p-3 rounded-2xl text-sm whitespace-pre-wrap",
+                                                    "p-3 rounded-2xl text-sm whitespace-pre-wrap max-w-full overflow-hidden",
                                                     msg.role === 'user'
                                                         ? "bg-primary text-primary-foreground rounded-tr-none"
-                                                        : "bg-muted/50 text-foreground rounded-tl-none"
+                                                        : "bg-muted/50 text-foreground rounded-tl-none prose prose-sm dark:prose-invert prose-p:leading-relaxed prose-pre:bg-zinc-900 prose-pre:text-zinc-100"
                                                 )}
                                             >
-                                                {msg.content}
+                                                {msg.role === 'user' ? (
+                                                    msg.content
+                                                ) : (
+                                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                        {msg.content}
+                                                    </ReactMarkdown>
+                                                )}
                                             </div>
 
                                             {msg.productDetail && (
@@ -298,7 +342,7 @@ export function AiAssistant() {
                     </CardContent>
 
                     <div className="px-4 py-2 border-t border-white/5 bg-zinc-950/50">
-                        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide overscroll-contain" style={{ overscrollBehaviorX: 'contain' }}>
+                        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide overscroll-contain overscroll-x-contain">
                             {['Find Textbooks', 'Cheap Laptops', 'Wigs for Sale', 'Food Delivery', 'Sell Item'].map((chip) => (
                                 <button
                                     key={chip}
