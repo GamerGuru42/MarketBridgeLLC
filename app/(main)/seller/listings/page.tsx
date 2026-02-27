@@ -10,6 +10,8 @@ import { Package, Plus, Edit, Trash2, Eye, Loader2, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { EmptyState } from '@/components/ui/empty-state';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -189,12 +191,34 @@ export default function SellerListingsPage() {
 
     if (authLoading || loading) {
         return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="flex items-center justify-center min-h-[400px]">
-                    <div className="text-center">
-                        <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
-                        <p className="mt-4 text-muted-foreground">Loading listings...</p>
+            <div className="container mx-auto py-10 px-4 space-y-8">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <Skeleton className="h-12 w-64 bg-white/5" />
+                        <Skeleton className="h-4 w-96 mt-2 bg-white/5" />
                     </div>
+                    <Skeleton className="h-12 w-48 rounded-xl bg-white/5" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="glass-card rounded-[2rem] border-white/5 overflow-hidden flex flex-col h-full shadow-2xl">
+                            <Skeleton className="aspect-[4/3] w-full rounded-none bg-white/5" />
+                            <div className="p-8 space-y-6 flex-1 flex flex-col justify-between">
+                                <div className="space-y-3">
+                                    <Skeleton className="h-6 w-3/4 bg-white/5" />
+                                    <Skeleton className="h-8 w-1/3 bg-[#FF6200]/20" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Skeleton className="h-4 w-full bg-white/5" />
+                                    <Skeleton className="h-4 w-2/3 bg-white/5" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-3 pt-6 border-t border-white/5">
+                                    <Skeleton className="h-8 w-full rounded-xl bg-white/5" />
+                                    <Skeleton className="h-8 w-full rounded-xl bg-white/5" />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         );
@@ -216,21 +240,13 @@ export default function SellerListingsPage() {
             </div>
 
             {listings.length === 0 ? (
-                <Card className="border-dashed border-2 bg-muted/5">
-                    <CardContent className="py-24 text-center">
-                        <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <Package className="h-10 w-10 text-muted-foreground opacity-30" />
-                        </div>
-                        <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-2">Zero Inventory Detected</h3>
-                        <p className="text-muted-foreground mb-8 text-sm italic">You haven't deployed any assets to the marketplace yet.</p>
-                        <Button asChild className="px-10 h-12 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-bold uppercase tracking-widest text-xs rounded-xl">
-                            <Link href="/seller/listings/new">
-                                <Plus className="mr-2 h-4 w-4" />
-                                Create First Listing
-                            </Link>
-                        </Button>
-                    </CardContent>
-                </Card>
+                <EmptyState
+                    icon={<Package className="h-10 w-10 text-[#FF6200]" />}
+                    title="Zero Inventory Detected"
+                    description="You haven't deployed any assets to the marketplace yet."
+                    actionLabel="Create First Listing"
+                    actionHref="/seller/listings/new"
+                />
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {listings.map((listing) => (

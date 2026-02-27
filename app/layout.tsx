@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { GlobalWidgets } from "@/components/GlobalWidgets";
+import { NetworkStatus } from "@/components/NetworkStatus";
 import { LocationChecker } from "@/components/location-checker";
 import BetaLabel from "@/components/BetaLabel";
 import { LocationProvider } from "@/contexts/LocationContext";
@@ -98,6 +99,7 @@ export default function RootLayout({
                   {/* Beta label is shown only on campus pages */}
                   <BetaLabel />
 
+                  <NetworkStatus />
                 </ToastProvider>
                 <GlobalWidgets />
               </CartProvider>

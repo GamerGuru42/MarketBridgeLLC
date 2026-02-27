@@ -6,6 +6,7 @@ import { Loader2, Upload, X, Image as ImageIcon, AlertCircle, RefreshCw, CheckCi
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useToast } from '@/contexts/ToastContext';
+import imageCompression from 'browser-image-compression';
 
 interface ImageUploadProps {
     onImagesSelected: (urls: string[]) => void;
@@ -72,7 +73,13 @@ export function ImageUpload({
             }
 
             // Convert to WebP with compression
-            const convertedBlob = await convertToWebP(file, 0.82);
+            const options = {
+                maxSizeMB: 0.8,
+                maxWidthOrHeight: 1920,
+                useWebWorker: true,
+                fileType: 'image/webp',
+            };
+            const convertedBlob = await imageCompression(file, options);
 
             // Upload with 3-attempt retry
             const { data: { user } } = await supabase.auth.getUser();
@@ -128,7 +135,7 @@ export function ImageUpload({
 
         const successCount = slots.filter(s => s.status === 'success').length;
         if (successCount + files.length > maxImages) {
-            try { toast(`You can only upload a maximum of ${maxImages} images. You already have ${successCount}.`, 'error'); } catch (e) {}
+            try { toast(`You can only upload a maximum of ${maxImages} images. You already have ${successCount}.`, 'error'); } catch (e) { }
             if (fileInputRef.current) fileInputRef.current.value = '';
             return;
         }
@@ -145,7 +152,7 @@ export function ImageUpload({
         // Upload each file
         await Promise.all(newSlots.map((slot, i) => uploadFile(files[i], slot.id)));
         // After all attempts, show success toast summarizing state
-        try { toast('Images uploaded (or queued) successfully.', 'success'); } catch (e) {}
+        try { toast('Images uploaded (or queued) successfully.', 'success'); } catch (e) { }
     };
 
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -192,6 +199,8 @@ export function ImageUpload({
                                 <Image src={slot.url} alt="Upload" fill className="object-cover" />
                                 <button
                                     type="button"
+                                    title="Remove Image"
+                                    aria-label="Remove Image"
                                     onClick={() => removeSlot(slot.id)}
                                     className="absolute top-2 right-2 p-1.5 bg-black/70 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[#FF6200]"
                                 >
@@ -259,6 +268,8 @@ export function ImageUpload({
 
             <input
                 type="file"
+                title="Upload Images"
+                aria-label="Upload Images"
                 ref={fileInputRef}
                 onChange={handleFileChange}
                 accept="image/*"
@@ -271,35 +282,4 @@ export function ImageUpload({
             </p>
         </div>
     );
-}
-
-async function convertToWebP(file: File, quality = 0.82): Promise<Blob> {
-    return new Promise((resolve, reject) => {
-        const img = new globalThis.Image();
-        const objectUrl = URL.createObjectURL(file);
-        img.onload = () => {
-            // Cap dimensions at 1920px for listings, 1200px for avatars
-            const maxDim = 1920;
-            let { width, height } = img;
-            if (width > maxDim || height > maxDim) {
-                const ratio = Math.min(maxDim / width, maxDim / height);
-                width = Math.round(width * ratio);
-                height = Math.round(height * ratio);
-            }
-            const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            if (!ctx) { URL.revokeObjectURL(objectUrl); reject(new Error('Canvas context failed')); return; }
-            ctx.drawImage(img, 0, 0, width, height);
-            URL.revokeObjectURL(objectUrl);
-            canvas.toBlob(
-                blob => blob ? resolve(blob) : reject(new Error('WebP conversion failed')),
-                'image/webp',
-                quality
-            );
-        };
-        img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error('Failed to load image for conversion')); };
-        img.src = objectUrl;
-    });
 }

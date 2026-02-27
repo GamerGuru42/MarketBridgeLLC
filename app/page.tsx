@@ -8,15 +8,33 @@ import { Logo } from '@/components/logo';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const waitlistSchema = z.object({
+    email: z.string().email("Please enter a valid email address.")
+});
+
+type WaitlistFormData = z.infer<typeof waitlistSchema>;
 
 export default function WaitlistPage() {
-    const [email, setEmail] = useState('');
-    const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle');
     const [message, setMessage] = useState('');
     const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
     const supabase = createClient();
     const router = useRouter();
     const { user, loading } = useAuth();
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset
+    } = useForm<WaitlistFormData>({
+        resolver: zodResolver(waitlistSchema),
+        defaultValues: { email: '' }
+    });
 
     useEffect(() => {
         const fetchWaitlistCount = async () => {
@@ -39,38 +57,33 @@ export default function WaitlistPage() {
         }
     }, [user, loading, router]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!email.trim() || !email.includes('@')) {
-            setStatus('error');
-            setMessage('Please enter a valid email address.');
-            return;
-        }
-
+    const onSubmit = async (data: WaitlistFormData) => {
         setStatus('loading');
+        setMessage('');
         try {
             const res = await fetch('/api/waitlist', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email }),
+                body: JSON.stringify({ email: data.email }),
             });
-            const data = await res.json();
+            const resData = await res.json();
 
             if (!res.ok) {
-                if (data.error && data.error.includes('already exists')) {
+                if (resData.error && resData.error.includes('already exists')) {
                     throw new Error('This email is already on the waitlist!');
                 }
-                throw new Error(data.error || 'Failed to join waitlist');
+                throw new Error(resData.error || 'Failed to join waitlist');
             }
 
             setStatus('success');
             setMessage("Welcome! You're now in the queue. We'll notify you when we open.");
-            setEmail('');
+            reset();
             // refresh count
             const { count } = await supabase.from('waitlist').select('*', { count: 'exact', head: true });
             if (count !== null) setWaitlistCount(count);
         } catch (error: any) {
-            setStatus('error');
+            setStatus('idle');
+            // Show error in the message area
             setMessage(error.message);
         }
     };
@@ -113,21 +126,22 @@ export default function WaitlistPage() {
                             </p>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
                             <div className="relative flex items-center">
                                 <Mail className="absolute left-5 h-6 w-6 text-zinc-500" />
                                 <input
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    {...register('email')}
                                     disabled={status === 'loading' || status === 'success'}
                                     placeholder="Enter your email address"
                                     className="w-full h-16 bg-black/50 border border-white/20 rounded-2xl pl-16 pr-6 text-white placeholder:text-zinc-500 focus:outline-none focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] transition-all font-medium text-lg disabled:opacity-50"
-                                    required
                                 />
                             </div>
 
-                            {status === 'error' && (
+                            {errors.email && (
+                                <p className="text-red-500 text-sm font-bold text-left px-2">{errors.email.message}</p>
+                            )}
+
+                            {message && status !== 'success' && (
                                 <p className="text-red-500 text-sm font-bold text-left px-2">{message}</p>
                             )}
 

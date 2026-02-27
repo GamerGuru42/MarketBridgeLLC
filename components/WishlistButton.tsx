@@ -24,23 +24,27 @@ export function WishlistButton({ listingId, initialInWishlist = false, className
             return;
         }
 
-        setLoading(true);
+        // Optimistic update
+        const previousState = inWishlist;
+        setInWishlist(!previousState);
+
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist/${listingId}`, {
-                method: inWishlist ? 'DELETE' : 'POST',
+                method: previousState ? 'DELETE' : 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json',
                 },
             });
 
-            if (response.ok) {
-                setInWishlist(!inWishlist);
+            if (!response.ok) {
+                // Revert on server error
+                throw new Error('Server returned an error');
             }
         } catch (error) {
             console.error('Failed to toggle wishlist', error);
-        } finally {
-            setLoading(false);
+            // Revert optimistic update
+            setInWishlist(previousState);
         }
     };
 

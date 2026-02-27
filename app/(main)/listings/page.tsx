@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
@@ -228,6 +230,8 @@ function ListingsContent() {
 
                     <div className="md:col-span-3">
                         <select
+                            title="Filter by Category"
+                            aria-label="Filter by Category"
                             value={category}
                             onChange={(e) => setCategory(e.target.value)}
                             className="w-full bg-white/5 border border-white/10 px-6 h-16 text-white focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
@@ -241,6 +245,8 @@ function ListingsContent() {
 
                     <div className="md:col-span-2">
                         <select
+                            title="Filter by Location"
+                            aria-label="Filter by Location"
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
                             className="w-full bg-white/5 border border-white/10 px-6 h-16 text-white focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
@@ -256,10 +262,28 @@ function ListingsContent() {
                     </Button>
                 </form>
 
-                {/* Loading */}
+                {/* Loading State - Skeleton Grid */}
                 {loading && (
-                    <div className="flex items-center justify-center py-20">
-                        <Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pt-4">
+                        {[...Array(8)].map((_, i) => (
+                            <div key={i} className="glass-card rounded-[2rem] border-white/5 overflow-hidden flex flex-col h-full shadow-2xl">
+                                <Skeleton className="h-64 w-full rounded-none bg-white/5" />
+                                <div className="p-8 space-y-6 flex-1 flex flex-col justify-between">
+                                    <div className="space-y-3">
+                                        <Skeleton className="h-3 w-24 bg-white/5" />
+                                        <Skeleton className="h-6 w-3/4 bg-white/5" />
+                                        <Skeleton className="h-4 w-full bg-white/5" />
+                                        <Skeleton className="h-4 w-2/3 bg-white/5" />
+                                    </div>
+                                    <div className="pt-6 border-t border-white/5 flex justify-between items-center">
+                                        <div className="flex flex-col space-y-2">
+                                            <Skeleton className="h-2 w-16 bg-white/5" />
+                                            <Skeleton className="h-6 w-24 bg-[#FF6200]/20" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 )}
 
@@ -272,21 +296,19 @@ function ListingsContent() {
 
                 {/* No Results State */}
                 {!loading && !error && listings.length === 0 && (
-                    <div className="text-center py-40 bg-white/5 border border-white/10 rounded-[3rem] space-y-8">
-                        <div className="h-28 w-28 rounded-full bg-[#FF6200]/5 border border-[#FF6200]/20 flex items-center justify-center mx-auto">
-                            <Search className="h-10 w-10 text-white/10" />
-                        </div>
-                        <div className="space-y-2">
-                            <h3 className="text-2xl font-black uppercase tracking-tighter italic font-heading">Zero Matches Found</h3>
-                            <p className="text-white/40 font-medium italic">Adjust your parameters to re-scan the marketplace.</p>
-                        </div>
-                        <Button
-                            onClick={() => { setSearch(''); window.location.href = '/listings'; }}
-                            variant="outline"
-                            className="h-12 px-8 border-white/10 text-white/40 hover:text-white rounded-xl font-black uppercase tracking-widest text-[10px]"
-                        >
-                            Reset Network Scan
-                        </Button>
+                    <div className="pt-8">
+                        <EmptyState
+                            icon={<Search className="w-12 h-12 text-[#FF6200]" />}
+                            title="Zero Matches Found"
+                            description="Adjust your parameters to re-scan the marketplace."
+                            actionLabel="Reset Network Scan"
+                            onAction={() => {
+                                setSearch('');
+                                setCategory('All Categories');
+                                setLocation('');
+                                fetchListings();
+                            }}
+                        />
                     </div>
                 )}
 

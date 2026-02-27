@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Trash2, ShoppingBag, ArrowRight, ArrowLeft } from 'lucide-react';
+import { EmptyState } from '@/components/ui/empty-state';
 import { useRouter } from 'next/navigation';
 
 export default function CartPage() {
@@ -17,26 +18,14 @@ export default function CartPage() {
         return (
             <div className="min-h-screen pt-40 pb-20 px-4 relative flex flex-col items-center">
                 <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
-                <div className="container mx-auto max-w-lg text-center relative z-10 space-y-12">
-                    <div className="h-32 w-32 rounded-[2rem] bg-white/5 border border-white/10 flex items-center justify-center mx-auto relative group">
-                        <ShoppingBag className="h-12 w-12 text-white/40 group-hover:text-[#FF6200] transition-colors" />
-                        <div className="absolute inset-0 rounded-[2rem] border border-[#FF6200]/50 animate-ping opacity-0 group-hover:opacity-20" />
-                    </div>
-
-                    <div className="space-y-4">
-                        <h1 className="text-5xl font-black uppercase tracking-tighter italic font-heading">
-                            Cart <span className="text-[#FF6200]">Empty</span>
-                        </h1>
-                        <p className="text-white/40 font-medium italic max-w-xs mx-auto">
-                            No active assets detected in your current acquisition cycle.
-                        </p>
-                    </div>
-
-                    <Button asChild className="h-16 px-12 bg-[#FF6200] text-black hover:bg-[#FF7A29] rounded-2xl font-black uppercase tracking-widest transition-all font-heading border-none">
-                        <Link href="/listings">
-                            Scan Marketplace <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
-                    </Button>
+                <div className="container mx-auto max-w-lg relative z-10 pt-16">
+                    <EmptyState
+                        icon={<ShoppingBag className="w-12 h-12 text-[#FF6200]" />}
+                        title="Cart Empty"
+                        description="No active assets detected in your current acquisition cycle."
+                        actionLabel="Scan Marketplace"
+                        actionHref="/listings"
+                    />
                 </div>
             </div>
         );

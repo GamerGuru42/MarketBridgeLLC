@@ -310,7 +310,19 @@ export default function ListingDetailContent() {
             return;
         }
 
+        // Optimistic UI updates
         setIsSubmittingOffer(true);
+        const previousOffer = activeOffer;
+        setActiveOffer({
+            listing_id: listing.id,
+            buyer_id: user.id,
+            seller_id: listing.dealer.id,
+            offered_price: price,
+            message: offerMessage,
+            status: 'pending'
+        });
+        setIsOfferOpen(false);
+
         try {
             const { error: offerError } = await supabase
                 .from('offers')
@@ -325,10 +337,13 @@ export default function ListingDetailContent() {
 
             if (offerError) throw offerError;
 
-            alert("Offer Transmitted: Waiting for seller response on the secure channel.");
-            setIsOfferOpen(false);
+            // Alert might be annoying, but keep it per existing behavior or use a toast
+            // alert("Offer Transmitted: Waiting for seller response on the secure channel.");
         } catch (err: any) {
             console.error("Offer Error:", err);
+            // Revert on error
+            setActiveOffer(previousOffer);
+            setIsOfferOpen(true);
             alert(err.message || "Signal transmission failed. Please try again.");
         } finally {
             setIsSubmittingOffer(false);

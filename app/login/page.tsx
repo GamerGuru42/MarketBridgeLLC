@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Eye, EyeOff, Loader2, ChevronRight, Lock, User, Globe, ArrowLeft, Briefcase, ShieldCheck } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 const supabase = createClient();
@@ -15,6 +15,8 @@ import { Logo } from '@/components/logo';
 export default function LoginPage() {
     const { signInWithGoogle, refreshUser, user, sessionUser, loading } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectUrl = searchParams?.get('redirect');
 
     // State
     const [step, setStep] = useState<'role' | 'login' | 'admin-code'>('role');
@@ -32,6 +34,10 @@ export default function LoginPage() {
     // Auto-redirect if already logged in (handles Google Auth return)
     useEffect(() => {
         if (!loading && sessionUser && user) {
+            if (redirectUrl) {
+                router.push(redirectUrl);
+                return;
+            }
             // Check if user is trying to login to a different role than they have
             // Or just redirect them to their dashboard
             if (['dealer', 'student_seller'].includes(user.role)) {
@@ -124,7 +130,9 @@ export default function LoginPage() {
                 }
 
                 // 4. Hard Redirect
-                if (['dealer', 'student_seller'].includes(userRole)) {
+                if (redirectUrl) {
+                    window.location.href = redirectUrl;
+                } else if (['dealer', 'student_seller'].includes(userRole)) {
                     window.location.href = '/seller/dashboard';
                 } else if (userRole === 'ceo') {
                     window.location.href = '/ceo';

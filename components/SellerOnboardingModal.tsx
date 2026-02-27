@@ -12,6 +12,9 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { createClient } from '@/lib/supabase/client';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const UNIVERSITIES = [
     "University of Abuja",
@@ -26,6 +29,27 @@ const CATEGORIES = [
     "Textbooks", "Laptops", "Wigs & Hair", "Fashion", "Food & Snacks", "Gadgets", "Hostel Items", "Others"
 ];
 
+const sellerApplicationSchema = z.object({
+    fullName: z.string().min(2, "Full name is required"),
+    phoneNumber: z.string().min(10, "Valid phone number is required"),
+    university: z.string().min(1, "Please select a university"),
+    studentEmail: z.string().email("Invalid email").refine(val => val.toLowerCase().endsWith('.edu') || val.toLowerCase().endsWith('.edu.ng'), "Must be a .edu or .edu.ng email"),
+    sellCategories: z.array(z.string()).min(1, "Select at least one category"),
+    otherCategoryDetails: z.string().optional(),
+    itemsReady: z.string().min(1, "Please select quantity of items"),
+    idCardUrl: z.string().optional()
+}).refine(data => {
+    if (data.sellCategories.includes("Others") && (!data.otherCategoryDetails || !data.otherCategoryDetails.trim())) {
+        return false;
+    }
+    return true;
+}, {
+    message: 'Please specify what you intend to sell under "Others".',
+    path: ['otherCategoryDetails']
+});
+
+type SellerFormData = z.infer<typeof sellerApplicationSchema>;
+
 export const SellerOnboardingModal = () => {
     const { toast } = useToast();
     const [isOpen, setIsOpen] = useState(false);
@@ -34,33 +58,36 @@ export const SellerOnboardingModal = () => {
     const [isUploading, setIsUploading] = useState(false);
     const supabase = createClient();
 
-    const [formData, setFormData] = useState({
-        fullName: '',
-        phoneNumber: '',
-        university: '',
-        studentEmail: '',
-        sellCategories: [] as string[],
-        itemsReady: '',
-        idCardUrl: ''
+    const { register, handleSubmit, formState: { errors }, setValue, watch, reset } = useForm<SellerFormData>({
+        resolver: zodResolver(sellerApplicationSchema),
+        defaultValues: {
+            fullName: '',
+            phoneNumber: '',
+            university: '',
+            studentEmail: '',
+            sellCategories: [],
+            otherCategoryDetails: '',
+            itemsReady: '',
+            idCardUrl: ''
+        }
     });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    };
+    const sellCategories = watch('sellCategories');
+    const university = watch('university');
+    const itemsReady = watch('itemsReady');
+    const idCardUrl = watch('idCardUrl');
 
-    const handleSelectChange = (name: string, value: string) => {
-        setFormData(prev => ({ ...prev, [name]: value }));
+    const handleSelectChange = (name: any, value: string) => {
+        setValue(name, value, { shouldValidate: true });
     };
 
     const handleCategoryToggle = (category: string) => {
-        setFormData(prev => {
-            const current = prev.sellCategories;
-            if (current.includes(category)) {
-                return { ...prev, sellCategories: current.filter(c => c !== category) };
-            } else {
-                return { ...prev, sellCategories: [...current, category] };
-            }
-        });
+        const current = sellCategories || [];
+        if (current.includes(category)) {
+            setValue('sellCategories', current.filter(c => c !== category), { shouldValidate: true });
+        } else {
+            setValue('sellCategories', [...current, category], { shouldValidate: true });
+        }
     };
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,7 +115,7 @@ export const SellerOnboardingModal = () => {
                 .from('seller_docs')
                 .getPublicUrl(filePath);
 
-            setFormData(prev => ({ ...prev, idCardUrl: publicUrl }));
+            setValue('idCardUrl', publicUrl, { shouldValidate: true });
             toast({ title: 'Uploaded!', description: 'ID Card uploaded successfully.' });
         } catch (error: any) {
             console.error('Upload error:', error);
@@ -98,17 +125,12 @@ export const SellerOnboardingModal = () => {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!formData.fullName || !formData.phoneNumber || !formData.university || !formData.studentEmail || formData.sellCategories.length === 0 || !formData.itemsReady) {
-            toast({ title: 'Missing fields', description: 'Please fill out all required fields.', variant: 'destructive' });
-            return;
-        }
-
-        if (!formData.studentEmail.toLowerCase().endsWith('.edu.ng') && !formData.studentEmail.toLowerCase().endsWith('.edu')) {
-            toast({ title: 'Invalid Email', description: 'Please use a valid student (.edu or .edu.ng) email address.', variant: 'destructive' });
-            return;
+    const onSubmit = async (data: SellerFormData) => {
+        let finalCategories = [...data.sellCategories];
+        if (finalCategories.includes('Others')) {
+            finalCategories = finalCategories.map(c =>
+                c === 'Others' ? `Others: ${data.otherCategoryDetails}` : c
+            );
         }
 
         setIsSubmitting(true);
@@ -116,11 +138,11 @@ export const SellerOnboardingModal = () => {
             const res = await fetch('/api/seller-application', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({ ...data, sellCategories: finalCategories })
             });
 
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error || 'Submission failed');
+            const resData = await res.json();
+            if (!res.ok) throw new Error(resData.error || 'Submission failed');
 
             setIsSuccess(true);
             toast({
@@ -133,10 +155,7 @@ export const SellerOnboardingModal = () => {
             setTimeout(() => {
                 setIsOpen(false);
                 setIsSuccess(false);
-                setFormData({
-                    fullName: '', phoneNumber: '', university: '', studentEmail: '',
-                    sellCategories: [], itemsReady: '', idCardUrl: ''
-                });
+                reset();
             }, 3000);
 
         } catch (error: any) {
@@ -170,29 +189,31 @@ export const SellerOnboardingModal = () => {
                             </div>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-6">
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                             <div className="space-y-4">
                                 <div>
                                     <Label className="text-zinc-300">Full Name *</Label>
                                     <Input
-                                        name="fullName" value={formData.fullName} onChange={handleChange}
+                                        {...register("fullName")}
                                         placeholder="John Doe"
                                         className="bg-black border-white/20 text-white mt-1 h-12"
                                     />
+                                    {errors.fullName && <p className="text-red-500 text-sm mt-1 ml-1">{errors.fullName.message}</p>}
                                 </div>
 
                                 <div>
                                     <Label className="text-zinc-300">Phone Number *</Label>
                                     <Input
-                                        name="phoneNumber" value={formData.phoneNumber} onChange={handleChange}
+                                        {...register("phoneNumber")}
                                         placeholder="08012345678" type="tel"
                                         className="bg-black border-white/20 text-white mt-1 h-12"
                                     />
+                                    {errors.phoneNumber && <p className="text-red-500 text-sm mt-1 ml-1">{errors.phoneNumber.message}</p>}
                                 </div>
 
                                 <div>
                                     <Label className="text-zinc-300">University *</Label>
-                                    <Select onValueChange={(val) => handleSelectChange('university', val)}>
+                                    <Select onValueChange={(val) => handleSelectChange('university', val)} value={university}>
                                         <SelectTrigger className="bg-black border-white/20 text-white mt-1 h-12">
                                             <SelectValue placeholder="Select University" />
                                         </SelectTrigger>
@@ -200,37 +221,58 @@ export const SellerOnboardingModal = () => {
                                             {UNIVERSITIES.map(u => <SelectItem key={u} value={u}>{u}</SelectItem>)}
                                         </SelectContent>
                                     </Select>
+                                    {errors.university && <p className="text-red-500 text-sm mt-1 ml-1">{errors.university.message}</p>}
                                 </div>
 
                                 <div>
                                     <Label className="text-zinc-300">Student Email (.edu or .edu.ng) *</Label>
                                     <Input
-                                        name="studentEmail" type="email" value={formData.studentEmail} onChange={handleChange}
+                                        {...register("studentEmail")}
+                                        type="email"
                                         placeholder="john.doe@uniabuja.edu.ng"
                                         className="bg-black border-white/20 text-white mt-1 h-12"
                                     />
+                                    {errors.studentEmail && <p className="text-red-500 text-sm mt-1 ml-1">{errors.studentEmail.message}</p>}
                                 </div>
 
                                 <div>
                                     <Label className="text-zinc-300 mb-2 block">What will you sell? *</Label>
                                     <div className="grid grid-cols-2 gap-3">
-                                        {CATEGORIES.map(category => (
-                                            <div key={category} className="flex items-center space-x-2 bg-white/5 p-3 rounded-lg border border-white/5 hover:border-[#FF6200]/30 transition-colors">
-                                                <Checkbox
-                                                    id={category}
-                                                    checked={formData.sellCategories.includes(category)}
-                                                    onCheckedChange={() => handleCategoryToggle(category)}
-                                                    className="border-white/30 data-[state=checked]:bg-[#FF6200] data-[state=checked]:border-[#FF6200]"
-                                                />
-                                                <label htmlFor={category} className="text-sm cursor-pointer whitespace-nowrap">{category}</label>
-                                            </div>
-                                        ))}
+                                        {CATEGORIES.map(category => {
+                                            const safeId = category.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+                                            return (
+                                                <div key={category} className="flex items-center space-x-2 bg-white/5 p-3 rounded-lg border border-white/5 hover:border-[#FF6200]/30 transition-colors cursor-pointer">
+                                                    <Checkbox
+                                                        id={`modal-${safeId}`}
+                                                        checked={sellCategories.includes(category)}
+                                                        onCheckedChange={() => handleCategoryToggle(category)}
+                                                        className="border-white/30 data-[state=checked]:bg-[#FF6200] data-[state=checked]:border-[#FF6200]"
+                                                    />
+                                                    <label htmlFor={`modal-${safeId}`} className="text-sm cursor-pointer whitespace-nowrap flex-1">{category}</label>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
+                                    {errors.sellCategories && <p className="text-red-500 text-sm mt-1 ml-1">{errors.sellCategories.message}</p>}
+                                    {sellCategories.includes("Others") && (
+                                        <div className="mt-4 pt-4 border-t border-white/10 animate-in fade-in slide-in-from-top-2">
+                                            <Label htmlFor="modalOtherCategoryDetails" className="text-zinc-300 mb-2 block">
+                                                Specify "Other" items *
+                                            </Label>
+                                            <Input
+                                                id="modalOtherCategoryDetails"
+                                                {...register("otherCategoryDetails")}
+                                                placeholder="E.g. Digital games, gift cards..."
+                                                className="bg-black border-white/20 text-white mt-1 h-12"
+                                            />
+                                            {errors.otherCategoryDetails && <p className="text-red-500 text-sm mt-1 ml-1">{errors.otherCategoryDetails.message}</p>}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div>
                                     <Label className="text-zinc-300">How many items ready to sell? *</Label>
-                                    <Select onValueChange={(val) => handleSelectChange('itemsReady', val)}>
+                                    <Select onValueChange={(val) => handleSelectChange('itemsReady', val)} value={itemsReady}>
                                         <SelectTrigger className="bg-black border-white/20 text-white mt-1 h-12">
                                             <SelectValue placeholder="Select Quantity" />
                                         </SelectTrigger>
@@ -240,12 +282,13 @@ export const SellerOnboardingModal = () => {
                                             <SelectItem value="21+">21+ items</SelectItem>
                                         </SelectContent>
                                     </Select>
+                                    {errors.itemsReady && <p className="text-red-500 text-sm mt-1 ml-1">{errors.itemsReady.message}</p>}
                                 </div>
 
                                 <div>
                                     <Label className="text-zinc-300 block mb-2">Student ID Card (Optional)</Label>
                                     <div className="border border-dashed border-white/20 rounded-xl p-6 flex flex-col items-center justify-center bg-white/5 relative">
-                                        {formData.idCardUrl ? (
+                                        {idCardUrl ? (
                                             <div className="flex flex-col items-center">
                                                 <CheckCircle className="h-8 w-8 text-[#FF6200] mb-2" />
                                                 <span className="text-sm text-[#FF6200] font-bold">Uploaded Successfully</span>
@@ -264,6 +307,7 @@ export const SellerOnboardingModal = () => {
                                                     accept="image/*"
                                                     onChange={handleFileUpload}
                                                     className="absolute inset-0 opacity-0 cursor-pointer"
+                                                    title="Upload Student ID"
                                                 />
                                             </>
                                         )}
