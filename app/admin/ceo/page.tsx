@@ -23,8 +23,8 @@ export default function CEOPage() {
     const [regionalStats, setRegionalStats] = useState({ abuja: 0, lagos: 0 });
 
     React.useEffect(() => {
-        if (!loading && (!user || user.role !== 'ceo')) {
-            router.push('/ceo/login');
+        if (!loading && (!user || (user.role !== 'ceo' && user.role !== 'cofounder'))) {
+            router.push('/admin/login');
         }
     }, [user, loading, router]);
 
@@ -88,7 +88,7 @@ export default function CEOPage() {
     };
 
     if (loading || loadingData) return <div className="min-h-screen flex items-center justify-center bg-black"><Loader2 className="h-8 w-8 animate-spin text-[#d4af37]" /></div>;
-    if (!user || user.role !== 'ceo') return null;
+    if (!user || (user.role !== 'ceo' && user.role !== 'cofounder')) return null;
 
     return (
         <div className="container mx-auto py-10 px-4 space-y-8">
