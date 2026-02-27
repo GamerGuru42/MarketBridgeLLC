@@ -86,6 +86,28 @@ export default function OperationsAdminPage() {
         }
     };
 
+    const handleDecline = async (applicationId: string) => {
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) return;
+
+            const { error } = await supabase
+                .from('seller_applications')
+                .update({ status: 'declined', reviewer_id: session.user.id })
+                .eq('id', applicationId);
+
+            if (!error) {
+                fetchOpsData();
+            } else {
+                console.error('Decline failed:', error);
+                alert('Failed to decline');
+            }
+        } catch (e) {
+            console.error('Decline error:', e);
+            alert('Failed to decline seller');
+        }
+    };
+
     if (loading) return (
         <div className="flex justify-center items-center h-screen bg-black text-white">
             <Loader2 className="h-8 w-8 animate-spin text-[#FF6200]" />
@@ -152,12 +174,21 @@ export default function OperationsAdminPage() {
                                                 View ID Card
                                             </a>
                                         )}
-                                        <Button
-                                            onClick={() => handleVerify(seller.id)}
-                                            className="bg-[#FF6200] text-black hover:bg-[#FF8533] font-black uppercase text-[10px] tracking-[0.2em] h-12 px-8 rounded-xl"
-                                        >
-                                            Approve User
-                                        </Button>
+                                        <div className="flex flex-col gap-2 w-full mt-4 sm:mt-0">
+                                            <Button
+                                                onClick={() => handleVerify(seller.id)}
+                                                className="bg-[#FF6200] text-black hover:bg-[#FF8533] font-black uppercase text-[10px] tracking-[0.2em] h-12 w-full px-8 rounded-xl"
+                                            >
+                                                Approve User
+                                            </Button>
+                                            <Button
+                                                onClick={() => handleDecline(seller.id)}
+                                                variant="outline"
+                                                className="border-white/10 text-white/50 hover:border-red-500 hover:text-red-500 font-black uppercase text-[10px] tracking-[0.2em] h-12 w-full px-8 rounded-xl transition-colors"
+                                            >
+                                                Decline User
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
