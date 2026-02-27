@@ -144,7 +144,7 @@ export default function SellerDashboardPage() {
     const searchParams = useSearchParams();
 
     useEffect(() => {
-        if (searchParams.get('subscription') === 'success') {
+        if (searchParams?.get('subscription') === 'success') {
             alert("Subscription updated successfully! \n\nNeed help with your subscription? Contact ops-support@marketbridge.com.ng");
             // Optional: clear the param
             router.replace('/seller/dashboard');

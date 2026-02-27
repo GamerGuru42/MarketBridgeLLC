@@ -9,7 +9,7 @@ import Link from 'next/link';
 function VerifyContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const reference = searchParams.get('reference');
+    const reference = searchParams?.get('reference');
     const [status, setStatus] = useState<'verifying' | 'success' | 'failed'>('verifying');
     const [message, setMessage] = useState('Establishing secure connection to Paystack network...');
 

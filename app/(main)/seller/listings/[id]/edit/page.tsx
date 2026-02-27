@@ -56,10 +56,10 @@ export default function EditListingPage() {
             return;
         }
 
-        if (user && params.id) {
+        if (user && params?.id) {
             fetchListing();
         }
-    }, [user, authLoading, params.id]);
+    }, [user, authLoading, params?.id]);
 
     const fetchListing = async () => {
         if (!user) return;
@@ -68,7 +68,7 @@ export default function EditListingPage() {
             const { data, error } = await supabase
                 .from('listings')
                 .select('*')
-                .eq('id', params.id)
+                .eq('id', params?.id)
                 .eq('dealer_id', user.id)
                 .single();
 

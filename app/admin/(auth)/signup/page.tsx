@@ -20,10 +20,10 @@ const SECRET_KEY = process.env.NEXT_PUBLIC_ADMIN_SECRET || 'marketbridge2026';
 function AdminSignupContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const dept = searchParams.get('dept');
-    const intent = searchParams.get('intent');
-    const prefillEmail = searchParams.get('email');
-    const token = searchParams.get('token');
+    const dept = searchParams?.get('dept');
+    const intent = searchParams?.get('intent');
+    const prefillEmail = searchParams?.get('email');
+    const token = searchParams?.get('token');
     const { refreshUser } = useAuth();
 
     const [formData, setFormData] = useState({

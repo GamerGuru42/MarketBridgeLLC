@@ -33,7 +33,7 @@ export default function SellerProfilePage() {
 
     useEffect(() => {
         fetchSellerProfile();
-    }, [params.id]);
+    }, [params?.id]);
 
     const fetchSellerProfile = async () => {
         try {
@@ -41,7 +41,7 @@ export default function SellerProfilePage() {
             const { data: sellerData, error: sellerError } = await supabase
                 .from('users')
                 .select('*')
-                .eq('id', params.id)
+                .eq('id', params?.id)
                 .in('role', ['dealer', 'student_seller'])
                 .single();
 
@@ -52,7 +52,7 @@ export default function SellerProfilePage() {
             const { data: listingsData } = await supabase
                 .from('listings')
                 .select('*')
-                .eq('dealer_id', params.id)
+                .eq('dealer_id', params?.id)
                 .eq('status', 'active')
                 .order('created_at', { ascending: false })
                 .limit(6);

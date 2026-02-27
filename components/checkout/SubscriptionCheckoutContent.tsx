@@ -18,8 +18,8 @@ export default function SubscriptionCheckoutContent() {
     const searchParams = useSearchParams();
     const supabase = createClient();
     const { toast } = useToast();
-    const planId = searchParams.get('plan');
-    const billingCycle = searchParams.get('billing') as 'monthly' | 'annual' || 'monthly';
+    const planId = searchParams?.get('plan');
+    const billingCycle = searchParams?.get('billing') as 'monthly' | 'annual' || 'monthly';
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [plan, setPlan] = useState<any>(null);

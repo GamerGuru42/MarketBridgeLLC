@@ -41,10 +41,10 @@ export default function DisputePage() {
     });
 
     useEffect(() => {
-        if (params.id) {
+        if (params?.id) {
             fetchOrder();
         }
-    }, [params.id]);
+    }, [params?.id]);
 
     const fetchOrder = async () => {
         try {
@@ -54,7 +54,7 @@ export default function DisputePage() {
                     id, amount, status, listing_id,
                     listing:listings(title, images)
                 `)
-                .eq('id', params.id)
+                .eq('id', params?.id)
                 .single();
 
             if (error) throw error;

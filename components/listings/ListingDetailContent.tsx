@@ -90,7 +90,7 @@ export default function ListingDetailContent() {
     const [activeOffer, setActiveOffer] = useState<any>(null);
 
     useEffect(() => {
-        if (params.id) {
+        if (params?.id) {
             fetchListing();
             const unsubListing = subscribeToListing();
 
@@ -105,11 +105,11 @@ export default function ListingDetailContent() {
                 if (unsubOffer) unsubOffer();
             };
         }
-    }, [params.id, user]);
+    }, [params?.id, user]);
 
     const fetchActiveOffer = async () => {
-        if (!user || !params.id) return;
-        const listingId = Array.isArray(params.id) ? params.id[0] : params.id;
+        if (!user || !params?.id) return;
+        const listingId = Array.isArray(params?.id) ? params?.id[0] : params?.id;
         const { data } = await supabase
             .from('offers')
             .select('*')
@@ -123,8 +123,8 @@ export default function ListingDetailContent() {
     };
 
     const subscribeToOwnOffers = () => {
-        if (!user || !params.id) return;
-        const listingId = Array.isArray(params.id) ? params.id[0] : params.id;
+        if (!user || !params?.id) return;
+        const listingId = Array.isArray(params?.id) ? params?.id[0] : params?.id;
         const channel = supabase
             .channel(`own_offers_${listingId}`)
             .on(
@@ -145,7 +145,7 @@ export default function ListingDetailContent() {
     };
 
     const subscribeToListing = () => {
-        const listingId = Array.isArray(params.id) ? params.id[0] : params.id;
+        const listingId = Array.isArray(params?.id) ? params?.id[0] : params?.id;
         const channel = supabase
             .channel(`listing_updates_${listingId}`)
             .on(
@@ -170,7 +170,7 @@ export default function ListingDetailContent() {
         setError('');
         try {
             // Handle mock data request explicitly
-            const listingId = Array.isArray(params.id) ? params.id[0] : params.id;
+            const listingId = Array.isArray(params?.id) ? params?.id[0] : params?.id;
 
             // Check comprehensive mock data first
             const mockItem = COMPREHENSIVE_MOCK_LISTINGS.find(item => item._id === listingId);
