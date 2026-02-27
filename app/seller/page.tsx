@@ -211,17 +211,20 @@ export default function SellerOnboardingPage() {
                                     <div className="pt-2">
                                         <Label className="text-zinc-300 font-bold uppercase text-xs tracking-widest ml-1 block mb-4">What will you sell? *</Label>
                                         <div className="grid grid-cols-2 gap-3">
-                                            {CATEGORIES.map(category => (
-                                                <div key={category} className="flex items-center space-x-3 bg-white/5 p-4 rounded-xl border border-white/5 hover:border-[#FF6200]/30 transition-colors cursor-pointer" onClick={() => handleCategoryToggle(category)}>
-                                                    <Checkbox
-                                                        id={category}
-                                                        checked={formData.sellCategories.includes(category)}
-                                                        onCheckedChange={() => handleCategoryToggle(category)}
-                                                        className="border-white/30 w-5 h-5 data-[state=checked]:bg-[#FF6200] data-[state=checked]:border-[#FF6200]"
-                                                    />
-                                                    <label className="text-sm font-medium cursor-pointer flex-1">{category}</label>
-                                                </div>
-                                            ))}
+                                            {CATEGORIES.map(category => {
+                                                const safeId = category.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+                                                return (
+                                                    <label key={category} htmlFor={safeId} className="flex items-center space-x-3 bg-white/5 p-4 rounded-xl border border-white/5 hover:border-[#FF6200]/30 transition-colors cursor-pointer">
+                                                        <Checkbox
+                                                            id={safeId}
+                                                            checked={formData.sellCategories.includes(category)}
+                                                            onCheckedChange={() => handleCategoryToggle(category)}
+                                                            className="border-white/30 w-5 h-5 data-[state=checked]:bg-[#FF6200] data-[state=checked]:border-[#FF6200]"
+                                                        />
+                                                        <span className="text-sm font-medium cursor-pointer flex-1">{category}</span>
+                                                    </label>
+                                                );
+                                            })}
                                         </div>
                                     </div>
 
@@ -261,6 +264,7 @@ export default function SellerOnboardingPage() {
                                                         accept="image/*"
                                                         onChange={handleFileUpload}
                                                         className="absolute inset-0 opacity-0 cursor-pointer"
+                                                        title="Upload Student ID"
                                                     />
                                                 </>
                                             )}
