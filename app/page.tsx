@@ -215,8 +215,8 @@ export default function WaitlistPage() {
 
             {/* Subtle Admin Footer Link */}
             <div className="w-full pb-6 flex justify-center opacity-30 hover:opacity-100 transition-opacity">
-                <Link href="/admin/login" className="text-white text-[10px] font-medium tracking-widest uppercase hover:text-[#FF6200] transition-colors">
-                    Admin / Team Login &rarr;
+                <Link href="/admin/login" className="text-white text-[10px] font-medium tracking-widest lowercase hover:text-[#FF6200] transition-colors">
+                    admin/ceo
                 </Link>
             </div>
         </div>

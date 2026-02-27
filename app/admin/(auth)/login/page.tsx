@@ -11,7 +11,7 @@ import { createClient } from '@/lib/supabase/client';
 const supabase = createClient();
 import { normalizeIdentifier } from '@/lib/auth/utils';
 import { useAuth } from '@/contexts/AuthContext';
-import { Loader2, ShieldCheck, Lock, Mail, ChevronRight, AlertCircle, Eye, EyeOff, ShieldAlert } from 'lucide-react';
+import { Loader2, ShieldCheck, Lock, Mail, ChevronRight, AlertCircle, Eye, EyeOff, ShieldAlert, UserCog, ArrowLeft } from 'lucide-react';
 
 export default function AdminLoginPage() {
     const router = useRouter();
@@ -22,6 +22,8 @@ export default function AdminLoginPage() {
         email: '',
         password: ''
     });
+    const [step, setStep] = useState<'role' | 'login'>('role');
+    const [selectedRole, setSelectedRole] = useState<string>('');
     const [showPassword, setShowPassword] = useState(false);
     const [view, setView] = useState<'login' | 'failed'>('login');
     const [isLoading, setIsLoading] = useState(false);
@@ -209,61 +211,96 @@ export default function AdminLoginPage() {
                 </CardHeader>
 
                 <CardContent className="px-12">
-                    <form onSubmit={handleSubmit} className="space-y-8">
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] ml-2">Email Address</Label>
-                            <div className="relative group/input">
-                                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-white/20 group-focus-within/input:text-[#FF6200] transition-colors" />
-                                <input
-                                    name="email"
-                                    type="email"
-                                    className="w-full h-16 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="admin@marketbridge.io"
-                                />
-                            </div>
-                        </div>
+                    {step === 'role' ? (
+                        <div className="space-y-4 animate-in fade-in zoom-in duration-300">
+                            <h3 className="text-white/60 font-bold text-center mb-6 uppercase tracking-widest text-xs">Which Admin are you?</h3>
 
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] ml-2">Password</Label>
-                            <div className="relative group/input">
-                                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-white/20 group-focus-within/input:text-[#FF6200] transition-colors" />
-                                <input
-                                    name="password"
-                                    type={showPassword ? 'text' : 'password'}
-                                    className="w-full h-16 pl-14 pr-14 bg-black border border-white/10 rounded-2xl text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="••••••••••••"
-                                />
+                            {[
+                                { id: 'ceo', label: 'CEO', icon: ShieldCheck },
+                                { id: 'operations_admin', label: 'Operations Admin', icon: UserCog },
+                                { id: 'technical_admin', label: 'Technical Admin', icon: Lock },
+                                { id: 'marketing_admin', label: 'Marketing Admin', icon: Mail },
+                            ].map((roleOption) => (
                                 <button
+                                    key={roleOption.id}
                                     type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-5 top-1/2 -translate-y-1/2 text-white/10 hover:text-[#FF6200] transition-colors"
+                                    onClick={() => {
+                                        setSelectedRole(roleOption.id);
+                                        setStep('login');
+                                    }}
+                                    className="w-full bg-white/5 hover:bg-[#FF6200]/20 border border-white/10 hover:border-[#FF6200]/50 text-white p-4 rounded-2xl flex items-center gap-4 transition-all group hover:scale-[1.02]"
                                 >
-                                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                    <div className="bg-black/50 p-3 rounded-xl group-hover:bg-[#FF6200]/20 transition-colors">
+                                        <roleOption.icon className="h-6 w-6 text-white/50 group-hover:text-[#FF6200] transition-colors" />
+                                    </div>
+                                    <span className="font-black tracking-widest uppercase text-xs">{roleOption.label}</span>
+                                    <ChevronRight className="h-5 w-5 ml-auto text-white/20 group-hover:text-[#FF6200] group-hover:translate-x-1 transition-all" />
+                                </button>
+                            ))}
+                        </div>
+                    ) : (
+                        <form onSubmit={handleSubmit} className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
+                            <div className="flex justify-center -mt-2 mb-2">
+                                <button type="button" onClick={() => setStep('role')} className="text-white/40 hover:text-white uppercase tracking-widest text-[10px] font-bold flex items-center gap-2 transition-colors">
+                                    <ArrowLeft className="h-3 w-3" /> Back to Roles
                                 </button>
                             </div>
-                        </div>
 
-                        <Button
-                            type="submit"
-                            className="w-full bg-[#FF6200] hover:opacity-90 text-black font-black uppercase tracking-[0.2em] h-16 rounded-2xl transition-all relative overflow-hidden group shadow-[0_0_20px_rgba(255,98,0,0.2)] border-none"
-                            disabled={isLoading}
-                        >
-                            {isLoading ? (
-                                <Loader2 className="h-6 w-6 animate-spin" />
-                            ) : (
-                                <div className="flex items-center gap-3">
-                                    Sign In
-                                    <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] ml-2">Email Address</Label>
+                                <div className="relative group/input">
+                                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-white/20 group-focus-within/input:text-[#FF6200] transition-colors" />
+                                    <input
+                                        name="email"
+                                        type="email"
+                                        className="w-full h-16 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        required
+                                        placeholder="admin@marketbridge.io"
+                                    />
                                 </div>
-                            )}
-                        </Button>
-                    </form>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] ml-2">Password</Label>
+                                <div className="relative group/input">
+                                    <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-white/20 group-focus-within/input:text-[#FF6200] transition-colors" />
+                                    <input
+                                        name="password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        className="w-full h-16 pl-14 pr-14 bg-black border border-white/10 rounded-2xl text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        required
+                                        placeholder="••••••••••••"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-5 top-1/2 -translate-y-1/2 text-white/10 hover:text-[#FF6200] transition-colors"
+                                    >
+                                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <Button
+                                type="submit"
+                                className="w-full bg-[#FF6200] hover:opacity-90 text-black font-black uppercase tracking-[0.2em] h-16 rounded-2xl transition-all relative overflow-hidden group shadow-[0_0_20px_rgba(255,98,0,0.2)] border-none"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? (
+                                    <Loader2 className="h-6 w-6 animate-spin" />
+                                ) : (
+                                    <div className="flex items-center gap-3">
+                                        Proceed securely
+                                        <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                    </div>
+                                )}
+                            </Button>
+                        </form>
+                    )}
                 </CardContent>
 
                 <CardFooter className="py-6 relative z-10" />
