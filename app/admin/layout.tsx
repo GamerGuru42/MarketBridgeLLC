@@ -68,12 +68,12 @@ export default function AdminLayout({
                 ...basicItems
             ];
         }
-        if (role === 'ceo') {
+        if (role === 'ceo' || role === 'cofounder') {
             return [
-                { label: 'Mission Control', href: '/admin', icon: LayoutDashboard },
+                { label: 'Mission Control', href: '/admin/ceo', icon: LayoutDashboard },
+                { label: 'Marketing Growth', href: '/admin/ceo/growth', icon: TrendingUp },
                 { label: 'Strategic Proposal', href: '/admin/proposals/new', icon: Zap },
                 { label: 'Executive Chat', href: '/admin/executive-chat', icon: MessageSquare },
-                { label: 'Marketing Growth', href: '/admin/marketing', icon: BarChart3 },
                 { label: 'Listings Manager', href: '/admin/listings', icon: ShoppingBag },
                 { label: 'Users Manager', href: '/admin/users', icon: Users },
             ];
