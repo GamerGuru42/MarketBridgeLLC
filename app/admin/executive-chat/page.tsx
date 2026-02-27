@@ -53,7 +53,6 @@ export default function ExecutiveChatPage() {
                 const { data, error } = await supabase
                     .from('admin_channels')
                     .select('*')
-                    .order('is_dm', { ascending: true })
                     .order('name', { ascending: true });
 
                 if (error) throw error;

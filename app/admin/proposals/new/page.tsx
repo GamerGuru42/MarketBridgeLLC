@@ -27,6 +27,7 @@ export default function SubmitProposalPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [myProposals, setMyProposals] = useState<Proposal[]>([]);
+    const [ceoDirectives, setCeoDirectives] = useState<any[]>([]);
 
     const [formData, setFormData] = useState({
         title: '',
@@ -40,6 +41,7 @@ export default function SubmitProposalPage() {
         if (user) {
             fetchProposals().then(all => {
                 setMyProposals(all.filter(p => p.author_id === user.id).slice(0, 5));
+                setCeoDirectives(all.filter((p: any) => p.author_role === 'ceo' && p.author_id !== user.id).slice(0, 5));
             });
         }
     }, [user]);
@@ -154,7 +156,7 @@ export default function SubmitProposalPage() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="category">Strategic Category</Label>
-                                        <select id="category" value={formData.category} onChange={handleChange} className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-primary">
+                                        <select title="category" aria-label="Proposal Category" id="category" value={formData.category} onChange={handleChange} className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-primary">
                                             <option>Infrastructure Upgrade</option>
                                             <option>Policy/Operations Shift</option>
                                             <option>Marketing Initiative</option>
@@ -164,7 +166,7 @@ export default function SubmitProposalPage() {
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="priority">Initial Priority</Label>
-                                        <select id="priority" value={formData.priority} onChange={handleChange} className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-primary">
+                                        <select title="priority" aria-label="Proposal Priority" id="priority" value={formData.priority} onChange={handleChange} className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-primary">
                                             <option>Low - Optimization</option>
                                             <option>Medium - Routine Growth</option>
                                             <option>High - Critical Scaling</option>
@@ -262,6 +264,32 @@ export default function SubmitProposalPage() {
                             )}
                         </CardContent>
                     </Card>
+
+                    {user?.role !== 'ceo' && (
+                        <Card className="border-[#FF6200]/30 shadow-[0_0_15px_rgba(255,98,0,0.1)]">
+                            <CardHeader className="pb-2 bg-[#FF6200]/5">
+                                <CardTitle className="text-xs font-bold uppercase text-[#FF6200]">CEO Directives</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-3 pt-4">
+                                {ceoDirectives.length === 0 ? (
+                                    <p className="text-xs text-muted-foreground italic">No top-level directives yet.</p>
+                                ) : (
+                                    ceoDirectives.map(directive => (
+                                        <div key={directive.id} className="flex flex-col gap-1.5 p-3 border border-[#FF6200]/20 bg-[#FF6200]/5 rounded-md">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2 overflow-hidden">
+                                                    <Zap className="h-3 w-3 text-[#FF6200] shrink-0" />
+                                                    <span className="text-[10px] font-bold text-white truncate max-w-[120px]">{directive.title}</span>
+                                                </div>
+                                                <Badge variant="outline" className="text-[8px] h-4 bg-[#FF6200] text-black border-none font-bold">HQ</Badge>
+                                            </div>
+                                            <p className="text-[10px] text-white/50 line-clamp-2 italic">{directive.description}</p>
+                                        </div>
+                                    ))
+                                )}
+                            </CardContent>
+                        </Card>
+                    )}
                 </div>
             </div>
         </div>

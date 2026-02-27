@@ -79,11 +79,9 @@ export async function fetchCEOStats(): Promise<CEOStats> {
 export async function fetchProposals(): Promise<Proposal[]> {
     const supabase = createClient();
 
-    // We try to fetch from 'proposals' table.
-    // If it doesn't exist, this will throw/return error, which the caller should handle.
     const { data, error } = await supabase
         .from('proposals')
-        .select('*')
+        .select(`*, author:users!proposals_author_id_fkey(role)`)
         .order('created_at', { ascending: false });
 
     if (error) {
@@ -91,7 +89,11 @@ export async function fetchProposals(): Promise<Proposal[]> {
         return [];
     }
 
-    return data as Proposal[];
+    // Map the returned data to include author_role for easier filtering
+    return data.map((p: any) => ({
+        ...p,
+        author_role: p.author?.role
+    })) as Proposal[];
 }
 
 export async function createProposal(proposalData: Omit<Proposal, 'id' | 'created_at' | 'status'>) {
