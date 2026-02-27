@@ -192,7 +192,7 @@ export default function CEOPage() {
                                                     </div>
                                                     <div>
                                                         <h4 className="font-bold underline italic text-sm">{proposal.title}</h4>
-                                                        <p className="text-xs text-muted-foreground font-medium">Author ID: {proposal.author_id.substring(0, 8)}... • {new Date(proposal.created_at).toLocaleDateString()}</p>
+                                                        <p className="text-xs text-muted-foreground font-medium">Author ID: {proposal.author_id ? proposal.author_id.substring(0, 8) : 'System'}... • {proposal.created_at ? new Date(proposal.created_at).toLocaleDateString() : 'N/A'}</p>
                                                     </div>
                                                 </div>
                                                 <Badge variant="outline" className={proposal.status === 'pending' ? 'bg-[#FF6200]/10 text-[#FF6200]' : 'bg-[#FF6200]/10 text-[#FF6200]'}>{proposal.status.toUpperCase()}</Badge>
@@ -292,7 +292,7 @@ export default function CEOPage() {
                                         <div key={msg.id} className="bg-white/10/40 p-3 rounded-lg border-l-2 border-l-blue-400">
                                             <p className="font-bold text-white/70 mb-1">{msg.sender_name || 'System'}</p>
                                             <p className="text-white/70 italic">"{msg.content}"</p>
-                                            <p className="text-[8px] text-white/40 mt-2">{new Date(msg.created_at).toLocaleTimeString()}</p>
+                                            <p className="text-[8px] text-white/40 mt-2">{msg.created_at ? new Date(msg.created_at).toLocaleTimeString() : 'N/A'}</p>
                                         </div>
                                     ))
                                 )}

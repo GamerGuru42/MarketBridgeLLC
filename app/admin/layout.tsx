@@ -13,7 +13,8 @@ import {
     ClipboardCheck,
     Server,
     Activity,
-    Zap
+    Zap,
+    TrendingUp
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
