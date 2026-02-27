@@ -1,0 +1,1593 @@
+
+> marketbridge@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.14
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ (pwa) Compiling for server...
+ ✓ (pwa) Compiling for server...
+ ✓ (pwa) Compiling for client (static)...
+ ○ (pwa) Service worker: C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\public\sw.js
+ ○ (pwa)   URL: /sw.js
+ ○ (pwa)   Scope: /
+ ✓ Compiled successfully
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+   Generating static pages (0/92) ...
+   Generating static pages (23/92) 
+   Generating static pages (46/92) 
+   Generating static pages (69/92) 
+ ✓ Generating static pages (92/92)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/refund". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/terms". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/privacy". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/disclaimer". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/_not-found". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/checkout/pending". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/cart". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/sellers". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/wishlist". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/orders". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/contact". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/seller/listings/new". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/about". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/seller/listings". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/admin/executive-chat". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/admin/ceo/growth". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/seller/dashboard". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/admin/login". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/admin/disputes". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/checkout/subscription". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/admin/listings". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/settings". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/pricing". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/faq". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/admin/operations". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/admin". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/admin/marketing". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/admin/operations/verifications". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/admin/signup". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/admin/orders". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/admin/ceo". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/admin/subscriptions". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/admin/technical". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/admin/verify-sellers". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/admin/revenue". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/cofounder". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/coo". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/admin/payouts". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/cto". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/admin/proposals/new". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/admin/users". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/login". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/forgot-password". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/admin/operations/escrow-templates". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/purchases/verify". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/verify-email". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/chats". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/checkout". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/subscriptions/checkout". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/settings/transactions". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/reset-password". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/verify-seller". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/onboarding". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/listings". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/seller". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010) {
+  digest: '1468280622'
+}
+
+Error occurred prerendering page "/signup". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Cannot read properties of undefined (reading 'trim')
+    at C (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\.next\server\chunks\2385.js:1:16948)
+    at nj (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46251)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47571)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nB (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67538)
+    at nD (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66680)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64853)
+    at nM (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:59102)
+    at nN (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64546)
+    at nI (C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47010)
+
+> Export encountered errors on following paths:
+	/(legal)/disclaimer/page: /disclaimer
+	/(legal)/privacy/page: /privacy
+	/(legal)/refund/page: /refund
+	/(legal)/terms/page: /terms
+	/(main)/about/page: /about
+	/(main)/cart/page: /cart
+	/(main)/chats/page: /chats
+	/(main)/checkout/page: /checkout
+	/(main)/checkout/pending/page: /checkout/pending
+	/(main)/checkout/subscription/page: /checkout/subscription
+	/(main)/contact/page: /contact
+	/(main)/faq/page: /faq
+	/(main)/listings/page: /listings
+	/(main)/orders/page: /orders
+	/(main)/pricing/page: /pricing
+	/(main)/seller/dashboard/page: /seller/dashboard
+	/(main)/seller/listings/new/page: /seller/listings/new
+	/(main)/seller/listings/page: /seller/listings
+	/(main)/sellers/page: /sellers
+	/(main)/settings/page: /settings
+	/(main)/wishlist/page: /wishlist
+	/_not-found/page: /_not-found
+	/admin/(auth)/login/page: /admin/login
+	/admin/(auth)/signup/page: /admin/signup
+	/admin/ceo/growth/page: /admin/ceo/growth
+	/admin/ceo/page: /admin/ceo
+	/admin/disputes/page: /admin/disputes
+	/admin/executive-chat/page: /admin/executive-chat
+	/admin/listings/page: /admin/listings
+	/admin/marketing/page: /admin/marketing
+	/admin/operations/escrow-templates/page: /admin/operations/escrow-templates
+	/admin/operations/page: /admin/operations
+	/admin/operations/verifications/page: /admin/operations/verifications
+	/admin/orders/page: /admin/orders
+	/admin/page: /admin
+	/admin/payouts/page: /admin/payouts
+	/admin/proposals/new/page: /admin/proposals/new
+	/admin/revenue/page: /admin/revenue
+	/admin/subscriptions/page: /admin/subscriptions
+	/admin/technical/page: /admin/technical
+	/admin/users/page: /admin/users
+	/admin/verify-sellers/page: /admin/verify-sellers
+	/cofounder/page: /cofounder
+	/coo/page: /coo
+	/cto/page: /cto
+	/forgot-password/page: /forgot-password
+	/login/page: /login
+	/onboarding/page: /onboarding
+	/purchases/verify/page: /purchases/verify
+	/reset-password/page: /reset-password
+	/seller/page: /seller
+	/settings/transactions/page: /settings/transactions
+	/signup/page: /signup
+	/subscriptions/checkout/page: /subscriptions/checkout
+	/verify-email/page: /verify-email
+	/verify-seller/page: /verify-seller

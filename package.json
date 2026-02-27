@@ -16,6 +16,7 @@
     "test:webhook": "node scripts/test_paystack_webhook.js"
   },
   "dependencies": {
+    "@ai-sdk/google": "^3.0.33",
     "@ducanh2912/next-pwa": "^10.2.9",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "^1.2.12",
@@ -41,7 +42,7 @@
     "@types/nodemailer": "^7.0.10",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.36.2",
-    "ai": "^6.0.103",
+    "ai": "^3.3.40",
     "axios": "^1.13.5",
     "bcryptjs": "^3.0.3",
     "browser-image-compression": "^2.0.2",

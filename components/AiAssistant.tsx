@@ -6,53 +6,25 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { MessageCircle, X, Send, Bot, User, ShoppingBag, Search, AlertCircle } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, ShoppingBag, Search, AlertCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { brain } from '@/lib/ai_brain';
-
-interface Message {
-    id: string;
-    role: 'user' | 'assistant' | 'system';
-    content: string;
-    timestamp: Date;
-    searchResults?: SearchResult[];
-    productDetail?: SearchResult;
-    supportTicket?: SupportTicket;
-}
-
-interface SearchResult {
-    id: string;
-    title: string;
-    price: number;
-    category: string;
-    location: string;
-    image?: string;
-    description?: string;
-    keywords?: string[];
-}
-
-interface SupportTicket {
-    ticketId: string;
-    status: 'escalated' | 'pending';
-    department: 'technical' | 'operations';
-}
-
+import { useChat } from 'ai/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 export function AiAssistant() {
     const [isOpen, setIsOpen] = useState(false);
-    const [messages, setMessages] = useState<Message[]>([
-        {
+
+    const { messages, input, handleInputChange, handleSubmit, isLoading, append, error } = useChat({
+        api: '/api/chat',
+        initialMessages: [{
             id: '1',
             role: 'assistant',
             content: "Hello! I'm **Sage**, your MarketBridge AI assistant. I'm trained to help you:\n- **Find products** safely across Abuja campuses\n- **Explain** our Paystack escrow system\n- **Guide** you to become a verified dealer\n\nHow can I assist your hustle today?",
-            timestamp: new Date()
-        }
-    ]);
-    const [inputValue, setInputValue] = useState('');
-    const [isTyping, setIsTyping] = useState(false);
+        }],
+    });
+
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -61,89 +33,126 @@ export function AiAssistant() {
 
     useEffect(() => {
         scrollToBottom();
-    }, [messages, isOpen]);
+    }, [messages, isOpen, isLoading, error]);
 
-    const generateResponse = (input: string) => {
-        const response = brain.processInput(input);
-        let supportTicket: SupportTicket | undefined;
-        if (response.action === 'escalate_tech') {
-            supportTicket = { ticketId: `TECH-${Date.now()}`, status: 'escalated', department: 'technical' };
-        } else if (response.action === 'escalate_ops') {
-            supportTicket = { ticketId: `OPS-${Date.now()}`, status: 'escalated', department: 'operations' };
+    const renderTool = (toolInvocation: any) => {
+        const { toolName, toolCallId, state, result } = toolInvocation;
+
+        if (state !== 'result' || !result) {
+            return (
+                <div key={toolCallId} className="p-3 bg-muted/30 border border-primary/10 rounded-lg flex items-center gap-2 mb-2 text-xs">
+                    <Loader2 className="h-3 w-3 animate-spin text-primary" /> Processing {toolName}...
+                </div>
+            );
         }
 
-        return {
-            content: response.content,
-            searchResults: response.searchResults,
-            productDetail: response.productDetail,
-            supportTicket
-        };
-    };
+        if (toolName === 'searchProducts') {
+            if (!result || result.length === 0) return null;
+            return (
+                <div key={toolCallId} className="space-y-2 mb-3 mt-2">
+                    {result.map((item: any) => (
+                        <div
+                            key={item.id}
+                            onClick={() => append({ role: 'user', content: `Tell me more about ${item.title}` })}
+                            className="block p-3 bg-card border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer group text-left"
+                        >
+                            <div className="flex items-start justify-between gap-2">
+                                <div className="flex-1">
+                                    <p className="font-medium text-sm line-clamp-1 group-hover:text-primary transition-colors">{item.title}</p>
+                                    <p className="text-xs text-muted-foreground">{item.location}</p>
+                                </div>
+                                <Badge variant="secondary" className="text-xs shrink-0 group-hover:bg-[#FF6200] group-hover:text-black transition-colors">
+                                    ₦{item.price.toLocaleString()}
+                                </Badge>
+                            </div>
+                        </div>
+                    ))}
+                    <Link href="/listings" className="block pt-2">
+                        <Button variant="outline" size="sm" className="w-full font-bold uppercase tracking-widest text-[10px]">
+                            <Search className="h-3 w-3 mr-2" />
+                            Browse All Marketplace
+                        </Button>
+                    </Link>
+                </div>
+            );
+        }
 
-    const handleSendMessage = async (text?: string) => {
-        const contentToSend = text || inputValue;
-        if (!contentToSend.trim()) return;
+        if (toolName === 'getProductDetails') {
+            const item = result;
+            return (
+                <div key={toolCallId} className="rounded-xl border border-primary/20 bg-card overflow-hidden shadow-lg animate-in fade-in zoom-in-95 duration-300 mb-3 mt-2">
+                    <div className="h-48 bg-muted relative">
+                        {item.image ? (
+                            <img
+                                src={item.image}
+                                alt={item.title}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1523475496153-3d6cc0f0bf19?w=800&q=80';
+                                }}
+                            />
+                        ) : (
+                            <div className="absolute inset-0 flex items-center justify-center bg-zinc-800 text-zinc-500">
+                                <ShoppingBag className="h-8 w-8 opacity-20" />
+                            </div>
+                        )}
+                        <Badge className="absolute top-2 right-2 bg-[#FF6200] text-black">
+                            {item.category}
+                        </Badge>
+                    </div>
+                    <div className="p-4 space-y-3">
+                        <div>
+                            <h3 className="font-bold text-lg leading-tight">{item.title}</h3>
+                            <p className="text-sm text-muted-foreground">{item.description}</p>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <div className="font-black text-xl">₦{item.price.toLocaleString()}</div>
+                            <div className="text-xs text-muted-foreground flex items-center">
+                                <Search className="h-3 w-3 mr-1" /> {item.location}
+                            </div>
+                        </div>
+                        <Button className="w-full font-bold uppercase tracking-widest bg-[#FF6200] text-black hover:bg-white transition-colors" asChild>
+                            <Link href={`/listings/${item.id}`}>
+                                View Full Listing
+                            </Link>
+                        </Button>
+                    </div>
+                </div>
+            );
+        }
 
-        const userMessage: Message = {
-            id: Date.now().toString(),
-            role: 'user',
-            content: contentToSend,
-            timestamp: new Date()
-        };
+        if (toolName === 'escalateSupport') {
+            const ticket = result;
+            return (
+                <div key={toolCallId} className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg mb-3 mt-2">
+                    <div className="flex items-start gap-2">
+                        <AlertCircle className="h-4 w-4 text-blue-500 mt-0.5" />
+                        <div className="flex-1">
+                            <p className="text-xs font-semibold text-blue-700 dark:text-blue-400">
+                                Support Ticket Created
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                                Ticket ID: {ticket.ticketId}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                                Status: <strong>ESCALATED</strong> - An agent will contact you shortly.
+                            </p>
+                            <Badge variant="secondary" className="text-xs mt-2">
+                                {ticket.department === 'technical' ? '🔴 Technical Team' : '🟢 Operations Team'}
+                            </Badge>
+                            <a
+                                href={`mailto:${ticket.department === 'technical' ? 'support@marketbridge.com.ng' : 'ops-support@marketbridge.com.ng'}?subject=Ticket%20${ticket.ticketId}`}
+                                className="block mt-2 text-xs text-primary hover:underline font-semibold"
+                            >
+                                → Email {ticket.department === 'technical' ? 'support@marketbridge.com.ng' : 'ops-support@marketbridge.com.ng'}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
 
-        setMessages(prev => [...prev, userMessage]);
-        setInputValue('');
-        setIsTyping(true);
-
-        // Simulate network delay
-        setTimeout(() => {
-            const response = generateResponse(userMessage.content);
-            const botMessageId = (Date.now() + 1).toString();
-
-            // Start with an empty message and streaming state
-            setMessages(prev => [...prev, {
-                id: botMessageId,
-                role: 'assistant',
-                content: '',
-                timestamp: new Date(),
-            }]);
-
-            setIsTyping(false); // Hide the "pulsing dots" loader
-
-            // Simulated Streaming Effect
-            const fullContent = response.content;
-            let currentLength = 0;
-            const chunkSize = Math.max(1, Math.floor(fullContent.length / 40));
-
-            const streamInterval = setInterval(() => {
-                currentLength += chunkSize;
-                if (currentLength >= fullContent.length) {
-                    currentLength = fullContent.length;
-                    clearInterval(streamInterval);
-
-                    // Once text finishes streaming, append the rich UI widgets (cards, tickets, etc.)
-                    setMessages(prev => prev.map(msg =>
-                        msg.id === botMessageId ? {
-                            ...msg,
-                            content: fullContent,
-                            searchResults: response.searchResults,
-                            productDetail: response.productDetail,
-                            supportTicket: response.supportTicket
-                        } : msg
-                    ));
-                } else {
-                    // Update streaming text
-                    setMessages(prev => prev.map(msg =>
-                        msg.id === botMessageId ? {
-                            ...msg,
-                            content: fullContent.substring(0, currentLength) + ' ⬤'
-                        } : msg
-                    ));
-                }
-                scrollToBottom();
-            }, 15); // FAST stream 15ms per chunk
-
-        }, 600);
+        return null;
     };
 
     return (
@@ -178,7 +187,7 @@ export function AiAssistant() {
                                 Sage
                                 <Badge variant="secondary" className="text-xs">AI Assistant</Badge>
                             </CardTitle>
-                            <p className="text-xs text-muted-foreground">Always here to help</p>
+                            <p className="text-xs text-muted-foreground">Powered by Gemini 1.5</p>
                         </div>
                     </CardHeader>
 
@@ -203,127 +212,36 @@ export function AiAssistant() {
                                             ) : (
                                                 <>
                                                     <AvatarImage src="/user-avatar.png" />
-                                                    <AvatarFallback className="bg-muted text-muted-foreground"><User className="h-4 w-4" /></AvatarFallback>                                                </>
+                                                    <AvatarFallback className="bg-muted text-muted-foreground"><User className="h-4 w-4" /></AvatarFallback>
+                                                </>
                                             )}
                                         </Avatar>
                                         <div className="flex flex-col gap-2 flex-1 min-w-0">
-                                            <div
-                                                className={cn(
-                                                    "p-3 rounded-2xl text-sm whitespace-pre-wrap max-w-full overflow-hidden",
-                                                    msg.role === 'user'
-                                                        ? "bg-primary text-primary-foreground rounded-tr-none"
-                                                        : "bg-muted/50 text-foreground rounded-tl-none prose prose-sm dark:prose-invert prose-p:leading-relaxed prose-pre:bg-zinc-900 prose-pre:text-zinc-100"
-                                                )}
-                                            >
-                                                {msg.role === 'user' ? (
-                                                    msg.content
-                                                ) : (
-                                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                                        {msg.content}
-                                                    </ReactMarkdown>
-                                                )}
-                                            </div>
-
-                                            {msg.productDetail && (
-                                                <div className="rounded-xl border border-primary/20 bg-card overflow-hidden shadow-lg animate-in fade-in zoom-in-95 duration-300">
-                                                    <div className="h-48 bg-muted relative">
-                                                        {msg.productDetail.image ? (
-                                                            <img
-                                                                src={msg.productDetail.image}
-                                                                alt={msg.productDetail.title}
-                                                                className="w-full h-full object-cover"
-                                                                onError={(e) => {
-                                                                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1523475496153-3d6cc0f0bf19?w=800&q=80';
-                                                                }}
-                                                            />
-                                                        ) : (
-                                                            <div className="absolute inset-0 flex items-center justify-center bg-zinc-800 text-zinc-500">
-                                                                <ShoppingBag className="h-8 w-8 opacity-20" />
-                                                            </div>
-                                                        )}
-                                                        <Badge className="absolute top-2 right-2 bg-[#FF6200] text-black">
-                                                            {msg.productDetail.category}
-                                                        </Badge>
-                                                    </div>
-                                                    <div className="p-4 space-y-3">
-                                                        <div>
-                                                            <h3 className="font-bold text-lg leading-tight">{msg.productDetail.title}</h3>
-                                                            <p className="text-sm text-muted-foreground">{msg.productDetail.description}</p>
-                                                        </div>
-                                                        <div className="flex items-center justify-between">
-                                                            <div className="font-black text-xl">₦{msg.productDetail.price.toLocaleString()}</div>
-                                                            <div className="text-xs text-muted-foreground flex items-center">
-                                                                <Search className="h-3 w-3 mr-1" /> {msg.productDetail.location}
-                                                            </div>
-                                                        </div>
-                                                        <Button className="w-full font-bold uppercase tracking-widest bg-[#FF6200] text-black hover:bg-white transition-colors" asChild>
-                                                            <Link href={`/listings/${msg.productDetail.id}`}>
-                                                                View Full Listing
-                                                            </Link>
-                                                        </Button>
-                                                    </div>
+                                            {msg.content && (
+                                                <div
+                                                    className={cn(
+                                                        "p-3 rounded-2xl text-sm whitespace-pre-wrap max-w-full overflow-hidden",
+                                                        msg.role === 'user'
+                                                            ? "bg-primary text-primary-foreground rounded-tr-none"
+                                                            : "bg-muted/50 text-foreground rounded-tl-none prose prose-sm dark:prose-invert prose-p:leading-relaxed prose-pre:bg-zinc-900 prose-pre:text-zinc-100"
+                                                    )}
+                                                >
+                                                    {msg.role === 'user' ? (
+                                                        msg.content
+                                                    ) : (
+                                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                            {msg.content}
+                                                        </ReactMarkdown>
+                                                    )}
                                                 </div>
                                             )}
 
-                                            {msg.searchResults && msg.searchResults.length > 0 && (
-                                                <div className="space-y-2">
-                                                    {msg.searchResults.map((result) => (
-                                                        <div
-                                                            key={result.id}
-                                                            onClick={() => handleSendMessage(`Tell me more about ${result.title}`)}
-                                                            className="block p-3 bg-card border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer group text-left"
-                                                        >
-                                                            <div className="flex items-start justify-between gap-2">
-                                                                <div className="flex-1">
-                                                                    <p className="font-medium text-sm line-clamp-1 group-hover:text-primary transition-colors">{result.title}</p>                                                                    <p className="text-xs text-muted-foreground">{result.location}</p>
-                                                                </div>
-                                                                <Badge variant="secondary" className="text-xs shrink-0 group-hover:bg-[#FF6200] group-hover:text-black transition-colors">
-                                                                    ₦{result.price.toLocaleString()}
-                                                                </Badge>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                    <Link href="/listings" className="block pt-2">
-                                                        <Button variant="outline" size="sm" className="w-full font-bold uppercase tracking-widest text-[10px]">
-                                                            <Search className="h-3 w-3 mr-2" />
-                                                            Browse All Marketplace
-                                                        </Button>
-                                                    </Link>
-                                                </div>
-                                            )}
-
-                                            {msg.supportTicket && (
-                                                <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-                                                    <div className="flex items-start gap-2">
-                                                        <AlertCircle className="h-4 w-4 text-blue-500 mt-0.5" />
-                                                        <div className="flex-1">
-                                                            <p className="text-xs font-semibold text-blue-700 dark:text-blue-400">
-                                                                Support Ticket Created
-                                                            </p>
-                                                            <p className="text-xs text-muted-foreground mt-1">
-                                                                Ticket ID: {msg.supportTicket.ticketId}
-                                                            </p>
-                                                            <p className="text-xs text-muted-foreground mt-1">
-                                                                Status: <strong>ESCALATED</strong> - An agent will contact you shortly.
-                                                            </p>
-                                                            <Badge variant="secondary" className="text-xs mt-2">
-                                                                {msg.supportTicket.department === 'technical' ? '🔴 Technical Team' : '🟢 Operations Team'}
-                                                            </Badge>
-                                                            <a
-                                                                href={`mailto:${msg.supportTicket.department === 'technical' ? 'support@marketbridge.com.ng' : 'ops-support@marketbridge.com.ng'}?subject=Ticket%20${msg.supportTicket.ticketId}`}
-                                                                className="block mt-2 text-xs text-primary hover:underline font-semibold"
-                                                            >
-                                                                → Email {msg.supportTicket.department === 'technical' ? 'support@marketbridge.com.ng' : 'ops-support@marketbridge.com.ng'}
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
+                                            {msg.toolInvocations?.map(toolInvocation => renderTool(toolInvocation))}
                                         </div>
                                     </div>
                                 </div>
                             ))}
-                            {isTyping && (
+                            {isLoading && messages[messages.length - 1]?.role !== 'assistant' && (
                                 <div className="flex gap-3 max-w-[85%]">
                                     <Avatar className="h-8 w-8 mt-1">
                                         <AvatarFallback className="bg-gradient-to-br from-primary to-primary/60 text-primary-foreground">
@@ -337,16 +255,30 @@ export function AiAssistant() {
                                     </div>
                                 </div>
                             )}
+                            {error && (
+                                <div className="flex gap-3 max-w-[85%] mt-2">
+                                    <Avatar className="h-8 w-8 mt-1">
+                                        <AvatarFallback className="bg-destructive text-destructive-foreground">
+                                            <AlertCircle className="h-4 w-4" />
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className="bg-destructive/10 text-destructive border border-destructive/20 p-3 rounded-2xl rounded-tl-none text-sm whitespace-pre-wrap">
+                                        {/* The error from the API typically contains the text inside error.message */}
+                                        {error.message || "Error connecting to Sage neural network. Please try again."}
+                                    </div>
+                                </div>
+                            )}
                             <div ref={messagesEndRef} />
                         </div>
                     </CardContent>
 
                     <div className="px-4 py-2 border-t border-white/5 bg-zinc-950/50">
                         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide overscroll-contain overscroll-x-contain">
-                            {['Find Textbooks', 'Cheap Laptops', 'Wigs for Sale', 'Food Delivery', 'Sell Item'].map((chip) => (
+                            {['Find Textbooks', 'Cheap Laptops', 'Wigs for Sale', 'How to Pay'].map((chip) => (
                                 <button
                                     key={chip}
-                                    onClick={() => handleSendMessage(chip)}
+                                    type="button"
+                                    onClick={() => append({ role: 'user', content: chip })}
                                     className="whitespace-nowrap px-3 py-1.5 rounded-full bg-white/5 hover:bg-[#FF6200] hover:text-black border border-white/10 text-[10px] font-bold uppercase tracking-wide transition-all text-zinc-400"
                                 >
                                     {chip}
@@ -357,19 +289,17 @@ export function AiAssistant() {
 
                     <CardFooter className="p-3 bg-muted/20 border-t border-primary/10 shrink-0">
                         <form
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                handleSendMessage();
-                            }}
+                            onSubmit={handleSubmit}
                             className="flex w-full gap-2"
                         >
                             <Input
                                 placeholder="Ask Sage anything..."
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
+                                value={input}
+                                onChange={handleInputChange}
                                 className="bg-background/50 focus-visible:ring-primary"
+                                disabled={isLoading}
                             />
-                            <Button type="submit" size="icon" disabled={!inputValue.trim() || isTyping}>
+                            <Button type="submit" size="icon" disabled={!input?.trim() || isLoading}>
                                 <Send className="h-4 w-4" />
                             </Button>
                         </form>
