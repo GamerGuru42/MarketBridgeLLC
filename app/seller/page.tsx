@@ -14,10 +14,16 @@ import Link from 'next/link';
 const UNIVERSITIES = [
     "University of Abuja",
     "Baze University",
-    "Nile University",
+    "Nile University of Nigeria",
     "Veritas University",
     "Cosmopolitan University",
-    "Other"
+    "African University of Science and Technology",
+    "National Open University of Nigeria",
+    "Philomath University",
+    "Bingham University",
+    "Prime University",
+    "Al-Muhibbah Open University",
+    "European University of Nigeria"
 ];
 
 const CATEGORIES = [
@@ -37,6 +43,7 @@ export default function SellerOnboardingPage() {
         university: '',
         studentEmail: '',
         sellCategories: [] as string[],
+        otherCategoryDetails: '',
         itemsReady: '',
         idCardUrl: ''
     });
@@ -103,6 +110,17 @@ export default function SellerOnboardingPage() {
             return;
         }
 
+        let finalCategories = [...formData.sellCategories];
+        if (finalCategories.includes('Others')) {
+            if (!formData.otherCategoryDetails.trim()) {
+                toast({ title: 'Missing information', description: 'Please specify what you intend to sell under "Others".', variant: 'destructive' });
+                return;
+            }
+            finalCategories = finalCategories.map(c =>
+                c === 'Others' ? `Others: ${formData.otherCategoryDetails}` : c
+            );
+        }
+
         if (!formData.studentEmail.toLowerCase().endsWith('.edu.ng') && !formData.studentEmail.toLowerCase().endsWith('.edu')) {
             toast({ title: 'Invalid Email', description: 'Please use a valid student (.edu or .edu.ng) email address.', variant: 'destructive' });
             return;
@@ -113,7 +131,7 @@ export default function SellerOnboardingPage() {
             const res = await fetch('/api/seller-application', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({ ...formData, sellCategories: finalCategories })
             });
 
             const data = await res.json();
@@ -226,6 +244,21 @@ export default function SellerOnboardingPage() {
                                                 );
                                             })}
                                         </div>
+                                        {formData.sellCategories.includes("Others") && (
+                                            <div className="mt-4 pt-4 border-t border-white/10 animate-in fade-in slide-in-from-top-2">
+                                                <Label htmlFor="otherCategoryDetails" className="text-zinc-300 font-bold uppercase text-xs tracking-widest ml-1 mb-3 block">
+                                                    Specify "Other" items *
+                                                </Label>
+                                                <Input
+                                                    id="otherCategoryDetails"
+                                                    name="otherCategoryDetails"
+                                                    value={formData.otherCategoryDetails}
+                                                    onChange={handleChange}
+                                                    placeholder="E.g. Digital games, gift cards, campus services..."
+                                                    className="bg-black/40 border-white/10 focus:border-[#FF6200] text-white h-14 rounded-xl text-sm placeholder:text-zinc-600"
+                                                />
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="pt-2">
