@@ -359,10 +359,10 @@ export class PaystackWebhookHandler {
         const { reference, amount, customer, metadata, id } = event.data;
         const normalizedAmount = amount / 100;
 
-        console.log(`Verifying charge: ${reference} (${normalizedAmount} NGN)`);
+        console.log(`Processing charge.success: ${reference} (₦${normalizedAmount})`);
 
         try {
-            // 1. Is it a subscription?
+            // ── 1. SUBSCRIPTION PAYMENT ──────────────────────────────────────
             if (reference.startsWith('SUB-')) {
                 const planId = metadata?.plan_id;
                 const userId = metadata?.user_id;
@@ -372,135 +372,214 @@ export class PaystackWebhookHandler {
                     return;
                 }
 
-                // Activate Subscription
-                const { error: subError } = await supabaseAdmin
+                await supabaseAdmin
                     .from('subscriptions')
                     .update({
                         status: 'active',
                         current_period_start: new Date().toISOString(),
-                        metadata: {
-                            ...metadata,
-                            paystack_id: id,
-                            last_payment_ref: reference
-                        }
+                        metadata: { ...metadata, paystack_id: id, last_payment_ref: reference }
                     })
                     .eq('user_id', userId);
 
-                if (subError) console.error('Error updating subscription:', subError);
-
-                // Update User Profile
                 await supabaseAdmin
                     .from('users')
-                    .update({
-                        subscription_status: 'active',
-                        subscription_plan_id: planId
-                    })
+                    .update({ subscription_status: 'active', subscription_plan_id: planId })
                     .eq('id', userId);
-            }
-            // 2. Is it a marketplace sale?
-            else if (reference.startsWith('TXNL-')) {
-                const listingId = metadata?.listing_id;
-                const buyerId = metadata?.buyer_id;
-                const sellerId = metadata?.seller_id;
-                const commissionRate = metadata?.platform_commission_percent || 7;
 
-                if (listingId) {
-                    // Update Listing Status
-                    const { error: listingError } = await supabaseAdmin
-                        .from('listings')
-                        .update({
-                            status: 'sold',
-                            updated_at: new Date().toISOString()
-                        })
-                        .eq('id', listingId);
-
-                    if (listingError) console.error('Error updating listing status:', listingError);
-
-                    // Record Sale Transaction
-                    const amountTotal = amount / 100;
-                    const amountPlatform = (amountTotal * commissionRate) / 100;
-                    const amountSeller = amountTotal - amountPlatform;
-
-                    const { error: transError } = await supabaseAdmin
-                        .from('sales_transactions')
-                        .insert({
-                            paystack_reference: reference,
-                            listing_id: listingId,
-                            buyer_id: buyerId,
-                            seller_id: sellerId,
-                            amount_total: amountTotal,
-                            amount_seller: amountSeller,
-                            amount_platform: amountPlatform,
-                            commission_rate: commissionRate,
-                            status: 'success',
-                            metadata: event.data
-                        });
-
-                    if (transError) console.error('Error recording sales transaction:', transError);
-
-                    // --- MarketCoins Logic ---
-                    const coinsUsed = metadata?.coins_used || 0;
-
-                    if (coinsUsed > 0 && buyerId) {
-                        const { error: deductErr } = await supabaseAdmin.rpc('subtract_coins', {
-                            user_id: buyerId,
-                            amount_to_subtract: coinsUsed,
-                            trans_type: 'redeem_discount',
-                            trans_desc: `Redeemed for listing ${listingId}`
-                        });
-                        if (deductErr) console.error('Error deducting coins:', deductErr);
-                    }
-
-                    const buyerEarned = Math.floor(amountTotal / 100);
-                    if (buyerEarned > 0 && buyerId) {
-                        const { error: earnErr } = await supabaseAdmin.rpc('add_coins', {
-                            user_id: buyerId,
-                            amount_to_add: buyerEarned,
-                            trans_type: 'earn_purchase',
-                            trans_desc: `Earned from purchase of listing ${listingId}`
-                        });
-                        if (earnErr) console.error('Error adding buyer coins:', earnErr);
-                    }
-
-                    const sellerEarned = Math.floor(amountSeller / 200);
-                    if (sellerEarned > 0 && sellerId) {
-                        const { error: sellEarnErr } = await supabaseAdmin.rpc('add_coins', {
-                            user_id: sellerId,
-                            amount_to_add: sellerEarned,
-                            trans_type: 'earn_sale',
-                            trans_desc: `Earned from sale of ${listingId}`
-                        });
-                        if (sellEarnErr) console.error('Error adding seller coins:', sellEarnErr);
-                    }
-                    // --- End MarketCoins Logic ---
-
-                    // 3. Reset Negotiation System for this listing
-                    await supabaseAdmin
-                        .from('listings')
-                        .update({ current_offered_price: null })
-                        .eq('id', listingId);
-
-                    if (buyerId) {
-                        await supabaseAdmin
-                            .from('offers')
-                            .update({ status: 'completed' })
-                            .eq('listing_id', listingId)
-                            .eq('buyer_id', buyerId)
-                            .eq('status', 'accepted');
-                    }
-                }
-            }
-            // 3. Record General Payment
-            await supabaseAdmin
-                .from('payments')
-                .insert({
+                // Record payment
+                await supabaseAdmin.from('payments').insert({
                     processor: 'paystack',
                     processor_reference: reference,
                     amount: normalizedAmount,
                     status: 'successful',
                     processor_response: event.data,
-                    metadata: metadata
+                    metadata,
                 });
+            }
+
+            // ── 2. MARKETPLACE SALE ────────────────────────────────────────
+            else if (reference.startsWith('TXNL-')) {
+                const listingId = metadata?.listing_id;
+                const buyerId = metadata?.buyer_id;
+                const sellerId = metadata?.seller_id;
+                const commissionRate = metadata?.platform_commission_percent || 5.3;
+
+                if (!listingId) {
+                    console.error('TXNL- payment missing listing_id in metadata');
+                    return;
+                }
+
+                const amountTotal = amount / 100;
+                const amountPlatform = (amountTotal * commissionRate) / 100;
+                const amountSeller = amountTotal - amountPlatform;
+
+                // Mark listing as sold
+                await supabaseAdmin
+                    .from('listings')
+                    .update({ status: 'sold', current_offered_price: null, updated_at: new Date().toISOString() })
+                    .eq('id', listingId);
+
+                // ✅ FIX: Create order record (was NEVER being created before)
+                const { data: orderData, error: orderError } = await supabaseAdmin
+                    .from('orders')
+                    .insert({
+                        listing_id: listingId,
+                        buyer_id: buyerId,
+                        seller_id: sellerId,
+                        amount: amountTotal,
+                        status: 'confirmed',
+                        payment_reference: reference,
+                        payment_status: 'paid',
+                        created_at: new Date().toISOString(),
+                    })
+                    .select('id')
+                    .single();
+
+                if (orderError) console.error('Error creating order:', orderError);
+                else console.log(`Order created: ${orderData?.id}`);
+
+                // Record sale transaction
+                await supabaseAdmin.from('sales_transactions').insert({
+                    paystack_reference: reference,
+                    listing_id: listingId,
+                    buyer_id: buyerId,
+                    seller_id: sellerId,
+                    amount_total: amountTotal,
+                    amount_seller: amountSeller,
+                    amount_platform: amountPlatform,
+                    commission_rate: commissionRate,
+                    status: 'success',
+                    metadata: event.data,
+                });
+
+                // MarketCoins: deduct used coins from buyer
+                const coinsUsed = metadata?.coins_used || 0;
+                if (coinsUsed > 0 && buyerId) {
+                    await supabaseAdmin.rpc('subtract_coins', {
+                        user_id: buyerId,
+                        amount_to_subtract: coinsUsed,
+                        trans_type: 'redeem_discount',
+                        trans_desc: `Redeemed for listing ${listingId}`
+                    }).then(({ error }) => { if (error) console.error('Coin deduct error:', error); });
+                }
+
+                // MarketCoins: award buyer coins (1 coin per ₦100 spent)
+                const buyerEarned = Math.floor(amountTotal / 100);
+                if (buyerEarned > 0 && buyerId) {
+                    await supabaseAdmin.rpc('add_coins', {
+                        user_id: buyerId,
+                        amount_to_add: buyerEarned,
+                        trans_type: 'earn_purchase',
+                        trans_desc: `Earned from purchase of listing ${listingId}`
+                    }).then(({ error }) => { if (error) console.error('Buyer coin earn error:', error); });
+                }
+
+                // MarketCoins: award seller coins (1 coin per ₦200 earned)
+                const sellerEarned = Math.floor(amountSeller / 200);
+                if (sellerEarned > 0 && sellerId) {
+                    await supabaseAdmin.rpc('add_coins', {
+                        user_id: sellerId,
+                        amount_to_add: sellerEarned,
+                        trans_type: 'earn_sale',
+                        trans_desc: `Earned from sale of ${listingId}`
+                    }).then(({ error }) => { if (error) console.error('Seller coin earn error:', error); });
+                }
+
+                // Close accepted offers for this listing
+                if (buyerId) {
+                    await supabaseAdmin
+                        .from('offers')
+                        .update({ status: 'completed' })
+                        .eq('listing_id', listingId)
+                        .eq('buyer_id', buyerId)
+                        .eq('status', 'accepted');
+                }
+
+                // Record payment
+                await supabaseAdmin.from('payments').insert({
+                    processor: 'paystack',
+                    processor_reference: reference,
+                    amount: normalizedAmount,
+                    status: 'successful',
+                    processor_response: event.data,
+                    metadata,
+                });
+            }
+
+            // ── 3. LISTING BOOST (AD) PAYMENT ────────────────────────────
+            else if (reference.startsWith('BOOST-')) {
+                const listingId = metadata?.listing_id;
+                const sellerId = metadata?.seller_id;
+                const tier = metadata?.tier as 'basic' | 'featured' | 'premium';
+                const durationDays = metadata?.duration_days || 3;
+                const coinsReward = metadata?.coins_reward || 10;
+
+                if (!listingId || !tier) {
+                    console.error('BOOST- payment missing listing_id or tier in metadata');
+                    return;
+                }
+
+                const sponsoredFrom = new Date();
+                const sponsoredUntil = new Date(sponsoredFrom);
+                sponsoredUntil.setDate(sponsoredUntil.getDate() + durationDays);
+
+                // Activate sponsorship on listing
+                await supabaseAdmin
+                    .from('listings')
+                    .update({
+                        is_sponsored: true,
+                        sponsored_tier: tier,
+                        sponsored_until: sponsoredUntil.toISOString(),
+                        updated_at: new Date().toISOString(),
+                    })
+                    .eq('id', listingId);
+
+                // Update ad_payments record to active
+                await supabaseAdmin
+                    .from('ad_payments')
+                    .update({
+                        status: 'active',
+                        sponsored_from: sponsoredFrom.toISOString(),
+                        sponsored_until: sponsoredUntil.toISOString(),
+                    })
+                    .eq('paystack_reference', reference);
+
+                // Award MarketCoins bonus to seller
+                if (coinsReward > 0 && sellerId) {
+                    await supabaseAdmin.rpc('add_coins', {
+                        user_id: sellerId,
+                        amount_to_add: coinsReward,
+                        trans_type: 'earn_boost',
+                        trans_desc: `Bonus for boosting listing ${listingId} (${tier})`
+                    }).then(({ error }) => { if (error) console.error('Boost coins error:', error); });
+                }
+
+                console.log(`Listing ${listingId} boosted (${tier}) until ${sponsoredUntil.toLocaleDateString()}`);
+
+                // Record payment
+                await supabaseAdmin.from('payments').insert({
+                    processor: 'paystack',
+                    processor_reference: reference,
+                    amount: normalizedAmount,
+                    status: 'successful',
+                    processor_response: event.data,
+                    metadata,
+                });
+            }
+
+            // ── 4. UNKNOWN PAYMENT TYPE ──────────────────────────────────
+            else {
+                console.warn(`Unknown charge reference prefix: ${reference}`);
+                // Still record it for audit purposes
+                await supabaseAdmin.from('payments').insert({
+                    processor: 'paystack',
+                    processor_reference: reference,
+                    amount: normalizedAmount,
+                    status: 'successful',
+                    processor_response: event.data,
+                    metadata,
+                });
+            }
 
         } catch (err) {
             console.error('Critical error in Paystack Webhook Handler:', err);

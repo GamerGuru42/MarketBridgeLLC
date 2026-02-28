@@ -46,10 +46,15 @@ export async function POST(req: Request) {
         }
 
         // 2. Calculate Commission & Split
-        const commissionPercentage = 5.3; // Strict 5.3%
+        const commissionPercentage = 5.3; // 5.3% platform commission
         const finalPrice = listing.current_offered_price || listing.price;
         const discountedPrice = Math.max(0, finalPrice - coinsToUse);
-        const amountKobo = Math.round(discountedPrice * 100);
+
+        // Smart Escrow protection fee (+₦150 flat when buyer opts in)
+        const isEscrow = (await req.clone().json().catch(() => ({}))).type === 'escrow';
+        const escrowFee = isEscrow ? 150 : 0;
+        const totalCharge = discountedPrice + escrowFee;
+        const amountKobo = Math.round(totalCharge * 100);
 
         // Generate a unique reference for this transaction
         const reference = `TXNL-${Date.now()}-${listingId.slice(0, 8)}`;
@@ -67,10 +72,11 @@ export async function POST(req: Request) {
                 platform_commission_percent: commissionPercentage,
                 coins_used: coinsToUse,
                 original_price: finalPrice,
-                type: 'marketplace_sale'
+                escrow_fee: escrowFee,
+                type: isEscrow ? 'escrow' : 'marketplace_sale'
             },
             subaccount: seller.paystack_subaccount_code,
-            bearer: 'account', // Platform bears the Paystack transaction fees
+            bearer: 'account',
             channels: ['card', 'bank', 'ussd', 'qr', 'bank_transfer']
         };
 

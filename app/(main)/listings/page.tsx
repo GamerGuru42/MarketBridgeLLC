@@ -105,6 +105,9 @@ function ListingsContent() {
         try {
             let resultData: Listing[] = [];
 
+            // Sync expired sponsorships on every fetch (lightweight)
+            try { await supabase.rpc('sync_sponsorship_expiry'); } catch { /* non-critical */ }
+
             // Use AI-powered intelligent search if there's a search query
             if (search && search.trim()) {
                 const results = await intelligentSearch({
@@ -125,44 +128,51 @@ function ListingsContent() {
                     resultsCount: results.length
                 });
             } else {
-                // Fallback to basic query if no search term
-                let query = supabase
-                    .from('listings')
-                    .select(`
-                        *,
-                        dealer:users!listings_dealer_id_fkey(
-                            id,
-                            display_name,
-                            is_verified,
-                            store_type
-                        )
-                    `)
-                    .eq('status', 'active')
-                    .order('created_at', { ascending: false });
+                // Build base query filter
+                const buildQuery = (baseQuery: any) => {
+                    let q = baseQuery.eq('status', 'active');
+                    if (category && category !== 'All Categories') q = q.eq('category', category);
+                    if (location) q = q.ilike('location', `%${location}%`);
+                    if (minPrice) q = q.gte('price', parseInt(minPrice));
+                    if (maxPrice) q = q.lte('price', parseInt(maxPrice));
+                    if (condition !== 'all') q = q.eq('condition', condition);
+                    return q;
+                };
 
-                if (category && category !== 'All Categories') {
-                    query = query.eq('category', category);
-                }
+                const selectFields = `
+                    *,
+                    dealer:users!listings_dealer_id_fkey(
+                        id,
+                        display_name,
+                        is_verified,
+                        store_type
+                    )
+                `;
 
-                if (location) {
-                    query = query.ilike('location', `%${location}%`);
-                }
+                // Fetch sponsored listings first (pinned to top)
+                const { data: sponsored } = await buildQuery(
+                    supabase.from('listings').select(selectFields)
+                        .eq('is_sponsored', true)
+                        .gt('sponsored_until', new Date().toISOString())
+                )
+                    .order('sponsored_tier', { ascending: false }) // premium > featured > basic
+                    .order('created_at', { ascending: false })
+                    .limit(8);
 
-                if (minPrice) {
-                    query = query.gte('price', parseInt(minPrice));
-                }
-                if (maxPrice) {
-                    query = query.lte('price', parseInt(maxPrice));
-                }
-
-                if (condition !== 'all') {
-                    query = query.eq('condition', condition);
-                }
-
-                const { data, error: fetchError } = await query;
+                // Fetch regular (non-sponsored) listings
+                const { data: regular, error: fetchError } = await buildQuery(
+                    supabase.from('listings').select(selectFields)
+                        .or('is_sponsored.eq.false,sponsored_until.lt.' + new Date().toISOString())
+                )
+                    .order('created_at', { ascending: false })
+                    .limit(80);
 
                 if (fetchError) throw fetchError;
-                resultData = data || [];
+
+                // Merge: sponsored pinned first, then regular (deduplicated)
+                const sponsoredIds = new Set((sponsored || []).map((l: Listing) => l.id));
+                const deduped = (regular || []).filter((l: Listing) => !sponsoredIds.has(l.id));
+                resultData = [...(sponsored || []), ...deduped];
             }
 
             setListings(resultData);
@@ -317,7 +327,10 @@ function ListingsContent() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {listings.map((listing) => (
                             <Link key={listing.id} href={`/listings/${listing.id}`}>
-                                <div className="glass-card rounded-[2rem] border-white/5 hover:border-[#FF6200]/40 transition-all duration-500 group overflow-hidden flex flex-col h-full shadow-2xl hover:shadow-[#FF6200]/10">
+                                <div className={`glass-card rounded-[2rem] border transition-all duration-500 group overflow-hidden flex flex-col h-full shadow-2xl ${listing.is_sponsored
+                                    ? 'border-[#FF6200]/30 hover:border-[#FF6200]/60 shadow-[#FF6200]/5'
+                                    : 'border-white/5 hover:border-[#FF6200]/40 hover:shadow-[#FF6200]/10'
+                                    }`}>
                                     <div className="relative h-64 w-full overflow-hidden bg-zinc-900 border-b border-white/5">
                                         {listing.images && listing.images[0] ? (
                                             <Image
@@ -377,6 +390,9 @@ function ListingsContent() {
                                                 <span className="text-2xl font-black text-white italic font-heading tracking-tighter">₦{listing.price.toLocaleString()}</span>
                                             </div>
                                             <div className="flex items-center gap-3">
+                                                {(listing as any).view_count > 0 && (
+                                                    <span className="text-[9px] text-white/20 font-bold">{(listing as any).view_count} views</span>
+                                                )}
                                                 {listing.dealer?.is_verified && (
                                                     <div className="h-8 w-8 rounded-full bg-[#FF6200]/10 flex items-center justify-center border border-[#FF6200]/20">
                                                         <ShieldCheck className="h-4 w-4 text-[#FF6200]" />

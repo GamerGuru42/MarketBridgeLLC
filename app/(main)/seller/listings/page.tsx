@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Package, Plus, Edit, Trash2, Eye, Loader2, Zap } from 'lucide-react';
+import { Package, Plus, Edit, Trash2, Eye, Loader2, Zap, X, Clock, TrendingUp, Flame, Crown } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -34,6 +34,10 @@ interface Listing {
     location: string | null;
     created_at: string;
     is_sponsored?: boolean;
+    sponsored_until?: string | null;
+    sponsored_tier?: 'basic' | 'featured' | 'premium' | null;
+    view_count?: number;
+    expires_at?: string | null;
 }
 
 export default function SellerListingsPage() {
@@ -45,6 +49,10 @@ export default function SellerListingsPage() {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
     const [promotingId, setPromotingId] = useState<string | null>(null);
+    // Boost modal state
+    const [boostListing, setBoostListing] = useState<Listing | null>(null);
+    const [boostLoading, setBoostLoading] = useState(false);
+    const [boostError, setBoostError] = useState('');
 
     useEffect(() => {
         if (authLoading) return;
@@ -82,7 +90,7 @@ export default function SellerListingsPage() {
         try {
             const { data, error } = await supabase
                 .from('listings')
-                .select('*')
+                .select('*, view_count, expires_at, is_sponsored, sponsored_until, sponsored_tier')
                 .eq('dealer_id', user.id)
                 .order('created_at', { ascending: false });
 
@@ -165,29 +173,68 @@ export default function SellerListingsPage() {
         }
     };
 
-    const handlePromote = async (listingId: string) => {
-        if (!confirm('Promote this listing for 500 MarketCoins? It will appear as "Sponsored" in the marketplace.')) return;
+    // Open the boost tier modal
+    const handleBoostClick = (listing: Listing) => {
+        setBoostListing(listing);
+        setBoostError('');
+    };
 
-        setPromotingId(listingId);
+    // Handle tier selection → Paystack checkout
+    const handleBoostTier = async (tier: 'basic' | 'featured' | 'premium') => {
+        if (!boostListing) return;
+        setBoostLoading(true);
+        setBoostError('');
         try {
-            const res = await fetch('/api/listings/promote', {
+            const res = await fetch('/api/paystack/boost', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ listingId })
+                body: JSON.stringify({ listingId: boostListing.id, tier })
             });
-
             const data = await res.json();
             if (!res.ok) throw new Error(data.error);
-
-            alert('Listing successfully promoted! Check the marketplace to see it.');
-            fetchListings();
+            // Redirect to Paystack checkout
+            window.location.href = data.authorization_url;
         } catch (err: any) {
-            console.error('Promotion failed:', err);
-            alert(err.message || 'Failed to promote listing');
+            setBoostError(err.message || 'Failed to initialize boost payment');
         } finally {
-            setPromotingId(null);
+            setBoostLoading(false);
         }
     };
+
+    const BOOST_TIERS = [
+        {
+            id: 'basic' as const,
+            label: 'Basic Boost',
+            price: '₦500',
+            duration: '3 days',
+            icon: <Zap className="h-5 w-5 text-[#FF6200]" />,
+            perks: ['Pinned to top of your category', '3-day visibility window', '+10 MarketCoins reward'],
+            color: 'border-white/10 hover:border-[#FF6200]/40',
+            badge: null,
+        },
+        {
+            id: 'featured' as const,
+            label: 'Featured',
+            price: '₦1,500',
+            duration: '7 days',
+            icon: <TrendingUp className="h-5 w-5 text-amber-400" />,
+            perks: ['Pinned for 7 days', 'FEATURED badge on card', '+25 MarketCoins reward'],
+            color: 'border-amber-500/30 hover:border-amber-400/60',
+            badge: 'POPULAR',
+        },
+        {
+            id: 'premium' as const,
+            label: 'Premium Spotlight',
+            price: '₦3,000',
+            duration: '14 days',
+            icon: <Crown className="h-5 w-5 text-yellow-300" />,
+            perks: ['Pinned for 14 days', 'PREMIUM badge + homepage exposure', '+50 MarketCoins reward'],
+            color: 'border-yellow-500/30 hover:border-yellow-400/60',
+            badge: 'BEST VALUE',
+        },
+    ];
+
+
 
     if (authLoading || loading) {
         return (
@@ -328,28 +375,113 @@ export default function SellerListingsPage() {
                                         )}
                                     </Button>
 
-                                    {!listing.is_sponsored && listing.status === 'active' && (
+                                    {/* Show expiry warning if listing expires within 7 days */}
+                                    {listing.expires_at && (new Date(listing.expires_at).getTime() - Date.now()) < 7 * 24 * 60 * 60 * 1000 && listing.status === 'active' && (
+                                        <div className="col-span-2 flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 mt-1">
+                                            <Clock className="h-3.5 w-3.5 text-amber-400 flex-shrink-0" />
+                                            <span className="text-[10px] text-amber-400 font-bold uppercase tracking-wider">
+                                                Expires {new Date(listing.expires_at).toLocaleDateString('en-NG', { day: 'numeric', month: 'short' })} — Boost to extend reach
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {/* Boost button — only for active non-sponsored listings */}
+                                    {listing.status === 'active' && (
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="col-span-2 font-black italic uppercase tracking-widest text-[10px] border-[#FF6200]/20 text-[#FF6200] hover:bg-[#FF6200] hover:text-black mt-2 h-10 shadow-lg shadow-[#FF6200]/5 rounded-xl"
-                                            onClick={() => handlePromote(listing.id)}
-                                            disabled={promotingId === listing.id}
+                                            className={`col-span-2 font-black italic uppercase tracking-widest text-[10px] mt-2 h-10 shadow-lg rounded-xl transition-all ${listing.is_sponsored
+                                                ? 'border-[#FF6200]/40 text-[#FF6200]/60 cursor-default'
+                                                : 'border-[#FF6200]/20 text-[#FF6200] hover:bg-[#FF6200] hover:text-black shadow-[#FF6200]/5'
+                                                }`}
+                                            onClick={() => !listing.is_sponsored && handleBoostClick(listing)}
+                                            disabled={listing.is_sponsored}
                                         >
-                                            {promotingId === listing.id ? (
-                                                <Loader2 className="h-4 w-4 animate-spin" />
-                                            ) : (
-                                                <>
-                                                    <Zap className="mr-2 h-3 w-3 fill-current" />
-                                                    Promote to Sponsored (500 MC)
-                                                </>
-                                            )}
+                                            <Zap className="mr-2 h-3 w-3 fill-current" />
+                                            {listing.is_sponsored
+                                                ? `Boosted until ${new Date(listing.sponsored_until!).toLocaleDateString('en-NG', { day: 'numeric', month: 'short' })}`
+                                                : 'Boost This Listing →'}
                                         </Button>
                                     )}
                                 </div>
                             </CardContent>
                         </Card>
                     ))}
+                </div>
+            )}
+
+            {/* ─── Boost Modal ───────────────────────────────────────── */}
+            {boostListing && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+                    <div className="w-full max-w-xl bg-zinc-950 border border-white/10 rounded-[2.5rem] p-8 shadow-2xl relative animate-in fade-in zoom-in-95 duration-300">
+                        <button
+                            onClick={() => setBoostListing(null)}
+                            aria-label="Close boost modal"
+                            title="Close"
+                            className="absolute top-6 right-6 text-white/30 hover:text-white transition-colors"
+                        >
+                            <X className="h-5 w-5" />
+                        </button>
+
+                        <div className="mb-6">
+                            <div className="flex items-center gap-3 mb-2">
+                                <Flame className="h-6 w-6 text-[#FF6200]" />
+                                <h2 className="text-2xl font-black uppercase tracking-tighter">Boost Listing</h2>
+                            </div>
+                            <p className="text-white/50 text-sm font-medium italic">
+                                &ldquo;{boostListing.title}&rdquo; — choose your boost tier
+                            </p>
+                        </div>
+
+                        <div className="space-y-4 mb-6">
+                            {BOOST_TIERS.map((tier) => (
+                                <button
+                                    key={tier.id}
+                                    onClick={() => handleBoostTier(tier.id)}
+                                    disabled={boostLoading}
+                                    className={`w-full text-left p-5 rounded-2xl border bg-black/30 transition-all hover:bg-black/60 relative ${tier.color} disabled:opacity-50 disabled:cursor-not-allowed`}
+                                >
+                                    {tier.badge && (
+                                        <span className="absolute top-4 right-4 text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-full bg-[#FF6200] text-black">
+                                            {tier.badge}
+                                        </span>
+                                    )}
+                                    <div className="flex items-center gap-3 mb-3">
+                                        {tier.icon}
+                                        <span className="font-black uppercase tracking-wider text-sm">{tier.label}</span>
+                                        <span className="ml-auto text-2xl font-black text-white">{tier.price}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <Clock className="h-3.5 w-3.5 text-white/30" />
+                                        <span className="text-[11px] text-white/40 font-bold uppercase tracking-widest">{tier.duration}</span>
+                                    </div>
+                                    <ul className="space-y-1">
+                                        {tier.perks.map((perk, i) => (
+                                            <li key={i} className="text-[11px] text-white/50 flex items-center gap-2">
+                                                <span className="h-1 w-1 rounded-full bg-[#FF6200]/60 flex-shrink-0" />
+                                                {perk}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </button>
+                            ))}
+                        </div>
+
+                        {boostError && (
+                            <p className="text-red-400 text-sm font-bold mb-4 text-center">{boostError}</p>
+                        )}
+
+                        {boostLoading && (
+                            <div className="flex items-center justify-center gap-3 text-white/60 text-sm font-bold">
+                                <Loader2 className="h-4 w-4 animate-spin text-[#FF6200]" />
+                                Taking you to checkout...
+                            </div>
+                        )}
+
+                        <p className="text-center text-[10px] text-white/20 mt-4 uppercase tracking-widest">
+                            Secure payment via Paystack — No recurring charges
+                        </p>
+                    </div>
                 </div>
             )}
 

@@ -93,6 +93,9 @@ export default function ListingDetailContent() {
     useEffect(() => {
         if (params?.id) {
             fetchListing();
+            // Increment view count (fire-and-forget)
+            const listingId = Array.isArray(params.id) ? params.id[0] : params.id;
+            supabase.rpc('increment_listing_view', { listing_id: listingId }).then(() => null);
             const unsubListing = subscribeToListing();
 
             let unsubOffer: (() => void) | undefined;
