@@ -461,9 +461,6 @@ export default function HomePage() {
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[#FF6200]/10 blur-[160px] rounded-full pointer-events-none" />
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[1px] bg-gradient-to-r from-transparent via-[#FF6200]/20 to-transparent" />
                     <div className="max-w-3xl mx-auto text-center relative z-10 flex flex-col items-center">
-                        <div className="mb-8 flex justify-center">
-                            <Logo size="lg" className="opacity-90 pointer-events-none select-none drop-shadow-[0_0_20px_rgba(255,98,0,0.6)]" />
-                        </div>
                         <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white mb-6 italic leading-[0.88]">
                             Stop Waiting.<br />
                             <span className="text-[#FF6200] drop-shadow-[0_0_40px_rgba(255,98,0,0.45)]">Start Trading.</span>
