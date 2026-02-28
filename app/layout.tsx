@@ -46,11 +46,12 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/icon.png', type: 'image/png' },
-      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/marketbridge_logo.png', type: 'image/png' },
     ],
-    apple: '/icon.png',
+    apple: '/marketbridge_logo.png',
   },
+
   openGraph: {
     title: "MarketBridge – Campus Marketplace for Abuja Universities",
     description: "Buy, sell & trade safely with verified student sellers. Textbooks, laptops, wigs, food delivery & more.",
@@ -58,9 +59,10 @@ export const metadata: Metadata = {
     siteName: "MarketBridge",
     images: [
       {
-        url: "/marketbridge_logo_branding.png",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
+        alt: "MarketBridge – Campus Marketplace",
       },
     ],
     locale: "en_NG",
@@ -70,7 +72,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "MarketBridge – Campus Marketplace for Abuja Universities",
     description: "Buy, sell & trade safely with verified student sellers. Textbooks, laptops, wigs, food delivery & more.",
-    images: ["/marketbridge_logo_branding.png"],
+    images: ["/og-image.png"],
   },
 };
 
