@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, CheckCircle, User, Building, Shield, Bell, MapPin, Phone, Mail, Banknote, Landmark, ArrowLeft } from 'lucide-react';
+import { Loader2, CheckCircle, User, Building, Shield, Bell, MapPin, Phone, MessageCircle, Tag, Banknote, Landmark, ArrowLeft } from 'lucide-react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NIGERIAN_STATES } from '@/lib/constants';
 
@@ -31,6 +31,16 @@ export default function SettingsPage() {
         accountNumber: '',
         accountName: ''
     });
+
+    // Notification preferences
+    const [notifPrefs, setNotifPrefs] = useState({
+        notif_order_updates: true,
+        notif_new_messages: true,
+        notif_offer_updates: true,
+        notif_marketing_emails: false,
+    });
+    const [savingNotif, setSavingNotif] = useState<string | null>(null);
+    const [notifSuccess, setNotifSuccess] = useState<string | null>(null);
 
     useEffect(() => {
         if (user) {
@@ -60,6 +70,24 @@ export default function SettingsPage() {
                 }
             };
             fetchBankDetails();
+
+            // Fetch notification preferences
+            const fetchNotifPrefs = async () => {
+                const { data } = await supabase
+                    .from('users')
+                    .select('notif_order_updates, notif_new_messages, notif_offer_updates, notif_marketing_emails')
+                    .eq('id', user.id)
+                    .single();
+                if (data) {
+                    setNotifPrefs({
+                        notif_order_updates: data.notif_order_updates ?? true,
+                        notif_new_messages: data.notif_new_messages ?? true,
+                        notif_offer_updates: data.notif_offer_updates ?? true,
+                        notif_marketing_emails: data.notif_marketing_emails ?? false,
+                    });
+                }
+            };
+            fetchNotifPrefs();
         }
     }, [user]);
 
@@ -128,6 +156,29 @@ export default function SettingsPage() {
             alert(err.message || 'Failed to update payout details');
         } finally {
             setUpdating(false);
+        }
+    };
+
+    const toggleNotif = async (key: keyof typeof notifPrefs) => {
+        if (!user || savingNotif) return;
+        const newValue = !notifPrefs[key];
+        // Optimistic update
+        setNotifPrefs(prev => ({ ...prev, [key]: newValue }));
+        setSavingNotif(key);
+        try {
+            const { error } = await supabase
+                .from('users')
+                .update({ [key]: newValue, updated_at: new Date().toISOString() })
+                .eq('id', user.id);
+            if (error) throw error;
+            setNotifSuccess(key);
+            setTimeout(() => setNotifSuccess(null), 2000);
+        } catch (err: any) {
+            // Revert on failure
+            setNotifPrefs(prev => ({ ...prev, [key]: !newValue }));
+            console.error('Failed to update notification preference:', err);
+        } finally {
+            setSavingNotif(null);
         }
     };
 
@@ -273,6 +324,8 @@ export default function SettingsPage() {
                                                     <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/10 group-focus-within:text-[#FF6200] transition-colors z-10" />
                                                     <select
                                                         id="location"
+                                                        title="Select your state or location"
+                                                        aria-label="Location / State"
                                                         className="w-full h-14 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-1 focus:ring-[#FF6200] focus:border-[#FF6200] outline-none font-bold uppercase appearance-none"
                                                         value={formData.location}
                                                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -323,6 +376,8 @@ export default function SettingsPage() {
                                             <Label htmlFor="storeType" className="text-[10px] uppercase font-black tracking-widest text-white/30 ml-1">Store Type</Label>
                                             <select
                                                 id="storeType"
+                                                title="Select your store type"
+                                                aria-label="Store Type"
                                                 className="w-full h-14 px-6 bg-black border border-white/10 rounded-2xl text-white focus:ring-1 focus:ring-[#FF6200] focus:border-[#FF6200] outline-none font-bold uppercase appearance-none"
                                                 value={formData.storeType}
                                                 onChange={(e) => setFormData({ ...formData, storeType: e.target.value })}
@@ -452,23 +507,81 @@ export default function SettingsPage() {
                         <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
                             <CardHeader className="p-8">
                                 <CardTitle className="text-xl font-black uppercase tracking-tight">Notifications</CardTitle>
-                                <CardDescription className="text-white/40 uppercase text-[9px] font-bold tracking-widest">Manage how we contact you</CardDescription>
+                                <CardDescription className="text-white/40 uppercase text-[9px] font-bold tracking-widest">Control how and when we contact you</CardDescription>
                             </CardHeader>
-                            <CardContent className="px-8 pb-8 space-y-4">
-                                <div className="flex items-center justify-between p-6 bg-black border border-white/5 rounded-2xl">
-                                    <div className="space-y-1">
-                                        <p className="font-bold text-white uppercase tracking-wider">Order Updates</p>
-                                        <p className="text-xs text-white/40 font-medium">Order status and essential updates</p>
-                                    </div>
-                                    <div className="px-3 py-1 bg-[#FF6200]/10 text-[#FF6200] text-[9px] font-black uppercase rounded-full border border-[#FF6200]/20 tracking-tighter">On</div>
-                                </div>
-                                <div className="border-t border-zinc-800 my-2" />
-                                <div className="flex items-center justify-between p-6 bg-white/5 border border-white/5 rounded-2xl opacity-40">
-                                    <div className="space-y-1">
-                                        <p className="font-bold text-white/40 uppercase tracking-wider">Marketing Emails</p>
-                                        <p className="text-xs text-white/20 font-medium">Promotions and news</p>
-                                    </div>
-                                    <div className="px-3 py-1 bg-white/5 text-white/10 text-[9px] font-black uppercase rounded-full border border-white/5 tracking-tighter">Off</div>
+                            <CardContent className="px-8 pb-8 space-y-3">
+                                {([
+                                    {
+                                        key: 'notif_order_updates' as const,
+                                        label: 'Order Updates',
+                                        description: 'Get notified when your order status changes (shipped, delivered, etc.)',
+                                        icon: Tag,
+                                    },
+                                    {
+                                        key: 'notif_new_messages' as const,
+                                        label: 'New Messages',
+                                        description: 'Get notified when someone sends you a chat message',
+                                        icon: MessageCircle,
+                                    },
+                                    {
+                                        key: 'notif_offer_updates' as const,
+                                        label: 'Offer Updates',
+                                        description: 'Get notified when a seller accepts or rejects your price offer',
+                                        icon: Bell,
+                                    },
+                                    {
+                                        key: 'notif_marketing_emails' as const,
+                                        label: 'Marketing Emails',
+                                        description: 'Receive promotional emails, campus deals, and platform news',
+                                        icon: MapPin,
+                                    },
+                                ] as const).map(({ key, label, description, icon: Icon }) => {
+                                    const isOn = notifPrefs[key];
+                                    const isSaving = savingNotif === key;
+                                    const isSuccess = notifSuccess === key;
+                                    return (
+                                        <button
+                                            key={key}
+                                            onClick={() => toggleNotif(key)}
+                                            disabled={!!savingNotif}
+                                            className={`w-full flex items-center justify-between p-6 rounded-2xl border transition-all duration-300 text-left group ${isOn
+                                                ? 'bg-[#FF6200]/5 border-[#FF6200]/20 hover:border-[#FF6200]/40'
+                                                : 'bg-black border-white/5 hover:border-white/15'
+                                                } disabled:opacity-60 disabled:cursor-wait`}
+                                        >
+                                            <div className="flex items-center gap-5">
+                                                <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 transition-colors ${isOn ? 'bg-[#FF6200]/10' : 'bg-white/5'
+                                                    }`}>
+                                                    <Icon className={`h-4 w-4 transition-colors ${isOn ? 'text-[#FF6200]' : 'text-white/30'}`} />
+                                                </div>
+                                                <div className="space-y-0.5">
+                                                    <p className={`font-black uppercase tracking-wider text-sm transition-colors ${isOn ? 'text-white' : 'text-white/40'}`}>
+                                                        {label}
+                                                    </p>
+                                                    <p className="text-[11px] text-white/30 font-medium">{description}</p>
+                                                </div>
+                                            </div>
+                                            <div className="shrink-0 ml-4">
+                                                {isSaving ? (
+                                                    <Loader2 className="h-5 w-5 animate-spin text-[#FF6200]" />
+                                                ) : isSuccess ? (
+                                                    <CheckCircle className="h-5 w-5 text-[#FF6200]" />
+                                                ) : (
+                                                    <div className={`relative w-12 h-6 rounded-full transition-all duration-300 ${isOn ? 'bg-[#FF6200]' : 'bg-white/10'
+                                                        }`}>
+                                                        <div className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-md transition-all duration-300 ${isOn ? 'left-7' : 'left-1'
+                                                            }`} />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+
+                                <div className="pt-4 border-t border-white/5">
+                                    <p className="text-[10px] text-white/20 font-medium leading-relaxed">
+                                        Note: Critical security emails (password resets, login alerts) are always sent regardless of your preferences.
+                                    </p>
                                 </div>
                             </CardContent>
                         </Card>
