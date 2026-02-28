@@ -27,8 +27,17 @@ const siteUrl = process.env.NEXT_PUBLIC_CLIENT_URL || 'https://marketbridge.com.
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "MarketBridge Official - Nigeria's Most Trusted Campus Marketplace",
-  description: "The official hyper-local student marketplace for Abuja universities. Nigeria 2026 Campus Beta. Trade safely within your university Dashboard.",
+  title: "MarketBridge – Campus Marketplace for Abuja Universities",
+  description: "Buy, sell & trade safely with verified student sellers. Textbooks, laptops, wigs, food delivery & more.",
+  alternates: {
+    canonical: siteUrl,
+  },
+  verification: {
+    google: "YOUR-GSC-CODE",
+    other: {
+      "msvalidate.01": "YOUR-BING-CODE"
+    }
+  },
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -43,8 +52,8 @@ export const metadata: Metadata = {
     apple: '/icon.png',
   },
   openGraph: {
-    title: "MarketBridge - Nigeria's Most Trusted Business Marketplace",
-    description: "Starting with new and used cars. Escrow-protected transactions for businesses of all sizes.",
+    title: "MarketBridge – Campus Marketplace for Abuja Universities",
+    description: "Buy, sell & trade safely with verified student sellers. Textbooks, laptops, wigs, food delivery & more.",
     url: siteUrl,
     siteName: "MarketBridge",
     images: [
@@ -59,8 +68,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "MarketBridge - Nigeria's Most Trusted Business Marketplace",
-    description: "Starting with new and used cars. Escrow-protected transactions for businesses of all sizes.",
+    title: "MarketBridge – Campus Marketplace for Abuja Universities",
+    description: "Buy, sell & trade safely with verified student sellers. Textbooks, laptops, wigs, food delivery & more.",
     images: ["/marketbridge_logo_branding.png"],
   },
 };

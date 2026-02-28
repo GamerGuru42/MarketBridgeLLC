@@ -1,238 +1,85 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Mail, CheckCircle, Loader2, Users } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
-import QRCode from 'react-qr-code';
+import React from 'react';
 import { Logo } from '@/components/logo';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { ArrowRight, ShoppingBag, ShieldCheck, Zap } from 'lucide-react';
 
-const waitlistSchema = z.object({
-    email: z.string().email("Please enter a valid email address.")
-});
-
-type WaitlistFormData = z.infer<typeof waitlistSchema>;
-
-export default function WaitlistPage() {
-    const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle');
-    const [message, setMessage] = useState('');
-    const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
-    const supabase = createClient();
-    const router = useRouter();
-    const { user, loading } = useAuth();
-
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-        reset
-    } = useForm<WaitlistFormData>({
-        resolver: zodResolver(waitlistSchema),
-        defaultValues: { email: '' }
-    });
-
-    useEffect(() => {
-        const fetchWaitlistCount = async () => {
-            const { count } = await supabase
-                .from('waitlist')
-                .select('*', { count: 'exact', head: true });
-            if (count !== null) setWaitlistCount(count);
-        };
-        fetchWaitlistCount();
-    }, [supabase]);
-
-    useEffect(() => {
-        if (!loading && user) {
-            const role = user.role;
-            if (role === 'ceo' || role === 'cofounder') router.replace('/admin/ceo');
-            else if (role === 'operations_admin') router.replace('/admin/operations');
-            else if (role === 'technical_admin') router.replace('/admin/technical');
-            else if (role === 'marketing_admin') router.replace('/admin/marketing');
-            else if (role === 'admin') router.replace('/admin/operations'); // fallback admin
-        }
-    }, [user, loading, router]);
-
-    const onSubmit = async (data: WaitlistFormData) => {
-        setStatus('loading');
-        setMessage('');
-        try {
-            const res = await fetch('/api/waitlist', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: data.email }),
-            });
-            const resData = await res.json();
-
-            if (!res.ok) {
-                if (resData.error && resData.error.includes('already exists')) {
-                    throw new Error('This email is already on the waitlist!');
-                }
-                throw new Error(resData.error || 'Failed to join waitlist');
-            }
-
-            setStatus('success');
-            setMessage("Welcome! You're now in the queue. We'll notify you when we open.");
-            reset();
-            // refresh count
-            const { count } = await supabase.from('waitlist').select('*', { count: 'exact', head: true });
-            if (count !== null) setWaitlistCount(count);
-        } catch (error: any) {
-            setStatus('idle');
-            // Show error in the message area
-            setMessage(error.message);
-        }
-    };
-
+export default function HomePage() {
     return (
         <div className="flex flex-col min-h-screen bg-[#000000] text-[#FFFFFF] font-sans selection:bg-[#FF6200] selection:text-white">
-            <header className="w-full p-6 md:p-8 flex justify-center md:justify-start absolute top-0 z-50">
-                <div className="flex items-center">
-                    <Logo size="lg" />
+            <header className="w-full p-6 md:p-8 flex items-center justify-between absolute top-0 z-50">
+                <Logo size="lg" />
+                <div className="hidden sm:flex items-center gap-6">
+                    <Link href="/login" className="text-white/80 hover:text-white font-bold text-sm tracking-wider uppercase transition-colors">
+                        Log In
+                    </Link>
+                    <Link href="/signup" className="px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full font-bold text-sm tracking-wider uppercase transition-all backdrop-blur-md">
+                        Sign Up
+                    </Link>
                 </div>
             </header>
 
             <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 pt-24 pb-20 relative overflow-hidden">
                 {/* Subtle Orange Glow */}
-                <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#FF6200]/15 blur-[120px] rounded-full pointer-events-none" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#FF6200]/10 blur-[150px] rounded-full pointer-events-none" />
 
-                <div className="z-10 w-full max-w-2xl flex flex-col items-center text-center space-y-12">
-
-                    {/* Header Section */}
-                    <div className="space-y-6 mt-8">
-                        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-[#FF6200] leading-tight">
-                            THE WAIT IS ALMOST OVER.
-                        </h1>
-                        <h2 className="text-lg md:text-xl font-medium text-white/90 mx-auto leading-relaxed max-w-2xl">
-                            MarketBridge is here, a safer, smarter way to buy and sell on campus. Whether you're a student, staff, or part of the community, discover a marketplace built for you.
-                        </h2>
-                        <div className="text-[#FF6200] font-bold text-base md:text-lg pt-2">
-                            Launching first in Abuja. Coming soon.
-                        </div>
+                <div className="z-10 w-full max-w-4xl flex flex-col items-center text-center space-y-10">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FF6200]/10 border border-[#FF6200]/30 text-[#FF6200] text-xs font-black uppercase tracking-widest animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6200] opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF6200]"></span>
+                        </span>
+                        Campus Beta is Open
                     </div>
 
-                    {/* Buyer Waitlist Section */}
-                    <div className="w-full max-w-xl bg-white/5 border border-white/10 backdrop-blur-md rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
-                        <div className="space-y-4 mb-8">
-                            <h3 className="text-3xl font-black uppercase tracking-tighter text-white">
-                                Join the Buyer Waitlist
-                            </h3>
-                            <p className="text-zinc-400 text-sm md:text-base font-medium leading-relaxed">
-                                Be the first to know when we launch. Get exclusive early access + special launch discounts.
-                            </p>
-                        </div>
+                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter text-white leading-[0.9] animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
+                        MarketBridge <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6200] to-[#FF8533]">
+                            Campus Marketplace
+                        </span>
+                    </h1>
 
-                        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
-                            <div className="relative flex items-center">
-                                <Mail className="absolute left-5 h-6 w-6 text-zinc-500" />
-                                <input
-                                    {...register('email')}
-                                    disabled={status === 'loading' || status === 'success'}
-                                    placeholder="Enter your email address"
-                                    className="w-full h-16 bg-black/50 border border-white/20 rounded-2xl pl-16 pr-6 text-white placeholder:text-zinc-500 focus:outline-none focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] transition-all font-medium text-lg disabled:opacity-50"
-                                />
-                            </div>
+                    <p className="text-lg md:text-2xl font-medium text-white/70 mx-auto leading-relaxed max-w-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+                        Buy, sell & trade safely with verified student sellers. Textbooks, laptops, wigs, food delivery & more.
+                    </p>
 
-                            {errors.email && (
-                                <p className="text-red-500 text-sm font-bold text-left px-2">{errors.email.message}</p>
-                            )}
-
-                            {message && status !== 'success' && (
-                                <p className="text-red-500 text-sm font-bold text-left px-2">{message}</p>
-                            )}
-
-                            {status === 'success' ? (
-                                <div className="bg-[#FF6200]/10 border border-[#FF6200]/30 rounded-2xl p-6 flex flex-col items-center justify-center gap-3 text-[#FF6200] animate-in fade-in slide-in-from-bottom-2">
-                                    <CheckCircle className="h-10 w-10 text-[#FF6200]" />
-                                    <p className="font-bold text-base text-center">{message}</p>
-                                </div>
-                            ) : (
-                                <button
-                                    type="submit"
-                                    disabled={status === 'loading'}
-                                    className="w-full h-16 bg-[#FF6200] text-black font-black uppercase tracking-widest text-lg rounded-2xl hover:bg-[#ff7a29] transition-all hover:scale-[1.02] active:scale-[0.98] disabled:hover:scale-100 disabled:opacity-70 shadow-[0_0_40px_rgba(255,98,0,0.4)] flex items-center justify-center"
-                                >
-                                    {status === 'loading' ? (
-                                        <Loader2 className="h-6 w-6 animate-spin" />
-                                    ) : (
-                                        'Join Waitlist →'
-                                    )}
-                                </button>
-                            )}
-                        </form>
-
-                        {waitlistCount !== null && (
-                            <div className="flex items-center justify-center gap-2 text-zinc-400 text-sm font-bold mt-6 animate-in fade-in zoom-in">
-                                <Users className="h-5 w-5 text-[#FF6200]" />
-                                Already joined: <span className="text-white bg-white/10 px-3 py-1 rounded-md">{waitlistCount}</span> people
-                            </div>
-                        )}
+                    <div className="flex flex-col sm:flex-row items-center gap-4 pt-8 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
+                        <Link 
+                            href="/signup" 
+                            className="w-full sm:w-auto px-10 py-5 bg-[#FF6200] hover:bg-[#ff7a29] text-black font-black uppercase tracking-widest text-lg rounded-2xl transition-all hover:scale-105 shadow-[0_0_40px_rgba(255,98,0,0.3)] flex items-center justify-center gap-3 group"
+                        >
+                            Get Started
+                            <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                        </Link>
+                        <Link 
+                            href="/login" 
+                            className="w-full sm:w-auto px-10 py-5 bg-white/5 hover:bg-white/10 text-white font-black uppercase tracking-widest text-lg rounded-2xl border border-white/10 transition-all backdrop-blur-md flex items-center justify-center"
+                        >
+                            Log In
+                        </Link>
                     </div>
 
-                    {/* Separator */}
-                    <div className="w-full max-w-xl flex items-center justify-center gap-4 opacity-30">
-                        <div className="h-px bg-white flex-1" />
-                        <span className="text-white text-xs font-bold uppercase tracking-widest">Campus Crew</span>
-                        <div className="h-px bg-white flex-1" />
-                    </div>
-
-                    {/* Seller Section */}
-                    <div className="w-full max-w-xl text-center space-y-8 pb-12">
-                        <div className="space-y-4">
-                            <h3 className="text-3xl font-black uppercase tracking-tighter text-[#FF6200]">
-                                Are you a student seller ready to earn first?
-                            </h3>
-                            <p className="text-zinc-300 text-base font-medium">
-                                Join our exclusive Campus Crew and start listing items before buyers arrive.
-                            </p>
-                            <div className="inline-block bg-[#FF6200]/10 border border-[#FF6200]/30 text-[#FF6200] px-4 py-2 rounded-full text-sm font-bold uppercase tracking-widest animate-pulse">
-                                Limited: First 40 Sellers Only
-                            </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-3xl pt-16 animate-in fade-in slide-in-from-bottom-12 duration-700 delay-500">
+                        <div className="flex flex-col items-center text-center p-6 bg-white/5 border border-white/5 rounded-3xl">
+                            <ShoppingBag className="h-8 w-8 text-[#FF6200] mb-4" />
+                            <h3 className="font-bold text-white mb-2">Buy Locally</h3>
+                            <p className="text-sm text-white/50">Find exactly what you need right on your campus without high shipping fees.</p>
                         </div>
-
-                        <div className="flex justify-center items-center">
-                            <div className="bg-white p-6 rounded-3xl shadow-[0_0_50px_rgba(255,255,255,0.1)] inline-flex flex-col items-center gap-6 group hover:scale-[1.02] transition-transform duration-300">
-                                <Link href="/seller" className="block relative">
-                                    <QRCode
-                                        value="https://www.marketbridge.com.ng/seller"
-                                        size={220}
-                                        bgColor="#FFFFFF"
-                                        fgColor="#000000"
-                                        level="H"
-                                    />
-                                    <div className="absolute inset-0 bg-black/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl">
-                                        <div className="bg-[#FF6200] text-black text-xs font-black uppercase tracking-widest px-4 py-2 rounded-full shadow-lg">
-                                            Tap to Open
-                                        </div>
-                                    </div>
-                                </Link>
-                                <div className="space-y-2 text-center">
-                                    <span className="block text-black font-black uppercase tracking-widest text-sm">
-                                        Scan to become a Campus Seller
-                                    </span>
-                                    <Link
-                                        href="/seller"
-                                        className="inline-block text-[#FF6200] hover:text-[#ff7a29] font-bold text-sm underline transition-colors"
-                                    >
-                                        Or tap here: www.marketbridge.com.ng/seller
-                                    </Link>
-                                </div>
-                            </div>
+                        <div className="flex flex-col items-center text-center p-6 bg-white/5 border border-white/5 rounded-3xl">
+                            <ShieldCheck className="h-8 w-8 text-[#FF6200] mb-4" />
+                            <h3 className="font-bold text-white mb-2">Verified Sellers</h3>
+                            <p className="text-sm text-white/50">Deal with confidence. Sellers go through mandatory student ID verification.</p>
+                        </div>
+                        <div className="flex flex-col items-center text-center p-6 bg-white/5 border border-white/5 rounded-3xl">
+                            <Zap className="h-8 w-8 text-[#FF6200] mb-4" />
+                            <h3 className="font-bold text-white mb-2">Start Earning</h3>
+                            <p className="text-sm text-white/50">Turn your extra items into cash or start your student-run business today.</p>
                         </div>
                     </div>
                 </div>
             </main>
-
-            {/* Subtle Admin Footer Link */}
-            <div className="w-full pb-6 flex justify-center opacity-30 hover:opacity-100 transition-opacity">
-                <Link href="/admin/login" className="text-white text-[10px] font-medium tracking-widest uppercase hover:text-[#FF6200] transition-colors">
-                    CEO & Admin Portal
-                </Link>
-            </div>
         </div>
     );
 }
+

@@ -214,8 +214,8 @@ export default function NewListingPage() {
                                         </SelectTrigger>
                                         <SelectContent className="bg-zinc-950 border-white/10 text-white font-heading text-[10px] uppercase font-black tracking-widest">
                                             {CATEGORIES.map((cat) => (
-                                                <SelectItem key={cat.id} value={cat.name} disabled={cat.locked} className="focus:bg-[#FF6200] focus:text-black py-3">
-                                                    {cat.name} {cat.locked ? '(COMING SOON)' : ''}
+                                                <SelectItem key={cat.id} value={cat.name} className="focus:bg-[#FF6200] focus:text-black py-3">
+                                                    {cat.name}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
