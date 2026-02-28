@@ -43,7 +43,13 @@ export default function LoginPage() {
             if (['dealer', 'student_seller'].includes(user.role)) {
                 router.push('/seller/dashboard');
             } else if (user.role === 'ceo') {
-                router.push('/ceo');
+                router.push('/admin/ceo');
+            } else if (user.role === 'cofounder') {
+                router.push('/cofounder');
+            } else if (user.role === 'cto') {
+                router.push('/cto');
+            } else if (user.role === 'coo') {
+                router.push('/coo');
             } else if (user.role === 'technical_admin') {
                 router.push('/admin/technical');
             } else if (user.role === 'operations_admin') {
@@ -52,7 +58,8 @@ export default function LoginPage() {
                 router.push('/admin/marketing');
             } else if (user.role === 'admin') {
                 router.push('/admin');
-            } else {
+            }
+            else {
                 router.push('/listings');
             }
         }
@@ -135,7 +142,13 @@ export default function LoginPage() {
                 } else if (['dealer', 'student_seller'].includes(userRole)) {
                     window.location.href = '/seller/dashboard';
                 } else if (userRole === 'ceo') {
-                    window.location.href = '/ceo';
+                    window.location.href = '/admin/ceo';
+                } else if (userRole === 'cofounder') {
+                    window.location.href = '/cofounder';
+                } else if (userRole === 'cto') {
+                    window.location.href = '/cto';
+                } else if (userRole === 'coo') {
+                    window.location.href = '/coo';
                 } else if (userRole === 'technical_admin') {
                     window.location.href = '/admin/technical';
                 } else if (userRole === 'operations_admin') {
@@ -144,7 +157,8 @@ export default function LoginPage() {
                     window.location.href = '/admin/marketing';
                 } else if (userRole === 'admin') {
                     window.location.href = '/admin';
-                } else {
+                }
+                else {
                     window.location.href = '/listings';
                 }
 

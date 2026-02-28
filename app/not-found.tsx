@@ -43,20 +43,27 @@ export default function NotFound() {
                 <div className="pt-8 grid grid-cols-2 gap-4">
                     <Button
                         variant="ghost"
-                        onClick={() => router.back()}
+                        onClick={() => {
+                            if (window.history.length > 2) {
+                                router.back();
+                            } else {
+                                router.push('/');
+                            }
+                        }}
                         className="h-16 font-black uppercase tracking-widest text-[10px] border border-white/10 text-white hover:bg-white hover:text-black transition-all rounded-2xl"
                     >
                         <ArrowLeft className="mr-3 h-4 w-4" />
                         GO BACK
                     </Button>
                     <Button
-                        asChild
+                        onClick={() => {
+                            // Use a relative path or a known secure route
+                            router.push('/login'); // Login page will auto-redirect based on session/role
+                        }}
                         className="h-16 font-black uppercase tracking-widest text-[10px] bg-[#FF6200] text-black hover:bg-white transition-all rounded-2xl shadow-[0_10px_40px_rgba(255,98,0,0.15)]"
                     >
-                        <Link href="/">
-                            <Home className="mr-3 h-4 w-4" />
-                            DASHBOARD
-                        </Link>
+                        <Home className="mr-3 h-4 w-4" />
+                        DASHBOARD
                     </Button>
                 </div>
 
