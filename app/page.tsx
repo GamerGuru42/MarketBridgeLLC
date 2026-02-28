@@ -1,44 +1,70 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Logo } from '@/components/logo';
 import Link from 'next/link';
-import { ArrowRight, ShoppingBag, ShieldCheck, Zap, Globe, Star, Clock, CheckCircle2, Heart, Pizza, BookOpen, Smartphone, Shirt, Sparkles } from 'lucide-react';
-import { motion } from 'framer-motion';
+import {
+    ArrowRight, ShoppingBag, ShieldCheck, Zap, Globe,
+    Star, Clock, CheckCircle2, Heart, TrendingUp,
+    Users, Menu, X, Loader2
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { createClient } from '@/lib/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
+import { CATEGORIES } from '@/lib/categories';
+
+interface LiveCategory {
+    slug: string;
+    count: number;
+}
 
 export default function HomePage() {
     const { signInWithGoogle } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [recentListings, setRecentListings] = useState<any[]>([]);
+    const [liveCategories, setLiveCategories] = useState<LiveCategory[]>([]);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-    React.useEffect(() => {
-        const fetchRecent = async () => {
-            const supabase = createClient();
-            const { data } = await supabase
+    useEffect(() => {
+        const supabase = createClient();
+
+        const fetchData = async () => {
+            // Fetch recent listings for hero cards
+            const { data: recentData } = await supabase
                 .from('listings')
-                .select(`
-                    id, title, price, description, category, created_at,
-                    dealer:users!listings_dealer_id_fkey(display_name)
-                `)
+                .select(`id, title, price, category, created_at, images, dealer:users!listings_dealer_id_fkey(display_name)`)
                 .eq('status', 'active')
                 .order('created_at', { ascending: false })
                 .limit(3);
 
-            if (data && data.length > 0) {
-                setRecentListings(data);
+            if (recentData && recentData.length > 0) setRecentListings(recentData);
+
+            // Fetch live category counts — only show categories with active listings
+            const { data: catData } = await supabase
+                .from('listings')
+                .select('category')
+                .eq('status', 'active');
+
+            if (catData) {
+                const counts: Record<string, number> = {};
+                catData.forEach((row: { category: string }) => {
+                    const slug = (row.category || '').toLowerCase().trim();
+                    counts[slug] = (counts[slug] || 0) + 1;
+                });
+                const sorted = Object.entries(counts)
+                    .map(([slug, count]) => ({ slug, count }))
+                    .sort((a, b) => b.count - a.count);
+                setLiveCategories(sorted);
             }
         };
-        fetchRecent();
+
+        fetchData();
     }, []);
 
     const handleGoogleAuth = async () => {
         setIsLoading(true);
         try {
-            // For both signup and login, if they use Google they become buyers by default unless they change it later or have a matching seller profile.
-            // As per instructions, "google signup are meant to be there for signup for buyers and google login for buyers"
             await signInWithGoogle(`${window.location.origin}/auth/callback?next=/listings`);
         } catch (err) {
             console.error(err);
@@ -47,304 +73,455 @@ export default function HomePage() {
         }
     };
 
+    // Merge live DB category counts with our static CATEGORIES metadata
+    const displayCategories = (() => {
+        if (liveCategories.length === 0) {
+            // Fallback: show first 8 from static list while DB loads
+            return CATEGORIES.filter(c => c.isActive).slice(0, 8).map(c => ({ ...c, count: 0 }));
+        }
+        // Map live slugs back to CATEGORIES metadata
+        const result: Array<typeof CATEGORIES[0] & { count: number }> = [];
+        liveCategories.forEach(({ slug, count }) => {
+            const match = CATEGORIES.find(c =>
+                c.slug === slug ||
+                c.id === slug ||
+                c.name.toLowerCase() === slug ||
+                slug.includes(c.id.toLowerCase())
+            );
+            if (match && !result.find(r => r.id === match.id)) {
+                result.push({ ...match, count });
+            }
+        });
+        // Append any active static categories with no listings yet (keep ecosystem complete)
+        CATEGORIES.filter(c => c.isActive && !result.find(r => r.id === c.id)).forEach(c => {
+            result.push({ ...c, count: 0 });
+        });
+        return result.slice(0, 10);
+    })();
+
+    const features = [
+        {
+            icon: Zap,
+            title: 'Instant Campus Trading',
+            desc: 'No shipping delays. Deal directly with students on your campus and get your items the same day.',
+            accent: 'from-[#FF6200]/25 to-transparent',
+            iconBg: 'bg-[#FF6200]/15 border-[#FF6200]/20',
+        },
+        {
+            icon: ShieldCheck,
+            title: '100% Verified Students',
+            desc: 'Every seller passes strict identity verification. No scams — just genuine campus businesses you can trust.',
+            accent: 'from-emerald-500/20 to-transparent',
+            iconBg: 'bg-emerald-500/10 border-emerald-500/20',
+        },
+        {
+            icon: Heart,
+            title: 'Support Local Hustle',
+            desc: 'From late-night food to thrifters — your money stays on campus, helping student entrepreneurs grow.',
+            accent: 'from-pink-500/20 to-transparent',
+            iconBg: 'bg-pink-500/10 border-pink-500/20',
+        },
+    ];
+
     return (
-        <div className="flex flex-col min-h-screen bg-[#050505] text-white font-sans selection:bg-[#FF6200] selection:text-white overflow-hidden">
-            {/* Nav */}
-            <motion.header
-                initial={{ y: -50, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full px-6 py-4 md:px-12 md:py-6 flex items-center justify-between absolute top-0 z-50 backdrop-blur-md bg-transparent"
-            >
-                <Logo size="lg" />
-                <div className="hidden md:flex items-center gap-6">
-                    <Link href="/login" className="text-white hover:text-[#FF6200] font-bold text-sm tracking-widest uppercase transition-colors">
-                        Log In
-                    </Link>
-                    <Link href="/signup" className="px-6 py-3 bg-[#FF6200] hover:bg-[#FF7A29] text-black rounded-full font-black text-xs tracking-widest uppercase transition-all hover:scale-105 shadow-[0_0_20px_rgba(255,98,0,0.4)]">
+        <div className="flex flex-col min-h-screen bg-[#080808] text-white selection:bg-[#FF6200] selection:text-black overflow-hidden">
+
+            {/* ─── Fixed Nav ─── */}
+            <header className="fixed top-0 left-0 right-0 z-50 px-6 md:px-10 py-4 flex items-center justify-between backdrop-blur-xl bg-black/70 border-b border-white/[0.06]">
+                <Logo size="md" />
+                <nav className="hidden md:flex items-center gap-8">
+                    <Link href="/listings" className="text-white/55 hover:text-white font-semibold text-sm tracking-wide transition-colors">Browse</Link>
+                    <Link href="/signup?role=student_seller" className="text-white/55 hover:text-white font-semibold text-sm tracking-wide transition-colors">Sell</Link>
+                    <Link href="/login" className="text-white/55 hover:text-white font-bold text-sm tracking-widest uppercase transition-colors">Log In</Link>
+                    <Link href="/signup" className="px-5 py-2.5 bg-[#FF6200] hover:bg-[#FF7A29] text-black rounded-xl font-black text-xs tracking-widest uppercase transition-all hover:scale-105 shadow-[0_0_20px_rgba(255,98,0,0.35)]">
                         Sign Up Free
                     </Link>
-                </div>
-            </motion.header>
+                </nav>
+                <button className="md:hidden text-white/70 hover:text-white" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle menu">
+                    {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                </button>
+            </header>
 
-            <main className="flex-1 w-full pt-32 lg:pt-0">
-                {/* Hero Section */}
-                <section className="relative min-h-[90vh] flex items-center justify-center px-6 md:px-12 lg:px-20 border-b border-white/5 pb-16 lg:pb-0">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#FF6200]/15 blur-[120px] rounded-full pointer-events-none" />
+            {/* Mobile Menu */}
+            <AnimatePresence>
+                {mobileMenuOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="fixed top-[65px] left-0 right-0 z-40 bg-black/95 backdrop-blur-xl border-b border-white/10 px-6 py-6 flex flex-col gap-5 md:hidden"
+                    >
+                        {[
+                            { href: '/listings', label: 'Browse Market' },
+                            { href: '/signup?role=student_seller', label: 'Become a Seller' },
+                            { href: '/login', label: 'Log In' },
+                        ].map(l => (
+                            <Link key={l.href} href={l.href} className="text-white font-bold text-lg" onClick={() => setMobileMenuOpen(false)}>{l.label}</Link>
+                        ))}
+                        <Link href="/signup" className="flex items-center justify-center py-4 bg-[#FF6200] text-black font-black uppercase tracking-widest rounded-2xl" onClick={() => setMobileMenuOpen(false)}>
+                            Sign Up Free
+                        </Link>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
-                    <div className="z-10 w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mt-12 lg:mt-0">
-                        {/* Left Content */}
+            <main className="flex-1 w-full pt-[65px]">
+
+                {/* ─── Hero ─── */}
+                <section className="relative min-h-[calc(100vh-65px)] flex items-center overflow-hidden px-6 md:px-10 lg:px-16">
+                    {/* Background */}
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(255,98,0,0.13),transparent)]" />
+                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#FF6200]/20 to-transparent" />
+                    <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.035] pointer-events-none" />
+                    <div className="absolute -bottom-20 right-0 w-[60%] h-[80%] bg-[#FF6200]/[0.035] rounded-full blur-[100px] pointer-events-none" />
+                    <div className="absolute top-[25%] -left-[10%] w-[40%] h-[50%] bg-indigo-500/[0.025] rounded-full blur-[120px] pointer-events-none" />
+
+                    <div className="relative z-10 w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-10 xl:gap-20 items-center py-16 lg:py-0">
+
+                        {/* Left */}
                         <motion.div
-                            initial="hidden"
-                            animate="visible"
-                            variants={{
-                                hidden: { opacity: 0, x: -40 },
-                                visible: { opacity: 1, x: 0, transition: { staggerChildren: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
-                            }}
-                            className="flex flex-col space-y-8"
+                            initial="hidden" animate="visible"
+                            variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
+                            className="flex flex-col space-y-7"
                         >
-                            <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
-                                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FF6200]/10 border border-[#FF6200]/30 text-[#FF6200] text-xs font-black uppercase tracking-widest mb-6 backdrop-blur-md shadow-[0_0_15px_rgba(255,98,0,0.1)]">
+                            {/* Badge */}
+                            <motion.div variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}>
+                                <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#FF6200]/10 border border-[#FF6200]/25 text-[#FF6200] text-[11px] font-black uppercase tracking-[0.25em] backdrop-blur-md">
                                     <span className="relative flex h-2 w-2">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6200] opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF6200]"></span>
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6200] opacity-75" />
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF6200]" />
                                     </span>
-                                    Campus Open Beta
+                                    Campus Open Beta · Live Now
                                 </div>
+                            </motion.div>
 
-                                <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black uppercase tracking-tighter text-white leading-[0.9]">
-                                    Your Campus <br />
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6200] to-[#FF8533] italic drop-shadow-[0_0_20px_rgba(255,98,0,0.4)]">
-                                        Super App.
+                            {/* Headline */}
+                            <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
+                                <h1 className="text-[clamp(3.2rem,8.5vw,7rem)] font-black uppercase leading-[0.86] tracking-tighter text-white">
+                                    Your Campus<br />
+                                    <span className="relative">
+                                        <span className="text-[#FF6200] italic drop-shadow-[0_0_50px_rgba(255,98,0,0.45)]">Super App.</span>
+                                        <span className="absolute -inset-3 bg-[#FF6200]/8 blur-3xl rounded-full" />
                                     </span>
                                 </h1>
                             </motion.div>
 
-                            <motion.p variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-lg md:text-xl font-medium text-white/50 leading-relaxed max-w-xl">
-                                Buy, sell, and trade safely with verified students. From fresh food delivery to textbooks and side-hustles—it all happens here.
+                            {/* Subtext */}
+                            <motion.p
+                                variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
+                                className="text-base md:text-[1.1rem] text-white/48 leading-relaxed max-w-lg font-medium"
+                            >
+                                Buy, sell, and trade safely with verified students. From fresh food delivery to textbooks and side-hustles — it all happens here.
                             </motion.p>
 
-                            <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="flex flex-col sm:flex-row gap-4 pt-4">
-                                <Link
-                                    href="/signup"
-                                    className="px-8 py-5 bg-[#FF6200] hover:bg-[#ff7a29] text-black font-black uppercase tracking-widest text-sm rounded-2xl transition-all hover:scale-105 shadow-[0_10px_40px_rgba(255,98,0,0.4)] flex items-center justify-center gap-3 group"
-                                >
-                                    Start Buying
-                                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                            {/* CTAs */}
+                            <motion.div
+                                variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
+                                className="flex flex-wrap gap-3 pt-1"
+                            >
+                                <Link href="/signup" className="flex items-center gap-3 px-7 py-4 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest text-xs rounded-2xl transition-all hover:scale-[1.03] shadow-[0_8px_32px_rgba(255,98,0,0.45)] group">
+                                    Start Buying <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </Link>
-
                                 <button
                                     onClick={handleGoogleAuth}
                                     disabled={isLoading}
-                                    className="px-8 py-5 bg-white text-black hover:bg-zinc-200 font-black uppercase tracking-widest text-sm rounded-2xl transition-all hover:scale-105 shadow-[0_10px_40px_rgba(255,255,255,0.1)] flex items-center justify-center gap-3 group cursor-pointer"
+                                    className="flex items-center gap-3 px-7 py-4 bg-white/[0.07] hover:bg-white/[0.12] border border-white/10 hover:border-white/20 text-white font-black uppercase tracking-widest text-xs rounded-2xl transition-all hover:scale-[1.03] backdrop-blur-md cursor-pointer disabled:opacity-60"
                                 >
-                                    <Globe className="h-5 w-5 text-black" />
+                                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Globe className="h-4 w-4" />}
                                     Google Sign Up
                                 </button>
+                                <Link href="/signup?role=student_seller" className="flex items-center gap-3 px-7 py-4 border border-white/10 hover:border-[#FF6200]/40 text-white/55 hover:text-white font-black uppercase tracking-widest text-xs rounded-2xl transition-all hover:scale-[1.03]">
+                                    Become a Seller
+                                </Link>
                             </motion.div>
 
-                            <motion.div variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }} className="flex items-center gap-6 text-xs font-bold text-white/40 uppercase tracking-widest pt-4">
-                                <span className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5 text-[#FF6200]" /> Verified Users</span>
-                                <span className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5 text-[#FF6200]" /> Escrow Protection</span>
+                            {/* Trust pills */}
+                            <motion.div
+                                variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { delay: 0.35 } } }}
+                                className="flex flex-wrap items-center gap-5 pt-1"
+                            >
+                                {['Verified Users', 'Escrow Protection', 'Paystack Secured'].map(t => (
+                                    <span key={t} className="flex items-center gap-2 text-[11px] font-bold text-white/30 uppercase tracking-widest">
+                                        <CheckCircle2 className="w-4 h-4 text-[#FF6200]" /> {t}
+                                    </span>
+                                ))}
                             </motion.div>
                         </motion.div>
 
-                        {/* Right Content - Real Data Floating Cards */}
+                        {/* Right — floating cards */}
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-                            className="relative h-[550px] hidden lg:block"
+                            initial={{ opacity: 0, x: 40 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+                            className="relative h-[500px] hidden lg:block"
                         >
-                            {/* Card 1 */}
+                            <div className="absolute inset-0 bg-[#FF6200]/6 blur-[90px] rounded-full" />
+
+                            {/* Product card */}
                             <motion.div
-                                animate={{ y: [0, -20, 0] }}
+                                animate={{ y: [0, -18, 0] }}
                                 transition={{ repeat: Infinity, duration: 6, ease: 'easeInOut' }}
-                                className="absolute top-[5%] left-[5%] w-64 glass-card bg-zinc-900/90 border border-white/10 rounded-[2rem] p-5 shadow-2xl backdrop-blur-xl z-20"
+                                className="absolute top-[4%] left-[0%] w-[240px] bg-zinc-900/90 border border-white/10 rounded-[2rem] overflow-hidden shadow-[0_24px_64px_rgba(0,0,0,0.7)] backdrop-blur-xl z-20"
                             >
-                                <div className="w-full h-36 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-2xl mb-4 flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden relative">
-                                    <div className="absolute inset-0 bg-[#FF6200] opacity-20 blur-[30px]" />
-                                    <ShoppingBag className="w-16 h-16 text-[#FF6200] relative z-10" />
+                                <div className="relative h-32 bg-gradient-to-br from-[#FF6200]/25 to-zinc-800 flex items-center justify-center overflow-hidden">
+                                    {recentListings[0]?.images?.[0] ? (
+                                        // eslint-disable-next-line @next/next/no-img-element
+                                        <img src={recentListings[0].images[0]} alt="" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <><div className="absolute inset-0 bg-[#FF6200] opacity-12 blur-2xl" /><ShoppingBag className="w-12 h-12 text-[#FF6200] z-10" /></>
+                                    )}
+                                    <div className="absolute top-3 left-3 bg-[#FF6200] text-black text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-full">New</div>
                                 </div>
-                                <div className="space-y-2">
-                                    <div className="flex justify-between items-start">
-                                        <h3 className="font-bold text-white uppercase tracking-wider text-sm truncate max-w-[120px]">
-                                            {recentListings[0]?.title || 'Nike Dunks'}
-                                        </h3>
-                                        <span className="font-black text-[#FF6200] bg-[#FF6200]/10 px-2 py-1 rounded-lg">
-                                            ₦{recentListings[0]?.price?.toLocaleString() || '45k'}
-                                        </span>
+                                <div className="p-4 space-y-2">
+                                    <div className="flex justify-between items-start gap-2">
+                                        <h3 className="font-black text-white text-sm uppercase tracking-tight truncate">{recentListings[0]?.title || 'Nike Dunks'}</h3>
+                                        <span className="font-black text-[#FF6200] text-sm bg-[#FF6200]/10 px-2 py-0.5 rounded-lg shrink-0">₦{recentListings[0]?.price?.toLocaleString() || '45k'}</span>
                                     </div>
-                                    <div className="flex items-center gap-1 text-white/40 text-[10px] uppercase font-bold tracking-widest mt-2">
+                                    <div className="flex items-center gap-1 text-white/30 text-[10px] font-bold uppercase tracking-widest">
                                         <Clock className="w-3 h-3" />
                                         {recentListings[0]?.created_at ? formatDistanceToNow(new Date(recentListings[0].created_at)) + ' ago' : '2 mins ago'}
                                     </div>
                                 </div>
                             </motion.div>
 
-                            {/* Card 2 */}
+                            {/* Seller card */}
                             <motion.div
-                                animate={{ y: [0, 20, 0] }}
-                                transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut', delay: 1 }}
-                                className="absolute top-[45%] right-[-5%] w-72 glass-card bg-zinc-900/90 border border-white/10 rounded-[2rem] p-5 shadow-2xl backdrop-blur-xl z-30"
+                                animate={{ y: [0, 16, 0] }}
+                                transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut', delay: 0.8 }}
+                                className="absolute top-[38%] right-[-2%] w-[270px] bg-zinc-900/90 border border-white/10 rounded-[2rem] p-5 shadow-[0_24px_64px_rgba(0,0,0,0.7)] backdrop-blur-xl z-30"
                             >
-                                <div className="flex items-center gap-4 mb-4 pb-4 border-b border-white/5">
-                                    <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#FF6200] to-yellow-500 flex items-center justify-center p-[2px]">
-                                        <div className="w-full h-full bg-black rounded-full flex items-center justify-center text-sm font-black text-white/80">
-                                            {recentListings[1]?.dealer?.display_name?.substring(0, 2).toUpperCase() || 'AK'}
-                                        </div>
+                                <div className="flex items-center gap-3.5 mb-4 pb-4 border-b border-white/[0.07]">
+                                    <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#FF6200] to-amber-400 flex items-center justify-center text-xs font-black text-black shrink-0">
+                                        {recentListings[1]?.dealer?.display_name?.substring(0, 2).toUpperCase() || 'AK'}
                                     </div>
                                     <div className="flex-1 overflow-hidden">
-                                        <h3 className="font-black text-white text-sm uppercase tracking-wide truncate">
-                                            {recentListings[1]?.dealer?.display_name || "Ada's Kitchen"}
-                                        </h3>
-                                        <div className="flex items-center gap-1 text-[#FF6200] text-[10px] font-bold mt-1 uppercase tracking-widest truncate">
-                                            <Star className="w-3 h-3 fill-current flex-shrink-0" /> {recentListings[1]?.category || 'Food & Dining'}
+                                        <h3 className="font-black text-white text-sm uppercase tracking-wide truncate">{recentListings[1]?.dealer?.display_name || "Ada's Kitchen"}</h3>
+                                        <div className="flex items-center gap-1 text-[#FF6200] text-[10px] font-bold mt-0.5 uppercase tracking-widest">
+                                            <Star className="w-3 h-3 fill-current shrink-0" />{recentListings[1]?.category || 'Food & Dining'}
                                         </div>
                                     </div>
                                 </div>
-                                <div className="w-full bg-white/5 rounded-xl p-3 text-sm text-white/70 font-medium italic line-clamp-2">
-                                    "{recentListings[1]?.title || 'Jollof rice and chicken, ordering now!'}"
+                                <div className="bg-white/[0.04] rounded-xl p-3 text-[13px] text-white/55 font-medium italic">
+                                    &ldquo;{recentListings[1]?.title || 'Jollof rice and chicken, ordering now!'}&rdquo;
+                                </div>
+                                <div className="mt-3 flex items-center justify-between">
+                                    <span className="text-[10px] text-white/20 uppercase font-bold tracking-widest">Active now</span>
+                                    <div className="flex -space-x-1">
+                                        {[...Array(3)].map((_, i) => <div key={i} className="w-5 h-5 rounded-full bg-zinc-700 border border-zinc-900" />)}
+                                        <div className="w-5 h-5 rounded-full bg-[#FF6200] border border-zinc-900 flex items-center justify-center text-[7px] font-black text-black">+7</div>
+                                    </div>
                                 </div>
                             </motion.div>
 
-                            {/* Card 3 */}
+                            {/* Price card */}
                             <motion.div
-                                animate={{ y: [0, -15, 0] }}
+                                animate={{ y: [0, -12, 0] }}
                                 transition={{ repeat: Infinity, duration: 7, ease: 'easeInOut', delay: 2 }}
-                                className="absolute bottom-[0%] left-[15%] w-60 glass-card bg-[#FF6200] border-none rounded-[2rem] p-5 shadow-[0_20px_50px_rgba(255,98,0,0.4)] z-40 text-black mt-8"
+                                className="absolute bottom-[2%] left-[12%] w-[210px] bg-[#FF6200] rounded-[2rem] p-5 shadow-[0_20px_60px_rgba(255,98,0,0.5)] z-40"
                             >
-                                <div className="border border-black/10 rounded-[1.5rem] p-4 mb-4 bg-black/5">
-                                    <h3 className="font-black uppercase tracking-tight text-xl mb-1 truncate">
-                                        {recentListings[2]?.category || 'Textbook'}
-                                    </h3>
-                                    <p className="text-black/60 text-[10px] font-black uppercase tracking-widest truncate">
-                                        {recentListings[2]?.title || 'MTH 101 - Almost New'}
-                                    </p>
+                                <div className="bg-black/12 rounded-[1.5rem] p-3 mb-3">
+                                    <p className="font-black text-black/50 text-[9px] uppercase tracking-widest mb-0.5">Listed Now</p>
+                                    <h3 className="font-black uppercase tracking-tight text-lg text-black truncate">{recentListings[2]?.category || 'Textbook'}</h3>
+                                    <p className="text-black/65 text-[10px] font-bold truncate">{recentListings[2]?.title || 'MTH 101 — Almost New'}</p>
                                 </div>
-                                <div className="flex justify-between items-center px-2">
-                                    <span className="font-black text-2xl tracking-tighter truncate max-w-[120px]">
-                                        ₦{recentListings[2]?.price?.toLocaleString() || '8.5k'}
-                                    </span>
-                                    <div className="w-10 h-10 flex-shrink-0 rounded-full bg-black flex items-center justify-center hover:scale-110 transition-transform cursor-pointer shadow-xl">
-                                        <ArrowRight className="w-5 h-5 text-[#FF6200]" />
+                                <div className="flex justify-between items-center px-1">
+                                    <span className="font-black text-2xl tracking-tighter text-black">₦{recentListings[2]?.price?.toLocaleString() || '8.5k'}</span>
+                                    <div className="w-9 h-9 rounded-full bg-black flex items-center justify-center shadow-xl shrink-0">
+                                        <ArrowRight className="w-4 h-4 text-[#FF6200]" />
                                     </div>
+                                </div>
+                            </motion.div>
+
+                            {/* Stats pills */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}
+                                className="absolute top-[14%] right-[4%] bg-black/80 border border-white/10 rounded-2xl px-4 py-3 backdrop-blur-xl z-50 flex items-center gap-3"
+                            >
+                                <div className="w-8 h-8 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+                                    <TrendingUp className="w-4 h-4 text-emerald-400" />
+                                </div>
+                                <div>
+                                    <p className="text-[9px] text-white/25 uppercase font-bold tracking-widest">Live Listings</p>
+                                    <p className="text-white font-black text-sm">Growing Daily</p>
+                                </div>
+                            </motion.div>
+
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.0 }}
+                                className="absolute bottom-[27%] right-[-1%] bg-black/80 border border-white/10 rounded-2xl px-4 py-3 backdrop-blur-xl z-50 flex items-center gap-3"
+                            >
+                                <div className="w-8 h-8 rounded-xl bg-[#FF6200]/20 flex items-center justify-center">
+                                    <Users className="w-4 h-4 text-[#FF6200]" />
+                                </div>
+                                <div>
+                                    <p className="text-[9px] text-white/25 uppercase font-bold tracking-widest">Students</p>
+                                    <p className="text-white font-black text-sm flex items-center gap-2">Online <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" /></p>
                                 </div>
                             </motion.div>
                         </motion.div>
                     </div>
                 </section>
 
-                {/* Features Section */}
-                <section className="py-24 px-6 md:px-12 bg-black relative">
+                {/* ─── Features ─── */}
+                <section className="py-28 px-6 md:px-10 bg-[#050505] border-t border-white/[0.05] relative overflow-hidden">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[1px] bg-gradient-to-r from-transparent via-[#FF6200]/25 to-transparent" />
                     <div className="max-w-7xl mx-auto">
                         <div className="text-center mb-20">
-                            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-white mb-4 italic">Why MarketBridge?</h2>
-                            <p className="text-[#FF6200] uppercase tracking-[0.3em] text-[10px] font-black">Zero hassle. Just moves.</p>
+                            <p className="text-[#FF6200] uppercase tracking-[0.35em] text-[10px] font-black mb-4">Why MarketBridge</p>
+                            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white italic">
+                                Zero Hassle. <span className="text-[#FF6200]">Just Moves.</span>
+                            </h2>
                         </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            <motion.div whileHover={{ y: -8, scale: 1.02 }} className="p-10 bg-zinc-950 border border-white/5 rounded-[2.5rem] group transition-all hover:bg-white/[0.04] hover:border-[#FF6200]/50 shadow-2xl relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-[#FF6200]/10 rounded-bl-full blur-[40px] transition-all group-hover:bg-[#FF6200]/20" />
-                                <div className="w-16 h-16 rounded-[1.5rem] bg-[#FF6200]/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(255,102,0,0.2)]">
-                                    <Zap className="h-8 w-8 text-[#FF6200]" />
-                                </div>
-                                <h3 className="font-black text-2xl text-white mb-4 uppercase tracking-tight italic">Instant Campus Trading</h3>
-                                <p className="text-white/50 leading-relaxed font-bold text-sm">No shipping fees or long wait times. Deal directly with people on your campus and get your items the same day.</p>
-                            </motion.div>
-
-                            <motion.div whileHover={{ y: -8, scale: 1.02 }} className="p-10 bg-zinc-950 border border-white/5 rounded-[2.5rem] group transition-all hover:bg-white/[0.04] hover:border-[#FF6200]/50 shadow-2xl relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-[#FF6200]/10 rounded-bl-full blur-[40px] transition-all group-hover:bg-[#FF6200]/20" />
-                                <div className="w-16 h-16 rounded-[1.5rem] bg-[#FF6200]/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(255,102,0,0.2)]">
-                                    <ShieldCheck className="h-8 w-8 text-[#FF6200]" />
-                                </div>
-                                <h3 className="font-black text-2xl text-white mb-4 uppercase tracking-tight italic">100% Verified Students</h3>
-                                <p className="text-white/50 leading-relaxed font-bold text-sm">Every seller passes strict identity verification. No scams, no strangers—just genuine campus businesses you can trust.</p>
-                            </motion.div>
-
-                            <motion.div whileHover={{ y: -8, scale: 1.02 }} className="p-10 bg-zinc-950 border border-white/5 rounded-[2.5rem] group transition-all hover:bg-white/[0.04] hover:border-[#FF6200]/50 shadow-2xl relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-[#FF6200]/10 rounded-bl-full blur-[40px] transition-all group-hover:bg-[#FF6200]/20" />
-                                <div className="w-16 h-16 rounded-[1.5rem] bg-[#FF6200]/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(255,102,0,0.2)]">
-                                    <Heart className="h-8 w-8 text-[#FF6200]" />
-                                </div>
-                                <h3 className="font-black text-2xl text-white mb-4 uppercase tracking-tight italic">Support Local Hustle</h3>
-                                <p className="text-white/50 leading-relaxed font-bold text-sm">From late-night food vendors to thrifters—spend your money where it matters and help student entrepreneurs grow.</p>
-                            </motion.div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Categories Section */}
-                <section className="py-24 px-6 md:px-12 bg-[#050505] relative border-t border-white/5">
-                    <div className="max-w-7xl mx-auto">
-                        <div className="flex flex-col md:flex-row justify-between items-end mb-12">
-                            <div>
-                                <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-white mb-2 italic">Campus <span className="text-[#FF6200]">Essentials</span></h2>
-                                <p className="text-white/40 font-bold text-sm">Everything you need, 5 minutes away.</p>
-                            </div>
-                            <Link href="/listings" className="text-[#FF6200] font-black uppercase tracking-widest text-xs hover:text-white transition-colors group flex items-center gap-2 mt-4 md:mt-0">
-                                View All Market <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </Link>
-                        </div>
-
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                            {[
-                                { name: 'Late Night Food', icon: Pizza, color: 'bg-red-500/10 text-red-500' },
-                                { name: 'Textbooks', icon: BookOpen, color: 'bg-blue-500/10 text-blue-500' },
-                                { name: 'Tech & Gadgets', icon: Smartphone, color: 'bg-purple-500/10 text-purple-500' },
-                                { name: 'Drip & Fashion', icon: Shirt, color: 'bg-pink-500/10 text-pink-500' },
-                                { name: 'Services & Hustles', icon: Sparkles, color: 'bg-yellow-500/10 text-yellow-500' }
-                            ].map((cat, idx) => (
-                                <Link href={`/listings?q=${encodeURIComponent(cat.name)}`} key={idx}>
-                                    <motion.div
-                                        whileHover={{ y: -5, scale: 1.05 }}
-                                        className="bg-black border border-white/5 rounded-3xl p-6 flex flex-col items-center justify-center text-center gap-4 hover:border-white/20 transition-all cursor-pointer group h-full"
-                                    >
-                                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${cat.color} group-hover:scale-110 transition-transform`}>
-                                            <cat.icon className="w-6 h-6" />
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {features.map((feat, i) => (
+                                <motion.div
+                                    key={i}
+                                    whileHover={{ y: -6, scale: 1.02 }}
+                                    className="relative p-8 bg-zinc-950 border border-white/[0.06] rounded-[2.5rem] group overflow-hidden transition-all hover:border-[#FF6200]/25"
+                                >
+                                    <div className={`absolute top-0 right-0 w-56 h-56 bg-gradient-to-bl ${feat.accent} rounded-bl-full blur-[50px] opacity-70 group-hover:opacity-100 transition-opacity`} />
+                                    <div className="relative z-10">
+                                        <div className={`w-14 h-14 rounded-2xl border flex items-center justify-center mb-6 group-hover:scale-110 transition-transform ${feat.iconBg}`}>
+                                            <feat.icon className="h-7 w-7 text-[#FF6200]" />
                                         </div>
-                                        <span className="text-white font-bold text-[11px] uppercase tracking-widest leading-tight">{cat.name}</span>
-                                    </motion.div>
-                                </Link>
+                                        <h3 className="font-black text-xl text-white mb-3 uppercase tracking-tight italic">{feat.title}</h3>
+                                        <p className="text-white/40 leading-relaxed text-sm font-medium">{feat.desc}</p>
+                                    </div>
+                                </motion.div>
                             ))}
                         </div>
                     </div>
                 </section>
 
-                {/* Bottom CTA */}
-                <section className="py-32 px-6 md:px-12 bg-black relative overflow-hidden border-t border-white/5">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl h-[400px] bg-[#FF6200]/20 blur-[150px] rounded-full pointer-events-none" />
-                    <div className="max-w-4xl mx-auto text-center relative z-10 flex flex-col items-center">
-                        <div className="w-20 h-20 bg-[#FF6200] rounded-3xl flex items-center justify-center mb-8 rotate-12 shadow-[0_0_50px_rgba(255,98,0,0.5)]">
-                            <Logo size="md" showText={false} className="scale-150 rotate-[-12deg] text-black" />
+                {/* ─── Live Categories ─── */}
+                <section className="py-24 px-6 md:px-10 bg-[#080808] border-t border-white/[0.05]">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="flex flex-col md:flex-row justify-between items-end mb-14 gap-5">
+                            <div>
+                                <p className="text-[#FF6200] uppercase tracking-[0.35em] text-[10px] font-black mb-3">Shop by Category</p>
+                                <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-white italic">
+                                    Campus <span className="text-[#FF6200]">Essentials</span>
+                                </h2>
+                                <p className="text-white/30 font-medium text-sm mt-2">
+                                    100% live — categories grow as new sellers join.
+                                </p>
+                            </div>
+                            <Link href="/listings" className="flex items-center gap-2 text-[#FF6200] font-black uppercase tracking-widest text-xs hover:text-white transition-colors group shrink-0">
+                                Browse Everything <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </Link>
                         </div>
-                        <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white mb-6 italic leading-[0.9]">
-                            Stop Waiting. <br /> <span className="text-[#FF6200]">Start Trading.</span>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                            {displayCategories.map((cat, idx) => (
+                                <Link href={`/listings?q=${encodeURIComponent(cat.slug)}`} key={cat.id}>
+                                    <motion.div
+                                        whileHover={{ y: -5, scale: 1.04 }}
+                                        className="group relative bg-zinc-950 border border-white/[0.06] rounded-3xl p-5 flex flex-col items-center justify-center text-center gap-3.5 hover:border-[#FF6200]/30 transition-all cursor-pointer overflow-hidden"
+                                    >
+                                        {/* hover glow */}
+                                        <div className="absolute inset-0 bg-[#FF6200]/0 group-hover:bg-[#FF6200]/[0.03] transition-colors rounded-3xl" />
+                                        <div className={`w-14 h-14 rounded-2xl ${cat.bg} flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                                            <cat.icon className={`w-6 h-6 ${cat.color}`} />
+                                        </div>
+                                        <div>
+                                            <span className="block text-white font-bold text-[11px] uppercase tracking-wider leading-tight group-hover:text-[#FF6200] transition-colors">
+                                                {cat.name}
+                                            </span>
+                                            {cat.count > 0 && (
+                                                <span className="block text-white/25 text-[10px] font-bold mt-1">
+                                                    {cat.count} listing{cat.count !== 1 ? 's' : ''}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </motion.div>
+                                </Link>
+                            ))}
+                        </div>
+
+                        {/* Seller CTA banner */}
+                        <div className="mt-12 p-8 bg-gradient-to-r from-[#FF6200]/10 to-transparent border border-[#FF6200]/15 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div>
+                                <p className="text-[#FF6200] uppercase tracking-widest text-[10px] font-black mb-1">Don&rsquo;t see your category?</p>
+                                <h3 className="text-white font-black text-xl uppercase tracking-tight italic">Join as a Seller — Add Yours</h3>
+                                <p className="text-white/40 text-sm font-medium mt-1">New categories appear automatically as sellers register and list.</p>
+                            </div>
+                            <Link
+                                href="/signup?role=student_seller"
+                                className="flex items-center gap-3 px-7 py-4 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest text-xs rounded-2xl transition-all hover:scale-105 shadow-[0_8px_30px_rgba(255,98,0,0.4)] shrink-0 group"
+                            >
+                                Start Selling <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                            </Link>
+                        </div>
+                    </div>
+                </section>
+
+                {/* ─── Bottom CTA ─── */}
+                <section className="py-32 px-6 md:px-10 bg-[#050505] border-t border-white/[0.05] relative overflow-hidden">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[#FF6200]/10 blur-[160px] rounded-full pointer-events-none" />
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[1px] bg-gradient-to-r from-transparent via-[#FF6200]/20 to-transparent" />
+                    <div className="max-w-3xl mx-auto text-center relative z-10 flex flex-col items-center">
+                        <div className="w-16 h-16 bg-[#FF6200] rounded-2xl flex items-center justify-center mb-8 rotate-12 shadow-[0_0_60px_rgba(255,98,0,0.5)]">
+                            <Logo size="sm" showText={false} className="scale-150 -rotate-12 text-black" />
+                        </div>
+                        <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white mb-6 italic leading-[0.88]">
+                            Stop Waiting.<br />
+                            <span className="text-[#FF6200] drop-shadow-[0_0_40px_rgba(255,98,0,0.45)]">Start Trading.</span>
                         </h2>
-                        <p className="text-lg text-white/50 font-medium mb-10 max-w-xl mx-auto">
+                        <p className="text-lg text-white/38 font-medium mb-10 max-w-md mx-auto leading-relaxed">
                             Join thousands of students securely buying and selling on campus right now.
                         </p>
-                        <Link
-                            href="/signup"
-                            className="px-10 py-6 bg-white hover:bg-zinc-200 text-black font-black uppercase tracking-widest text-lg rounded-full transition-all hover:scale-105 shadow-[0_20px_50px_rgba(255,255,255,0.1)] flex items-center gap-3 group"
-                        >
-                            Create Free Account <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-                        </Link>
+                        <div className="flex flex-wrap justify-center gap-4">
+                            <Link href="/signup" className="flex items-center gap-3 px-10 py-5 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest text-sm rounded-full transition-all hover:scale-105 shadow-[0_10px_40px_rgba(255,98,0,0.4)] group">
+                                Create Free Account <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                            </Link>
+                            <Link href="/login" className="flex items-center gap-3 px-10 py-5 bg-white/[0.05] hover:bg-white/10 border border-white/10 text-white font-black uppercase tracking-widest text-sm rounded-full transition-all hover:scale-105 backdrop-blur-md">
+                                Log In
+                            </Link>
+                        </div>
                     </div>
                 </section>
             </main>
 
-            {/* Footer */}
-            <footer className="w-full bg-[#020202] border-t border-white/5 py-12 px-6 md:px-12 relative z-10">
+            {/* ─── Footer ─── */}
+            <footer className="w-full bg-[#030303] border-t border-white/[0.05] py-16 px-6 md:px-10">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                     <div className="col-span-1 md:col-span-2">
-                        <Logo size="lg" className="mb-6" />
-                        <p className="text-white/40 text-[13px] font-bold max-w-md leading-relaxed">
-                            The secure, student-only marketplace. We're bridging the gap between campus buyers and student businesses.
+                        <Logo size="md" className="mb-5" />
+                        <p className="text-white/30 text-[13px] font-medium max-w-md leading-relaxed">
+                            The secure, student-only marketplace. Bridging the gap between campus buyers and student businesses.
                         </p>
                     </div>
                     <div>
-                        <h4 className="text-white font-black uppercase tracking-widest mb-6 border-b border-white/10 pb-4 inline-block text-[11px]">Platform</h4>
+                        <h4 className="text-white/50 font-black uppercase tracking-[0.25em] mb-6 text-[10px]">Platform</h4>
                         <ul className="space-y-4">
-                            <li><Link href="/listings" className="text-white/50 hover:text-[#FF6200] font-bold text-[13px] transition-colors">Browse Market</Link></li>
-                            <li><Link href="/login" className="text-white/50 hover:text-[#FF6200] font-bold text-[13px] transition-colors">Log In</Link></li>
-                            <li><Link href="/signup?role=student_seller" className="text-white/50 hover:text-[#FF6200] font-bold text-[13px] transition-colors">Become a Seller</Link></li>
+                            {[
+                                { href: '/listings', label: 'Browse Market' },
+                                { href: '/login', label: 'Log In' },
+                                { href: '/signup?role=student_seller', label: 'Become a Seller' },
+                            ].map(l => <li key={l.href}><Link href={l.href} className="text-white/35 hover:text-[#FF6200] font-bold text-sm transition-colors">{l.label}</Link></li>)}
                         </ul>
                     </div>
                     <div>
-                        <h4 className="text-white font-black uppercase tracking-widest mb-6 border-b border-white/10 pb-4 inline-block text-[11px]">Legal</h4>
+                        <h4 className="text-white/50 font-black uppercase tracking-[0.25em] mb-6 text-[10px]">Legal</h4>
                         <ul className="space-y-4">
-                            <li><Link href="/terms" className="text-white/50 hover:text-[#FF6200] font-bold text-[13px] transition-colors">Terms of Service</Link></li>
-                            <li><Link href="/privacy" className="text-white/50 hover:text-[#FF6200] font-bold text-[13px] transition-colors">Privacy Policy</Link></li>
-                            <li><a href="mailto:support@marketbridge.com.ng" className="text-white/50 hover:text-[#FF6200] font-bold text-[13px] transition-colors">Support</a></li>
+                            {[
+                                { href: '/terms', label: 'Terms of Service' },
+                                { href: '/privacy', label: 'Privacy Policy' },
+                                { href: 'mailto:support@marketbridge.com.ng', label: 'Support', external: true },
+                            ].map(l => <li key={l.label}>
+                                {l.external
+                                    ? <a href={l.href} className="text-white/35 hover:text-[#FF6200] font-bold text-sm transition-colors">{l.label}</a>
+                                    : <Link href={l.href} className="text-white/35 hover:text-[#FF6200] font-bold text-sm transition-colors">{l.label}</Link>
+                                }
+                            </li>)}
                         </ul>
                     </div>
                 </div>
-                <div className="max-w-7xl mx-auto border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <p className="text-white/30 text-[10px] font-bold uppercase tracking-widest">© {new Date().getFullYear()} MarketBridge LLC. All rights reserved.</p>
+                <div className="max-w-7xl mx-auto border-t border-white/[0.05] pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <p className="text-white/18 text-[11px] font-bold uppercase tracking-widest">© {new Date().getFullYear()} MarketBridge LLC. All rights reserved.</p>
+                    <p className="text-white/15 text-[11px] font-medium">Built for campus. Powered by Paystack.</p>
                 </div>
             </footer>
         </div>
     );
 }
-
