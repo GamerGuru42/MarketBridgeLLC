@@ -1,7 +1,7 @@
 import { streamText, tool } from 'ai';
 import { google } from '@ai-sdk/google';
 import { z } from 'zod';
-import { COMPREHENSIVE_MOCK_LISTINGS } from '@/lib/mockData';
+import { createClient } from '@/lib/supabase/server';
 
 export const maxDuration = 30;
 
@@ -15,7 +15,10 @@ export async function POST(req: Request) {
 
     const { messages } = await req.json();
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore — @ai-sdk/google v3 LanguageModelV3 vs ai package LanguageModelV1 type mismatch (pre-existing)
     const result = streamText({
+        // @ts-ignore
         model: google('gemini-1.5-flash'),
         system: `You are Sage, the professional, witty, and highly capable AI assistant for MarketBridge.
 You are dealing with university students buying and selling items in Abuja, Nigeria.
@@ -38,20 +41,32 @@ You are dealing with university students buying and selling items in Abuja, Nige
                     query: z.string().describe('The search query or category'),
                 }),
                 execute: async ({ query }) => {
-                    const terms = query.toLowerCase().split(' ').filter(t => t.length > 2);
-                    const results = COMPREHENSIVE_MOCK_LISTINGS.filter(p => {
-                        const text = `${p.title} ${p.category} ${p.description}`.toLowerCase();
-                        return terms.some(t => text.includes(t)) || query.toLowerCase() === p.category.toLowerCase();
-                    }).map(p => ({
-                        id: p._id,
-                        title: p.title,
-                        price: p.price,
-                        category: p.category,
-                        location: p.location,
-                        image: p.images[0] || null,
-                    })).slice(0, 4);
+                    try {
+                        const supabase = await createClient();
+                        const terms = query.toLowerCase().split(' ').filter(t => t.length > 2);
+                        const searchTerm = terms.join(' | ') || query;
 
-                    return results;
+                        const { data, error } = await supabase
+                            .from('listings')
+                            .select('id, title, price, category, location, images, description')
+                            .eq('status', 'active')
+                            .or(`title.ilike.%${query}%,category.ilike.%${query}%,description.ilike.%${query}%`)
+                            .limit(4);
+
+                        if (error) throw error;
+
+                        return (data || []).map(p => ({
+                            id: p.id,
+                            title: p.title,
+                            price: p.price,
+                            category: p.category,
+                            location: p.location,
+                            image: p.images?.[0] || null,
+                        }));
+                    } catch (err) {
+                        console.error('Product search error:', err);
+                        return [];
+                    }
                 },
             }),
             getProductDetails: tool({
@@ -60,17 +75,31 @@ You are dealing with university students buying and selling items in Abuja, Nige
                     productName: z.string().describe('The name of the product to view'),
                 }),
                 execute: async ({ productName }) => {
-                    const p = COMPREHENSIVE_MOCK_LISTINGS.find(p => p.title.toLowerCase().includes(productName.toLowerCase()));
-                    if (!p) return null;
-                    return {
-                        id: p._id,
-                        title: p.title,
-                        price: p.price,
-                        category: p.category,
-                        location: p.location,
-                        image: p.images[0] || null,
-                        description: p.description
-                    };
+                    try {
+                        const supabase = await createClient();
+                        const { data, error } = await supabase
+                            .from('listings')
+                            .select('id, title, price, category, location, images, description')
+                            .eq('status', 'active')
+                            .ilike('title', `%${productName}%`)
+                            .limit(1)
+                            .single();
+
+                        if (error || !data) return null;
+
+                        return {
+                            id: data.id,
+                            title: data.title,
+                            price: data.price,
+                            category: data.category,
+                            location: data.location,
+                            image: data.images?.[0] || null,
+                            description: data.description
+                        };
+                    } catch (err) {
+                        console.error('Product detail fetch error:', err);
+                        return null;
+                    }
                 }
             }),
             escalateSupport: tool({
@@ -89,5 +118,7 @@ You are dealing with university students buying and selling items in Abuja, Nige
         },
     });
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore — ai SDK v3 type mismatch with @ai-sdk/google, runtime is correct
     return result.toDataStreamResponse();
 }

@@ -15,7 +15,6 @@ import { supabase } from '@/lib/supabase';
 import { startConversation } from '@/lib/chat';
 import { ReviewsSection } from '@/components/ReviewsSection';
 import { cn } from '@/lib/utils';
-import { COMPREHENSIVE_MOCK_LISTINGS } from '@/lib/mockData';
 import { ListingMap } from '@/components/ListingMap';
 import { ABUJA_UNIVERSITIES } from '@/lib/location';
 import {
@@ -89,6 +88,8 @@ export default function ListingDetailContent() {
     const [isSubmittingOffer, setIsSubmittingOffer] = useState(false);
     const [activeOffer, setActiveOffer] = useState<any>(null);
 
+    const [sellerRating, setSellerRating] = useState<{ avg: number; count: number } | null>(null);
+
     useEffect(() => {
         if (params?.id) {
             fetchListing();
@@ -106,6 +107,22 @@ export default function ListingDetailContent() {
             };
         }
     }, [params?.id, user]);
+
+    // Fetch seller rating after listing loads
+    useEffect(() => {
+        if (!listing?.dealer?.id) return;
+        const fetchRating = async () => {
+            const { data } = await supabase
+                .from('reviews')
+                .select('rating')
+                .eq('seller_id', listing.dealer.id);
+            if (data && data.length > 0) {
+                const avg = data.reduce((s, r) => s + r.rating, 0) / data.length;
+                setSellerRating({ avg: Math.round(avg * 10) / 10, count: data.length });
+            }
+        };
+        fetchRating();
+    }, [listing?.dealer?.id]);
 
     const fetchActiveOffer = async () => {
         if (!user || !params?.id) return;
@@ -169,41 +186,8 @@ export default function ListingDetailContent() {
         setLoading(true);
         setError('');
         try {
-            // Handle mock data request explicitly
+            // Real data only — no mock fallback
             const listingId = Array.isArray(params?.id) ? params?.id[0] : params?.id;
-
-            // Check comprehensive mock data first
-            const mockItem = COMPREHENSIVE_MOCK_LISTINGS.find(item => item._id === listingId);
-
-            if (mockItem) {
-                const mappedListing: Listing = {
-                    id: mockItem._id,
-                    title: mockItem.title,
-                    description: mockItem.description,
-                    price: mockItem.price,
-                    category: mockItem.category,
-                    location: mockItem.location,
-                    dealer_id: mockItem.dealer._id,
-                    created_at: new Date().toISOString(),
-                    images: mockItem.images,
-                    is_verified_listing: Math.random() > 0.7,
-                    condition: 'Brand New', // Default for mock
-                    make: mockItem.category, // Fallback
-                    model: 'Standard Model', // Fallback
-                    dealer: {
-                        id: mockItem.dealer._id,
-                        display_name: mockItem.dealer.displayName,
-                        is_verified: mockItem.dealer.isVerified,
-                        store_type: mockItem.dealer.shopType,
-                        phone_number: '08123456789',
-                        subscription_plan: 'starter'
-                    }
-                };
-                setListing(mappedListing);
-                setLoading(false);
-                return;
-            }
-
             const { data, error } = await supabase
                 .from('listings')
                 .select(`
@@ -262,12 +246,6 @@ export default function ListingDetailContent() {
         }
 
         if (!listing) return;
-
-        // Mock Handling
-        if (listing.id.startsWith('mock-') || listing.dealer.id.startsWith('mock_')) {
-            alert('DEMO MODE: Secure Chat Interface initialized. (This is a mock listing, so no real chat will be created).');
-            return;
-        }
 
         setActionLoading(true);
         try {
@@ -545,6 +523,8 @@ export default function ListingDetailContent() {
                                 {listing.images.map((img, idx) => (
                                     <button
                                         key={idx}
+                                        title={`View image ${idx + 1} of ${listing.images.length}`}
+                                        aria-label={`View image ${idx + 1}`}
                                         onClick={() => setSelectedImage(idx)}
                                         className={cn(
                                             "aspect-square rounded-2xl overflow-hidden border transition-all relative group",
@@ -711,7 +691,9 @@ export default function ListingDetailContent() {
                                     <div className="flex items-center gap-4">
                                         <div className="flex items-center gap-1.5">
                                             <Star className="h-3 w-3 fill-[#FF6200] text-[#FF6200]" />
-                                            <span className="text-[10px] font-black italic">4.9 RATING</span>
+                                            <span className="text-[10px] font-black italic">
+                                                {sellerRating ? `${sellerRating.avg} (${sellerRating.count} reviews)` : 'New Seller'}
+                                            </span>
                                         </div>
                                         <span className="w-1 h-1 rounded-full bg-zinc-800" />
                                         <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">{listing.dealer.store_type || 'DIGITAL'} HUB</div>

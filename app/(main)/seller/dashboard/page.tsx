@@ -119,6 +119,7 @@ export default function SellerDashboardPage() {
     const [offerStats, setOfferStats] = useState<OfferStats>({ totalPending: 0 });
     const [processingOffer, setProcessingOffer] = useState<string | null>(null);
     const [referralStats, setReferralStats] = useState({ totalInvited: 0, coinsEarned: 0 });
+    const [revenueTrend, setRevenueTrend] = useState<string>('—');
 
     const fetchBankDetails = async () => {
         if (!user) return;
@@ -347,9 +348,44 @@ export default function SellerDashboardPage() {
 
             if (financialData) {
                 const totalSellerEarnings = financialData.reduce((sum, t) => sum + Number(t.amount_seller), 0);
+                const finalRevenue = totalSellerEarnings || totalRevenue;
+
+                // Compute real month-over-month trend
+                const now = new Date();
+                const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+                const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
+                const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString();
+
+                const { data: lastMonthData } = await supabase
+                    .from('sales_transactions')
+                    .select('amount_seller')
+                    .eq('seller_id', user!.id)
+                    .eq('status', 'success')
+                    .gte('created_at', startOfLastMonth)
+                    .lte('created_at', endOfLastMonth);
+
+                const { data: thisMonthData } = await supabase
+                    .from('sales_transactions')
+                    .select('amount_seller')
+                    .eq('seller_id', user!.id)
+                    .eq('status', 'success')
+                    .gte('created_at', startOfThisMonth);
+
+                const lastMonthRev = lastMonthData?.reduce((s, t) => s + Number(t.amount_seller), 0) || 0;
+                const thisMonthRev = thisMonthData?.reduce((s, t) => s + Number(t.amount_seller), 0) || 0;
+
+                if (lastMonthRev > 0) {
+                    const pct = ((thisMonthRev - lastMonthRev) / lastMonthRev) * 100;
+                    setRevenueTrend(`${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%`);
+                } else if (thisMonthRev > 0) {
+                    setRevenueTrend('+100%');
+                } else {
+                    setRevenueTrend('—');
+                }
+
                 setStats(prev => ({
                     ...prev,
-                    totalRevenue: totalSellerEarnings || totalRevenue // Fallback to orders revenue if no transactions yet
+                    totalRevenue: finalRevenue
                 }));
             }
         } catch (err) {
@@ -705,7 +741,7 @@ export default function SellerDashboardPage() {
                 {/* Performance Metrics */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {[
-                        { label: "Revenue Cycle", val: `₦${stats.totalRevenue.toLocaleString()}`, icon: DollarSign, trend: "+12.5%" },
+                        { label: "Revenue Cycle", val: `₦${stats.totalRevenue.toLocaleString()}`, icon: DollarSign, trend: revenueTrend },
                         { label: "Active Orders", val: stats.totalOrders, icon: ShoppingBag, trend: "Stable" },
                         { label: "Pending Verification", val: stats.pendingOrders, icon: Clock, color: "text-[#FF6200]" },
                         { label: "Success Rate", val: `${Math.round((stats.completedOrders / (stats.totalOrders || 1)) * 100)}%`, icon: TrendingUp, color: "text-white" }
@@ -888,8 +924,8 @@ export default function SellerDashboardPage() {
                                                     </>
                                                 )}
                                                 <Button
-                                                    onClick={() => {
-                                                        const conversationId = startConversation(user!.id, offer.buyer_id, offer.listing_id);
+                                                    onClick={async () => {
+                                                        const conversationId = await startConversation(user!.id, offer.buyer_id, offer.listing_id);
                                                         router.push(`/chats/${conversationId}`);
                                                     }}
                                                     variant="ghost"

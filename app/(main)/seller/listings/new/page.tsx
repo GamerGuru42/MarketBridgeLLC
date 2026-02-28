@@ -99,7 +99,7 @@ export default function NewListingPage() {
                     location: formData.location || null,
                     images: validImages,
                     videos: videoUrls.length > 0 ? videoUrls : null,
-                    status: 'hidden_beta', // BETA OVERRIDE: Keep listings hidden from public until launch
+                    status: 'active',
                 })
                 .select()
                 .single();

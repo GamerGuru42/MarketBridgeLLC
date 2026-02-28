@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Logo } from '@/components/logo';
 import { normalizeIdentifier } from '@/lib/auth/utils';
-import { Loader2, ArrowLeft, ArrowRight, Mail, Eye, EyeOff, ShieldCheck, User as UserIcon, Lock, Sparkles } from 'lucide-react';
+import { Loader2, ArrowLeft, ArrowRight, Mail, Eye, EyeOff, ShieldCheck, User as UserIcon, Lock, Sparkles, Globe } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/contexts/ToastContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -35,7 +35,7 @@ function SignupContent() {
     const supabase = createClient();
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { refreshUser } = useAuth();
+    const { refreshUser, signInWithGoogle } = useAuth();
     const role = searchParams?.get('role') || 'buyer';
     const { toast } = useToast();
 
@@ -54,6 +54,17 @@ function SignupContent() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const handleGoogleAuth = async () => {
+        setIsLoading(true);
+        try {
+            await signInWithGoogle(`${window.location.origin}/auth/callback?next=/listings`);
+        } catch (err: any) {
+            console.error('Google signup error:', err);
+            toast(err.message || 'Google signup failed', 'error');
+            setIsLoading(false);
+        }
     };
 
     const handleSignup = async (e: React.FormEvent) => {
@@ -88,16 +99,17 @@ function SignupContent() {
             if (authError) throw authError;
             if (!authData.user) throw new Error('Signup failed - no user returned');
 
-            // 2. Create profile in users table
-            const { error: profileError } = await supabase.from('users').insert({
+            // 2. Safely upsert profile — the DB trigger `handle_new_user` may have already
+            //    created a row. Use upsert so we don't crash with a duplicate PK error.
+            const { error: profileError } = await supabase.from('users').upsert({
                 id: authData.user.id,
                 email: normalizedEmail,
+                display_name: `${formData.firstName} ${formData.lastName}`.trim(),
                 first_name: formData.firstName,
                 last_name: formData.lastName,
                 role: role,
-                status: 'pending',
                 email_verified: false
-            });
+            }, { onConflict: 'id' });
 
             if (profileError) throw profileError;
 
@@ -274,6 +286,13 @@ function SignupContent() {
                                         Next Step <ArrowRight className="h-4 w-4" />
                                     </Button>
                                 </div>
+                                <div className="relative py-2 flex items-center justify-center">
+                                    <div className="absolute inset-x-0 h-px bg-white/10"></div>
+                                    <span className="relative bg-black px-4 text-[9px] font-black uppercase tracking-[0.3em] text-[#FF6200]">Or Continue With</span>
+                                </div>
+                                <Button type="button" onClick={handleGoogleAuth} disabled={isLoading} className="w-full h-14 bg-white text-black font-black uppercase tracking-widest rounded-2xl border-none transition-all flex items-center justify-center gap-3 hover:bg-zinc-200">
+                                    <Globe className="h-5 w-5" /> Google Sign Up
+                                </Button>
                             </div>
                         )}
 
