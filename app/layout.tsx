@@ -47,9 +47,8 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/marketbridge_logo.png', type: 'image/png' },
     ],
-    apple: '/marketbridge_logo.png',
+    apple: '/favicon.svg',
   },
 
   openGraph: {

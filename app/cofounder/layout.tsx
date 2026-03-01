@@ -2,12 +2,14 @@
 
 import React from 'react';
 import { Sidebar } from '@/components/sidebar';
-import { Activity, Users, ShieldAlert } from 'lucide-react';
+import { Activity, Users, ShieldAlert, MessageSquare, LayoutDashboard } from 'lucide-react';
 
 const cofounderItems = [
-    { label: 'Operational Dashboard', href: '/cofounder/dashboard', icon: Activity },
-    { label: 'User Growth', href: '/cofounder/users', icon: Users },
-    { label: 'Executive Chat', href: '/admin/executive-chat', icon: ShieldAlert },
+    { label: 'Strategic Root', href: '/cofounder', icon: LayoutDashboard },
+    { label: 'Operational Hub', href: '/admin/operations', icon: Activity },
+    { label: 'User Statistics', href: '/admin/users', icon: Users },
+    { label: 'Executive Pulse', href: '/admin/ceo', icon: Activity },
+    { label: 'Secure Terminal', href: '/admin/executive-chat', icon: MessageSquare },
 ];
 
 export default function CofounderLayout({

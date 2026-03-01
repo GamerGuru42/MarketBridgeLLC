@@ -2,15 +2,16 @@
 
 import React from 'react';
 import { Sidebar } from '@/components/sidebar';
-import { LayoutDashboard, Users, AlertTriangle, ShieldCheck, Truck } from 'lucide-react';
+import { LayoutDashboard, Users, AlertTriangle, ShieldCheck, Truck, MessageSquare } from 'lucide-react';
 
 const cooItems = [
     { label: 'Operations Root', href: '/coo', icon: LayoutDashboard },
-    { label: 'Real-time Analytics', href: '/admin/operations', icon: LayoutDashboard },
-    { label: 'Verifications', href: '/admin/operations/verifications', icon: ShieldCheck },
-    { label: 'Logistics Control', href: '/coo/logistics', icon: Truck },
-    { label: 'Active Disputes', href: '/admin/disputes', icon: AlertTriangle },
-    { label: 'Executive Dashboard', href: '/admin/executive-chat', icon: Users },
+    { label: 'Exchange Intelligence', href: '/admin/operations', icon: LayoutDashboard },
+    { label: 'Entity Validations', href: '/admin/operations/verifications', icon: ShieldCheck },
+    { label: 'Order Hub', href: '/admin/orders', icon: Truck },
+    { label: 'Conflict Resolution', href: '/admin/disputes', icon: AlertTriangle },
+    { label: 'Vision Control', href: '/admin/ceo', icon: Users },
+    { label: 'Management Uplink', href: '/admin/executive-chat', icon: MessageSquare },
 ];
 
 export default function COOLayout({

@@ -461,10 +461,13 @@ export default function HomePage() {
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[#FF6200]/10 blur-[160px] rounded-full pointer-events-none" />
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[1px] bg-gradient-to-r from-transparent via-[#FF6200]/20 to-transparent" />
                     <div className="max-w-3xl mx-auto text-center relative z-10 flex flex-col items-center">
-                        <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white mb-6 italic leading-[0.88]">
-                            Stop Waiting.<br />
-                            <span className="text-[#FF6200] drop-shadow-[0_0_40px_rgba(255,98,0,0.45)]">Start Trading.</span>
-                        </h2>
+                        <div className="flex flex-col md:flex-row items-center gap-4 justify-center mb-8">
+                            <Logo size="xl" />
+                            <h2 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter uppercase text-center md:text-left">
+                                Stop Waiting.<br />
+                                <span className="text-[#FF6200] drop-shadow-[0_0_40px_rgba(255,98,0,0.45)]">Start Trading.</span>
+                            </h2>
+                        </div>
                         <p className="text-lg text-white/38 font-medium mb-10 max-w-md mx-auto leading-relaxed">
                             Join thousands of students securely buying and selling on campus right now.
                         </p>

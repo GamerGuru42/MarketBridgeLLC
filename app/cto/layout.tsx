@@ -2,16 +2,16 @@
 
 import React from 'react';
 import { Sidebar } from '@/components/sidebar';
-import { LayoutDashboard, Database, ShieldAlert, Cpu, HardDrive, Zap } from 'lucide-react';
+import { LayoutDashboard, Database, ShieldAlert, Cpu, HardDrive, Zap, MessageSquare } from 'lucide-react';
 
 const ctoItems = [
     { label: 'System Root', href: '/cto', icon: LayoutDashboard },
-    { label: 'Infrastructure', href: '/cto/infrastructure', icon: Cpu },
-    { label: 'Storage & Media', href: '/cto/storage', icon: HardDrive },
-    { label: 'DB Performance', href: '/admin/page', icon: Database },
-    { label: 'Security Center', href: '/cto/security', icon: ShieldAlert },
-    { label: 'API Latency', href: '/cto/api', icon: Zap },
-    { label: 'Executive Dashboard', href: '/admin/executive-chat', icon: LayoutDashboard },
+    { label: 'Cloud Infrastructure', href: '/admin/technical', icon: Cpu },
+    { label: 'Asset Diagnostics', href: '/admin/listings', icon: HardDrive },
+    { label: 'Platform Performance', href: '/admin', icon: Database },
+    { label: 'System Guard', href: '/admin/technical', icon: ShieldAlert },
+    { label: 'Vision Control', href: '/admin/ceo', icon: LayoutDashboard },
+    { label: 'Executive Pulse', href: '/admin/executive-chat', icon: MessageSquare },
 ];
 
 export default function CTOLayout({
