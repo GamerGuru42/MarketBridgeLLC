@@ -24,7 +24,7 @@ const StepProgress = ({ currentStep }: { currentStep: string }) => {
                 <React.Fragment key={s}>
                     <div className="flex flex-col items-center gap-2">
                         <div className={`h-2 w-12 rounded-full transition-all duration-500 ${i <= activeIdx ? 'bg-[#FF6200] shadow-[0_0_10px_rgba(255,98,0,0.5)]' : 'bg-zinc-800'}`} />
-                        <span className={`text-[8px] font-black uppercase tracking-widest ${i <= activeIdx ? 'text-[#FF6200]' : 'text-white/20'}`}>{s}</span>
+                        <span className={`text-[8px] font-black uppercase tracking-widest ${i <= activeIdx ? 'text-[#FF6200]' : 'text-zinc-900/20'}`}>{s}</span>
                     </div>
                     {i < steps.length - 1 && <div className="h-[1px] w-4 bg-zinc-900 mb-4" />}
                 </React.Fragment>
@@ -160,18 +160,18 @@ function SignupContent() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center py-10 sm:py-20 px-4 bg-black relative">
+        <div className="min-h-screen flex items-center justify-center py-10 sm:py-20 px-4 bg-[#FAFAFA] relative">
             <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#FF6200]/5 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#FF6200]/10 blur-[100px] rounded-full pointer-events-none" />
 
-            <Card className="w-full max-w-2xl glass-card border-none rounded-[3rem] p-6 sm:p-12 text-white shadow-2xl relative z-10 transition-all">
+            <Card className="w-full max-w-2xl glass-card border-none rounded-[3rem] p-6 sm:p-12 text-zinc-900 shadow-2xl relative z-10 transition-all">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-[#FF6200]/50 to-transparent" />
 
                 <div className="flex justify-start mb-8">
                     <Button
                         asChild
                         variant="ghost"
-                        className="text-white/40 hover:text-[#FF6200] flex items-center gap-2 px-0 transition-colors group"
+                        className="text-zinc-500 hover:text-[#FF6200] flex items-center gap-2 px-0 transition-colors group"
                     >
                         <Link href="/">
                             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
@@ -187,7 +187,7 @@ function SignupContent() {
                     <CardTitle className="text-4xl sm:text-5xl font-black uppercase italic tracking-tighter mb-4 leading-none">
                         Create <span className="text-[#FF6200]">Account</span>
                     </CardTitle>
-                    <CardDescription className="text-white font-medium uppercase tracking-widest text-[10px] bg-white/5 py-2 px-6 rounded-full inline-block">
+                    <CardDescription className="text-zinc-900 font-medium uppercase tracking-widest text-[10px] bg-zinc-100 py-2 px-6 rounded-full inline-block">
                         MarketBridge Campus Access
                     </CardDescription>
                 </CardHeader>
@@ -206,9 +206,9 @@ function SignupContent() {
                                     <div
                                         key={item.id}
                                         onClick={() => setRole(item.id as any)}
-                                        className={`glass-card p-6 rounded-3xl border transition-all cursor-pointer text-center group ${role === item.id ? 'border-[#FF6200] bg-[#FF6200]/5' : 'border-white/5 hover:border-white/20'}`}
+                                        className={`glass-card p-6 rounded-3xl border transition-all cursor-pointer text-center group ${role === item.id ? 'border-[#FF6200] bg-[#FF6200]/5' : 'border-zinc-200 hover:border-zinc-300'}`}
                                     >
-                                        <div className={`h-12 w-12 rounded-2xl flex items-center justify-center mx-auto mb-4 transition-transform group-hover:scale-110 ${role === item.id ? 'bg-[#FF6200] text-black' : 'bg-white/5 text-white/40'}`}>
+                                        <div className={`h-12 w-12 rounded-2xl flex items-center justify-center mx-auto mb-4 transition-transform group-hover:scale-110 ${role === item.id ? 'bg-[#FF6200] text-black' : 'bg-zinc-100 text-zinc-500'}`}>
                                             <item.icon className="h-6 w-6" />
                                         </div>
                                         <h3 className="text-sm font-black uppercase italic tracking-tight mb-1">{item.title}</h3>
@@ -230,13 +230,13 @@ function SignupContent() {
                                 <div className="space-y-2">
                                     <label className="text-[10px] uppercase font-black tracking-widest text-[#FF6200] ml-2">First Name</label>
                                     <div className="relative group">
-                                        <UserIcon className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-[#FF6200] transition-colors" />
+                                        <UserIcon className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-900/20 group-focus-within:text-[#FF6200] transition-colors" />
                                         <input
                                             name="firstName"
                                             value={formData.firstName}
                                             onChange={handleChange}
                                             required
-                                            className="w-full h-14 pl-14 pr-6 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all hover:bg-white/[0.05]"
+                                            className="w-full h-14 pl-14 pr-6 bg-white/[0.03] border border-zinc-200 rounded-2xl text-zinc-900 placeholder:text-zinc-900/20 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all hover:bg-white/[0.05]"
                                             placeholder="Emeka"
                                         />
                                     </div>
@@ -244,13 +244,13 @@ function SignupContent() {
                                 <div className="space-y-2">
                                     <label className="text-[10px] uppercase font-black tracking-widest text-[#FF6200] ml-2">Last Name</label>
                                     <div className="relative group">
-                                        <UserIcon className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-[#FF6200] transition-colors" />
+                                        <UserIcon className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-900/20 group-focus-within:text-[#FF6200] transition-colors" />
                                         <input
                                             name="lastName"
                                             value={formData.lastName}
                                             onChange={handleChange}
                                             required
-                                            className="w-full h-14 pl-14 pr-6 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all hover:bg-white/[0.05]"
+                                            className="w-full h-14 pl-14 pr-6 bg-white/[0.03] border border-zinc-200 rounded-2xl text-zinc-900 placeholder:text-zinc-900/20 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all hover:bg-white/[0.05]"
                                             placeholder="Okonkwo"
                                         />
                                     </div>
@@ -260,14 +260,14 @@ function SignupContent() {
                             <div className="space-y-2">
                                 <label className="text-[10px] uppercase font-black tracking-widest text-[#FF6200] ml-2">Email Address</label>
                                 <div className="relative group">
-                                    <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-[#FF6200] transition-colors" />
+                                    <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-900/20 group-focus-within:text-[#FF6200] transition-colors" />
                                     <input
                                         name="email"
                                         type="email"
                                         value={formData.email}
                                         onChange={handleChange}
                                         required
-                                        className="w-full h-14 pl-14 pr-6 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all hover:bg-white/[0.05]"
+                                        className="w-full h-14 pl-14 pr-6 bg-white/[0.03] border border-zinc-200 rounded-2xl text-zinc-900 placeholder:text-zinc-900/20 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all hover:bg-white/[0.05]"
                                         placeholder="operator@marketbridge.com.ng"
                                     />
                                 </div>
@@ -277,17 +277,17 @@ function SignupContent() {
                                 <div className="space-y-2">
                                     <label className="text-[10px] uppercase font-black tracking-widest text-[#FF6200] ml-2">Password</label>
                                     <div className="relative group">
-                                        <Lock className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-[#FF6200] transition-colors" />
+                                        <Lock className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-900/20 group-focus-within:text-[#FF6200] transition-colors" />
                                         <input
                                             name="password"
                                             type={showPassword ? 'text' : 'password'}
                                             value={formData.password}
                                             onChange={handleChange}
                                             required
-                                            className="w-full h-14 pl-14 pr-14 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all hover:bg-white/[0.05]"
+                                            className="w-full h-14 pl-14 pr-14 bg-white/[0.03] border border-zinc-200 rounded-2xl text-zinc-900 placeholder:text-zinc-900/20 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all hover:bg-white/[0.05]"
                                             placeholder="••••••••"
                                         />
-                                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-6 top-1/2 -translate-y-1/2 text-white/20 hover:text-[#FF6200] transition-colors">
+                                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-6 top-1/2 -translate-y-1/2 text-zinc-900/20 hover:text-[#FF6200] transition-colors">
                                             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                         </button>
                                     </div>
@@ -295,14 +295,14 @@ function SignupContent() {
                                 <div className="space-y-2">
                                     <label className="text-[10px] uppercase font-black tracking-widest text-[#FF6200] ml-2">Confirm Password</label>
                                     <div className="relative group">
-                                        <ShieldCheck className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-[#FF6200] transition-colors" />
+                                        <ShieldCheck className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-900/20 group-focus-within:text-[#FF6200] transition-colors" />
                                         <input
                                             name="passwordConfirm"
                                             type={showPassword ? 'text' : 'password'}
                                             value={formData.passwordConfirm}
                                             onChange={handleChange}
                                             required
-                                            className="w-full h-14 pl-14 pr-6 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all hover:bg-white/[0.05]"
+                                            className="w-full h-14 pl-14 pr-6 bg-white/[0.03] border border-zinc-200 rounded-2xl text-zinc-900 placeholder:text-zinc-900/20 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold transition-all hover:bg-white/[0.05]"
                                             placeholder="••••••••"
                                         />
                                     </div>
@@ -310,7 +310,7 @@ function SignupContent() {
                             </div>
 
                             <div className="pt-4 flex justify-between">
-                                <Button type="button" onClick={() => setCurrentStep('role')} variant="ghost" className="text-white/40 hover:text-white font-black uppercase tracking-widest text-[10px]">
+                                <Button type="button" onClick={() => setCurrentStep('role')} variant="ghost" className="text-zinc-500 hover:text-zinc-900 font-black uppercase tracking-widest text-[10px]">
                                     <ArrowLeft className="mr-2 h-4 w-4" /> Back
                                 </Button>
                                 <Button type="submit" className="h-14 px-8 bg-[#FF6200] hover:bg-[#FF8533] text-black font-black uppercase tracking-widest rounded-2xl border-none transition-all flex items-center gap-3">
@@ -321,8 +321,8 @@ function SignupContent() {
                             {role === 'buyer' && (
                                 <>
                                     <div className="relative py-2 flex items-center justify-center">
-                                        <div className="absolute inset-x-0 h-px bg-white/10"></div>
-                                        <span className="relative bg-black px-4 text-[9px] font-black uppercase tracking-[0.3em] text-[#FF6200]">Or Continue With</span>
+                                        <div className="absolute inset-x-0 h-px bg-zinc-100"></div>
+                                        <span className="relative bg-[#FAFAFA] px-4 text-[9px] font-black uppercase tracking-[0.3em] text-[#FF6200]">Or Continue With</span>
                                     </div>
                                     <Button type="button" onClick={handleGoogleAuth} disabled={isLoading} className="w-full h-14 bg-white text-black font-black uppercase tracking-widest rounded-2xl border-none transition-all flex items-center justify-center gap-3 hover:bg-zinc-200">
                                         <Globe className="h-5 w-5" /> Google Sign Up
@@ -335,34 +335,34 @@ function SignupContent() {
                     {currentStep === 'terms' && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <div className="space-y-6">
-                                <div className="glass-card p-6 sm:p-8 rounded-[2rem] border border-white/5 text-center bg-gradient-to-b from-[#FF6200]/5 to-transparent relative overflow-hidden">
+                                <div className="glass-card p-6 sm:p-8 rounded-[2rem] border border-zinc-200 text-center bg-gradient-to-b from-[#FF6200]/5 to-transparent relative overflow-hidden">
                                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF6200]/20 to-transparent" />
                                     <Sparkles className="h-6 w-6 text-[#FF6200] mx-auto mb-4" />
                                     <p className="text-[10px] uppercase font-black text-[#FF6200] mb-2 tracking-[0.2em]">Almost Done</p>
-                                    <p className="text-white/60 text-xs font-bold leading-relaxed">
+                                    <p className="text-zinc-900/60 text-xs font-bold leading-relaxed">
                                         Campus selling requires student verification—complete it in your dashboard to start listing.
                                         By creating this account, you agree to our fair-trade policies and campus safety rules.
                                     </p>
                                 </div>
 
-                                <div className="flex items-start gap-4 p-6 bg-zinc-950/50 rounded-3xl border border-white/5">
+                                <div className="flex items-start gap-4 p-6 bg-zinc-950/50 rounded-3xl border border-zinc-200">
                                     <div className="pt-1">
                                         <input
                                             type="checkbox"
                                             id="terms"
                                             checked={agreedToTerms}
                                             onChange={(e) => setAgreedToTerms(e.target.checked)}
-                                            className="h-5 w-5 rounded-lg border-white/10 bg-black checked:bg-[#FF6200] checked:text-black focus:ring-[#FF6200]/50 transition-all cursor-pointer accent-[#FF6200]"
+                                            className="h-5 w-5 rounded-lg border-zinc-200 bg-[#FAFAFA] checked:bg-[#FF6200] checked:text-black focus:ring-[#FF6200]/50 transition-all cursor-pointer accent-[#FF6200]"
                                         />
                                     </div>
-                                    <label htmlFor="terms" className="text-[11px] text-white/70 font-bold leading-tight cursor-pointer">
-                                        I verify compliance with the <Link href="/terms" className="text-[#FF6200] hover:text-white underline decoration-[#FF6200]/40 decoration-1 underline-offset-4 transition-colors">Terms of Service</Link> & <Link href="/privacy" className="text-[#FF6200] hover:text-white underline decoration-[#FF6200]/40 decoration-1 underline-offset-4 transition-colors">Privacy Policy</Link>.
+                                    <label htmlFor="terms" className="text-[11px] text-zinc-900/70 font-bold leading-tight cursor-pointer">
+                                        I verify compliance with the <Link href="/terms" className="text-[#FF6200] hover:text-zinc-900 underline decoration-[#FF6200]/40 decoration-1 underline-offset-4 transition-colors">Terms of Service</Link> & <Link href="/privacy" className="text-[#FF6200] hover:text-zinc-900 underline decoration-[#FF6200]/40 decoration-1 underline-offset-4 transition-colors">Privacy Policy</Link>.
                                     </label>
                                 </div>
                             </div>
 
                             <div className="pt-4 flex justify-between">
-                                <Button type="button" onClick={() => setCurrentStep('profile')} variant="ghost" className="text-white/40 hover:text-white font-black uppercase tracking-widest text-[10px]">
+                                <Button type="button" onClick={() => setCurrentStep('profile')} variant="ghost" className="text-zinc-500 hover:text-zinc-900 font-black uppercase tracking-widest text-[10px]">
                                     <ArrowLeft className="mr-2 h-4 w-4" /> Back
                                 </Button>
                                 <Button type="submit" onClick={handleSignup} disabled={isLoading || !agreedToTerms} className="h-14 px-8 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest rounded-2xl shadow-[0_20px_40px_rgba(255,102,0,0.2)] border-none transition-all flex items-center gap-3">
@@ -375,7 +375,7 @@ function SignupContent() {
                     )}
 
                     <div className="text-center mt-6">
-                        <Link href="/login" className="text-xs text-white/50 hover:text-white transition-colors">
+                        <Link href="/login" className="text-xs text-zinc-600 hover:text-zinc-900 transition-colors">
                             Already have an account? Log In
                         </Link>
                     </div>
@@ -387,7 +387,7 @@ function SignupContent() {
 
 export default function SignupPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-black"><Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" /></div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#FAFAFA]"><Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" /></div>}>
             <SignupContent />
         </Suspense>
     );

@@ -7,48 +7,48 @@
 @layer base {
   :root {
     --radius: 1rem;
-    /* MarketBridge Revamp (Pure Black & Vibrant Orange #FF6200) */
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
+    /* MarketBridge Clean Light Theme (Chowdeck style) */
+    --background: 0 0% 98%; /* #FAFAFA */
+    --foreground: 0 0% 10%; /* #1A1A1A */
 
-    --card: 0 0% 6%;
-    --card-foreground: 0 0% 100%;
+    --card: 0 0% 100%; /* #FFF */
+    --card-foreground: 0 0% 10%;
 
-    --popover: 0 0% 6%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
 
-    --primary: 23 100% 50%;
-    --primary-foreground: 0 0% 0%;
+    --primary: 23 100% 50%; /* #FF6200 */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 10%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%; /* #F5F5F5 */
+    --secondary-foreground: 0 0% 10%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 0 0% 90%;
+    --muted-foreground: 0 0% 45%;
 
     --accent: 23 100% 50%;
-    --accent-foreground: 23 100% 50%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 23 100% 50%;
-    --destructive-foreground: 0 0% 0%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
     --ring: 23 100% 50%;
 
     --chart-1: 23 100% 50%;
-    --chart-2: 0 0% 100%;
+    --chart-2: 0 0% 20%;
     --chart-3: 0 0% 40%;
     --chart-4: 23 100% 60%;
     --chart-5: 23 100% 40%;
 
-    --sidebar-background: 0 0% 0%;
-    --sidebar-foreground: 0 0% 100%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 10%;
     --sidebar-primary: 23 100% 50%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 10%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 20%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 0 0% 10%;
+    --sidebar-border: 0 0% 90%;
     --sidebar-ring: 23 100% 50%;
   }
 
@@ -105,9 +105,7 @@
     overscroll-behavior-y: none;
     /* Prevents "bounce" refresh effect */
 
-    background-image:
-      linear-gradient(to right, hsla(0, 0%, 100%, 0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, hsla(0, 0%, 100%, 0.03) 1px, transparent 1px);
+    background-image: none;
     background-size: 50px 50px;
     background-attachment: fixed;
   }
@@ -122,11 +120,11 @@
 
 @layer utilities {
   .glass-card {
-    @apply bg-black/40 backdrop-blur-xl border border-white/10 shadow-2xl;
+    @apply bg-white/40 backdrop-blur-xl border border-black/5 shadow-xl;
   }
 
   .glass-border {
-    @apply border border-white/10;
+    @apply border border-black/5;
   }
 
   .text-glow {

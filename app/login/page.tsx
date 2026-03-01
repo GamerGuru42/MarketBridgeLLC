@@ -204,35 +204,35 @@ export default function LoginPage() {
     // UI Renders
     if (step === 'role') {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-black overflow-hidden relative">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#FF6200]/5 blur-[120px] rounded-full" />
+            <div className="min-h-screen flex items-center justify-center p-4 bg-[#FAFAFA] overflow-hidden relative">
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#FF6200]/10 blur-[100px] rounded-full" />
 
                 <div className="w-full max-w-5xl relative z-10">
                     <div className="text-center mb-16">
-                        <Link href="/" className="inline-flex items-center text-white/40 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest transition-colors py-3">
+                        <Link href="/" className="inline-flex items-center text-zinc-500 hover:text-zinc-900 mb-6 uppercase text-[10px] font-black tracking-widest transition-colors py-3">
                             <ArrowLeft className="mr-2 h-4 w-4" /> Return to Home
                         </Link>
-                        <h1 className="text-5xl font-black uppercase tracking-tighter text-white italic mb-4">Welcome Back</h1>
+                        <h1 className="text-5xl font-black uppercase tracking-tighter text-zinc-900 italic mb-4">Welcome Back</h1>
                         <p className="text-[#FF6200] font-medium uppercase tracking-[0.2em] text-[10px]">Select account type to continue</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 max-w-6xl mx-auto">
                         {[
-                            { id: 'student_buyer', title: 'Buyer', icon: User, desc: 'Student Account', color: 'text-white' },
+                            { id: 'student_buyer', title: 'Buyer', icon: User, desc: 'Student Account', color: 'text-zinc-900' },
                             { id: 'student_seller', title: 'Seller', icon: Briefcase, desc: 'Business Account', color: 'text-[#FF6200]' },
-                            { id: 'admin', title: 'Staff Admin', icon: ShieldCheck, desc: 'Management Access', color: 'text-white' },
+                            { id: 'admin', title: 'Staff Admin', icon: ShieldCheck, desc: 'Management Access', color: 'text-zinc-900' },
                             { id: 'ceo', title: 'Executive', icon: Lock, desc: 'Full Access', color: 'text-[#FF6200]' }
                         ].map(item => (
                             <Card
                                 key={item.id}
-                                className={`glass-card border-white/10 rounded-[2rem] p-8 text-center group cursor-pointer hover:bg-white/[0.08] hover:translate-y-[-8px] transition-all duration-500 ${item.id === 'ceo' ? 'border-[#FF6200]/50' : ''}`}
+                                className={`glass-card border-zinc-200 rounded-[2rem] p-8 text-center group cursor-pointer hover:bg-zinc-100 hover:translate-y-[-8px] transition-all duration-500 ${item.id === 'ceo' ? 'border-[#FF6200]/50' : ''}`}
                                 onClick={() => handleRoleSelect(item.id as any)}
                             >
                                 <div className={`h-16 w-16 glass-card rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform ${item.id === 'ceo' ? 'bg-[#FF6200]/10' : ''}`}>
                                     <item.icon className={`h-8 w-8 ${item.color}`} />
                                 </div>
-                                <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2 italic">{item.title}</h3>
-                                <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest">{item.desc}</p>
+                                <h3 className="text-lg font-black text-zinc-900 uppercase tracking-tight mb-2 italic">{item.title}</h3>
+                                <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">{item.desc}</p>
                             </Card>
                         ))}
                     </div>
@@ -243,23 +243,23 @@ export default function LoginPage() {
 
     if (step === 'admin-code') {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-black">
-                <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white relative overflow-hidden">
+            <div className="min-h-screen flex items-center justify-center p-4 bg-[#FAFAFA]">
+                <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-zinc-900 relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-[#FF6200]/50 shadow-[0_0_20px_#FF6200]" />
                     <CardHeader className="p-0 text-center mb-10">
-                        <Button variant="ghost" onClick={() => setStep('role')} className="text-white/30 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
+                        <Button variant="ghost" onClick={() => setStep('role')} className="text-zinc-500 hover:text-zinc-900 mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
                         <div className="mx-auto h-16 w-16 rounded-2xl border border-[#FF6200]/30 bg-[#FF6200]/5 flex items-center justify-center mb-6">
                             <Lock className="h-8 w-8 text-[#FF6200]" />
                         </div>
                         <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2 text-[#FF6200]">Restricted</CardTitle>
-                        <CardDescription className="text-white font-medium uppercase tracking-widest text-[10px]">Enter access key</CardDescription>
+                        <CardDescription className="text-zinc-900 font-medium uppercase tracking-widest text-[10px]">Enter access key</CardDescription>
                     </CardHeader>
                     <CardContent className="p-0 space-y-6 pb-8">
-                        {error && <div className="bg-[#FF6200]/10 text-white text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-[#FF6200]/20">{error}</div>}
+                        {error && <div className="bg-[#FF6200]/10 text-zinc-900 text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-[#FF6200]/20">{error}</div>}
                         <form onSubmit={handleAdminCodeSubmit} className="space-y-6">
                             <input
                                 type="password"
-                                className="w-full h-16 bg-black border border-white/5 rounded-2xl text-center tracking-[0.5em] font-mono text-xl focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 text-[#FF6200]"
+                                className="w-full h-16 bg-[#FAFAFA] border border-zinc-200 rounded-2xl text-center tracking-[0.5em] font-mono text-xl focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 text-[#FF6200]"
                                 value={accessCode}
                                 onChange={(e) => setAccessCode(e.target.value)}
                                 placeholder="••••••••"
@@ -277,34 +277,34 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-black overflow-hidden relative">
-            <div className="absolute top-[10%] left-[10%] w-[40%] h-[40%] bg-[#FF6200]/5 blur-[120px] rounded-full pointer-events-none" />
-            <div className="absolute bottom-[10%] right-[10%] w-[40%] h-[40%] bg-[#FF6200]/5 blur-[120px] rounded-full pointer-events-none" />
+        <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-[#FAFAFA] overflow-hidden relative">
+            <div className="absolute top-[10%] left-[10%] w-[40%] h-[40%] bg-[#FF6200]/10 blur-[100px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-[10%] right-[10%] w-[40%] h-[40%] bg-[#FF6200]/10 blur-[100px] rounded-full pointer-events-none" />
 
-            <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-white relative z-10">
+            <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-zinc-900 relative z-10">
                 <CardHeader className="p-0 mb-10 text-center">
-                    <Button variant="ghost" onClick={() => setStep('role')} className="text-white/30 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> Switch Role</Button>
+                    <Button variant="ghost" onClick={() => setStep('role')} className="text-zinc-500 hover:text-zinc-900 mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> Switch Role</Button>
                     <div className="flex justify-center mb-6">
                         <Logo showText={false} className="scale-125" />
                     </div>
                     <CardTitle className="text-4xl font-black uppercase italic tracking-tighter">MarketBridge</CardTitle>
-                    <CardDescription className="text-white font-medium uppercase tracking-widest text-[10px]">
+                    <CardDescription className="text-zinc-900 font-medium uppercase tracking-widest text-[10px]">
                         {role === 'admin' ? 'Secure Admin Login' : 'Secure Account Login'}
                     </CardDescription>
                 </CardHeader>
 
                 <CardContent className="p-0 space-y-8">
                     {error && (
-                        <div className="bg-black text-white text-[10px] font-black uppercase tracking-widest p-4 rounded-2xl text-center border-2 border-[#FF6200]">
+                        <div className="bg-[#FAFAFA] text-zinc-900 text-[10px] font-black uppercase tracking-widest p-4 rounded-2xl text-center border-2 border-[#FF6200]">
                             {error}
                         </div>
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-2">
-                            <label className="text-[10px] uppercase font-black tracking-widest text-white ml-2">Email Address</label>
+                            <label className="text-[10px] uppercase font-black tracking-widest text-zinc-900 ml-2">Email Address</label>
                             <div className="relative">
-                                <User className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-white/30" />
+                                <User className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500" />
                                 <input
                                     name="email"
                                     type="text"
@@ -312,18 +312,18 @@ export default function LoginPage() {
                                     onChange={handleChange}
                                     required
                                     placeholder={role === 'admin' ? "admin@marketbridge.io" : "user@example.com / phone"}
-                                    className="w-full h-16 pl-14 pr-6 bg-black border border-white/10 rounded-2xl text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
+                                    className="w-full h-16 pl-14 pr-6 bg-[#FAFAFA] border border-zinc-200 rounded-2xl text-zinc-900 placeholder:text-zinc-900/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-2">
                             <div className="flex justify-between items-center ml-2">
-                                <label className="text-[10px] uppercase font-black tracking-widest text-white">Password</label>
+                                <label className="text-[10px] uppercase font-black tracking-widest text-zinc-900">Password</label>
                                 <Link href="/forgot-password" className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] hover:opacity-80 transition-opacity">Reset Key</Link>
                             </div>
                             <div className="relative">
-                                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-white/30" />
+                                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500" />
                                 <input
                                     name="password"
                                     type={showPassword ? 'text' : 'password'}
@@ -331,12 +331,12 @@ export default function LoginPage() {
                                     onChange={handleChange}
                                     required
                                     placeholder="••••••••"
-                                    className="w-full h-16 pl-14 pr-16 bg-black border border-white/10 rounded-2xl text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
+                                    className="w-full h-16 pl-14 pr-16 bg-[#FAFAFA] border border-zinc-200 rounded-2xl text-zinc-900 placeholder:text-zinc-900/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors"
+                                    className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-900 transition-colors"
                                 >
                                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                 </button>
@@ -357,22 +357,22 @@ export default function LoginPage() {
                         <>
                             <div className="relative py-4 flex items-center justify-center">
                                 <div className="absolute inset-x-0 h-px bg-white/10"></div>
-                                <span className="relative bg-black px-4 text-[9px] font-black uppercase tracking-[0.3em] text-[#FF6200]">Social Login</span>
+                                <span className="relative bg-[#FAFAFA] px-4 text-[9px] font-black uppercase tracking-[0.3em] text-[#FF6200]">Social Login</span>
                             </div>
 
-                            <Button variant="outline" onClick={handleGoogleLogin} className="w-full h-14 bg-transparent border-white/10 text-white font-bold rounded-2xl hover:bg-white/5 transition-all">
+                            <Button variant="outline" onClick={handleGoogleLogin} className="w-full h-14 bg-transparent border-zinc-200 text-zinc-900 font-bold rounded-2xl hover:bg-zinc-100 transition-all">
                                 <Globe className="mr-3 h-5 w-5" />
                                 Google Login
                             </Button>
                         </>
                     )}
 
-                    <p className="text-center text-white text-xs font-bold uppercase tracking-widest">
+                    <p className="text-center text-zinc-900 text-xs font-bold uppercase tracking-widest">
                         New here? <Link href="/signup" className="text-[#FF6200] hover:opacity-80 transition-opacity italic ml-1 underline decoration-dotted">Register Account</Link>
                     </p>
 
-                    <div className="mt-8 pt-6 border-t border-white/5 text-center">
-                        <p className="text-[10px] text-white/30 font-medium leading-relaxed">
+                    <div className="mt-8 pt-6 border-t border-zinc-200 text-center">
+                        <p className="text-[10px] text-zinc-500 font-medium leading-relaxed">
                             Beta platform – technical problems? Email <a href="mailto:support@marketbridge.com.ng?subject=Tech%20Support" className="text-[#FF6200] hover:underline">support@marketbridge.com.ng</a><br />
                             Refunds, subscriptions or seller questions? Email <a href="mailto:ops-support@marketbridge.com.ng?subject=Ops%20Support" className="text-[#FF6200] hover:underline">ops-support@marketbridge.com.ng</a>
                         </p>
