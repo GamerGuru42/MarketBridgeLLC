@@ -7,7 +7,7 @@ import { Logo } from '@/components/logo';
 import { useAuth } from '@/contexts/AuthContext';
 import {
     Menu, User, LogOut, LayoutDashboard, Crown, Zap,
-    ShoppingBag, Store, ChevronDown, X
+    ShoppingBag, Store, ChevronDown, X, MessageCircle
 } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import {
@@ -46,7 +46,7 @@ export const Header = () => {
     };
 
     const navLinks = [
-        { href: '/listings', label: 'Browse' },
+        { href: '/marketplace', label: 'Browse' },
         { href: '/signup?role=student_seller', label: 'Sell on MarketBridge' },
     ];
 
@@ -122,6 +122,15 @@ export const Header = () => {
                                     <span className="text-[9px] font-black text-[#FF6200]/90 uppercase">MC</span>
                                 </div>
 
+                                {/* Messages Link */}
+                                <Link
+                                    href="/chats"
+                                    className="px-3 py-1.5 flex items-center gap-2 rounded-full border border-zinc-200 bg-white hover:bg-zinc-50 transition-colors shadow-sm text-zinc-600 hover:text-zinc-900"
+                                >
+                                    <MessageCircle className="h-4 w-4" />
+                                    <span className="text-xs font-bold hidden lg:inline">Messages</span>
+                                </Link>
+
                                 {/* Profile Dropdown */}
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
@@ -157,9 +166,16 @@ export const Header = () => {
                                             )}
 
                                             <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 my-0.5">
-                                                <Link href="/listings" className="flex items-center gap-3 px-3 py-2.5">
+                                                <Link href="/marketplace" className="flex items-center gap-3 px-3 py-2.5">
                                                     <ShoppingBag className="h-4 w-4 text-zinc-500" />
                                                     <span className="text-sm font-bold">Browse Market</span>
+                                                </Link>
+                                            </DropdownMenuItem>
+
+                                            <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 my-0.5">
+                                                <Link href="/chats" className="flex items-center gap-3 px-3 py-2.5">
+                                                    <MessageCircle className="h-4 w-4 text-zinc-500" />
+                                                    <span className="text-sm font-bold">My Communications</span>
                                                 </Link>
                                             </DropdownMenuItem>
 

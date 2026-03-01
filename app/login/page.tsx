@@ -3,24 +3,23 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Eye, EyeOff, Loader2, ChevronRight, Lock, User, Globe, ArrowLeft, Briefcase, ShieldCheck } from 'lucide-react';
+import { Eye, EyeOff, Loader2, ChevronRight, Lock, User as UserIcon, Globe, ArrowLeft, Briefcase, ShieldCheck } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-const supabase = createClient();
 import { normalizeIdentifier } from '@/lib/auth/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { Logo } from '@/components/logo';
 
 export default function LoginPage() {
+    const supabase = createClient();
     const { signInWithGoogle, refreshUser, user, sessionUser, loading } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
     const redirectUrl = searchParams?.get('redirect');
 
-    // State
     const [step, setStep] = useState<'role' | 'login' | 'admin-code'>('role');
-    const [role, setRole] = useState<'student_buyer' | 'student_seller' | 'admin' | 'customer' | 'dealer' | 'ceo'>('student_buyer');
+    const [role, setRole] = useState<'student_buyer' | 'student_seller' | 'admin' | 'ceo'>('student_buyer');
     const [accessCode, setAccessCode] = useState('');
 
     const [formData, setFormData] = useState({
@@ -31,39 +30,27 @@ export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
-    // Auto-redirect if already logged in (handles Google Auth return)
     useEffect(() => {
         if (!loading && sessionUser && user) {
             if (redirectUrl) {
                 router.push(redirectUrl);
                 return;
             }
-            // Check if user is trying to login to a different role than they have
-            // Or just redirect them to their dashboard
-            if (['dealer', 'student_seller'].includes(user.role)) {
-                router.push('/seller/dashboard');
+            if (['dealer', 'student_seller', 'seller'].includes(user.role)) {
+                if (user.isVerified) {
+                    router.push('/seller/dashboard');
+                } else {
+                    router.push('/seller-onboard');
+                }
             } else if (user.role === 'ceo') {
                 router.push('/admin/ceo');
-            } else if (user.role === 'cofounder') {
-                router.push('/cofounder');
-            } else if (user.role === 'cto') {
-                router.push('/cto');
-            } else if (user.role === 'coo') {
-                router.push('/coo');
-            } else if (user.role === 'technical_admin') {
-                router.push('/admin/technical');
-            } else if (user.role === 'operations_admin') {
-                router.push('/admin/operations');
-            } else if (user.role === 'marketing_admin') {
-                router.push('/admin/marketing');
-            } else if (user.role === 'admin') {
+            } else if (['admin', 'technical_admin', 'operations_admin'].includes(user.role)) {
                 router.push('/admin');
-            }
-            else {
-                router.push('/listings');
+            } else {
+                router.push('/marketplace');
             }
         }
-    }, [user, sessionUser, loading, router]);
+    }, [user, sessionUser, loading, router, redirectUrl]);
 
     const handleRoleSelect = (selectedRole: 'student_buyer' | 'student_seller' | 'admin' | 'ceo') => {
         setRole(selectedRole);
@@ -77,7 +64,6 @@ export default function LoginPage() {
 
     const handleAdminCodeSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Updated secure signature
         const validCodes = ['marketbridge2026', '1029384756', 'MB-FOUNDER-99', 'MB-TECH-2024', 'MB-OPS-2024', 'MB-MKT-2024'];
 
         if (validCodes.includes(accessCode)) {
@@ -85,6 +71,22 @@ export default function LoginPage() {
             setError('');
         } else {
             setError('Access Denied: Invalid Security Signature');
+        }
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const handleGoogleLogin = async () => {
+        setIsLoading(true);
+        setError('');
+        try {
+            await signInWithGoogle(`${window.location.origin}/auth/callback?next=/marketplace`);
+        } catch (err: any) {
+            console.error('Google login error:', err);
+            setError(err.message || 'Login failed. Please check your connection.');
+            setIsLoading(false);
         }
     };
 
@@ -96,7 +98,6 @@ export default function LoginPage() {
         try {
             const emailToUse = normalizeIdentifier(formData.email);
 
-            // 1. Race execution against a 15-second timeout
             const loginPromise = supabase.auth.signInWithPassword({
                 email: emailToUse,
                 password: formData.password,
@@ -111,130 +112,94 @@ export default function LoginPage() {
             if (signInError) throw signInError;
 
             if (data?.user) {
-                // 2. Successful Auth - Keep loading true while we redirect
-                // Don't setIsLoading(false) here to prevent UI flicker
-
-                // Refresh context
                 try {
                     await refreshUser(data.user.id);
                 } catch (err) {
-                    console.warn("Context refresh warning:", err); // Non-fatal
+                    console.warn("Context refresh warning:", err);
                 }
 
-                // 3. Determine Role with Database Fallback
                 let userRole = data.user.user_metadata?.role;
+                let isVerified = false;
 
                 try {
                     const { data: profile } = await supabase
                         .from('users')
-                        .select('role')
+                        .select('role, isVerified')
                         .eq('id', data.user.id)
                         .single();
 
                     if (profile?.role) userRole = profile.role;
+                    if (profile?.isVerified) isVerified = profile.isVerified;
                 } catch {
-                    // Fallback to metadata if DB read fails
                 }
 
-                // 4. Hard Redirect
-                // 4. Hard Redirect
                 if (redirectUrl) {
                     window.location.href = redirectUrl;
                 } else if (['dealer', 'student_seller', 'seller'].includes(userRole)) {
-                    window.location.href = '/seller/dashboard';
+                    if (isVerified) {
+                        window.location.href = '/seller/dashboard';
+                    } else {
+                        window.location.href = '/seller-onboard';
+                    }
                 } else if (userRole === 'ceo') {
                     window.location.href = '/admin/ceo';
-                } else if (userRole === 'cofounder') {
-                    window.location.href = '/cofounder';
-                } else if (userRole === 'cto') {
-                    window.location.href = '/cto';
-                } else if (userRole === 'coo') {
-                    window.location.href = '/coo';
-                } else if (userRole === 'technical_admin') {
-                    window.location.href = '/admin/technical';
-                } else if (userRole === 'operations_admin') {
-                    window.location.href = '/admin/operations';
-                } else if (userRole === 'marketing_admin') {
-                    window.location.href = '/admin/marketing';
-                } else if (userRole === 'admin') {
+                } else if (['admin', 'technical_admin', 'operations_admin'].includes(userRole)) {
                     window.location.href = '/admin';
+                } else {
+                    window.location.href = '/marketplace';
                 }
-                else {
-                    window.location.href = '/listings';
-                }
-
-                // Return here so we don't trigger the "finally" block that stops loading
-                return;
             } else {
-                throw new Error("No user session created.");
+                throw new Error("Invalid response from server.");
             }
-        } catch (err: unknown) {
-            console.error('Login Error:', err);
-            let message = 'Login failed. Check credentials.';
-            if (err instanceof Error) {
-                if (err.message.includes("Invalid login credentials")) message = "Incorrect credentials. Please try again.";
-                else if (err.message.includes("timeout")) message = "Network timeout. Slow connection detected.";
-                else message = err.message;
+
+        } catch (err: any) {
+            console.error('Login error:', err);
+            if (err.message.includes('Invalid login credentials')) {
+                setError('Invalid email or password. Please try again.');
+            } else {
+                setError(err.message || 'Login failed');
             }
-            setError(message);
-            setIsLoading(false); // Only stop loading on error
-        }
-    };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData(prev => ({
-            ...prev,
-            [e.target.name]: e.target.value
-        }));
-    };
-
-    const handleGoogleLogin = async () => {
-        setIsLoading(true);
-        setError('');
-        try {
-            // Redirect back to login page to trigger the new auto-redirect logic
-            await signInWithGoogle(`${window.location.origin}/auth/callback?next=/login`);
-        } catch (err: unknown) {
-            console.error(err);
-            setError('Google sign-in failed.');
             setIsLoading(false);
         }
     };
 
-    // UI Renders
     if (step === 'role') {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-[#FAFAFA] overflow-hidden relative">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#FF6200]/10 blur-[100px] rounded-full" />
-
+            <div className="min-h-screen flex items-center justify-center p-4 bg-[#FAFAFA] relative overflow-hidden">
                 <div className="w-full max-w-5xl relative z-10">
                     <div className="text-center mb-16">
                         <Link href="/" className="inline-flex items-center text-zinc-500 hover:text-zinc-900 mb-6 uppercase text-[10px] font-black tracking-widest transition-colors py-3">
                             <ArrowLeft className="mr-2 h-4 w-4" /> Return to Home
                         </Link>
-                        <h1 className="text-5xl font-black uppercase tracking-tighter text-zinc-900 italic mb-4">Welcome Back</h1>
-                        <p className="text-[#FF6200] font-medium uppercase tracking-[0.2em] text-[10px]">Select account type to continue</p>
+                        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-zinc-900 mb-4">Welcome Back</h1>
+                        <p className="text-[#FF6200] font-bold uppercase tracking-[0.2em] text-[10px]">Select account type to continue</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 max-w-6xl mx-auto">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4 max-w-6xl mx-auto">
                         {[
-                            { id: 'student_buyer', title: 'Buyer', icon: User, desc: 'Student Account', color: 'text-zinc-900' },
-                            { id: 'student_seller', title: 'Seller', icon: Briefcase, desc: 'Business Account', color: 'text-[#FF6200]' },
-                            { id: 'admin', title: 'Staff Admin', icon: ShieldCheck, desc: 'Management Access', color: 'text-zinc-900' },
-                            { id: 'ceo', title: 'Executive', icon: Lock, desc: 'Full Access', color: 'text-[#FF6200]' }
+                            { id: 'student_buyer', title: 'Buyer', icon: UserIcon, desc: 'Student Account', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'hover:border-emerald-500/50' },
+                            { id: 'student_seller', title: 'Seller', icon: Briefcase, desc: 'Business Account', color: 'text-[#FF6200]', bg: 'bg-[#FF6200]/10', border: 'hover:border-[#FF6200]/50' },
+                            { id: 'admin', title: 'Admin', icon: ShieldCheck, desc: 'Management Access', color: 'text-blue-500', bg: 'bg-blue-500/10', border: 'hover:border-blue-500/50' },
+                            { id: 'ceo', title: 'Executive', icon: Lock, desc: 'Full Access', color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'hover:border-purple-500/50' }
                         ].map(item => (
                             <Card
                                 key={item.id}
-                                className={`glass-card border-zinc-200 rounded-[2rem] p-8 text-center group cursor-pointer hover:bg-zinc-100 hover:translate-y-[-8px] transition-all duration-500 ${item.id === 'ceo' ? 'border-[#FF6200]/50' : ''}`}
+                                className={`bg-white border-zinc-200 rounded-[2rem] p-8 text-center cursor-pointer hover:shadow-xl transition-all duration-300 ${item.border}`}
                                 onClick={() => handleRoleSelect(item.id as any)}
                             >
-                                <div className={`h-16 w-16 glass-card rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform ${item.id === 'ceo' ? 'bg-[#FF6200]/10' : ''}`}>
+                                <div className={`h-16 w-16 rounded-2xl flex items-center justify-center mx-auto mb-6 ${item.bg}`}>
                                     <item.icon className={`h-8 w-8 ${item.color}`} />
                                 </div>
-                                <h3 className="text-lg font-black text-zinc-900 uppercase tracking-tight mb-2 italic">{item.title}</h3>
+                                <h3 className="text-lg font-black text-zinc-900 uppercase tracking-tight mb-2">{item.title}</h3>
                                 <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">{item.desc}</p>
                             </Card>
                         ))}
+                    </div>
+
+                    <div className="text-center mt-12">
+                        <p className="text-zinc-600 font-medium text-sm">
+                            New here? <Link href="/signup" className="text-[#FF6200] font-bold hover:underline">Register Account</Link>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -244,29 +209,28 @@ export default function LoginPage() {
     if (step === 'admin-code') {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-[#FAFAFA]">
-                <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-zinc-900 relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-[1px] bg-[#FF6200]/50 shadow-[0_0_20px_#FF6200]" />
+                <Card className="w-full max-w-md bg-white border border-zinc-200 shadow-xl rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden">
                     <CardHeader className="p-0 text-center mb-10">
                         <Button variant="ghost" onClick={() => setStep('role')} className="text-zinc-500 hover:text-zinc-900 mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
-                        <div className="mx-auto h-16 w-16 rounded-2xl border border-[#FF6200]/30 bg-[#FF6200]/5 flex items-center justify-center mb-6">
+                        <div className="mx-auto h-16 w-16 rounded-2xl bg-[#FF6200]/10 flex items-center justify-center mb-6">
                             <Lock className="h-8 w-8 text-[#FF6200]" />
                         </div>
-                        <CardTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2 text-[#FF6200]">Restricted</CardTitle>
-                        <CardDescription className="text-zinc-900 font-medium uppercase tracking-widest text-[10px]">Enter access key</CardDescription>
+                        <CardTitle className="text-3xl font-black uppercase tracking-tighter mb-2 text-zinc-900">Restricted</CardTitle>
+                        <CardDescription className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Enter access key</CardDescription>
                     </CardHeader>
                     <CardContent className="p-0 space-y-6 pb-8">
-                        {error && <div className="bg-[#FF6200]/10 text-zinc-900 text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-[#FF6200]/20">{error}</div>}
+                        {error && <div className="bg-red-50 text-red-600 text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-red-100">{error}</div>}
                         <form onSubmit={handleAdminCodeSubmit} className="space-y-6">
                             <input
                                 type="password"
-                                className="w-full h-16 bg-[#FAFAFA] border border-zinc-200 rounded-2xl text-center tracking-[0.5em] font-mono text-xl focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 text-[#FF6200]"
+                                className="w-full h-16 bg-zinc-50 border border-zinc-200 rounded-2xl text-center tracking-[0.5em] font-mono text-xl focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 text-zinc-900"
                                 value={accessCode}
                                 onChange={(e) => setAccessCode(e.target.value)}
                                 placeholder="••••••••"
                                 autoFocus
                                 required
                             />
-                            <Button type="submit" className="w-full h-16 rounded-2xl bg-[#FF6200] text-black font-black uppercase tracking-widest hover:bg-[#FF7A29] shadow-[0_0_30px_rgba(255,98,0,0.3)]">
+                            <Button type="submit" className="w-full h-16 rounded-2xl bg-[#FF6200] text-white font-black uppercase tracking-widest hover:bg-[#FF7A29] shadow-lg">
                                 Authorize
                             </Button>
                         </form>
@@ -277,53 +241,50 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-[#FAFAFA] overflow-hidden relative">
-            <div className="absolute top-[10%] left-[10%] w-[40%] h-[40%] bg-[#FF6200]/10 blur-[100px] rounded-full pointer-events-none" />
-            <div className="absolute bottom-[10%] right-[10%] w-[40%] h-[40%] bg-[#FF6200]/10 blur-[100px] rounded-full pointer-events-none" />
-
-            <Card className="w-full max-w-md glass-card border-none rounded-[3rem] p-10 text-zinc-900 relative z-10">
-                <CardHeader className="p-0 mb-10 text-center">
-                    <Button variant="ghost" onClick={() => setStep('role')} className="text-zinc-500 hover:text-zinc-900 mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> Switch Role</Button>
+        <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-[#FAFAFA] relative">
+            <Card className="w-full max-w-md bg-white border border-zinc-200 shadow-xl rounded-[2.5rem] p-8 md:p-10 relative z-10">
+                <CardHeader className="p-0 mb-8 text-center">
+                    <Button variant="ghost" onClick={() => setStep('role')} className="text-zinc-500 hover:text-zinc-900 mb-4 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> Switch Role</Button>
                     <div className="flex justify-center mb-6">
                         <Logo showText={false} className="scale-125" />
                     </div>
-                    <CardTitle className="text-4xl font-black uppercase italic tracking-tighter">MarketBridge</CardTitle>
-                    <CardDescription className="text-zinc-900 font-medium uppercase tracking-widest text-[10px]">
+                    <CardTitle className="text-3xl font-black uppercase tracking-tighter text-zinc-900">MarketBridge</CardTitle>
+                    <CardDescription className="text-zinc-500 font-bold uppercase tracking-widest text-[10px] mt-2">
                         {role === 'admin' ? 'Secure Admin Login' : 'Secure Account Login'}
                     </CardDescription>
                 </CardHeader>
 
-                <CardContent className="p-0 space-y-8">
+                <CardContent className="p-0 space-y-6">
                     {error && (
-                        <div className="bg-[#FAFAFA] text-zinc-900 text-[10px] font-black uppercase tracking-widest p-4 rounded-2xl text-center border-2 border-[#FF6200]">
+                        <div className="bg-red-50 text-red-600 text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-red-100">
                             {error}
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="space-y-2">
-                            <label className="text-[10px] uppercase font-black tracking-widest text-zinc-900 ml-2">Email Address</label>
+                            <label className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-2">Email Address</label>
                             <div className="relative">
-                                <User className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500" />
+                                <UserIcon className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400" />
                                 <input
                                     name="email"
                                     type="text"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
-                                    placeholder={role === 'admin' ? "admin@marketbridge.io" : "user@example.com / phone"}
-                                    className="w-full h-16 pl-14 pr-6 bg-[#FAFAFA] border border-zinc-200 rounded-2xl text-zinc-900 placeholder:text-zinc-900/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
+                                    placeholder={role === 'admin' ? "admin@marketbridge.io" : "user@example.com"}
+                                    className="w-full h-14 pl-14 pr-6 bg-zinc-50 border border-zinc-200 rounded-2xl text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-2">
                             <div className="flex justify-between items-center ml-2">
-                                <label className="text-[10px] uppercase font-black tracking-widest text-zinc-900">Password</label>
-                                <Link href="/forgot-password" className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] hover:opacity-80 transition-opacity">Reset Key</Link>
+                                <label className="text-[10px] uppercase font-black tracking-widest text-zinc-600">Password</label>
+                                <Link href="/forgot-password" className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] hover:underline">Reset Key</Link>
                             </div>
                             <div className="relative">
-                                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500" />
+                                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400" />
                                 <input
                                     name="password"
                                     type={showPassword ? 'text' : 'password'}
@@ -331,23 +292,23 @@ export default function LoginPage() {
                                     onChange={handleChange}
                                     required
                                     placeholder="••••••••"
-                                    className="w-full h-16 pl-14 pr-16 bg-[#FAFAFA] border border-zinc-200 rounded-2xl text-zinc-900 placeholder:text-zinc-900/10 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
+                                    className="w-full h-14 pl-14 pr-16 bg-zinc-50 border border-zinc-200 rounded-2xl text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-900 transition-colors"
+                                    className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-900 transition-colors"
                                 >
                                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                 </button>
                             </div>
                         </div>
 
-                        <Button type="submit" className="w-full h-16 bg-orange-gradient text-black font-black uppercase tracking-widest rounded-2xl glow-on-hover border-none flex items-center justify-center gap-2 group" disabled={isLoading}>
-                            {isLoading ? <Loader2 className="animate-spin h-6 w-6" /> : (
+                        <Button type="submit" className="w-full h-14 bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black uppercase tracking-widest rounded-2xl shadow-lg flex items-center justify-center gap-2 group" disabled={isLoading}>
+                            {isLoading ? <Loader2 className="animate-spin h-5 w-5" /> : (
                                 <>
                                     Login
-                                    <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                                    <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </>
                             )}
                         </Button>
@@ -356,27 +317,20 @@ export default function LoginPage() {
                     {role === 'student_buyer' && (
                         <>
                             <div className="relative py-4 flex items-center justify-center">
-                                <div className="absolute inset-x-0 h-px bg-white/10"></div>
-                                <span className="relative bg-[#FAFAFA] px-4 text-[9px] font-black uppercase tracking-[0.3em] text-[#FF6200]">Social Login</span>
+                                <div className="absolute inset-x-0 h-px bg-zinc-200"></div>
+                                <span className="relative bg-white px-4 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500">Social Login</span>
                             </div>
 
-                            <Button variant="outline" onClick={handleGoogleLogin} className="w-full h-14 bg-transparent border-zinc-200 text-zinc-900 font-bold rounded-2xl hover:bg-zinc-100 transition-all">
-                                <Globe className="mr-3 h-5 w-5" />
+                            <Button variant="outline" onClick={handleGoogleLogin} className="w-full h-14 bg-white border-zinc-200 text-zinc-700 font-bold rounded-2xl hover:bg-zinc-50 transition-all shadow-sm">
+                                <Globe className="mr-3 h-5 w-5 text-[#FF6200]" />
                                 Google Login
                             </Button>
                         </>
                     )}
 
-                    <p className="text-center text-zinc-900 text-xs font-bold uppercase tracking-widest">
-                        New here? <Link href="/signup" className="text-[#FF6200] hover:opacity-80 transition-opacity italic ml-1 underline decoration-dotted">Register Account</Link>
+                    <p className="text-center text-zinc-600 text-xs font-semibold mt-6">
+                        New here? <Link href="/signup" className="text-[#FF6200] hover:underline">Register Account</Link>
                     </p>
-
-                    <div className="mt-8 pt-6 border-t border-zinc-200 text-center">
-                        <p className="text-[10px] text-zinc-500 font-medium leading-relaxed">
-                            Beta platform – technical problems? Email <a href="mailto:support@marketbridge.com.ng?subject=Tech%20Support" className="text-[#FF6200] hover:underline">support@marketbridge.com.ng</a><br />
-                            Refunds, subscriptions or seller questions? Email <a href="mailto:ops-support@marketbridge.com.ng?subject=Ops%20Support" className="text-[#FF6200] hover:underline">ops-support@marketbridge.com.ng</a>
-                        </p>
-                    </div>
                 </CardContent>
             </Card>
         </div>

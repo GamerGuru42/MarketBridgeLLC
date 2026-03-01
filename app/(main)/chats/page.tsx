@@ -129,7 +129,7 @@ export default function ChatsPage() {
                 <div className="flex items-center justify-center min-h-[400px]">
                     <div className="text-center">
                         <Loader2 className="animate-spin h-12 w-12 text-[#FF6200] mx-auto" />
-                        <p className="mt-4 text-white/40 font-mono text-xs tracking-widest uppercase">Syncing Encrypted Feeds...</p>
+                        <p className="mt-4 text-zinc-500 font-mono text-xs tracking-widest uppercase">Syncing Encrypted Feeds...</p>
                     </div>
                 </div>
             </div>
@@ -140,10 +140,10 @@ export default function ChatsPage() {
         <div className="container mx-auto py-10 px-4 space-y-8 min-h-screen">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl border-l-4 border-[#FF6200] pl-4 text-white">
+                    <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl border-l-4 border-[#FF6200] pl-4 text-zinc-900">
                         Dashboard Link
                     </h1>
-                    <p className="text-white/40 mt-2 font-mono text-sm uppercase tracking-wider">
+                    <p className="text-zinc-500 mt-2 font-mono text-sm uppercase tracking-wider">
                         Secure Communication Hub v2.0
                     </p>
                 </div>
@@ -154,26 +154,26 @@ export default function ChatsPage() {
                 </div>
             </div>
 
-            <Card className="border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden bg-black/50 backdrop-blur-sm">
-                <CardHeader className="border-b border-white/5 bg-white/5 pb-6">
+            <Card className="border-zinc-200 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden bg-[#FAFAFA]/50 backdrop-blur-sm">
+                <CardHeader className="border-b border-zinc-100 bg-white pb-6">
                     <div className="relative group max-w-md w-full">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40 group-focus-within:text-[#FF6200] transition-colors" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 group-focus-within:text-[#FF6200] transition-colors" />
                         <Input
                             placeholder="FILTER CONVERSATIONS..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10 h-11 bg-black/50 border-white/10 font-mono text-xs tracking-widest uppercase focus:ring-1 focus:ring-[#FF6200] text-white placeholder:text-white/20"
+                            className="pl-10 h-11 bg-[#FAFAFA]/50 border-zinc-200 font-mono text-xs tracking-widest uppercase focus:ring-1 focus:ring-[#FF6200] text-zinc-900 placeholder:text-zinc-900/20"
                         />
                     </div>
                 </CardHeader>
                 <CardContent className="p-0">
                     {filteredChats.length === 0 ? (
-                        <div className="text-center py-24 bg-black/20">
-                            <div className="h-20 w-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 border border-white/5">
-                                <MessageSquare className="h-10 w-10 text-white/20" />
+                        <div className="text-center py-24 bg-[#FAFAFA]/20">
+                            <div className="h-20 w-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 border border-zinc-100">
+                                <MessageSquare className="h-10 w-10 text-zinc-900/20" />
                             </div>
-                            <h3 className="text-xl font-black italic uppercase tracking-tighter mb-2 text-white">No Active Streams</h3>
-                            <p className="text-white/40 mb-8 text-sm italic max-w-md mx-auto">
+                            <h3 className="text-xl font-black italic uppercase tracking-tighter mb-2 text-zinc-900">No Active Streams</h3>
+                            <p className="text-zinc-500 mb-8 text-sm italic max-w-md mx-auto">
                                 Connections will appear here once you initiate contact with a Dashboard provider (Seller).
                             </p>
                             <Button asChild className="font-bold uppercase tracking-widest text-xs h-12 px-10 bg-[#FF6200] text-black hover:bg-[#FF6200]/90">
@@ -186,13 +186,13 @@ export default function ChatsPage() {
                                 <Link
                                     key={chat.id}
                                     href={`/chats/${chat.id}`}
-                                    className="block group transition-all hover:bg-white/5"
+                                    className="block group transition-all hover:bg-white"
                                 >
                                     <div className="flex items-center gap-5 p-6 transition-all border-l-2 border-transparent hover:border-l-[#FF6200]">
                                         <div className="relative">
-                                            <Avatar className="h-14 w-14 border border-white/10 shadow-md group-hover:scale-105 transition-transform">
+                                            <Avatar className="h-14 w-14 border border-zinc-200 shadow-md group-hover:scale-105 transition-transform">
                                                 <AvatarImage src={chat.other_user?.avatar_url || chat.other_user?.photo_url || ''} />
-                                                <AvatarFallback className="bg-zinc-800 text-white/40 font-black uppercase text-lg">
+                                                <AvatarFallback className="bg-zinc-200 text-zinc-500 font-black uppercase text-lg">
                                                     {chat.other_user?.display_name?.charAt(0).toUpperCase() || '?'}
                                                 </AvatarFallback>
                                             </Avatar>
@@ -205,7 +205,7 @@ export default function ChatsPage() {
                                         <div className="flex-1 min-w-0 py-1">
                                             <div className="flex items-center justify-between mb-1.5">
                                                 <div className="flex items-center gap-2 overflow-hidden">
-                                                    <h3 className="font-black italic uppercase tracking-tighter text-base truncate text-white group-hover:text-[#FF6200] transition-colors">
+                                                    <h3 className="font-black italic uppercase tracking-tighter text-base truncate text-zinc-900 group-hover:text-[#FF6200] transition-colors">
                                                         {chat.other_user?.display_name || 'Unknown User'}
                                                     </h3>
                                                     {['dealer', 'student_seller'].includes(chat.other_user?.role as string) && (
@@ -215,20 +215,20 @@ export default function ChatsPage() {
                                                     )}
                                                 </div>
                                                 {chat.last_message_at && (
-                                                    <span className="text-[10px] font-mono text-white/30 bg-white/5 px-2 py-0.5 rounded leading-none">
+                                                    <span className="text-[10px] font-mono text-zinc-900/30 bg-white px-2 py-0.5 rounded leading-none">
                                                         {formatDistanceToNow(new Date(chat.last_message_at), { addSuffix: true })}
                                                     </span>
                                                 )}
                                             </div>
                                             {chat.listing_title && (
-                                                <p className="text-[10px] text-white/40 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                                <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1 flex items-center gap-1">
                                                     <span className="w-1.5 h-1.5 rounded-full bg-[#FF6200] inline-block"></span>
                                                     Re: {chat.listing_title}
                                                 </p>
                                             )}
                                             <div className="flex items-center justify-between gap-4">
                                                 <p className={cn("text-sm line-clamp-1 transition-colors",
-                                                    chat.unread_count! > 0 ? "font-bold text-white" : "text-white/60 font-medium italic"
+                                                    chat.unread_count! > 0 ? "font-bold text-zinc-900" : "text-zinc-600 font-medium italic"
                                                 )}>
                                                     {chat.last_message || 'Initializing stream session...'}
                                                 </p>

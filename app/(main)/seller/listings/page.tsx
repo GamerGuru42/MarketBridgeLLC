@@ -209,7 +209,7 @@ export default function SellerListingsPage() {
             duration: '3 days',
             icon: <Zap className="h-5 w-5 text-[#FF6200]" />,
             perks: ['Pinned to top of your category', '3-day visibility window', '+10 MarketCoins reward'],
-            color: 'border-white/10 hover:border-[#FF6200]/40',
+            color: 'border-zinc-200 hover:border-[#FF6200]/40',
             badge: null,
         },
         {
@@ -241,27 +241,27 @@ export default function SellerListingsPage() {
             <div className="container mx-auto py-10 px-4 space-y-8">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <Skeleton className="h-12 w-64 bg-white/5" />
-                        <Skeleton className="h-4 w-96 mt-2 bg-white/5" />
+                        <Skeleton className="h-12 w-64 bg-white" />
+                        <Skeleton className="h-4 w-96 mt-2 bg-white" />
                     </div>
-                    <Skeleton className="h-12 w-48 rounded-xl bg-white/5" />
+                    <Skeleton className="h-12 w-48 rounded-xl bg-white" />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {[1, 2, 3].map((i) => (
-                        <div key={i} className="glass-card rounded-[2rem] border-white/5 overflow-hidden flex flex-col h-full shadow-2xl">
-                            <Skeleton className="aspect-[4/3] w-full rounded-none bg-white/5" />
+                        <div key={i} className="bg-white border border-zinc-200 shadow-sm rounded-[2rem] border-zinc-100 overflow-hidden flex flex-col h-full shadow-2xl">
+                            <Skeleton className="aspect-[4/3] w-full rounded-none bg-white" />
                             <div className="p-8 space-y-6 flex-1 flex flex-col justify-between">
                                 <div className="space-y-3">
-                                    <Skeleton className="h-6 w-3/4 bg-white/5" />
+                                    <Skeleton className="h-6 w-3/4 bg-white" />
                                     <Skeleton className="h-8 w-1/3 bg-[#FF6200]/20" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Skeleton className="h-4 w-full bg-white/5" />
-                                    <Skeleton className="h-4 w-2/3 bg-white/5" />
+                                    <Skeleton className="h-4 w-full bg-white" />
+                                    <Skeleton className="h-4 w-2/3 bg-white" />
                                 </div>
-                                <div className="grid grid-cols-2 gap-3 pt-6 border-t border-white/5">
-                                    <Skeleton className="h-8 w-full rounded-xl bg-white/5" />
-                                    <Skeleton className="h-8 w-full rounded-xl bg-white/5" />
+                                <div className="grid grid-cols-2 gap-3 pt-6 border-t border-zinc-100">
+                                    <Skeleton className="h-8 w-full rounded-xl bg-white" />
+                                    <Skeleton className="h-8 w-full rounded-xl bg-white" />
                                 </div>
                             </div>
                         </div>
@@ -297,8 +297,8 @@ export default function SellerListingsPage() {
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {listings.map((listing) => (
-                        <Card key={listing.id} className="overflow-hidden border-white/5 bg-zinc-900/50 hover:border-[#FF6200]/30 hover:shadow-2xl transition-all group rounded-[2rem]">
-                            <div className="aspect-[4/3] bg-zinc-900 relative overflow-hidden">
+                        <Card key={listing.id} className="overflow-hidden border-zinc-100 bg-white0 hover:border-[#FF6200]/30 hover:shadow-2xl transition-all group rounded-[2rem]">
+                            <div className="aspect-[4/3] bg-white relative overflow-hidden">
                                 {listing.images && listing.images.length > 0 ? (
                                     <Image
                                         src={listing.images[0]}
@@ -313,7 +313,7 @@ export default function SellerListingsPage() {
                                 )}
                                 <div className="absolute top-3 right-3 flex flex-col gap-2">
                                     <Badge
-                                        className={`font-black uppercase tracking-tighter shadow-lg ${listing.status === 'active' ? 'bg-[#FF6200] text-black hover:bg-[#FF7A29]' : 'bg-zinc-800 text-white/60 hover:bg-zinc-700'}`}
+                                        className={`font-black uppercase tracking-tighter shadow-lg ${listing.status === 'active' ? 'bg-[#FF6200] text-black hover:bg-[#FF7A29]' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-700'}`}
                                     >
                                         {listing.status}
                                     </Badge>
@@ -327,7 +327,7 @@ export default function SellerListingsPage() {
                             </div>
                             <CardHeader className="p-5">
                                 <div className="flex justify-between items-start gap-4">
-                                    <CardTitle className="text-xl font-black italic uppercase tracking-tighter line-clamp-1 group-hover:text-[#FF6200] transition-colors text-white">{listing.title}</CardTitle>
+                                    <CardTitle className="text-xl font-black italic uppercase tracking-tighter line-clamp-1 group-hover:text-[#FF6200] transition-colors text-zinc-900">{listing.title}</CardTitle>
                                 </div>
                                 <p className="text-2xl font-black text-[#FF6200] mt-1">
                                     ₦{listing.price.toLocaleString()}
@@ -338,13 +338,13 @@ export default function SellerListingsPage() {
                                     {listing.description}
                                 </p>
                                 <div className="grid grid-cols-2 gap-3">
-                                    <Button asChild variant="outline" size="sm" className="font-bold border-white/10 hover:border-[#FF6200]/30 hover:bg-white/5 rounded-xl text-[10px] uppercase tracking-widest font-heading">
+                                    <Button asChild variant="outline" size="sm" className="font-bold border-zinc-200 hover:border-[#FF6200]/30 hover:bg-white rounded-xl text-[10px] uppercase tracking-widest font-heading">
                                         <Link href={`/listings/${listing.id}`}>
                                             <Eye className="mr-2 h-3.5 w-3.5" />
                                             PREVIEW
                                         </Link>
                                     </Button>
-                                    <Button asChild variant="outline" size="sm" className="font-bold border-white/10 hover:border-[#FF6200]/30 hover:bg-white/5 rounded-xl text-[10px] uppercase tracking-widest font-heading">
+                                    <Button asChild variant="outline" size="sm" className="font-bold border-zinc-200 hover:border-[#FF6200]/30 hover:bg-white rounded-xl text-[10px] uppercase tracking-widest font-heading">
                                         <Link href={`/seller/listings/${listing.id}/edit`}>
                                             <Edit className="mr-2 h-3.5 w-3.5" />
                                             MODIFY
@@ -353,7 +353,7 @@ export default function SellerListingsPage() {
                                     <Button
                                         variant="secondary"
                                         size="sm"
-                                        className="font-bold bg-zinc-800 text-white hover:bg-zinc-700 rounded-xl text-[10px] uppercase tracking-widest font-heading"
+                                        className="font-bold bg-zinc-100 text-zinc-900 hover:bg-zinc-700 rounded-xl text-[10px] uppercase tracking-widest font-heading"
                                         onClick={() => toggleStatus(listing)}
                                     >
                                         {listing.status === 'active' ? 'OFFLINE' : 'ONLINE'}
@@ -412,13 +412,13 @@ export default function SellerListingsPage() {
 
             {/* ─── Boost Modal ───────────────────────────────────────── */}
             {boostListing && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-                    <div className="w-full max-w-xl bg-zinc-950 border border-white/10 rounded-[2.5rem] p-8 shadow-2xl relative animate-in fade-in zoom-in-95 duration-300">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#FAFAFA]/80 backdrop-blur-md animate-in fade-in duration-200">
+                    <div className="w-full max-w-xl bg-zinc-50 border border-zinc-200 rounded-[2.5rem] p-8 shadow-2xl relative animate-in fade-in zoom-in-95 duration-300">
                         <button
                             onClick={() => setBoostListing(null)}
                             aria-label="Close boost modal"
                             title="Close"
-                            className="absolute top-6 right-6 text-white/30 hover:text-white transition-colors"
+                            className="absolute top-6 right-6 text-zinc-900/30 hover:text-zinc-900 transition-colors"
                         >
                             <X className="h-5 w-5" />
                         </button>
@@ -428,7 +428,7 @@ export default function SellerListingsPage() {
                                 <Flame className="h-6 w-6 text-[#FF6200]" />
                                 <h2 className="text-2xl font-black uppercase tracking-tighter">Boost Listing</h2>
                             </div>
-                            <p className="text-white/50 text-sm font-medium italic">
+                            <p className="text-zinc-500 text-sm font-medium italic">
                                 &ldquo;{boostListing.title}&rdquo; — choose your boost tier
                             </p>
                         </div>
@@ -439,7 +439,7 @@ export default function SellerListingsPage() {
                                     key={tier.id}
                                     onClick={() => handleBoostTier(tier.id)}
                                     disabled={boostLoading}
-                                    className={`w-full text-left p-5 rounded-2xl border bg-black/30 transition-all hover:bg-black/60 relative ${tier.color} disabled:opacity-50 disabled:cursor-not-allowed`}
+                                    className={`w-full text-left p-5 rounded-2xl border bg-[#FAFAFA]/30 transition-all hover:bg-[#FAFAFA]/60 relative ${tier.color} disabled:opacity-50 disabled:cursor-not-allowed`}
                                 >
                                     {tier.badge && (
                                         <span className="absolute top-4 right-4 text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-full bg-[#FF6200] text-black">
@@ -449,15 +449,15 @@ export default function SellerListingsPage() {
                                     <div className="flex items-center gap-3 mb-3">
                                         {tier.icon}
                                         <span className="font-black uppercase tracking-wider text-sm">{tier.label}</span>
-                                        <span className="ml-auto text-2xl font-black text-white">{tier.price}</span>
+                                        <span className="ml-auto text-2xl font-black text-zinc-900">{tier.price}</span>
                                     </div>
                                     <div className="flex items-center gap-2 mb-3">
-                                        <Clock className="h-3.5 w-3.5 text-white/30" />
-                                        <span className="text-[11px] text-white/40 font-bold uppercase tracking-widest">{tier.duration}</span>
+                                        <Clock className="h-3.5 w-3.5 text-zinc-900/30" />
+                                        <span className="text-[11px] text-zinc-500 font-bold uppercase tracking-widest">{tier.duration}</span>
                                     </div>
                                     <ul className="space-y-1">
                                         {tier.perks.map((perk, i) => (
-                                            <li key={i} className="text-[11px] text-white/50 flex items-center gap-2">
+                                            <li key={i} className="text-[11px] text-zinc-500 flex items-center gap-2">
                                                 <span className="h-1 w-1 rounded-full bg-[#FF6200]/60 flex-shrink-0" />
                                                 {perk}
                                             </li>
@@ -472,13 +472,13 @@ export default function SellerListingsPage() {
                         )}
 
                         {boostLoading && (
-                            <div className="flex items-center justify-center gap-3 text-white/60 text-sm font-bold">
+                            <div className="flex items-center justify-center gap-3 text-zinc-600 text-sm font-bold">
                                 <Loader2 className="h-4 w-4 animate-spin text-[#FF6200]" />
                                 Taking you to checkout...
                             </div>
                         )}
 
-                        <p className="text-center text-[10px] text-white/20 mt-4 uppercase tracking-widest">
+                        <p className="text-center text-[10px] text-zinc-900/20 mt-4 uppercase tracking-widest">
                             Secure payment via Paystack — No recurring charges
                         </p>
                     </div>

@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, ListIcon, ShoppingCart, User, Crown } from 'lucide-react';
+import { Home, ShoppingBag, ShoppingCart, User, Crown, MessageCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import { cn } from '@/lib/utils';
@@ -27,10 +27,16 @@ export const MobileBottomNav = () => {
             show: true,
         },
         {
-            href: '/listings',
-            label: 'Listings',
-            icon: ListIcon,
+            href: '/marketplace',
+            label: 'Market',
+            icon: ShoppingBag,
             show: true,
+        },
+        {
+            href: '/chats',
+            label: 'Chats',
+            icon: MessageCircle,
+            show: !!user,
         },
         {
             href: '/cart',
@@ -61,7 +67,7 @@ export const MobileBottomNav = () => {
     ];
 
     return (
-        <nav className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] w-[90%] glass-card rounded-[2rem] border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] h-20 px-8">
+        <nav className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] w-[90%] bg-white rounded-[2rem] border border-zinc-200 shadow-lg shadow-black/5 h-20 px-8">
             <div className="flex h-full items-center justify-between">
                 {navItems.filter(item => item.show).map((item) => {
                     const isActive = pathname === item.href;
@@ -73,13 +79,13 @@ export const MobileBottomNav = () => {
                             href={item.href}
                             className={cn(
                                 "flex flex-col items-center justify-center gap-1 transition-all relative group",
-                                isActive ? "text-[#FF6200] scale-110" : "text-zinc-600 hover:text-white"
+                                isActive ? "text-[#FF6200] scale-110" : "text-zinc-400 hover:text-zinc-600"
                             )}
                         >
                             <div className="relative">
-                                <Icon className={cn("h-6 w-6", isActive ? "drop-shadow-[0_0_8px_rgba(255,184,0,0.5)]" : "")} />
+                                <Icon className={cn("h-6 w-6", isActive ? "drop-shadow-[0_2px_4px_rgba(255,184,0,0.3)]" : "")} />
                                 {item.badge && item.badge > 0 && (
-                                    <span className="absolute -top-2 -right-3 h-4 w-4 rounded-full bg-[#FF6200] text-[9px] font-black text-black flex items-center justify-center">
+                                    <span className="absolute -top-2 -right-3 h-4 w-4 rounded-full bg-[#FF6200] text-[9px] font-black text-white flex items-center justify-center">
                                         {item.badge}
                                     </span>
                                 )}

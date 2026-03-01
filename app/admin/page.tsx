@@ -3,269 +3,215 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { createClient } from '@/lib/supabase/client';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
-    Activity, Globe, TrendingUp, ArrowRight,
-    Zap, LayoutDashboard, Loader2, Shield, Cpu, Server
+    Loader2, ShieldCheck, XCircle, Search, UserCheck, Check, AlertTriangle, ChevronRight, Activity
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
-export default function AdminPage() {
-    const { user } = useAuth();
+interface Application {
+    id: string;
+    user_id: string;
+    name: string;
+    email: string;
+    phone: string;
+    campus: string;
+    business_type: string;
+    categories: string[];
+    id_card_url: string;
+    bio: string;
+    status: string;
+    created_at: string;
+}
+
+export default function AdminOperationsPage() {
+    const { user, loading: authLoading } = useAuth();
     const router = useRouter();
     const supabase = createClient();
 
-    const [dashboardStats, setDashboardStats] = useState({
-        pendingOps: 0,
-        marketingGrowth: 0,
-        techHealth: 99
-    });
-    const [publicSectionEnabled, setPublicSectionEnabled] = useState(false);
-    const [isThinking, setIsThinking] = useState(false);
+    const [applications, setApplications] = useState<Application[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [actioningId, setActioningId] = useState<string | null>(null);
+    const [search, setSearch] = useState('');
 
     useEffect(() => {
-        if (user) {
-            if (user.role === 'marketing_admin') router.replace('/admin/marketing');
-            else if (user.role === 'operations_admin') router.replace('/admin/operations');
-            else if (user.role === 'technical_admin') router.replace('/admin/technical');
+        if (!authLoading && (!user || (user.role !== 'admin' && user.role !== 'ceo' && user.role !== 'cofounder' && user.role !== 'operations_admin'))) {
+            router.replace('/login');
         }
-    }, [user, router]);
+    }, [user, authLoading, router]);
 
     useEffect(() => {
-        const fetchGlobalStats = async () => {
-            const { count: pendingVerifications } = await supabase
-                .from('users').select('*', { count: 'exact', head: true })
-                .in('role', ['dealer', 'student_seller']).eq('is_verified', false);
-            const { count: pendingOrders } = await supabase
-                .from('orders').select('*', { count: 'exact', head: true }).eq('status', 'pending');
-            const { count: totalUsers, error: userError } = await supabase
-                .from('users').select('*', { count: 'exact', head: true });
+        if (user) fetchApplications();
+    }, [user]);
 
-            setDashboardStats({
-                pendingOps: (pendingVerifications || 0) + (pendingOrders || 0),
-                marketingGrowth: totalUsers || 0,
-                techHealth: userError ? 0 : 100
-            });
+    const fetchApplications = async () => {
+        setLoading(true);
+        const { data, error } = await supabase
+            .from('seller_applications')
+            .select('*')
+            .eq('status', 'pending')
+            .order('created_at', { ascending: false });
 
-            const { data: settings } = await supabase
-                .from('site_settings').select('value')
-                .eq('key', 'public_section_enabled').single();
-            if (settings) setPublicSectionEnabled(settings.value === 'true' || settings.value === true);
-        };
-        fetchGlobalStats();
-    }, []);
+        if (!error && data) {
+            setApplications(data);
+        }
+        setLoading(false);
+    };
 
-    const operationalCampuss = [
-        {
-            title: 'Technical',
-            label: 'System Health & Logs',
-            href: '/admin/technical',
-            icon: Activity,
-            color: 'text-[#FF6200]',
-            status: dashboardStats.techHealth === 100 ? 'Status: Optimal' : 'Status: Issues Detected',
-            health: dashboardStats.techHealth,
-            isNew: dashboardStats.techHealth < 100
-        },
-        { title: 'Operations', href: '/admin/operations', icon: Activity, color: 'text-[#FF6200]', label: 'Exchange Flux', status: `${dashboardStats.pendingOps} Pending Actions`, health: 85 },
-        { title: 'Marketing', href: '/admin/marketing', icon: Globe, color: 'text-white', label: 'Growth Vector', status: `${dashboardStats.marketingGrowth.toLocaleString()} Active Users`, health: 92 },
-        { title: 'Revenue', href: '/admin/revenue', icon: TrendingUp, color: 'text-[#FF6200]', label: 'Fee Analytics', status: '5% Commission Active', health: 100 },
-        { title: 'Proposal', href: '/admin/proposals/new', icon: Zap, color: 'text-[#FF6200]', label: 'Direct Memo', status: 'Priority Channel', health: 100, isNew: true },
-    ];
+    const handleAction = async (app: Application, act: 'approve' | 'reject') => {
+        if (act === 'reject') {
+            const reason = prompt("Enter reason for rejection:");
+            if (reason === null) return; // cancelled
+        }
 
-    if (!user) return (
-        <div className="min-h-screen flex items-center justify-center bg-black">
+        setActioningId(app.id);
+
+        try {
+            // Update application status
+            await supabase
+                .from('seller_applications')
+                .update({ status: act === 'approve' ? 'approved' : 'rejected' })
+                .eq('id', app.id);
+
+            // If approved, update user role
+            if (act === 'approve') {
+                await supabase
+                    .from('users')
+                    .update({ is_verified: true, role: 'seller' })
+                    .eq('id', app.user_id);
+            }
+
+            // Remove from local state
+            setApplications(prev => prev.filter(a => a.id !== app.id));
+        } catch (error) {
+            alert("Action failed to execute. Check logs.");
+        } finally {
+            setActioningId(null);
+        }
+    };
+
+    if (authLoading || loading) return (
+        <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
             <Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" />
         </div>
     );
 
+    const filtered = applications.filter(a =>
+        (a.name?.toLowerCase().includes(search.toLowerCase())) ||
+        (a.email?.toLowerCase().includes(search.toLowerCase())) ||
+        (a.campus?.toLowerCase().includes(search.toLowerCase()))
+    );
+
     return (
-        <div className="min-h-screen bg-black text-white relative flex flex-col selection:bg-[#FF6200] selection:text-black">
-            <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
-            <div className="container mx-auto py-16 px-6 relative z-10 space-y-16">
+        <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 selection:bg-[#FF6200] selection:text-white pt-28 pb-20">
+            <div className="container px-6 mx-auto max-w-7xl space-y-12">
 
                 {/* Header */}
-                <div className="space-y-6">
-                    <div className="flex items-center gap-3">
-                        <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Secure Administrative Uplink</span>
-                    </div>
-                    <div>
-                        <h1 className="text-6xl md:text-8xl font-black text-white uppercase tracking-tighter italic">
-                            Admin <span className="text-[#FF6200]">Control</span>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-zinc-200 pb-8">
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">Operations Node</span>
+                        </div>
+                        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic">
+                            Pending <span className="text-[#FF6200]">Approvals</span>
                         </h1>
-                        <p className="text-white/40 font-medium italic lowercase mt-4 max-w-2xl">
-                            Authorized Access: <span className="text-white font-bold">{user.displayName}</span> //
-                            System: <span className="text-[#FF6200] font-black">{user.role.replace('_', ' ')} Dashboard</span> //
-                            Status: <span className="text-white font-black">Online</span>
+                        <p className="text-zinc-500 font-medium italic">
+                            {applications.length} applications requiring manual review.
                         </p>
                     </div>
                 </div>
 
-                {/* Operational Campuss Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {operationalCampuss.map((Campus) => (
-                        <Link key={Campus.title} href={Campus.href} className="group">
-                            <div className="glass-card p-8 h-full flex flex-col space-y-8 transition-all duration-500 hover:translate-y-[-8px] hover:border-[#FF6200]/20">
-                                <div className="flex justify-between items-start">
-                                    <div className="h-14 w-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-[#FF6200]/30 transition-colors">
-                                        <Campus.icon className={cn('h-7 w-7', Campus.color)} />
-                                    </div>
-                                    <ArrowRight className="h-5 w-5 text-white/20 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-                                </div>
-                                <div className="space-y-1">
-                                    <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter">
-                                        {Campus.title}
-                                    </h3>
-                                    <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em]">
-                                        {Campus.label}
-                                    </p>
-                                </div>
-                                <div className="pt-4 mt-auto">
-                                    <div className="p-4 rounded-xl bg-black/40 border border-white/5 flex flex-col gap-3">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-[10px] font-black text-white/60 uppercase italic tracking-widest">{Campus.status}</span>
-                                            {Campus.isNew && <Badge className="bg-[#FF6200] text-black font-black text-[8px] border-none px-2 rounded-sm italic">Required</Badge>}
-                                        </div>
-                                        <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                                            <div className="h-full bg-[#FF6200] transition-all duration-1000" style={{ width: `${Campus.health}%` }} />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </Link>
-                    ))}
-                </div>
-
-                {/* Quick Access */}
-                <div className="glass-card rounded-[3rem] p-12 overflow-hidden relative">
-                    <div className="absolute top-0 right-0 w-[40%] h-full bg-gradient-to-l from-[#FF6200]/5 to-transparent pointer-events-none" />
-                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-12 relative z-10">
-                        <div className="space-y-8 flex-1">
-                            <div className="space-y-2">
-                                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 italic">// Strategic Subsystems</h3>
-                                <p className="text-white/40 text-sm italic lowercase">High-priority Dashboard routes for core asset management.</p>
-                            </div>
-                            <div className="flex flex-wrap gap-4">
-                                {[
-                                    { label: 'User Index', href: '/admin/users' },
-                                    { label: 'Asset Ledger', href: '/admin/listings' },
-                                    { label: 'Order Verification', href: '/admin/orders' },
-                                    { label: 'Seller Payouts', href: '/admin/payouts' },
-                                    { label: 'Resolution Campus', href: '/admin/disputes' },
-                                    { label: 'System Logs', href: '/admin/logs' }
-                                ].map(link => (
-                                    <Button key={link.label} asChild variant="outline" className="border-white/10 text-white rounded-xl uppercase text-[10px] font-black tracking-widest h-14 px-8 hover:bg-white/5 hover:border-[#FF6200]/30 transition-all whitespace-nowrap bg-black/20">
-                                        <Link href={link.href}>{link.label}</Link>
-                                    </Button>
-                                ))}
-                            </div>
-                        </div>
-                        <div className="flex flex-col gap-6 items-end shrink-0">
-                            <div className="text-right space-y-1">
-                                <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">Encryption Status</p>
-                                <div className="text-white font-black italic text-sm tracking-tighter">MIL-SPEC AES-256 / SHA-3</div>
-                            </div>
-                            <div className="flex flex-col gap-2 text-right">
-                                <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">System Status</p>
-                                <div className="flex items-center gap-2 text-[#FF6200] font-black italic tracking-tighter">
-                                    <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-ping" />
-                                    CORE NETWORK ACTIVE
-                                </div>
-                            </div>
+                {/* Main Operations Block */}
+                <div className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm p-4 md:p-8">
+                    <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
+                        <h3 className="text-lg font-black uppercase tracking-widest text-zinc-900 flex items-center gap-2">
+                            <Activity className="h-4 w-4 text-[#FF6200]" /> Verification Queue
+                        </h3>
+                        <div className="relative w-full sm:w-auto">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                            <input
+                                type="text"
+                                placeholder="Search by name, email, or campus..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="w-full sm:w-80 h-12 bg-zinc-50 border border-zinc-200 rounded-full pl-12 pr-4 text-sm font-medium focus:outline-none focus:border-[#FF6200]/50"
+                            />
                         </div>
                     </div>
+
+                    {filtered.length === 0 ? (
+                        <div className="text-center py-20 border-2 border-dashed border-zinc-100 rounded-[2rem]">
+                            <UserCheck className="h-12 w-12 text-zinc-300 mx-auto mb-4" />
+                            <h4 className="text-zinc-500 font-black uppercase tracking-widest">Zero Pending Applications</h4>
+                        </div>
+                    ) : (
+                        <div className="overflow-x-auto rounded-2xl border border-zinc-100">
+                            <table className="w-full text-left border-collapse min-w-[800px]">
+                                <thead>
+                                    <tr className="bg-zinc-50 border-b border-zinc-100 text-[10px] uppercase font-black tracking-widest text-zinc-500">
+                                        <th className="p-4">Applicant Data</th>
+                                        <th className="p-4">Campus / Biz Type</th>
+                                        <th className="p-4">Categories</th>
+                                        <th className="p-4">ID Card</th>
+                                        <th className="p-4 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filtered.map(app => (
+                                        <tr key={app.id} className="border-b border-zinc-100 hover:bg-zinc-50/50 transition-colors">
+                                            <td className="p-4">
+                                                <div className="font-bold text-sm text-zinc-900">{app.name}</div>
+                                                <div className="text-xs text-zinc-500">{app.email}</div>
+                                                <div className="text-xs text-zinc-500 mt-1">{app.phone}</div>
+                                            </td>
+                                            <td className="p-4">
+                                                <Badge className="bg-[#FF6200]/10 text-[#FF6200] border-none mb-1 shadow-none">{app.campus}</Badge>
+                                                <div className="text-xs text-zinc-600 font-medium capitalize">{app.business_type}</div>
+                                            </td>
+                                            <td className="p-4">
+                                                <div className="flex flex-wrap gap-1">
+                                                    {(app.categories || []).map(c => (
+                                                        <span key={c} className="text-[9px] bg-zinc-100 text-zinc-600 px-2 py-1 rounded-md font-bold uppercase tracking-wider">{c}</span>
+                                                    ))}
+                                                </div>
+                                            </td>
+                                            <td className="p-4">
+                                                {app.id_card_url ? (
+                                                    <a href={app.id_card_url} target="_blank" rel="noopener noreferrer" className="block relative w-20 h-12 bg-zinc-100 rounded-lg overflow-hidden border border-zinc-200 hover:border-[#FF6200] transition-colors group">
+                                                        <Image src={app.id_card_url} alt="ID" fill className="object-cover opacity-80 group-hover:opacity-100" />
+                                                    </a>
+                                                ) : <span className="text-xs text-zinc-400 italic">No Upload</span>}
+                                            </td>
+                                            <td className="p-4 text-right space-x-2 whitespace-nowrap">
+                                                <Button
+                                                    size="sm"
+                                                    disabled={actioningId === app.id}
+                                                    onClick={() => handleAction(app, 'approve')}
+                                                    className="bg-green-600 hover:bg-green-700 text-white font-black uppercase text-[10px] tracking-widest h-9"
+                                                >
+                                                    {actioningId === app.id ? <Loader2 className="h-3 w-3 animate-spin mx-4" /> : 'Approve'}
+                                                </Button>
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    disabled={actioningId === app.id}
+                                                    onClick={() => handleAction(app, 'reject')}
+                                                    className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 font-black uppercase text-[10px] tracking-widest h-9"
+                                                >
+                                                    {actioningId === app.id ? <Loader2 className="h-3 w-3 animate-spin mx-4" /> : 'Reject'}
+                                                </Button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
                 </div>
 
-                {/* Kill-Switch Control */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <Card className="lg:col-span-2 bg-gradient-to-br from-[#FF6200]/10 to-transparent border-[#FF6200]/20 rounded-[3rem] overflow-hidden p-10">
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-                            <div className="space-y-4 max-w-xl">
-                                <div className="flex items-center gap-2 text-[#FF6200]">
-                                    <Shield className="h-5 w-5" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.4em]">Security System 7</span>
-                                </div>
-                                <h3 className="text-3xl font-black uppercase tracking-tighter italic">
-                                    Public Expansion <span className="text-[#FF6200]">Kill-Switch</span>
-                                </h3>
-                                <p className="text-white/40 text-sm leading-relaxed italic">
-                                    Emergency override for the national marketplace. Disabling this instantly locks the <span className="text-white">/public</span> route. Use during maintenance or security events.
-                                </p>
-                            </div>
-                            <div className="flex flex-col items-center gap-4 bg-black/40 p-8 rounded-3xl border border-white/5 shrink-0 min-w-[200px]">
-                                <button
-                                    className={cn(
-                                        'w-20 h-10 rounded-full p-1 cursor-pointer transition-all duration-500 relative',
-                                        publicSectionEnabled ? 'bg-[#FF6200]' : 'bg-zinc-800'
-                                    )}
-                                    onClick={async () => {
-                                        if (isThinking) return;
-                                        if (!confirm(`Are you sure you want to ${publicSectionEnabled ? 'DISABLE' : 'ENABLE'} the public marketplace?`)) return;
-                                        setIsThinking(true);
-                                        try {
-                                            const { error } = await supabase.from('site_settings').upsert({
-                                                key: 'public_section_enabled',
-                                                value: String(!publicSectionEnabled),
-                                                updated_at: new Date().toISOString()
-                                            }, { onConflict: 'key' });
-                                            if (error) throw error;
-                                            setPublicSectionEnabled(!publicSectionEnabled);
-                                        } catch (e) {
-                                            alert('Override Failed: Check system logs.');
-                                        } finally {
-                                            setIsThinking(false);
-                                        }
-                                    }}
-                                >
-                                    <div className={cn(
-                                        'h-8 w-8 rounded-full bg-white shadow-xl transition-all duration-500 flex items-center justify-center',
-                                        publicSectionEnabled ? 'translate-x-10' : 'translate-x-0'
-                                    )}>
-                                        {isThinking ? (
-                                            <Loader2 className="h-4 w-4 animate-spin text-black" />
-                                        ) : (
-                                            <Globe className={cn('h-4 w-4', publicSectionEnabled ? 'text-[#FF6200]' : 'text-white/60')} />
-                                        )}
-                                    </div>
-                                </button>
-                                <span className={cn(
-                                    'text-[10px] font-black uppercase tracking-[0.2em]',
-                                    publicSectionEnabled ? 'text-[#FF6200]' : 'text-white/40'
-                                )}>
-                                    {publicSectionEnabled ? 'Public Access Enabled' : 'Service Unavailable'}
-                                </span>
-                            </div>
-                        </div>
-                    </Card>
-                    <Card className="bg-black/40 border border-white/10 rounded-[3rem] p-10 flex flex-col justify-between">
-                        <div className="space-y-4">
-                            <Cpu className="h-8 w-8 text-[#FF6200]" />
-                            <h3 className="text-xl font-black uppercase tracking-tighter italic">Handshake Logic</h3>
-                            <p className="text-white/40 text-[10px] leading-relaxed uppercase tracking-widest font-bold">
-                                Middleware checks <span className="text-[#FF6200]">ENABLE_PUBLIC_SECTION</span> env first,
-                                then falls back to this DB-level switch.
-                            </p>
-                        </div>
-                        <div className="pt-6 border-t border-white/5">
-                            <Link href="/admin/technical" className="text-[10px] font-black uppercase text-[#FF6200] flex items-center gap-2 hover:gap-4 transition-all">
-                                View Technical Audit <ArrowRight className="h-3 w-3" />
-                            </Link>
-                        </div>
-                    </Card>
-                </div>
-
-                {/* Footer */}
-                <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.3em] text-white/20 italic">
-                    <div>MarketBridge Technical Division // 2026</div>
-                    <div className="flex items-center gap-4">
-                        <span>Latency: 14ms</span>
-                        <span>Uptime: 99.99%</span>
-                    </div>
-                </div>
             </div>
         </div>
     );

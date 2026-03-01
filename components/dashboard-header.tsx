@@ -24,16 +24,16 @@ export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
     const router = useRouter();
 
     return (
-        <header className="sticky top-0 z-40 flex h-24 w-full items-center justify-between border-b border-white/5 bg-black/40 backdrop-blur-2xl px-6 md:px-12">
+        <header className="sticky top-0 z-40 flex h-24 w-full items-center justify-between border-b border-zinc-100 bg-[#FAFAFA]/40 backdrop-blur-2xl px-6 md:px-12">
             <div className="flex items-center gap-6">
                 <Sheet>
                     <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon" className="md:hidden text-white">
+                        <Button variant="ghost" size="icon" className="md:hidden text-zinc-900">
                             <Menu className="h-6 w-6" />
                             <span className="sr-only">Toggle Menu</span>
                         </Button>
                     </SheetTrigger>
-                    <SheetContent side="left" className="p-0 w-72 bg-black border-r border-white/10">
+                    <SheetContent side="left" className="p-0 w-72 bg-[#FAFAFA] border-r border-zinc-200">
                         <Sidebar items={sidebarItems} title={title} className="border-0 shadow-none" />
                     </SheetContent>
                 </Sheet>
@@ -41,14 +41,14 @@ export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
                     <h1 className="text-xl md:text-2xl font-black italic tracking-widest text-[#FF6200] uppercase">
                         {title}
                     </h1>
-                    <span className="text-zinc-400 text-sm hidden md:block">
+                    <span className="text-zinc-500 text-sm hidden md:block">
                         Welcome back, {user?.displayName || 'Admin'} – {user?.role ? user.role.replace('_', ' ').toUpperCase() : 'ADMIN'} Dashboard
                     </span>
                 </div>
             </div>
 
             <div className="flex items-center gap-4 md:gap-8">
-                <Link href="/" className="hidden md:flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-xs uppercase font-bold tracking-widest bg-white/5 px-4 py-2 rounded-full border border-white/10 hover:border-white/20">
+                <Link href="/" className="hidden md:flex items-center gap-2 text-zinc-500 hover:text-zinc-900 transition-colors text-xs uppercase font-bold tracking-widest bg-white px-4 py-2 rounded-full border border-zinc-200 hover:border-zinc-200">
                     <Globe className="h-4 w-4" />
                     Back to Public Site
                 </Link>
@@ -58,22 +58,22 @@ export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
                     Logout
                 </Button>
 
-                <div className="flex items-center gap-4 pl-6 border-l border-white/5">
+                <div className="flex items-center gap-4 pl-6 border-l border-zinc-100">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <div className="h-10 w-10 rounded-2xl glass-card border-none flex items-center justify-center text-[#FF6200] shadow-[0_0_15px_rgba(255,184,0,0.1)] group cursor-pointer hover:scale-105 transition-transform">
+                            <div className="h-10 w-10 rounded-2xl bg-white border border-zinc-200 shadow-sm border-none flex items-center justify-center text-[#FF6200] shadow-[0_0_15px_rgba(255,184,0,0.1)] group cursor-pointer hover:scale-105 transition-transform">
                                 <User className="h-5 w-5" />
                             </div>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" sideOffset={15} className="w-64 bg-black border border-white/10 p-2 text-white z-[999] rounded-[2rem] shadow-2xl backdrop-blur-3xl">
-                            <div className="px-4 py-3 mb-2 border-b border-white/5">
+                        <DropdownMenuContent align="end" sideOffset={15} className="w-64 bg-[#FAFAFA] border border-zinc-200 p-2 text-zinc-900 z-[999] rounded-[2rem] shadow-2xl backdrop-blur-3xl">
+                            <div className="px-4 py-3 mb-2 border-b border-zinc-100">
                                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Protocol Holder</p>
                                 <p className="text-sm font-black truncate uppercase">{user?.displayName}</p>
                             </div>
-                            <DropdownMenuItem asChild className="focus:bg-white/5 rounded-xl cursor-pointer py-3 group outline-none transition-colors border border-transparent focus:border-white/5">
+                            <DropdownMenuItem asChild className="focus:bg-white rounded-xl cursor-pointer py-3 group outline-none transition-colors border border-transparent focus:border-zinc-100">
                                 <Link href="/settings" className="flex items-center gap-4 w-full px-2">
                                     <User className="h-4 w-4 text-zinc-500 group-hover:text-[#FF6200]" />
-                                    <span className="font-bold uppercase text-[10px] tracking-widest text-zinc-400 group-hover:text-white">Profile Node</span>
+                                    <span className="font-bold uppercase text-[10px] tracking-widest text-zinc-500 group-hover:text-zinc-900">Profile Node</span>
                                 </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={async () => { await logout(); router.push('/'); }} className="focus:bg-red-500/10 text-red-500 rounded-xl cursor-pointer py-3 group outline-none border border-transparent focus:border-red-500/10">

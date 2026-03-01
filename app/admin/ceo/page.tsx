@@ -10,6 +10,18 @@ import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { fetchCEOStats, fetchProposals, Proposal, CEOStats } from '@/lib/analytics';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
+
+// Mock historical data for visualizations tracking User Growth & Listings over time
+const HISTORICAL_DATA = [
+    { name: 'Week 1', users: 120, listings: 45 },
+    { name: 'Week 2', users: 200, listings: 85 },
+    { name: 'Week 3', users: 350, listings: 150 },
+    { name: 'Week 4', users: 480, listings: 220 },
+    { name: 'Week 5', users: 600, listings: 310 },
+    { name: 'Week 6', users: 850, listings: 490 },
+    { name: 'Week 7', users: 1100, listings: 600 }
+];
 
 export default function CEOPage() {
     const { user, loading } = useAuth();
@@ -24,7 +36,7 @@ export default function CEOPage() {
 
     React.useEffect(() => {
         if (!loading && (!user || (user.role !== 'ceo' && user.role !== 'cofounder'))) {
-            router.push('/admin/login');
+            router.push('/login');
         }
     }, [user, loading, router]);
 
@@ -40,35 +52,20 @@ export default function CEOPage() {
                 const activeProposals = await fetchProposals();
                 setProposals(activeProposals || []);
 
-                // 3. Fetch Regional Stats (Real count)
+                // 3. Fetch Regional Stats
                 const { count: abujaCount } = await supabase.from('users').select('*', { count: 'exact', head: true }).ilike('location', '%Abuja%');
                 const { count: lagosCount } = await supabase.from('users').select('*', { count: 'exact', head: true }).ilike('location', '%Lagos%');
                 setRegionalStats({ abuja: abujaCount || 0, lagos: lagosCount || 0 });
 
-                // 4. Fetch Executive Chat (Live Comms)
-                // Default to 'gen' channel or just most recent system-wide
+                // 4. Fetch Live Comms (Fallback to general admin channel)
                 try {
-                    const { data: recentMsgs, error: chatError } = await supabase
+                    const { data: recentMsgs } = await supabase
                         .from('admin_channel_messages')
                         .select('*, sender:users!sender_id(display_name)')
                         .order('created_at', { ascending: false })
-                        .limit(5);
-
-                    if (chatError) throw chatError;
-
-                    // Map for display
-                    const mappedMsgs = (recentMsgs || []).map((m: any) => ({
-                        id: m.id,
-                        sender_name: m.sender?.display_name || 'System',
-                        content: m.content,
-                        created_at: m.created_at
-                    }));
-                    setMessages(mappedMsgs);
-                } catch (chatError) {
-                    console.warn('Chat fetch fallback:', chatError);
-                    // Fallback to empty if table doesn't exist yet
-                    setMessages([]);
-                }
+                        .limit(6);
+                    setMessages(recentMsgs || []);
+                } catch (e) { setMessages([]); }
 
             } catch (error) {
                 console.error("Dashboard Load Error:", error);
@@ -81,244 +78,217 @@ export default function CEOPage() {
     }, [user]);
 
     const handleAction = async (id: string, action: 'approve' | 'decline') => {
-        // Optimistic Update
+        // Optimistic UI Update
         setProposals(prev => prev.map(p => p.id === id ? { ...p, status: action === 'approve' ? 'approved' : 'declined' } : p));
-        // In real app, call API to update status in DB
-        // await updateProposalStatus(id, action);
+        // Real app would patch the Supabase proposal table here
     };
 
-    if (loading || loadingData) return <div className="min-h-screen flex items-center justify-center bg-black"><Loader2 className="h-8 w-8 animate-spin text-[#d4af37]" /></div>;
+    if (loading || loadingData) return (
+        <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+            <Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" />
+        </div>
+    );
     if (!user || (user.role !== 'ceo' && user.role !== 'cofounder')) return null;
 
     return (
-        <div className="container mx-auto py-10 px-4 space-y-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">Executive Command Center</h1>
-                    <p className="text-muted-foreground mt-2">
-                        Real-time intelligence and global operations overview for {user?.displayName || 'CEO'}.
-                    </p>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="px-3 py-1 text-sm font-medium border-primary/30 bg-primary/5">
-                        System Status: <span className="text-[#FF6200] ml-1">Online</span>
-                    </Badge>
-                </div>
-            </div>
+        <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 selection:bg-[#FF6200] selection:text-white pt-28 pb-20">
+            <div className="container px-6 mx-auto max-w-7xl space-y-12">
 
-            <Separator />
-
-            {/* Strategic KPIs (Real Data) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card className="border-l-4 border-l-green-500 shadow-md transition-all hover:shadow-lg">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Total GMV</CardTitle>
-                        <DollarSign className="h-4 w-4 text-[#FF6200]" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-3xl font-extrabold">₦{stats?.gmv.toLocaleString() || '0'}</div>
-                        <p className="text-xs text-[#FF6200] font-semibold mt-1 flex items-center">
-                            <TrendingUp className="h-3 w-3 mr-1" /> Verified Revenue
+                {/* Header */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-zinc-200 pb-8">
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">Executive Node</span>
+                        </div>
+                        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic">
+                            CEO <span className="text-[#FF6200]">Command</span>
+                        </h1>
+                        <p className="text-zinc-500 font-medium italic">
+                            Global operations active. Logged in as <span className="text-zinc-900 font-bold">{user.displayName}</span>
                         </p>
-                    </CardContent>
-                </Card>
-                <Card className="border-l-4 border-l-blue-500 shadow-md transition-all hover:shadow-lg">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Certified Dealers</CardTitle>
-                        <Users className="h-4 w-4 text-[#FF6200]" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-3xl font-extrabold">{stats?.activeDealers || 0}</div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                            Verified Sellers on Platform
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card className="border-l-4 border-l-purple-500 shadow-md transition-all hover:shadow-lg">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Active Listings</CardTitle>
-                        <Video className="h-4 w-4 text-[#FF6200]" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-3xl font-extrabold">{stats?.activeListings || 0}</div>
-                        <p className="text-xs text-purple-600 font-semibold mt-1">
-                            Live Inventory Count
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card className="border-l-4 border-l-orange-500 shadow-md transition-all hover:shadow-lg">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Platform Users</CardTitle>
-                        <ShieldCheck className="h-4 w-4 text-[#FF6200]" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-3xl font-extrabold">{stats?.totalUsers || 0}</div>
-                        <p className="text-xs text-muted-foreground mt-1 text-[#FF6200] font-semibold">
-                            Trust Score: {Math.round(stats?.trustScore || 100)}%
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                {/* Main Intelligence Stream */}
-                <div className="lg:col-span-3 space-y-8">
-                    {/* Proposal Approval Queue */}
-                    <Card className="border-primary/20 shadow-xl overflow-hidden">
-                        <CardHeader className="bg-primary/5 border-b border-primary/10">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <CardTitle className="text-xl">Strategic Proposal Queue</CardTitle>
-                                    <CardDescription>Live feed of strategic memos from admin units</CardDescription>
-                                </div>
-                                <Badge className="bg-primary/20 text-primary border-primary/30">{proposals.filter(p => p.status === 'pending').length} Pending</Badge>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="p-0">
-                            <div className="divide-y">
-                                {proposals.length === 0 ? (
-                                    <div className="p-12 text-center text-muted-foreground">
-                                        <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-white/40 opacity-50" />
-                                        <h3 className="text-lg font-bold">Queue Empty</h3>
-                                        <p className="text-sm">No active proposals found in database.</p>
-                                    </div>
-                                ) : (
-                                    proposals.map((proposal) => (
-                                        <div key={proposal.id} className="p-6 hover:bg-muted/30 transition-colors">
-                                            <div className="flex items-start justify-between mb-4">
-                                                <div className="flex gap-3">
-                                                    <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-[#FF6200] font-bold">
-                                                        <Activity className="h-5 w-5" />
-                                                    </div>
-                                                    <div>
-                                                        <h4 className="font-bold underline italic text-sm">{proposal.title}</h4>
-                                                        <p className="text-xs text-muted-foreground font-medium">Author ID: {proposal.author_id ? proposal.author_id.substring(0, 8) : 'System'}... • {proposal.created_at ? new Date(proposal.created_at).toLocaleDateString() : 'N/A'}</p>
-                                                    </div>
-                                                </div>
-                                                <Badge variant="outline" className={proposal.status === 'pending' ? 'bg-[#FF6200]/10 text-[#FF6200]' : 'bg-[#FF6200]/10 text-[#FF6200]'}>{proposal.status.toUpperCase()}</Badge>
-                                            </div>
-                                            <p className="text-sm text-white/30 mb-6 leading-relaxed">
-                                                {proposal.description}
-                                            </p>
-                                            {proposal.status === 'pending' && (
-                                                <div className="flex gap-3">
-                                                    <Button size="sm" onClick={() => handleAction(proposal.id, 'approve')} className="bg-green-600 hover:bg-green-700 h-8 text-xs">APPROVE</Button>
-                                                    <Button size="sm" onClick={() => handleAction(proposal.id, 'decline')} variant="ghost" className="h-8 text-xs text-[#FF6200]">DECLINE</Button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* Regional Performance (Real) */}
-                        <Card className="shadow-sm border-primary/10">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <MapPin className="h-5 w-5 text-primary" />
-                                    Regional Penetration
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-6">
-                                <div className="space-y-4 font-mono">
-                                    <div className="space-y-1">
-                                        <div className="flex justify-between text-xs font-bold uppercase">
-                                            <span>Abuja (HQ)</span>
-                                            <span className="text-[#FF6200]">{regionalStats.abuja} Users</span>
-                                        </div>
-                                        <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                                            <div className="h-full bg-[#FF6200]" style={{ width: `${Math.min((regionalStats.abuja / (stats?.totalUsers || 1)) * 100, 100)}%` }}></div>
-                                        </div>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <div className="flex justify-between text-xs font-bold uppercase">
-                                            <span>Lagos</span>
-                                            <span className="text-[#FF6200]">{regionalStats.lagos} Users</span>
-                                        </div>
-                                        <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                                            <div className="h-full bg-[#FF6200]" style={{ width: `${Math.min((regionalStats.lagos / (stats?.totalUsers || 1)) * 100, 100)}%` }}></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* System Health */}
-                        <Card className="shadow-sm border-primary/10">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Activity className="h-5 w-5 text-primary" />
-                                    System Metrics
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="p-3 bg-muted/20 rounded-lg flex items-center justify-between border-l-4 border-l-primary">
-                                    <div>
-                                        <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-tighter">Database Health</p>
-                                        <p className="text-lg font-bold text-[#FF6200]">OPTIMAL</p>
-                                    </div>
-                                    <TrendingUp className="h-6 w-6 text-[#FF6200]" />
-                                </div>
-                                <div className="p-3 bg-muted/20 rounded-lg flex items-center justify-between border-l-4 border-l-secondary">
-                                    <div>
-                                        <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-tighter">API Latency</p>
-                                        <p className="text-lg font-bold">~25ms</p>
-                                    </div>
-                                    <Clock className="h-6 w-6 text-[#FF6200]" />
-                                </div>
-                            </CardContent>
-                        </Card>
                     </div>
                 </div>
 
-                {/* Staff Collaboration Side Panel (Real Chat Feed) */}
-                <div className="space-y-8">
-                    <Card className="border-secondary/20 shadow-lg bg-black text-white">
-                        <CardHeader className="bg-black/50 border-b border-white/10">
-                            <CardTitle className="text-sm flex items-center gap-2">
-                                <div className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse"></div>
-                                Live Comms Relay
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-4 h-[400px] flex flex-col">
-                            <div className="flex-1 overflow-y-auto space-y-4 text-xs scrollbar-hide">
+                {/* Strategic KPIs */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <Card className="bg-white border-zinc-200 shadow-sm rounded-3xl p-6 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-6 opacity-5"><DollarSign className="h-20 w-20 text-[#00A355]" /></div>
+                        <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] mb-4">Total Liquid Volume</p>
+                        <div className="text-4xl font-black text-zinc-900 italic font-heading tracking-tighter">₦{stats?.gmv.toLocaleString() || '0'}</div>
+                        <p className="text-xs text-[#00A355] font-bold mt-2 flex items-center"><TrendingUp className="h-3 w-3 mr-1" /> Verified Revenue</p>
+                    </Card>
+                    <Card className="bg-white border-zinc-200 shadow-sm rounded-3xl p-6 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-6 opacity-5"><Store className="h-20 w-20 text-[#FF6200]" /></div>
+                        <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] mb-4">Certified Dealers</p>
+                        <div className="text-4xl font-black text-zinc-900 italic font-heading tracking-tighter">{stats?.activeDealers || 0}</div>
+                        <p className="text-xs text-[#FF6200] font-bold mt-2">Verified Sellers Mapped</p>
+                    </Card>
+                    <Card className="bg-white border-zinc-200 shadow-sm rounded-3xl p-6 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-6 opacity-5"><Activity className="h-20 w-20 text-blue-500" /></div>
+                        <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] mb-4">Active Listings</p>
+                        <div className="text-4xl font-black text-zinc-900 italic font-heading tracking-tighter">{stats?.activeListings || 0}</div>
+                        <p className="text-xs text-blue-500 font-bold mt-2">Live Inventory Count</p>
+                    </Card>
+                    <Card className="bg-white border-zinc-200 shadow-sm rounded-3xl p-6 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-6 opacity-5"><ShieldCheck className="h-20 w-20 text-purple-500" /></div>
+                        <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] mb-4">Platform Users</p>
+                        <div className="text-4xl font-black text-zinc-900 italic font-heading tracking-tighter">{stats?.totalUsers || 0}</div>
+                        <p className="text-xs text-purple-500 font-bold mt-2">Trust Score: {Math.round(stats?.trustScore || 100)}%</p>
+                    </Card>
+                </div>
+
+                {/* Analytical Charts Module */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <Card className="bg-white border-zinc-200 shadow-sm rounded-3xl p-6">
+                        <h3 className="text-sm font-black uppercase tracking-[0.2em] text-zinc-900 mb-6 flex items-center gap-2">
+                            <TrendingUp className="h-4 w-4 text-[#FF6200]" /> Network User Penetration
+                        </h3>
+                        <div className="h-[300px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={HISTORICAL_DATA}>
+                                    <defs>
+                                        <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#FF6200" stopOpacity={0.3} />
+                                            <stop offset="95%" stopColor="#FF6200" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f4f4f5" />
+                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#a1a1aa' }} dy={10} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#a1a1aa' }} dx={-10} />
+                                    <Tooltip contentStyle={{ borderRadius: '16px', border: '1px solid #e4e4e7', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }} />
+                                    <Area type="monotone" dataKey="users" stroke="#FF6200" strokeWidth={3} fillOpacity={1} fill="url(#colorUsers)" />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </Card>
+
+                    <Card className="bg-white border-zinc-200 shadow-sm rounded-3xl p-6">
+                        <h3 className="text-sm font-black uppercase tracking-[0.2em] text-zinc-900 mb-6 flex items-center gap-2">
+                            <Video className="h-4 w-4 text-[#00A355]" /> Total Active Listings
+                        </h3>
+                        <div className="h-[300px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={HISTORICAL_DATA}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f4f4f5" />
+                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#a1a1aa' }} dy={10} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#a1a1aa' }} dx={-10} />
+                                    <Tooltip cursor={{ fill: '#f4f4f5' }} contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }} />
+                                    <Bar dataKey="listings" fill="#00A355" radius={[4, 4, 0, 0]} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </Card>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    {/* Proposal Queue */}
+                    <Card className="lg:col-span-3 bg-white border-zinc-200 shadow-sm rounded-[2rem] overflow-hidden">
+                        <div className="p-6 bg-zinc-50 border-b border-zinc-100 flex items-center justify-between">
+                            <div>
+                                <h3 className="text-lg font-black uppercase tracking-tighter text-zinc-900">Strategic Proposals</h3>
+                                <p className="text-xs text-zinc-500 font-medium">Live memos from operational divisions.</p>
+                            </div>
+                            <Badge className="bg-[#FF6200]/10 text-[#FF6200] border-none shadow-none text-xs font-black uppercase">{proposals.filter(p => p.status === 'pending').length} Actionable</Badge>
+                        </div>
+                        <div className="divide-y divide-zinc-100">
+                            {proposals.length === 0 ? (
+                                <div className="p-16 text-center">
+                                    <AlertTriangle className="h-12 w-12 text-zinc-300 mx-auto mb-4" />
+                                    <h4 className="text-zinc-500 font-black uppercase tracking-widest text-sm">Dashboard Clear</h4>
+                                </div>
+                            ) : (
+                                proposals.map(proposal => (
+                                    <div key={proposal.id} className="p-6 hover:bg-zinc-50 transition-colors">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div className="flex gap-4">
+                                                <div className="h-12 w-12 rounded-xl bg-[#FF6200]/10 flex items-center justify-center text-[#FF6200]">
+                                                    <Activity className="h-6 w-6" />
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-black text-zinc-900 italic tracking-tighter uppercase">{proposal.title}</h4>
+                                                    <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">
+                                                        Author ID: {proposal.author_id ? proposal.author_id.substring(0, 8) : 'Sys'} // {proposal.created_at ? new Date(proposal.created_at).toLocaleDateString() : 'N/A'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <Badge className={
+                                                proposal.status === 'pending' ? 'bg-[#FF6200]/10 text-[#FF6200] border-none shadow-none' :
+                                                    proposal.status === 'approved' ? 'bg-[#00A355]/10 text-[#00A355] border-none shadow-none' :
+                                                        'bg-red-50 text-red-600 border-none shadow-none'
+                                            }>
+                                                {proposal.status.toUpperCase()}
+                                            </Badge>
+                                        </div>
+                                        <p className="text-sm text-zinc-600 italic font-medium leading-relaxed mb-6 bg-zinc-50 p-4 rounded-2xl">
+                                            "{proposal.description}"
+                                        </p>
+                                        {proposal.status === 'pending' && (
+                                            <div className="flex gap-3">
+                                                <Button size="sm" onClick={() => handleAction(proposal.id, 'approve')} className="bg-green-600 hover:bg-green-700 text-white font-black uppercase tracking-widest text-[9px] h-8 px-6">Ratify Memo</Button>
+                                                <Button size="sm" onClick={() => handleAction(proposal.id, 'decline')} variant="outline" className="border-red-200 text-red-600 hover:bg-red-50 text-[9px] font-black uppercase tracking-widest h-8 px-6">Veto Memo</Button>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </Card>
+
+                    {/* Regional & System Sidebar */}
+                    <div className="space-y-8">
+                        {/* Regional Penetration */}
+                        <Card className="bg-white border-zinc-200 shadow-sm rounded-3xl p-6">
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 flex items-center gap-2 mb-6">
+                                <MapPin className="h-3 w-3 text-[#FF6200]" /> Regional Saturation
+                            </h3>
+                            <div className="space-y-6">
+                                <div>
+                                    <div className="flex justify-between text-xs font-black uppercase mb-2">
+                                        <span className="text-zinc-900">Abuja (HQ)</span>
+                                        <span className="text-[#FF6200]">{regionalStats.abuja}</span>
+                                    </div>
+                                    <div className="h-2 w-full bg-zinc-100 rounded-full overflow-hidden">
+                                        <div className="h-full bg-[#FF6200]" style={{ width: `${Math.min((regionalStats.abuja / (stats?.totalUsers || 1)) * 100, 100)}%` }}></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="flex justify-between text-xs font-black uppercase mb-2">
+                                        <span className="text-zinc-900">Lagos</span>
+                                        <span className="text-[#00A355]">{regionalStats.lagos}</span>
+                                    </div>
+                                    <div className="h-2 w-full bg-zinc-100 rounded-full overflow-hidden">
+                                        <div className="h-full bg-[#00A355]" style={{ width: `${Math.min((regionalStats.lagos / (stats?.totalUsers || 1)) * 100, 100)}%` }}></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+
+                        {/* Live Comms Relay */}
+                        <Card className="bg-zinc-900 text-white border-none shadow-xl shadow-[#FF6200]/10 rounded-3xl overflow-hidden flex flex-col h-[350px]">
+                            <div className="p-4 bg-zinc-950 flex items-center justify-between">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white flex items-center gap-2">
+                                    <div className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" /> Live Relay
+                                </h3>
+                                <MessageSquare className="h-3 w-3 text-white/40" />
+                            </div>
+                            <div className="p-4 flex-1 overflow-y-auto space-y-4">
                                 {messages.length === 0 ? (
-                                    <p className="text-white/40 italic text-center mt-10">No recent communications received.</p>
+                                    <p className="text-white/40 italic text-center text-[10px] uppercase font-bold mt-10 tracking-widest">No Transmissions</p>
                                 ) : (
                                     messages.map((msg: any) => (
-                                        <div key={msg.id} className="bg-white/10/40 p-3 rounded-lg border-l-2 border-l-blue-400">
-                                            <p className="font-bold text-white/70 mb-1">{msg.sender_name || 'System'}</p>
-                                            <p className="text-white/70 italic">"{msg.content}"</p>
-                                            <p className="text-[8px] text-white/40 mt-2">{msg.created_at ? new Date(msg.created_at).toLocaleTimeString() : 'N/A'}</p>
+                                        <div key={msg.id} className="bg-white/5 p-3 rounded-xl border-l-[3px] border-[#FF6200]">
+                                            <p className="font-bold text-white mb-1 text-xs">{msg.sender?.display_name || msg.sender_name || 'System'}</p>
+                                            <p className="text-white/60 italic text-xs leading-relaxed">"{msg.content}"</p>
                                         </div>
                                     ))
                                 )}
                             </div>
-                            <Separator className="my-4 bg-white/10" />
-                            <div className="relative">
-                                <Button size="sm" className="w-full h-8 text-[10px] px-2" onClick={() => router.push('/admin/executive-chat')}>
-                                    <MessageSquare className="h-3 w-3 mr-2" />
-                                    OPEN SECURE CHAT
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="border-primary/10">
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-xs font-bold uppercase text-muted-foreground">Admin Roster Status</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <p className="text-xs text-muted-foreground italic">Admin presence tracking syncing with database...</p>
-                        </CardContent>
-                    </Card>
+                        </Card>
+                    </div>
                 </div>
             </div>
         </div>
     );
 }
-
 

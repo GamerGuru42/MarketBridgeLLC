@@ -25,7 +25,7 @@ export function Sidebar({ items, title, className }: SidebarProps) {
     const { logout } = useAuth();
 
     return (
-        <div className={cn("pb-12 min-h-screen border-r border-white/5 bg-black/40 backdrop-blur-2xl flex flex-col", className)}>
+        <div className={cn("pb-12 min-h-screen border-r border-zinc-100 bg-[#FAFAFA]/40 backdrop-blur-2xl flex flex-col", className)}>
             <div className="space-y-8 py-8 px-6">
                 <div className="px-3">
                     <div className="mb-12">
@@ -50,8 +50,8 @@ export function Sidebar({ items, title, className }: SidebarProps) {
                                     className={cn(
                                         "flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 group relative",
                                         isActive
-                                            ? "bg-white/5 text-[#FF6200] shadow-[0_0_20px_rgba(255,184,0,0.05)]"
-                                            : "text-zinc-500 hover:text-white hover:bg-white/5"
+                                            ? "bg-white text-[#FF6200] shadow-[0_0_20px_rgba(255,184,0,0.05)]"
+                                            : "text-zinc-500 hover:text-zinc-900 hover:bg-white"
                                     )}
                                 >
                                     {isActive && (
@@ -71,7 +71,7 @@ export function Sidebar({ items, title, className }: SidebarProps) {
                 </div>
             </div>
 
-            <div className="mt-auto px-8 py-8 border-t border-white/5">
+            <div className="mt-auto px-8 py-8 border-t border-zinc-100">
                 <button
                     className="flex items-center gap-4 w-full px-4 py-3 text-zinc-600 hover:text-red-500 transition-colors group"
                     onClick={() => logout()}

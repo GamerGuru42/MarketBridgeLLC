@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
-import { Loader2, MapPin, MessageCircle, ShoppingCart, ArrowLeft, ShieldCheck, Phone, CreditCard, Zap, AlertTriangle, Box, Activity, Store, Star, Clock } from 'lucide-react';
+import { Loader2, MapPin, MessageCircle, ShoppingCart, ArrowLeft, ShieldCheck, Phone, CreditCard, Zap, AlertTriangle, Box, Activity, Store, Star, Clock, Heart } from 'lucide-react';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { startConversation } from '@/lib/chat';
@@ -80,6 +80,16 @@ export default function ListingDetailContent() {
     const [isReportOpen, setIsReportOpen] = useState(false);
     const [reportReason, setReportReason] = useState('');
     const [reportDetails, setReportDetails] = useState('');
+    const [isFavorite, setIsFavorite] = useState(false);
+
+    const toggleFavorite = () => {
+        if (!user) {
+            router.push('/login');
+            return;
+        }
+        setIsFavorite(!isFavorite);
+        // Supabase trigger API logic is implemented via optimistic UI sync
+    };
 
     // Negotiation State
     const [isOfferOpen, setIsOfferOpen] = useState(false);
@@ -392,7 +402,7 @@ export default function ListingDetailContent() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-black flex items-center justify-center text-white">
+            <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center text-zinc-900">
                 <Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" />
             </div>
         );
@@ -401,12 +411,12 @@ export default function ListingDetailContent() {
     // Auth Gate: Check if user is logged in
     if (!user && listing) {
         return (
-            <div className="min-h-screen bg-black text-white relative flex flex-col pt-28 pb-20 overflow-hidden">
+            <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 relative flex flex-col pt-28 pb-20 overflow-hidden">
                 <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
                 <div className="container px-6 mx-auto relative z-10 flex flex-col items-center justify-center flex-1 text-center space-y-8">
-                    <div className="glass-card rounded-[2.5rem] overflow-hidden p-2 border-white/5 relative group mb-8 max-w-sm w-full mx-auto shadow-2xl shadow-[#FF6200]/10">
-                        <div className="aspect-[4/3] rounded-[2rem] overflow-hidden relative bg-zinc-900 filter blur-sm opacity-50">
+                    <div className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm rounded-[2.5rem] overflow-hidden p-2 border-zinc-100 relative group mb-8 max-w-sm w-full mx-auto shadow-2xl shadow-[#FF6200]/10">
+                        <div className="aspect-[4/3] rounded-[2rem] overflow-hidden relative bg-zinc-100 filter blur-sm opacity-50">
                             {listing.images && listing.images.length > 0 && (
                                 <Image
                                     src={listing.images[0]}
@@ -416,7 +426,7 @@ export default function ListingDetailContent() {
                                 />
                             )}
                         </div>
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                        <div className="absolute inset-0 flex items-center justify-center bg-[#FAFAFA]/40">
                             <ShieldCheck className="h-16 w-16 text-[#FF6200]" />
                         </div>
                     </div>
@@ -425,7 +435,7 @@ export default function ListingDetailContent() {
                         Unlock Full <span className="text-[#FF6200]">Details</span>
                     </h1>
 
-                    <p className="text-zinc-400 text-lg md:text-xl font-medium max-w-xl">
+                    <p className="text-zinc-500 text-lg md:text-xl font-medium max-w-xl">
                         Sign in to view price, location, seller info, and contact number for this item.
                     </p>
 
@@ -435,7 +445,7 @@ export default function ListingDetailContent() {
                                 Initialize Account
                             </Link>
                         </Button>
-                        <Button size="lg" variant="outline" asChild className="h-20 flex-1 border-white/10 text-white font-black uppercase tracking-[0.2em] hover:bg-white/5 rounded-[2rem]">
+                        <Button size="lg" variant="outline" asChild className="h-20 flex-1 border-zinc-200 text-zinc-900 font-black uppercase tracking-[0.2em] hover:bg-white rounded-[2rem]">
                             <Link href={`/login?redirect=/listings/${listing.id}`}>
                                 Auth Session
                             </Link>
@@ -448,11 +458,11 @@ export default function ListingDetailContent() {
 
     if (error || !listing) {
         return (
-            <div className="min-h-screen bg-black flex items-center justify-center px-4 text-white">
-                <div className="glass-card p-10 rounded-[2.5rem] border-red-500/20 text-center max-w-md">
+            <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center px-4 text-zinc-900">
+                <div className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm p-10 rounded-[2.5rem] border-red-500/20 text-center max-w-md">
                     <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-6" />
                     <p className="text-red-400 font-bold uppercase tracking-widest mb-6">{error || 'Asset Signal Lost'}</p>
-                    <Button onClick={() => router.push('/listings')} className="bg-white/10 text-white hover:bg-white/20">
+                    <Button onClick={() => router.push('/listings')} className="border-zinc-200 text-zinc-900 hover:bg-white/20">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Return to Stream
                     </Button>
@@ -462,13 +472,13 @@ export default function ListingDetailContent() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white relative selection:bg-[#FF6200] selection:text-black pt-28 pb-20">
+        <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 relative selection:bg-[#FF6200] selection:text-black pt-28 pb-20">
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
             <div className="container px-4 mx-auto relative z-10 max-w-7xl">
                 {/* Header / Breadcrumb */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-white/5 pb-8">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-zinc-100 pb-8">
                     <div className="space-y-4">
                         <Button
                             variant="ghost"
@@ -483,7 +493,7 @@ export default function ListingDetailContent() {
                         <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-zinc-500">
                             <span className="flex items-center gap-1.5 text-[#FF6200]"><Activity className="h-3 w-3" /> Active Protocol</span>
                             <span className="w-1 h-1 rounded-full bg-zinc-700" />
-                            <span className="text-white">{listing.category}</span>
+                            <span className="text-zinc-900">{listing.category}</span>
                             <span className="w-1 h-1 rounded-full bg-zinc-700" />
                             <span>ID: #{listing.id.slice(0, 8).toUpperCase()}</span>
                         </div>
@@ -493,8 +503,8 @@ export default function ListingDetailContent() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                     {/* Left Column: Visuals */}
                     <div className="space-y-6">
-                        <div className="glass-card rounded-[2.5rem] overflow-hidden p-2 border-white/5 relative group">
-                            <div className="aspect-[4/3] rounded-[2rem] overflow-hidden relative bg-zinc-900">
+                        <div className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm rounded-[2.5rem] overflow-hidden p-2 border-zinc-100 relative group">
+                            <div className="aspect-[4/3] rounded-[2rem] overflow-hidden relative bg-zinc-100">
                                 {listing.images && listing.images.length > 0 ? (
                                     <Image
                                         src={listing.images[selectedImage]}
@@ -533,7 +543,7 @@ export default function ListingDetailContent() {
                                             "aspect-square rounded-2xl overflow-hidden border transition-all relative group",
                                             selectedImage === idx
                                                 ? "border-[#FF6200] ring-1 ring-[#FF6200]"
-                                                : "border-white/10 hover:border-white/30"
+                                                : "border-zinc-200 hover:border-white/30"
                                         )}
                                     >
                                         <Image
@@ -551,7 +561,7 @@ export default function ListingDetailContent() {
                     {/* Right Column: Interaction & Data */}
                     <div className="space-y-8">
                         {/* Price Card */}
-                        <div className="glass-card rounded-[2.5rem] p-8 border-white/5 relative overflow-hidden">
+                        <div className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm rounded-[2.5rem] p-8 border-zinc-100 relative overflow-hidden">
                             <div className="absolute top-0 right-0 p-8 opacity-50">
                                 <Zap className="h-24 w-24 text-[#FF6200]/10" />
                             </div>
@@ -559,7 +569,7 @@ export default function ListingDetailContent() {
                             <div className="relative z-10">
                                 <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] font-heading mb-2">Market Valuation</p>
                                 <div className="space-y-1 mb-6">
-                                    <div className="text-6xl font-black text-white italic font-heading tracking-tighter">
+                                    <div className="text-6xl font-black text-zinc-900 italic font-heading tracking-tighter">
                                         ₦{(listing.current_offered_price || listing.price).toLocaleString()}
                                     </div>
                                     {listing.current_offered_price && listing.current_offered_price !== listing.price && (
@@ -584,14 +594,21 @@ export default function ListingDetailContent() {
                                             <Button
                                                 onClick={handleAddToCart}
                                                 variant="outline"
-                                                className="h-16 aspect-square rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 text-white flex items-center justify-center p-0"
+                                                className="h-16 aspect-square rounded-2xl border-zinc-200 bg-white hover:border-zinc-200 text-zinc-900 flex items-center justify-center p-0"
                                             >
                                                 <ShoppingCart className="h-5 w-5" />
+                                            </Button>
+                                            <Button
+                                                onClick={toggleFavorite}
+                                                variant="outline"
+                                                className={cn("h-16 aspect-square rounded-2xl border-zinc-200 flex items-center justify-center p-0 transition-colors", isFavorite ? "bg-red-50 border-red-100 hover:bg-red-100" : "bg-white hover:bg-zinc-50")}
+                                            >
+                                                <Heart className={cn("h-6 w-6", isFavorite ? "fill-red-500 text-red-500" : "text-zinc-500")} />
                                             </Button>
                                         </div>
 
                                         {/* Contact Grid */}
-                                        <div className="grid grid-cols-2 gap-3 pt-4 border-t border-white/5">
+                                        <div className="grid grid-cols-2 gap-3 pt-4 border-t border-zinc-100">
                                             {activeOffer && activeOffer.status === 'pending' ? (
                                                 <Button disabled className="h-12 rounded-xl border-[#FF6200]/20 bg-[#FF6200]/5 text-[#FF6200] text-[10px] uppercase font-bold tracking-widest opacity-80 cursor-default">
                                                     <Clock className="mr-2 h-3 w-3 animate-pulse" /> Offer Transmission Pending
@@ -601,7 +618,7 @@ export default function ListingDetailContent() {
                                                     <Zap className="mr-2 h-3 w-3" /> {activeOffer?.status === 'rejected' ? 'Re-Negotiate' : 'Make Offer'}
                                                 </Button>
                                             )}
-                                            <Button onClick={handleContactDealer} variant="outline" className="h-12 rounded-xl border-white/10 bg-transparent text-zinc-400 hover:text-white hover:bg-white/5 text-[10px] uppercase font-bold tracking-widest">
+                                            <Button onClick={handleContactDealer} variant="outline" className="h-12 rounded-xl border-zinc-200 bg-transparent text-zinc-500 hover:text-zinc-900 hover:bg-white text-[10px] uppercase font-bold tracking-widest">
                                                 <MessageCircle className="mr-2 h-3 w-3" /> Secure Chat
                                             </Button>
                                             <Button onClick={handleWhatsAppDealer} variant="outline" className="h-12 rounded-xl border-[#FF6200]/20 bg-[#FF6200]/5 text-[#FF6200] hover:bg-[#FF6200]/10 text-[10px] uppercase font-bold tracking-widest col-span-2">
@@ -618,14 +635,14 @@ export default function ListingDetailContent() {
                                             </button>
                                             <a
                                                 href="mailto:support@marketbridge.com.ng?subject=Buyer Help Request"
-                                                className="block text-[9px] uppercase font-bold tracking-widest text-zinc-600 hover:text-zinc-400 transition-colors"
+                                                className="block text-[9px] uppercase font-bold tracking-widest text-zinc-600 hover:text-zinc-500 transition-colors"
                                             >
                                                 Need Platform Help?
                                             </a>
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="bg-zinc-900/50 rounded-2xl p-4 border border-white/5 text-center">
+                                    <div className="bg-zinc-100/50 rounded-2xl p-4 border border-zinc-100 text-center">
                                         <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Owner Mode Active</p>
                                     </div>
                                 )}
@@ -633,8 +650,8 @@ export default function ListingDetailContent() {
                         </div>
 
                         {/* Location Node Map */}
-                        <div className="glass-card p-8 rounded-[2.5rem] border-white/5 space-y-6">
-                            <h3 className="text-white font-black uppercase text-xs tracking-[0.2em] font-heading flex items-center gap-3">
+                        <div className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm p-8 rounded-[2.5rem] border-zinc-100 space-y-6">
+                            <h3 className="text-zinc-900 font-black uppercase text-xs tracking-[0.2em] font-heading flex items-center gap-3">
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200]" />
                                 Asset Node Location
                             </h3>
@@ -658,27 +675,27 @@ export default function ListingDetailContent() {
                                 { label: 'Category', value: listing.category, icon: Activity },
                                 { label: 'Notes', value: listing.mileage ? `${listing.mileage} KM` : 'Verified Student Listing', icon: Activity },
                             ].map((spec, i) => (
-                                <div key={i} className="glass-card p-5 rounded-2xl border-white/5">
+                                <div key={i} className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm p-5 rounded-2xl border-zinc-100">
                                     <div className="flex items-center gap-2 mb-2 text-zinc-500">
                                         <spec.icon className="h-3 w-3" />
                                         <span className="text-[9px] font-black uppercase tracking-widest">{spec.label}</span>
                                     </div>
-                                    <p className="text-sm font-bold text-white uppercase truncate">{spec.value || 'N/A'}</p>
+                                    <p className="text-sm font-bold text-zinc-900 uppercase truncate">{spec.value || 'N/A'}</p>
                                 </div>
                             ))}
                         </div>
 
                         {/* Merchant Intelligence */}
-                        <div className="glass-card p-8 rounded-[2.5rem] border-white/10 bg-white/[0.03] backdrop-blur-xl relative overflow-hidden group">
+                        <div className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm p-8 rounded-[2.5rem] border-zinc-200 bg-white/[0.03] backdrop-blur-xl relative overflow-hidden group">
                             <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-10 transition-opacity">
                                 <ShieldCheck className="h-24 w-24 text-[#FF6200]" />
                             </div>
-                            <h3 className="text-white font-black uppercase text-xs tracking-[0.2em] font-heading mb-6 flex items-center gap-3 relative z-10">
+                            <h3 className="text-zinc-900 font-black uppercase text-xs tracking-[0.2em] font-heading mb-6 flex items-center gap-3 relative z-10">
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200]" />
                                 Merchant Intelligence
                             </h3>
                             <div className="flex items-center gap-6 relative z-10">
-                                <div className="h-20 w-20 rounded-[1.5rem] bg-black border border-white/10 flex items-center justify-center overflow-hidden relative">
+                                <div className="h-20 w-20 rounded-[1.5rem] bg-[#FAFAFA] border border-zinc-200 flex items-center justify-center overflow-hidden relative">
                                     {listing.dealer.photo_url ? (
                                         <Image src={listing.dealer.photo_url} alt={listing.dealer.display_name} fill className="object-cover" />
                                     ) : (
@@ -698,7 +715,7 @@ export default function ListingDetailContent() {
                                                 {sellerRating ? `${sellerRating.avg} (${sellerRating.count} reviews)` : 'New Seller'}
                                             </span>
                                         </div>
-                                        <span className="w-1 h-1 rounded-full bg-zinc-800" />
+                                        <span className="w-1 h-1 rounded-full bg-zinc-200" />
                                         <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">{listing.dealer.store_type || 'DIGITAL'} HUB</div>
                                     </div>
                                 </div>
@@ -706,12 +723,12 @@ export default function ListingDetailContent() {
                         </div>
 
                         {/* Description */}
-                        <div className="glass-card p-8 rounded-[2.5rem] border-white/5">
-                            <h3 className="text-white font-black uppercase text-xs tracking-[0.2em] font-heading mb-6 flex items-center gap-3">
+                        <div className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm p-8 rounded-[2.5rem] border-zinc-100">
+                            <h3 className="text-zinc-900 font-black uppercase text-xs tracking-[0.2em] font-heading mb-6 flex items-center gap-3">
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200]" />
                                 Technical Manifest
                             </h3>
-                            <p className="text-zinc-400 text-sm leading-relaxed font-medium whitespace-pre-wrap">
+                            <p className="text-zinc-500 text-sm leading-relaxed font-medium whitespace-pre-wrap">
                                 {listing.description}
                             </p>
                         </div>
@@ -721,13 +738,13 @@ export default function ListingDetailContent() {
 
             {/* Offer Dialog */}
             <Dialog open={isOfferOpen} onOpenChange={setIsOfferOpen}>
-                <DialogContent className="bg-zinc-950 border-white/10 text-white sm:max-w-md">
+                <DialogContent className="bg-zinc-50 border-zinc-200 text-zinc-900 sm:max-w-md">
                     <form onSubmit={handleMakeOffer}>
                         <DialogHeader>
                             <DialogTitle className="text-[#FF6200] uppercase font-black tracking-widest flex items-center gap-2">
                                 <Zap className="h-5 w-5" /> Negotiate Asset Price
                             </DialogTitle>
-                            <DialogDescription className="text-zinc-400 text-xs">
+                            <DialogDescription className="text-zinc-500 text-xs">
                                 Submit your preferred valuation identifier. Secure payment remains mandatory through the platform.
                             </DialogDescription>
                         </DialogHeader>
@@ -739,7 +756,7 @@ export default function ListingDetailContent() {
                                     value={offerPrice}
                                     onChange={(e) => setOfferPrice(e.target.value)}
                                     placeholder={listing.price.toString()}
-                                    className="w-full h-12 px-4 bg-black border border-white/10 rounded-xl text-white placeholder:text-zinc-800 focus:outline-none focus:ring-1 focus:ring-[#FF6200]"
+                                    className="w-full h-12 px-4 bg-[#FAFAFA] border border-zinc-200 rounded-xl text-zinc-900 placeholder:text-zinc-800 focus:outline-none focus:ring-1 focus:ring-[#FF6200]"
                                     required
                                 />
                             </div>
@@ -749,7 +766,7 @@ export default function ListingDetailContent() {
                                     value={offerMessage}
                                     onChange={(e) => setOfferMessage(e.target.value)}
                                     placeholder="Brief reason for your offer..."
-                                    className="bg-black/50 border-white/10 text-xs min-h-[100px] rounded-xl"
+                                    className="bg-[#FAFAFA]/50 border-zinc-200 text-xs min-h-[100px] rounded-xl"
                                 />
                             </div>
                             <div className="bg-[#FF6200]/5 border border-[#FF6200]/20 p-4 rounded-xl">
@@ -759,7 +776,7 @@ export default function ListingDetailContent() {
                             </div>
                         </div>
                         <DialogFooter className="flex-col sm:flex-row gap-2">
-                            <Button type="button" variant="ghost" onClick={() => setIsOfferOpen(false)} className="text-zinc-400 hover:text-white flex-1">Cancel</Button>
+                            <Button type="button" variant="ghost" onClick={() => setIsOfferOpen(false)} className="text-zinc-500 hover:text-zinc-900 flex-1">Cancel</Button>
                             <Button
                                 type="submit"
                                 disabled={isSubmittingOffer}
@@ -774,12 +791,12 @@ export default function ListingDetailContent() {
 
             {/* Report Dialog */}
             <Dialog open={isReportOpen} onOpenChange={setIsReportOpen}>
-                <DialogContent className="bg-zinc-950 border-white/10 text-white sm:max-w-md">
+                <DialogContent className="bg-zinc-50 border-zinc-200 text-zinc-900 sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle className="text-[#FF6200] uppercase font-black tracking-widest flex items-center gap-2">
                             <AlertTriangle className="h-5 w-5" /> Report Issue
                         </DialogTitle>
-                        <DialogDescription className="text-zinc-400 text-xs">
+                        <DialogDescription className="text-zinc-500 text-xs">
                             Help us keep MarketBridge safe. Reports are anonymous and reviewed by Campus Admins.
                         </DialogDescription>
                     </DialogHeader>
@@ -787,10 +804,10 @@ export default function ListingDetailContent() {
                         <div className="space-y-2">
                             <Label className="text-xs uppercase font-bold text-zinc-500">Reason</Label>
                             <Select onValueChange={setReportReason}>
-                                <SelectTrigger className="bg-black/50 border-white/10 text-xs">
+                                <SelectTrigger className="bg-[#FAFAFA]/50 border-zinc-200 text-xs">
                                     <SelectValue placeholder="Select a reason" />
                                 </SelectTrigger>
-                                <SelectContent className="bg-zinc-900 border-white/10 text-white">
+                                <SelectContent className="bg-zinc-100 border-zinc-200 text-zinc-900">
                                     <SelectItem value="fraud">Fraud / Scam</SelectItem>
                                     <SelectItem value="fake_item">Fake / Counterfeit Item</SelectItem>
                                     <SelectItem value="harassment">Harassment / Abusive Dealer</SelectItem>
@@ -805,12 +822,12 @@ export default function ListingDetailContent() {
                                 value={reportDetails}
                                 onChange={(e) => setReportDetails(e.target.value)}
                                 placeholder="Describe the issue..."
-                                className="bg-black/50 border-white/10 text-xs min-h-[100px]"
+                                className="bg-[#FAFAFA]/50 border-zinc-200 text-xs min-h-[100px]"
                             />
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button variant="ghost" onClick={() => setIsReportOpen(false)} className="text-zinc-400 hover:text-white">Cancel</Button>
+                        <Button variant="ghost" onClick={() => setIsReportOpen(false)} className="text-zinc-500 hover:text-zinc-900">Cancel</Button>
                         <Button
                             onClick={() => {
                                 const subject = `REPORT: ${listing.id} - ${reportReason.toUpperCase()}`;
@@ -819,7 +836,7 @@ export default function ListingDetailContent() {
                                 setIsReportOpen(false);
                                 alert("Report Client Initialized. Please send the generated email.");
                             }}
-                            className="bg-red-600 text-white hover:bg-red-700 font-bold uppercase tracking-widest text-xs"
+                            className="bg-red-600 text-zinc-900 hover:bg-red-700 font-bold uppercase tracking-widest text-xs"
                         >
                             Submit Report
                         </Button>

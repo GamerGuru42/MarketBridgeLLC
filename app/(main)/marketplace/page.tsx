@@ -192,14 +192,12 @@ function ListingsContent() {
 
     // Strict Beta Auth Wall: Redirect non-authenticated users smoothly back to Home
     useEffect(() => {
-        if (!authLoading && !user) {
-            router.push('/');
-        }
+        // Auth wall removed for open marketplace
     }, [user, authLoading, router]);
 
-    if (authLoading || (!user)) {
+    if (authLoading) {
         return (
-            <div className="min-h-screen bg-black flex items-center justify-center">
+            <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
                 <Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" />
             </div>
         );
@@ -207,7 +205,7 @@ function ListingsContent() {
 
 
     return (
-        <div className="min-h-screen bg-black text-white relative selection:bg-[#FF6200] selection:text-black flex flex-col pt-28 pb-20">
+        <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 relative selection:bg-[#FF6200] selection:text-black flex flex-col pt-28 pb-20">
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
@@ -216,26 +214,26 @@ function ListingsContent() {
                 <div className="space-y-4">
                     <div className="flex items-center gap-3">
                         <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 font-heading">Global Asset Index</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading">Global Asset Index</span>
                     </div>
                     <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
                         Market<span className="text-[#FF6200]">Place</span>
                     </h1>
-                    <p className="text-white/40 font-medium italic">
-                        Scanning <span className="text-white font-bold">{listings.length} live Notices</span> across the network.
+                    <p className="text-zinc-500 font-medium italic">
+                        Scanning <span className="text-zinc-900 font-bold">{listings.length} live Notices</span> across the network.
                     </p>
                 </div>
 
                 {/* Search & Filters */}
                 <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-12 gap-4">
                     <div className="md:col-span-5 relative group">
-                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30 group-focus-within:text-[#FF6200] transition-colors" />
+                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 group-focus-within:text-[#FF6200] transition-colors" />
                         <input
                             type="text"
                             placeholder="Search active Notices..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 pl-16 pr-6 h-16 text-white placeholder:text-white/30 focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-medium italic text-sm transition-all"
+                            className="w-full bg-white border border-zinc-200 pl-16 pr-6 h-16 text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-medium italic text-sm transition-all"
                         />
                     </div>
 
@@ -245,11 +243,11 @@ function ListingsContent() {
                             aria-label="Filter by Category"
                             value={category}
                             onChange={(e) => setCategory(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 px-6 h-16 text-white focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
+                            className="w-full bg-white border border-zinc-200 px-6 h-16 text-zinc-900 focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
                         >
-                            <option value="All Categories" className="bg-black text-white">All Categories</option>
+                            <option value="All Categories" className="bg-[#FAFAFA] text-zinc-900">All Categories</option>
                             {CATEGORIES.map((cat: any, idx: number) => (
-                                <option key={idx} value={cat.name} className="bg-black text-white">{cat.name.toUpperCase()}</option>
+                                <option key={idx} value={cat.name} className="bg-[#FAFAFA] text-zinc-900">{cat.name.toUpperCase()}</option>
                             ))}
                         </select>
                     </div>
@@ -260,11 +258,11 @@ function ListingsContent() {
                             aria-label="Filter by Location"
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 px-6 h-16 text-white focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
+                            className="w-full bg-white border border-zinc-200 px-6 h-16 text-zinc-900 focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
                         >
-                            <option value="" className="bg-black text-white">All Terminals</option>
-                            <option value="Abuja" className="bg-black text-white">Abuja (Main Node)</option>
-                            <option value="Global" className="bg-black text-white">Global Access</option>
+                            <option value="" className="bg-[#FAFAFA] text-zinc-900">All Terminals</option>
+                            <option value="Abuja" className="bg-[#FAFAFA] text-zinc-900">Abuja (Main Node)</option>
+                            <option value="Global" className="bg-[#FAFAFA] text-zinc-900">Global Access</option>
                         </select>
                     </div>
 
@@ -277,18 +275,18 @@ function ListingsContent() {
                 {loading && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pt-4">
                         {[...Array(8)].map((_, i) => (
-                            <div key={i} className="glass-card rounded-[2rem] border-white/5 overflow-hidden flex flex-col h-full shadow-2xl">
-                                <Skeleton className="h-64 w-full rounded-none bg-white/5" />
+                            <div key={i} className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm rounded-[2rem] border-zinc-100 overflow-hidden flex flex-col h-full shadow-2xl">
+                                <Skeleton className="h-64 w-full rounded-none bg-white" />
                                 <div className="p-8 space-y-6 flex-1 flex flex-col justify-between">
                                     <div className="space-y-3">
-                                        <Skeleton className="h-3 w-24 bg-white/5" />
-                                        <Skeleton className="h-6 w-3/4 bg-white/5" />
-                                        <Skeleton className="h-4 w-full bg-white/5" />
-                                        <Skeleton className="h-4 w-2/3 bg-white/5" />
+                                        <Skeleton className="h-3 w-24 bg-white" />
+                                        <Skeleton className="h-6 w-3/4 bg-white" />
+                                        <Skeleton className="h-4 w-full bg-white" />
+                                        <Skeleton className="h-4 w-2/3 bg-white" />
                                     </div>
-                                    <div className="pt-6 border-t border-white/5 flex justify-between items-center">
+                                    <div className="pt-6 border-t border-zinc-100 flex justify-between items-center">
                                         <div className="flex flex-col space-y-2">
-                                            <Skeleton className="h-2 w-16 bg-white/5" />
+                                            <Skeleton className="h-2 w-16 bg-white" />
                                             <Skeleton className="h-6 w-24 bg-[#FF6200]/20" />
                                         </div>
                                     </div>
@@ -328,11 +326,11 @@ function ListingsContent() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {listings.map((listing) => (
                             <Link key={listing.id} href={`/listings/${listing.id}`}>
-                                <div className={`glass-card rounded-[2rem] border transition-all duration-500 group overflow-hidden flex flex-col h-full shadow-2xl ${listing.is_sponsored
+                                <div className={`bg-white border border-zinc-200 rounded-[2rem] shadow-sm rounded-[2rem] border transition-all duration-500 group overflow-hidden flex flex-col h-full shadow-2xl ${listing.is_sponsored
                                     ? 'border-[#FF6200]/30 hover:border-[#FF6200]/60 shadow-[#FF6200]/5'
-                                    : 'border-white/5 hover:border-[#FF6200]/40 hover:shadow-[#FF6200]/10'
+                                    : 'border-zinc-100 hover:border-[#FF6200]/40 hover:shadow-[#FF6200]/10'
                                     }`}>
-                                    <div className="relative h-64 w-full overflow-hidden bg-zinc-900 border-b border-white/5">
+                                    <div className="relative h-64 w-full overflow-hidden bg-zinc-100 border-b border-zinc-100">
                                         {listing.images && listing.images[0] ? (
                                             <Image
                                                 src={listing.images[0]}
@@ -342,7 +340,7 @@ function ListingsContent() {
                                             />
                                         ) : (
                                             <div className="flex items-center justify-center h-full">
-                                                <Store className="h-12 w-12 text-white/10" />
+                                                <Store className="h-12 w-12 text-zinc-900/10" />
                                             </div>
                                         )}
 
@@ -375,24 +373,24 @@ function ListingsContent() {
                                             <div className="flex items-center gap-2 mb-1">
                                                 <span className="text-[9px] font-black text-[#FF6200] uppercase tracking-widest">{listing.category.toUpperCase()}</span>
                                                 <span className="h-1 w-1 rounded-full bg-zinc-700" />
-                                                <span className="text-[9px] font-medium text-white/40 italic">{listing.location || 'Remote'}</span>
+                                                <span className="text-[9px] font-medium text-zinc-500 italic">{listing.location || 'Remote'}</span>
                                             </div>
                                             <h3 className="text-xl font-black uppercase tracking-tighter italic font-heading line-clamp-1 group-hover:text-[#FF6200] transition-colors leading-tight">
                                                 {listing.title}
                                             </h3>
-                                            <p className="text-white/40 text-xs font-medium italic line-clamp-2 leading-relaxed">
+                                            <p className="text-zinc-500 text-xs font-medium italic line-clamp-2 leading-relaxed">
                                                 {listing.description}
                                             </p>
                                         </div>
 
-                                        <div className="pt-6 border-t border-white/5 flex justify-between items-center">
+                                        <div className="pt-6 border-t border-zinc-100 flex justify-between items-center">
                                             <div className="flex flex-col">
-                                                <span className="text-[8px] font-black text-white/30 uppercase tracking-widest">Pricing Unit</span>
-                                                <span className="text-2xl font-black text-white italic font-heading tracking-tighter">₦{listing.price.toLocaleString()}</span>
+                                                <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Pricing Unit</span>
+                                                <span className="text-2xl font-black text-zinc-900 italic font-heading tracking-tighter">₦{listing.price.toLocaleString()}</span>
                                             </div>
                                             <div className="flex items-center gap-3">
                                                 {(listing as any).view_count > 0 && (
-                                                    <span className="text-[9px] text-white/20 font-bold">{(listing as any).view_count} views</span>
+                                                    <span className="text-[9px] text-zinc-900/20 font-bold">{(listing as any).view_count} views</span>
                                                 )}
                                                 {listing.dealer?.is_verified && (
                                                     <div className="h-8 w-8 rounded-full bg-[#FF6200]/10 flex items-center justify-center border border-[#FF6200]/20">
@@ -415,7 +413,7 @@ function ListingsContent() {
 
 export default function ListingsPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" /></div>}>
+        <Suspense fallback={<div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" /></div>}>
             <ListingsContent />
         </Suspense>
     );

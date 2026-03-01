@@ -105,22 +105,22 @@ export default function AdminUsersPage() {
 
     const getRoleBadge = (role: string) => {
         switch (role) {
-            case 'admin': return <Badge className="bg-zinc-800 text-white/60 border-zinc-700 font-mono uppercase tracking-widest text-[10px]">Admin</Badge>;
+            case 'admin': return <Badge className="bg-zinc-200 text-zinc-600 border-zinc-300 font-mono uppercase tracking-widest text-[10px]">Admin</Badge>;
             case 'ceo': return <Badge className="bg-[#FF6200]/10 text-[#FF6200] border-[#FF6200]/20 font-mono uppercase tracking-widest text-[10px]">CEO</Badge>;
             case 'dealer': return <Badge className="bg-[#FF6200]/10 text-[#FF6200] border-[#FF6200]/20 font-mono uppercase tracking-widest text-[10px]">Dealer</Badge>;
-            default: return <Badge variant="outline" className="text-white/40 border-zinc-800 font-mono uppercase tracking-widest text-[10px]">{role}</Badge>;
+            default: return <Badge variant="outline" className="text-zinc-500 border-zinc-200 font-mono uppercase tracking-widest text-[10px]">{role}</Badge>;
         }
     };
 
     return (
-        <div className="min-h-screen bg-black text-white p-6 md:p-12 font-sans selection:bg-[#FF6200] selection:text-black">
+        <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 p-6 md:p-12 font-sans selection:bg-[#FF6200] selection:text-black">
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
             <div className="max-w-7xl mx-auto relative z-10 space-y-8">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-6">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-zinc-200 pb-6">
                     <div>
                         <div className="flex items-center gap-3 mb-2">
                             <Users className="h-5 w-5 text-[#FF6200]" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 font-heading">Network Administration</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 font-heading">Network Administration</span>
                         </div>
                         <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading">
                             Identity <span className="text-[#FF6200]">Nexus</span>
@@ -128,13 +128,13 @@ export default function AdminUsersPage() {
                     </div>
                 </div>
 
-                <div className="glass-card border border-white/10 bg-zinc-900/30 p-1 rounded-xl">
+                <div className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm border border-zinc-200 bg-zinc-100/30 p-1 rounded-xl">
                     <div className="flex flex-col md:flex-row gap-4 justify-between p-4">
                         <div className="relative w-full md:w-96">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                             <Input
                                 placeholder="Scan for identity signatures..."
-                                className="pl-10 bg-black border-white/10 text-white placeholder:text-white/20 h-10 focus:border-[#FF6200]/50"
+                                className="pl-10 bg-[#FAFAFA] border-zinc-200 text-zinc-900 placeholder:text-zinc-900/20 h-10 focus:border-[#FF6200]/50"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -148,7 +148,7 @@ export default function AdminUsersPage() {
                                     onClick={() => setFilterRole(role === 'All' ? null : role.toLowerCase())}
                                     className={`text-[10px] font-black uppercase tracking-widest h-10 ${filterRole === (role === 'All' ? null : role.toLowerCase())
                                         ? 'bg-[#FF6200] text-black hover:bg-[#FF6200]/90'
-                                        : 'border-white/10 text-white/60 hover:text-white hover:bg-white/5'
+                                        : 'border-zinc-200 text-zinc-600 hover:text-zinc-900 hover:bg-white'
                                         }`}
                                 >
                                     {role}s
@@ -157,15 +157,15 @@ export default function AdminUsersPage() {
                         </div>
                     </div>
 
-                    <div className="overflow-hidden rounded-lg border-t border-white/5">
+                    <div className="overflow-hidden rounded-lg border-t border-zinc-100">
                         <Table>
-                            <TableHeader className="bg-black/50">
-                                <TableRow className="border-white/5 hover:bg-transparent">
-                                    <TableHead className="w-[300px] text-white/40 uppercase text-[10px] font-black tracking-widest font-heading">Identified Entity</TableHead>
-                                    <TableHead className="text-white/40 uppercase text-[10px] font-black tracking-widest font-heading">Clearance</TableHead>
-                                    <TableHead className="text-white/40 uppercase text-[10px] font-black tracking-widest font-heading">Status</TableHead>
-                                    <TableHead className="text-white/40 uppercase text-[10px] font-black tracking-widest font-heading">Inception</TableHead>
-                                    <TableHead className="text-right text-white/40 uppercase text-[10px] font-black tracking-widest font-heading px-6">Controls</TableHead>
+                            <TableHeader className="bg-[#FAFAFA]/50">
+                                <TableRow className="border-zinc-100 hover:bg-transparent">
+                                    <TableHead className="w-[300px] text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading">Identified Entity</TableHead>
+                                    <TableHead className="text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading">Clearance</TableHead>
+                                    <TableHead className="text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading">Status</TableHead>
+                                    <TableHead className="text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading">Inception</TableHead>
+                                    <TableHead className="text-right text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading px-6">Controls</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -173,47 +173,47 @@ export default function AdminUsersPage() {
                                     <TableRow>
                                         <TableCell colSpan={5} className="h-64 text-center">
                                             <Loader2 className="h-8 w-8 animate-spin mx-auto text-[#FF6200]" />
-                                            <p className="mt-2 text-white/40 font-mono text-xs uppercase tracking-widest">Establishing Uplink...</p>                                        </TableCell>
+                                            <p className="mt-2 text-zinc-500 font-mono text-xs uppercase tracking-widest">Establishing Uplink...</p>                                        </TableCell>
                                     </TableRow>
                                 ) : filteredUsers.length === 0 ? (
                                     <TableRow>
                                         <TableCell colSpan={5} className="h-64 text-center">
-                                            <ShieldAlert className="h-10 w-10 mx-auto text-white/10 mb-2" />
-                                            <p className="text-white/40 font-mono text-xs uppercase tracking-widest italic">No entities detected in sector.</p>
+                                            <ShieldAlert className="h-10 w-10 mx-auto text-zinc-900/10 mb-2" />
+                                            <p className="text-zinc-500 font-mono text-xs uppercase tracking-widest italic">No entities detected in sector.</p>
                                         </TableCell>
                                     </TableRow>
                                 ) : (
                                     filteredUsers.map((u) => (
-                                        <TableRow key={u.id} className="border-white/5 hover:bg-white/5 transition-colors group">
+                                        <TableRow key={u.id} className="border-zinc-100 hover:bg-white transition-colors group">
                                             <TableCell>
                                                 <div className="flex items-center gap-4">
-                                                    <div className="h-10 w-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center text-[#FF6200] font-bold shrink-0">
+                                                    <div className="h-10 w-10 rounded-full bg-zinc-100 border border-zinc-200 flex items-center justify-center text-[#FF6200] font-bold shrink-0">
                                                         {u.display_name?.[0]?.toUpperCase() || '?'}
                                                     </div>
                                                     <div className="flex flex-col min-w-0">
-                                                        <span className="font-bold text-white group-hover:text-[#FF6200] transition-colors text-sm truncate">
+                                                        <span className="font-bold text-zinc-900 group-hover:text-[#FF6200] transition-colors text-sm truncate">
                                                             {u.display_name || 'Anonymous User'}
                                                         </span>
-                                                        <span className="text-xs text-white/30 font-mono italic truncate">{u.email}</span>
+                                                        <span className="text-xs text-zinc-500 font-mono italic truncate">{u.email}</span>
                                                     </div>
                                                 </div>
                                             </TableCell>
                                             <TableCell>{getRoleBadge(u.role)}</TableCell>
                                             <TableCell>
                                                 {u.is_verified ? (
-                                                    <div className="flex items-center gap-1.5 text-white">
+                                                    <div className="flex items-center gap-1.5 text-zinc-900">
                                                         <CheckCircle2 className="h-3.5 w-3.5 text-[#FF6200]" />
                                                         <span className="text-[10px] uppercase font-black tracking-tighter font-heading">Verified</span>
                                                     </div>
                                                 ) : (
-                                                    <div className="flex items-center gap-1.5 text-white/30">
+                                                    <div className="flex items-center gap-1.5 text-zinc-500">
                                                         <ShieldAlert className="h-3.5 w-3.5" />
                                                         <span className="text-[10px] uppercase font-black tracking-tighter font-heading">Unverified</span>
                                                     </div>
                                                 )}
                                             </TableCell>
                                             <TableCell>
-                                                <span className="text-xs font-mono text-white/40">
+                                                <span className="text-xs font-mono text-zinc-500">
                                                     {new Date(u.created_at).toLocaleDateString()}
                                                 </span>
                                             </TableCell>
@@ -231,14 +231,14 @@ export default function AdminUsersPage() {
                                                     )}
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
-                                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-white/40 hover:text-white hover:bg-white/10">
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-500 hover:text-zinc-900 hover:border-zinc-200">
                                                                 <MoreVertical className="h-4 w-4" />
                                                             </Button>
                                                         </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end" className="w-56 bg-zinc-950 border-white/10 text-white/70">
-                                                            <DropdownMenuLabel className="text-[10px] font-black uppercase text-white/30 font-heading">Entity Control</DropdownMenuLabel>
+                                                        <DropdownMenuContent align="end" className="w-56 bg-zinc-50 border-zinc-200 text-zinc-700">
+                                                            <DropdownMenuLabel className="text-[10px] font-black uppercase text-zinc-500 font-heading">Entity Control</DropdownMenuLabel>
                                                             {u.is_verified ? (
-                                                                <DropdownMenuItem onClick={() => handleAction(u.id, 'unverify')} className="gap-2 cursor-pointer focus:bg-white/10">
+                                                                <DropdownMenuItem onClick={() => handleAction(u.id, 'unverify')} className="gap-2 cursor-pointer focus:border-zinc-200">
                                                                     <ShieldAlert className="h-4 w-4" /> Revoke Verification
                                                                 </DropdownMenuItem>
                                                             ) : (
@@ -250,8 +250,8 @@ export default function AdminUsersPage() {
                                                                 <DropdownMenuItem onClick={() => handleAction(u.id, 'make_dealer')} className="gap-2 cursor-pointer focus:bg-[#FF6200]/10 focus:text-[#FF6200]">
                                                                     <Briefcase className="h-4 w-4" /> Grant Dealer License                                                                </DropdownMenuItem>
                                                             )}
-                                                            <DropdownMenuSeparator className="bg-white/10" />
-                                                            <DropdownMenuItem className="gap-2 cursor-pointer focus:bg-white/10">
+                                                            <DropdownMenuSeparator className="border-zinc-200" />
+                                                            <DropdownMenuItem className="gap-2 cursor-pointer focus:border-zinc-200">
                                                                 <Mail className="h-4 w-4" /> Send Transmission                                                            </DropdownMenuItem>
                                                         </DropdownMenuContent>
                                                     </DropdownMenu>

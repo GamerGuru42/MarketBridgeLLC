@@ -12,7 +12,7 @@ const ListingDetailContent = dynamic(
 export default function ListingDetailPage() {
     return (
         <Suspense fallback={
-            <div className="min-h-screen bg-black flex items-center justify-center text-white">
+            <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center text-zinc-900">
                 <Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" />
             </div>
         }>

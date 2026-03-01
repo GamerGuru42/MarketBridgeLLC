@@ -44,6 +44,7 @@ import {
 import { cn } from '@/lib/utils';
 import { SellerGuide } from '@/components/SellerGuide';
 import { TrialBanner } from '@/components/subscription/TrialBanner';
+import { SellerWeatherWidget } from '@/components/seller-weather-widget';
 import { checkAndHandleExpiredTrial } from '@/lib/subscription/utils';
 
 interface Order {
@@ -574,14 +575,14 @@ export default function SellerDashboardPage() {
 
     if (authLoading || loading || (!mounted && !sessionLost)) {
         return (
-            <div className="min-h-[80vh] flex items-center justify-center bg-black relative overflow-hidden text-white">
+            <div className="min-h-[80vh] flex items-center justify-center bg-[#FAFAFA] relative overflow-hidden text-zinc-900">
                 <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20 pointer-events-none" />
                 <div className="relative text-center">
                     <div className="h-24 w-24 rounded-2xl border-2 border-[#FF6200]/20 flex items-center justify-center relative animate-pulse mx-auto">
                         <Zap className="h-10 w-10 text-[#FF6200] animate-bounce" />
                         <div className="absolute inset-0 rounded-2xl border border-[#FF6200] animate-ping opacity-25" />
                     </div>
-                    <p className="mt-8 text-white/40 font-black uppercase tracking-[0.3em] text-xs font-heading">Syncing Dashboard...</p>
+                    <p className="mt-8 text-zinc-500 font-black uppercase tracking-[0.3em] text-xs font-heading">Syncing Dashboard...</p>
                 </div>
             </div>
         );
@@ -589,16 +590,16 @@ export default function SellerDashboardPage() {
 
     if (sessionLost) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-black text-white p-6 relative overflow-hidden">
+            <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] text-zinc-900 p-6 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none" />
-                <div className="max-w-md w-full glass-card p-8 rounded-[2rem] text-center relative z-10 border border-white/10">
+                <div className="max-w-md w-full bg-white border border-zinc-200 shadow-sm p-8 rounded-[2rem] text-center relative z-10 border border-zinc-200">
                     <AlertCircle className="h-16 w-16 text-[#FF6200] mx-auto mb-6" />
                     <h2 className="text-3xl font-black uppercase italic tracking-tighter mb-4">Error Occurred</h2>
-                    <p className="text-white/40 font-medium mb-8">Secure connection to the Dashboard was interrupted. Please re-establish identity.</p>
+                    <p className="text-zinc-500 font-medium mb-8">Secure connection to the Dashboard was interrupted. Please re-establish identity.</p>
                     <Button onClick={() => window.location.reload()} className="w-full h-14 bg-[#FF6200] text-black font-black uppercase tracking-widest rounded-xl hover:bg-[#FF7A29] transition-all">
                         Reconnect Campus
                     </Button>
-                    <Button variant="ghost" onClick={() => router.push('/login')} className="w-full mt-4 text-white/40 hover:text-white font-black uppercase tracking-widest text-[10px]">
+                    <Button variant="ghost" onClick={() => router.push('/login')} className="w-full mt-4 text-zinc-500 hover:text-zinc-900 font-black uppercase tracking-widest text-[10px]">
                         Return to Gate
                     </Button>
                 </div>
@@ -626,9 +627,9 @@ export default function SellerDashboardPage() {
         };
 
         return (
-            <div className="min-h-screen flex items-center justify-center bg-black text-white p-6 relative overflow-hidden">
+            <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] text-zinc-900 p-6 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none" />
-                <div className="max-w-xl w-full glass-card p-12 rounded-[3rem] text-center relative z-10 border border-white/10 shadow-2xl">
+                <div className="max-w-xl w-full bg-white border border-zinc-200 shadow-sm p-12 rounded-[3rem] text-center relative z-10 border border-zinc-200 shadow-2xl">
                     <div className="h-24 w-24 rounded-3xl bg-[#FF6200]/10 border border-[#FF6200]/20 flex items-center justify-center mx-auto mb-8 relative">
                         {isEmailMethod ? (
                             <Mail className="h-10 w-10 text-[#FF6200]" />
@@ -642,14 +643,14 @@ export default function SellerDashboardPage() {
                         {isEmailMethod ? "Verify Identity" : "System Pending"}
                     </h2>
 
-                    <p className="text-white/40 font-medium mb-10 leading-relaxed max-w-sm mx-auto">
+                    <p className="text-zinc-500 font-medium mb-10 leading-relaxed max-w-sm mx-auto">
                         {isEmailMethod
-                            ? <span>We have transmitted a secure link to <span className="text-white font-bold">{user.email}</span>. Please authorize this Campus to activate your dashboard.</span>
+                            ? <span>We have transmitted a secure link to <span className="text-zinc-900 font-bold">{user.email}</span>. Please authorize this Campus to activate your dashboard.</span>
                             : (
                                 <>
                                     Your merchant credentials are under review by central command. Access will be granted upon successful ID verification.
                                     <br /><br />
-                                    <span className="text-[10px] uppercase font-bold text-white/30">
+                                    <span className="text-[10px] uppercase font-bold text-zinc-900/30">
                                         For verification questions, email <a href="mailto:ops-support@marketbridge.com.ng?subject=Account%20Verification" className="text-[#FF6200] hover:underline">ops-support@marketbridge.com.ng</a>
                                     </span>
                                 </>
@@ -662,19 +663,19 @@ export default function SellerDashboardPage() {
                             <Button onClick={() => window.location.reload()} className="w-full h-16 bg-[#FF6200] text-black font-black uppercase tracking-widest rounded-2xl hover:bg-[#FF7A29] transition-all shadow-[0_0_30px_rgba(255,98,0,0.2)]">
                                 <RefreshCw className="mr-3 h-5 w-5" /> I Have Verified
                             </Button>
-                            <button onClick={resendEmail} className="text-[10px] font-black uppercase tracking-widest text-white/30 hover:text-[#FF6200] transition-colors">
+                            <button onClick={resendEmail} className="text-[10px] font-black uppercase tracking-widest text-zinc-900/30 hover:text-[#FF6200] transition-colors">
                                 Re-transmit Notice
                             </button>
                         </div>
                     ) : (
-                        <div className="bg-zinc-900/50 rounded-2xl p-6 border border-white/5">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2">Estimated Arrival</p>
-                            <p className="text-xl font-black text-white italic">~24 Hours</p>
+                        <div className="bg-white0 rounded-2xl p-6 border border-zinc-100">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-900/30 mb-2">Estimated Arrival</p>
+                            <p className="text-xl font-black text-zinc-900 italic">~24 Hours</p>
                         </div>
                     )}
 
-                    <div className="mt-12 pt-8 border-t border-white/5">
-                        <Button variant="ghost" onClick={() => router.push('/listings')} className="text-white/40 hover:text-white font-black uppercase tracking-widest text-[10px]">
+                    <div className="mt-12 pt-8 border-t border-zinc-100">
+                        <Button variant="ghost" onClick={() => router.push('/marketplace')} className="text-zinc-500 hover:text-zinc-900 font-black uppercase tracking-widest text-[10px]">
                             Return to Base
                         </Button>
                     </div>
@@ -684,34 +685,35 @@ export default function SellerDashboardPage() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white relative flex flex-col selection:bg-[#FF6200] selection:text-black">
+        <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 relative flex flex-col selection:bg-[#FF6200] selection:text-black">
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
             <SellerGuide />
+            <div className="container mx-auto px-6 mt-6 relative z-10"><SellerWeatherWidget /></div>
 
-            <div className="container mx-auto py-12 px-6 relative z-10 space-y-12 pb-24">
+            <div className="container mx-auto py-6 px-6 relative z-10 space-y-12 pb-24">
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-12">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-zinc-100 pb-12">
                     {/* ... Header Section content ... */}
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
                             <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 font-heading leading-tight">Live Operation Panel</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading leading-tight">Live Operation Panel</span>
                         </div>
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
                             Seller <span className="text-[#FF6200]">Hub</span>
                         </h1>
-                        <p className="text-white/40 font-medium max-w-xl italic">
-                            Command center for <span className="text-white font-bold">{user?.displayName}</span>.
-                            Managing <span className="text-white font-bold">{stats.totalOrders} assets</span> in current cycle.
+                        <p className="text-zinc-500 font-medium max-w-xl italic">
+                            Command center for <span className="text-zinc-900 font-bold">{user?.displayName}</span>.
+                            Managing <span className="text-zinc-900 font-bold">{stats.totalOrders} assets</span> in current cycle.
                         </p>
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <div className="h-16 px-8 rounded-2xl bg-white/5 border border-white/10 flex flex-col justify-center">
-                            <span className="text-[10px] font-black text-white/40 uppercase tracking-widest border-b border-white/5 mb-1 pb-1 font-heading">Network Status</span>
-                            <span className="text-sm font-black text-white italic uppercase tracking-tighter flex items-center gap-2 font-heading">
+                        <div className="h-16 px-8 rounded-2xl bg-white border border-zinc-200 flex flex-col justify-center">
+                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest border-b border-zinc-100 mb-1 pb-1 font-heading">Network Status</span>
+                            <span className="text-sm font-black text-zinc-900 italic uppercase tracking-tighter flex items-center gap-2 font-heading">
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200]" /> Connected
                             </span>
                         </div>
@@ -724,7 +726,7 @@ export default function SellerDashboardPage() {
                             </a>
                             <a
                                 href={`mailto:ops-support@marketbridge.com.ng?subject=Seller%20Support%20%E2%80%93%20${user?.displayName || 'Merchant'}`}
-                                className="h-16 px-6 flex items-center justify-center bg-white/5 hover:bg-white/10 border border-white/20 rounded-2xl text-white font-black uppercase tracking-widest text-[10px] transition-all font-heading"
+                                className="h-16 px-6 flex items-center justify-center bg-white hover:bg-zinc-50 border border-zinc-200 rounded-2xl text-zinc-900 font-black uppercase tracking-widest text-[10px] transition-all font-heading"
                             >
                                 Refund / Payment / Seller Help
                             </a>
@@ -744,18 +746,18 @@ export default function SellerDashboardPage() {
                         { label: "Revenue Cycle", val: `₦${stats.totalRevenue.toLocaleString()}`, icon: DollarSign, trend: revenueTrend },
                         { label: "Active Orders", val: stats.totalOrders, icon: ShoppingBag, trend: "Stable" },
                         { label: "Pending Verification", val: stats.pendingOrders, icon: Clock, color: "text-[#FF6200]" },
-                        { label: "Success Rate", val: `${Math.round((stats.completedOrders / (stats.totalOrders || 1)) * 100)}%`, icon: TrendingUp, color: "text-white" }
+                        { label: "Success Rate", val: `${Math.round((stats.completedOrders / (stats.totalOrders || 1)) * 100)}%`, icon: TrendingUp, color: "text-zinc-900" }
                     ].map((stat, i) => (
-                        <div key={i} className="glass-card p-8 group relative overflow-hidden transition-all duration-500 hover:translate-y-[-5px]">
+                        <div key={i} className="bg-white border border-zinc-200 shadow-sm p-8 group relative overflow-hidden transition-all duration-500 hover:translate-y-[-5px]">
                             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                                 <stat.icon className="h-12 w-12" />
                             </div>
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic font-heading leading-tight">{stat.label}</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading leading-tight">{stat.label}</span>
                                     {stat.trend && <span className="text-[9px] font-black text-[#FF6200] bg-[#FF6200]/5 px-2 py-0.5 rounded uppercase font-heading">{stat.trend}</span>}
                                 </div>
-                                <div className={cn("text-3xl font-black uppercase tracking-tighter font-heading", stat.color || "text-white")}>
+                                <div className={cn("text-3xl font-black uppercase tracking-tighter font-heading", stat.color || "text-zinc-900")}>
                                     {stat.val}
                                 </div>
                             </div>
@@ -775,7 +777,7 @@ export default function SellerDashboardPage() {
                                 "p-8 rounded-[2rem] transition-all duration-500 h-full flex items-center justify-between border",
                                 action.primary
                                     ? "bg-[#FF6200] border-[#FF6200] text-black"
-                                    : "bg-white/5 border-white/10 text-white hover:border-[#FF6200]/30"
+                                    : "bg-white border-zinc-200 text-zinc-900 hover:border-[#FF6200]/30"
                             )}>
                                 <div className="space-y-1">
                                     <h4 className="text-xl font-black uppercase tracking-tighter italic font-heading">{action.label}</h4>
@@ -785,7 +787,7 @@ export default function SellerDashboardPage() {
                                 </div>
                                 <div className={cn(
                                     "h-12 w-12 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110",
-                                    action.primary ? "bg-black/10" : "bg-white/5"
+                                    action.primary ? "bg-[#FAFAFA]/10" : "bg-white"
                                 )}>
                                     <action.icon className="h-6 w-6" />
                                 </div>
@@ -795,10 +797,10 @@ export default function SellerDashboardPage() {
                 </div>
 
                 {/* Execution Management Container */}
-                <div className="glass-card rounded-[3rem] p-10 overflow-hidden">
+                <div className="bg-white border border-zinc-200 shadow-sm rounded-[3rem] p-10 overflow-hidden">
                     <Tabs defaultValue="orders" className="space-y-10">
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-white/5 pb-8">
-                            <div className="flex bg-black/40 p-1.5 rounded-2xl border border-white/10">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-zinc-100 pb-8">
+                            <div className="flex bg-[#FAFAFA]/40 p-1.5 rounded-2xl border border-zinc-200">
                                 <TabsList className="bg-transparent gap-2 h-auto p-0 border-none shadow-none">
                                     <TabsTrigger value="orders" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading">Orders Queue</TabsTrigger>
                                     <TabsTrigger value="offers" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading relative">
@@ -813,7 +815,7 @@ export default function SellerDashboardPage() {
                                     <TabsTrigger value="settings" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading">Payout Settings</TabsTrigger>
                                 </TabsList>
                             </div>
-                            <div className="flex items-center gap-4 text-white/40 text-[10px] font-black uppercase tracking-widest font-heading italic">
+                            <div className="flex items-center gap-4 text-zinc-500 text-[10px] font-black uppercase tracking-widest font-heading italic">
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200] animate-pulse" /> Auto-sync enabled
                             </div>
                         </div>
@@ -831,9 +833,9 @@ export default function SellerDashboardPage() {
                                 <div className="grid grid-cols-1 gap-6">
                                     <TabsContent value="all" className="space-y-6 m-0 border-none">
                                         {orders.length === 0 ? (
-                                            <div className="text-center py-24 glass-card border-dashed">
-                                                <Package className="h-16 w-16 text-white/20 mx-auto mb-6" />
-                                                <p className="text-white/40 font-black uppercase tracking-widest text-xs font-heading italic">Zero orders detected in current sector</p>
+                                            <div className="text-center py-24 bg-white border border-zinc-200 shadow-sm border-dashed">
+                                                <Package className="h-16 w-16 text-zinc-900/20 mx-auto mb-6" />
+                                                <p className="text-zinc-500 font-black uppercase tracking-widest text-xs font-heading italic">Zero orders detected in current sector</p>
                                             </div>
                                         ) : (
                                             orders.map((order: Order) => (
@@ -844,9 +846,9 @@ export default function SellerDashboardPage() {
                                     {['pending', 'confirmed', 'completed'].map(status => (
                                         <TabsContent key={status} value={status} className="space-y-6 m-0 border-none">
                                             {orders.filter((o: Order) => o.status === status).length === 0 ? (
-                                                <div className="text-center py-24 glass-card border-dashed">
-                                                    <Package className="h-16 w-16 text-white/20 mx-auto mb-6" />
-                                                    <p className="text-white/40 font-black uppercase tracking-widest text-xs font-heading italic">No {status} orders found</p>
+                                                <div className="text-center py-24 bg-white border border-zinc-200 shadow-sm border-dashed">
+                                                    <Package className="h-16 w-16 text-zinc-900/20 mx-auto mb-6" />
+                                                    <p className="text-zinc-500 font-black uppercase tracking-widest text-xs font-heading italic">No {status} orders found</p>
                                                 </div>
                                             ) : (
                                                 orders.filter((o: Order) => o.status === status).map((order: Order) => (
@@ -862,45 +864,45 @@ export default function SellerDashboardPage() {
                         <TabsContent value="offers" className="space-y-10 focus-visible:outline-none focus:outline-none">
                             <div className="grid grid-cols-1 gap-6">
                                 {offers.length === 0 ? (
-                                    <div className="text-center py-24 glass-card border-dashed">
-                                        <Zap className="h-16 w-16 text-white/20 mx-auto mb-6" />
-                                        <p className="text-white/40 font-black uppercase tracking-widest text-xs font-heading italic">Zero negotiation Notices detected</p>
+                                    <div className="text-center py-24 bg-white border border-zinc-200 shadow-sm border-dashed">
+                                        <Zap className="h-16 w-16 text-zinc-900/20 mx-auto mb-6" />
+                                        <p className="text-zinc-500 font-black uppercase tracking-widest text-xs font-heading italic">Zero negotiation Notices detected</p>
                                     </div>
                                 ) : (
                                     offers.map((offer) => (
-                                        <div key={offer.id} className="glass-card p-6 flex flex-col md:flex-row gap-8 group/card transition-all duration-500 hover:border-[#FF6200]/20 italic">
+                                        <div key={offer.id} className="bg-white border border-zinc-200 shadow-sm p-6 flex flex-col md:flex-row gap-8 group/card transition-all duration-500 hover:border-[#FF6200]/20 italic">
                                             <div className="flex-1 space-y-4">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-3">
-                                                        <span className="text-[10px] font-black text-white/30 uppercase tracking-widest font-heading">System: #{offer.id.slice(-8).toUpperCase()}</span>
+                                                        <span className="text-[10px] font-black text-zinc-900/30 uppercase tracking-widest font-heading">System: #{offer.id.slice(-8).toUpperCase()}</span>
                                                         <Badge className={cn(
                                                             "px-3 py-1 font-black uppercase text-[9px] tracking-widest border font-heading italic",
                                                             offer.status === 'pending' ? 'bg-[#FF6200]/10 text-[#FF6200] border-[#FF6200]/20' :
-                                                                offer.status === 'accepted' ? 'bg-white/5 text-white border-white/20' :
-                                                                    'bg-zinc-800 text-white/60 border-zinc-700'
+                                                                offer.status === 'accepted' ? 'bg-white text-zinc-900 border-zinc-200' :
+                                                                    'bg-zinc-100 text-zinc-600 border-zinc-700'
                                                         )}>
                                                             {offer.status}
                                                         </Badge>
                                                     </div>
-                                                    <span className="text-[10px] text-white/30 font-black uppercase font-heading">{new Date(offer.created_at).toLocaleDateString()}</span>
+                                                    <span className="text-[10px] text-zinc-900/30 font-black uppercase font-heading">{new Date(offer.created_at).toLocaleDateString()}</span>
                                                 </div>
                                                 <div>
-                                                    <h3 className="text-xl font-black uppercase tracking-tighter font-heading text-white">{offer.listing?.title}</h3>
+                                                    <h3 className="text-xl font-black uppercase tracking-tighter font-heading text-zinc-900">{offer.listing?.title}</h3>
                                                     <div className="flex items-center gap-4 mt-1">
-                                                        <span className="text-[10px] text-white/40 font-black tracking-widest uppercase">Original: ₦{offer.listing?.price?.toLocaleString()}</span>
-                                                        <ArrowRight className="h-3 w-3 text-white/20" />
+                                                        <span className="text-[10px] text-zinc-500 font-black tracking-widest uppercase">Original: ₦{offer.listing?.price?.toLocaleString()}</span>
+                                                        <ArrowRight className="h-3 w-3 text-zinc-900/20" />
                                                         <span className="text-lg font-black text-[#FF6200]">Offered: ₦{offer.offered_price.toLocaleString()}</span>
                                                     </div>
                                                 </div>
-                                                <div className="p-4 bg-white/[0.02] border border-white/5 rounded-xl">
-                                                    <p className="text-[10px] text-white/30 font-black uppercase tracking-widest mb-1">Transmission Message</p>
-                                                    <p className="text-xs text-white/60 font-medium leading-relaxed">{offer.message || 'No additional data transmitted.'}</p>
+                                                <div className="p-4 bg-white/[0.02] border border-zinc-100 rounded-xl">
+                                                    <p className="text-[10px] text-zinc-900/30 font-black uppercase tracking-widest mb-1">Transmission Message</p>
+                                                    <p className="text-xs text-zinc-600 font-medium leading-relaxed">{offer.message || 'No additional data transmitted.'}</p>
                                                 </div>
                                                 <div className="flex items-center gap-3">
-                                                    <div className="h-8 w-8 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center overflow-hidden">
-                                                        {offer.buyer?.photo_url ? <Image src={offer.buyer.photo_url} alt="B" fill className="object-cover" /> : <User className="h-4 w-4 text-white/20" />}
+                                                    <div className="h-8 w-8 rounded-full bg-white border border-zinc-100 flex items-center justify-center overflow-hidden">
+                                                        {offer.buyer?.photo_url ? <Image src={offer.buyer.photo_url} alt="B" fill className="object-cover" /> : <User className="h-4 w-4 text-zinc-900/20" />}
                                                     </div>
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-white/70">Buyer: {offer.buyer?.display_name}</span>
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-900/70">Buyer: {offer.buyer?.display_name}</span>
                                                 </div>
                                             </div>
                                             <div className="flex md:flex-col justify-end gap-3 shrink-0">
@@ -917,7 +919,7 @@ export default function SellerDashboardPage() {
                                                             onClick={() => handleOfferAction(offer, 'reject')}
                                                             disabled={processingOffer === offer.id}
                                                             variant="outline"
-                                                            className="flex-1 md:w-32 h-12 border-white/20 text-white/60 hover:text-white hover:bg-white/5 font-black uppercase tracking-widest text-[10px]"
+                                                            className="flex-1 md:w-32 h-12 border-zinc-200 text-zinc-600 hover:text-zinc-900 hover:bg-white font-black uppercase tracking-widest text-[10px]"
                                                         >
                                                             Reject
                                                         </Button>
@@ -929,7 +931,7 @@ export default function SellerDashboardPage() {
                                                         router.push(`/chats/${conversationId}`);
                                                     }}
                                                     variant="ghost"
-                                                    className="flex-1 md:w-32 h-12 text-white/40 hover:text-white font-black uppercase tracking-widest text-[10px] gap-2"
+                                                    className="flex-1 md:w-32 h-12 text-zinc-500 hover:text-zinc-900 font-black uppercase tracking-widest text-[10px] gap-2"
                                                 >
                                                     <MessageCircle className="h-4 w-4" /> Message
                                                 </Button>
@@ -943,7 +945,7 @@ export default function SellerDashboardPage() {
                         <TabsContent value="rewards" className="divide-y divide-white/5 focus-visible:outline-none focus:outline-none">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                                 {/* MarketCoins Card */}
-                                <div className="p-10 rounded-[3rem] border border-white/5 bg-white/[0.02] flex flex-col justify-between">
+                                <div className="p-10 rounded-[3rem] border border-zinc-100 bg-white/[0.02] flex flex-col justify-between">
                                     <div className="space-y-6">
                                         <div className="flex items-center gap-3">
                                             <div className="h-12 w-12 rounded-2xl bg-[#FF6200]/10 border border-[#FF6200]/20 flex items-center justify-center">
@@ -951,42 +953,42 @@ export default function SellerDashboardPage() {
                                             </div>
                                             <div>
                                                 <h3 className="text-2xl font-black uppercase tracking-tighter italic font-heading">MarketCoins</h3>
-                                                <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Digital Loyalty System</p>
+                                                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Digital Loyalty System</p>
                                             </div>
                                         </div>
 
-                                        <div className="py-8 border-y border-white/5">
-                                            <p className="text-[10px] font-black uppercase text-white/30 tracking-[0.3em] mb-2 font-heading">Active Balance</p>
+                                        <div className="py-8 border-y border-zinc-100">
+                                            <p className="text-[10px] font-black uppercase text-zinc-900/30 tracking-[0.3em] mb-2 font-heading">Active Balance</p>
                                             <div className="flex items-baseline gap-2 font-heading">
-                                                <span className="text-6xl font-black text-white italic tracking-tighter">{(user?.coins_balance || 0).toLocaleString()}</span>
+                                                <span className="text-6xl font-black text-zinc-900 italic tracking-tighter">{(user?.coins_balance || 0).toLocaleString()}</span>
                                                 <span className="text-xl font-black text-[#FF6200] italic">MC</span>
                                             </div>
                                         </div>
 
                                         <div className="space-y-4">
-                                            <p className="text-[10px] font-medium text-white/40 italic leading-relaxed">
+                                            <p className="text-[10px] font-medium text-zinc-500 italic leading-relaxed">
                                                 Earn 1 MC for every ₦200 you sell. Redeem coins for listing promotions, platform perks, or trading discounts.
                                             </p>
                                             <div className="flex flex-wrap gap-2">
-                                                <Badge variant="outline" className="border-white/10 text-white/60 font-black uppercase text-[8px] tracking-widest">1 MC = Reward System</Badge>
-                                                <Badge variant="outline" className="border-white/10 text-white/60 font-black uppercase text-[8px] tracking-widest">Atomic Redemption</Badge>
+                                                <Badge variant="outline" className="border-zinc-200 text-zinc-600 font-black uppercase text-[8px] tracking-widest">1 MC = Reward System</Badge>
+                                                <Badge variant="outline" className="border-zinc-200 text-zinc-600 font-black uppercase text-[8px] tracking-widest">Atomic Redemption</Badge>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Refer & Earn Card */}
-                                <div className="p-10 rounded-[3rem] border border-white/5 bg-white/[0.02] space-y-8">
+                                <div className="p-10 rounded-[3rem] border border-zinc-100 bg-white/[0.02] space-y-8">
                                     <div className="space-y-2">
                                         <h3 className="text-2xl font-black uppercase tracking-tighter italic font-heading">Refer & Earn</h3>
-                                        <p className="text-white/40 text-xs italic">Expand the network and earn 100 MC for every verified referral.</p>
+                                        <p className="text-zinc-500 text-xs italic">Expand the network and earn 100 MC for every verified referral.</p>
                                     </div>
 
                                     <div className="space-y-4">
                                         <div className="space-y-2">
-                                            <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 font-heading">Your Referral Transmission Code</Label>
+                                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 font-heading">Your Referral Transmission Code</Label>
                                             <div className="flex gap-2">
-                                                <div className="flex-1 bg-black/40 border border-white/10 rounded-xl px-6 flex items-center h-14 font-mono text-lg font-black text-[#FF6200] tracking-widest">
+                                                <div className="flex-1 bg-[#FAFAFA]/40 border border-zinc-200 rounded-xl px-6 flex items-center h-14 font-mono text-lg font-black text-[#FF6200] tracking-widest">
                                                     {user?.referral_link_code || 'PROTOCOL_PENDING'}
                                                 </div>
                                                 <Button
@@ -1002,18 +1004,18 @@ export default function SellerDashboardPage() {
                                             </div>
                                         </div>
 
-                                        <div className="p-6 bg-white/[0.02] border border-white/5 rounded-2xl">
-                                            <div className="flex justify-between items-center mb-4 text-white/30">
+                                        <div className="p-6 bg-white/[0.02] border border-zinc-100 rounded-2xl">
+                                            <div className="flex justify-between items-center mb-4 text-zinc-900/30">
                                                 <span className="text-[10px] font-black uppercase tracking-widest">Referral Stats</span>
                                                 <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
                                             </div>
                                             <div className="grid grid-cols-2 gap-6">
                                                 <div>
-                                                    <p className="text-[10px] font-black uppercase text-white/40 mb-1">Total Invited</p>
-                                                    <p className="text-2xl font-black text-white italic font-heading">{referralStats.totalInvited}</p>
+                                                    <p className="text-[10px] font-black uppercase text-zinc-500 mb-1">Total Invited</p>
+                                                    <p className="text-2xl font-black text-zinc-900 italic font-heading">{referralStats.totalInvited}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-[10px] font-black uppercase text-white/40 mb-1">Coins Earned</p>
+                                                    <p className="text-[10px] font-black uppercase text-zinc-500 mb-1">Coins Earned</p>
                                                     <p className="text-2xl font-black text-[#FF6200] italic font-heading">{referralStats.coinsEarned} MC</p>
                                                 </div>
                                             </div>
@@ -1027,7 +1029,7 @@ export default function SellerDashboardPage() {
                             <div className="max-w-xl space-y-8">
                                 <div className="space-y-1">
                                     <h3 className="text-2xl font-black uppercase tracking-tighter font-heading italic">Payout Dashboard</h3>
-                                    <p className="text-white/40 text-sm italic mb-4">Establishing secure Paystack subaccount for auto-payouts.</p>
+                                    <p className="text-zinc-500 text-sm italic mb-4">Establishing secure Paystack subaccount for auto-payouts.</p>
                                     <div className="bg-[#FF6200]/5 border border-[#FF6200]/10 p-4 rounded-2xl flex items-start gap-4 mb-8">
                                         <Zap className="h-5 w-5 text-[#FF6200] shrink-0 mt-1" />
                                         <p className="text-[10px] text-[#FF6200] font-black uppercase tracking-widest leading-relaxed">
@@ -1038,16 +1040,16 @@ export default function SellerDashboardPage() {
                                 <form onSubmit={updateBankDetails} className="space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-3">
-                                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60 font-heading">Select Bank</Label>
+                                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 font-heading">Select Bank</Label>
                                             <Select
                                                 value={bankDetails.bankCode}
                                                 onValueChange={(val) => setBankDetails(prev => ({ ...prev, bankCode: val }))}
                                                 required
                                             >
-                                                <SelectTrigger className="h-14 bg-white/5 border-white/10 rounded-xl font-heading text-[10px] font-black uppercase tracking-widest text-left">
+                                                <SelectTrigger className="h-14 bg-white border-zinc-200 rounded-xl font-heading text-[10px] font-black uppercase tracking-widest text-left">
                                                     <SelectValue placeholder="CHOOSE INSTITUTION" />
                                                 </SelectTrigger>
-                                                <SelectContent className="bg-zinc-900 border-white/10 text-white font-heading text-[10px] font-black uppercase tracking-widest">
+                                                <SelectContent className="bg-white border-zinc-200 text-zinc-900 font-heading text-[10px] font-black uppercase tracking-widest">
                                                     {banks.map((bank) => (
                                                         <SelectItem key={bank.code} value={bank.code} className="focus:bg-[#FF6200] focus:text-black py-3">
                                                             {bank.name}
@@ -1057,13 +1059,13 @@ export default function SellerDashboardPage() {
                                             </Select>
                                         </div>
                                         <div className="space-y-3">
-                                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60 font-heading">Account Serial</Label>
+                                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 font-heading">Account Serial</Label>
                                             <div className="relative">
                                                 <Input
                                                     value={bankDetails.accountNumber}
                                                     onChange={(e) => setBankDetails({ ...bankDetails, accountNumber: e.target.value.replace(/\D/g, '').slice(0, 10) })}
                                                     placeholder="0123456789"
-                                                    className="h-14 bg-white/5 border-white/10 rounded-xl focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] transition-colors font-mono tracking-widest"
+                                                    className="h-14 bg-white border-zinc-200 rounded-xl focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] transition-colors font-mono tracking-widest"
                                                     required
                                                 />
                                                 {isResolving && <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-[#FF6200]" />}
@@ -1071,12 +1073,12 @@ export default function SellerDashboardPage() {
                                         </div>
                                     </div>
                                     <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60 font-heading">Entity Name</Label>
+                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 font-heading">Entity Name</Label>
                                         <Input
                                             value={bankDetails.accountName}
                                             readOnly
                                             placeholder="AUTO-RESOLVING NAME..."
-                                            className="h-14 bg-white/[0.02] border-white/10 rounded-xl font-heading text-sm uppercase tracking-widest text-white cursor-not-allowed"
+                                            className="h-14 bg-white/[0.02] border-zinc-200 rounded-xl font-heading text-sm uppercase tracking-widest text-zinc-900 cursor-not-allowed"
                                             required
                                         />
                                     </div>
@@ -1098,8 +1100,8 @@ export default function SellerDashboardPage() {
                     </Tabs>
                 </div>
 
-                <div className="border-t border-white/5 pt-8 text-center pb-8">
-                    <p className="text-[10px] text-white/30 font-medium leading-relaxed">
+                <div className="border-t border-zinc-100 pt-8 text-center pb-8">
+                    <p className="text-[10px] text-zinc-900/30 font-medium leading-relaxed">
                         Beta platform – technical problems? Email <a href="mailto:support@marketbridge.com.ng?subject=Tech%20Support" className="text-[#FF6200] hover:underline">support@marketbridge.com.ng</a><br />
                         Refunds, subscriptions or seller questions? Email <a href="mailto:ops-support@marketbridge.com.ng?subject=Ops%20Support" className="text-[#FF6200] hover:underline">ops-support@marketbridge.com.ng</a>
                     </p>
@@ -1123,9 +1125,9 @@ function OrderCard({
     const getStatusBadge = (status: string) => {
         const colors = {
             pending: 'bg-[#FF6200]/10 text-[#FF6200] border-[#FF6200]/20',
-            confirmed: 'bg-zinc-800 text-white/60 border-zinc-700',
-            completed: 'bg-white/5 text-white border-white/20',
-            cancelled: 'bg-white/5 text-white/60 border-zinc-700',
+            confirmed: 'bg-zinc-100 text-zinc-600 border-zinc-700',
+            completed: 'bg-white text-zinc-900 border-zinc-200',
+            cancelled: 'bg-white text-zinc-600 border-zinc-700',
         } as const;
 
         return (
@@ -1139,34 +1141,34 @@ function OrderCard({
     };
 
     return (
-        <div className="glass-card p-6 flex flex-col md:flex-row gap-8 group/card transition-all duration-500 hover:border-[#FF6200]/20">
+        <div className="bg-white border border-zinc-200 shadow-sm p-6 flex flex-col md:flex-row gap-8 group/card transition-all duration-500 hover:border-[#FF6200]/20">
             <div className="flex-1 flex gap-6 italic">
                 {order.listing?.images?.[0] ? (
-                    <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border border-white/5 bg-zinc-900 group-hover/card:border-[#FF6200]/20 transition-all">
+                    <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border border-zinc-100 bg-white group-hover/card:border-[#FF6200]/20 transition-all">
                         <Image src={order.listing.images[0]} alt={order.listing.title} fill className="object-cover group-hover/card:scale-110 transition-transform duration-700" />
                     </div>
                 ) : (
-                    <div className="h-24 w-24 shrink-0 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center">
-                        <Package className="h-8 w-8 text-white/20" />
+                    <div className="h-24 w-24 shrink-0 rounded-2xl bg-white border border-zinc-100 flex items-center justify-center">
+                        <Package className="h-8 w-8 text-zinc-900/20" />
                     </div>
                 )}
 
                 <div className="space-y-2 flex-1 min-w-0">
                     <div className="flex items-center gap-3">
-                        <span className="text-[10px] font-black text-white/30 uppercase tracking-widest font-heading">Ref: #{order.id.slice(-8).toUpperCase()}</span>
+                        <span className="text-[10px] font-black text-zinc-900/30 uppercase tracking-widest font-heading">Ref: #{order.id.slice(-8).toUpperCase()}</span>
                         {getStatusBadge(order.status)}
                     </div>
                     <h3 className="text-xl font-black uppercase tracking-tighter truncate font-heading">{order.listing?.title}</h3>
-                    <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-white/40">
-                        <span className="flex items-center gap-1.5 lowercase font-medium italic"><span className="text-white/20 underline">buyer:</span> <span className="text-white/70 font-bold">{order.buyer?.display_name}</span></span>
-                        <span className="flex items-center gap-1.5 lowercase font-medium italic"><span className="text-white/20 underline">value:</span> <span className="text-[#FF6200] font-black">₦{order.amount.toLocaleString()}</span></span>
-                        <span className="flex items-center gap-1.5 lowercase font-medium italic"><span className="text-white/20 underline">date:</span> <span>{new Date(order.created_at).toLocaleDateString()}</span></span>
+                    <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-zinc-500">
+                        <span className="flex items-center gap-1.5 lowercase font-medium italic"><span className="text-zinc-900/20 underline">buyer:</span> <span className="text-zinc-900/70 font-bold">{order.buyer?.display_name}</span></span>
+                        <span className="flex items-center gap-1.5 lowercase font-medium italic"><span className="text-zinc-900/20 underline">value:</span> <span className="text-[#FF6200] font-black">₦{order.amount.toLocaleString()}</span></span>
+                        <span className="flex items-center gap-1.5 lowercase font-medium italic"><span className="text-zinc-900/20 underline">date:</span> <span>{new Date(order.created_at).toLocaleDateString()}</span></span>
                     </div>
                 </div>
             </div>
 
             <div className="flex md:flex-col justify-end gap-3 shrink-0">
-                <Button variant="outline" onClick={() => onOpenChat(order)} className="flex-1 md:w-40 h-12 rounded-xl bg-white/5 border-white/10 hover:border-[#FF6200]/30 hover:bg-white/5 text-white font-black uppercase tracking-widest text-[10px] gap-2 font-heading transition-all">
+                <Button variant="outline" onClick={() => onOpenChat(order)} className="flex-1 md:w-40 h-12 rounded-xl bg-white border-zinc-200 hover:border-[#FF6200]/30 hover:bg-white text-zinc-900 font-black uppercase tracking-widest text-[10px] gap-2 font-heading transition-all">
                     <MessageCircle className="h-4 w-4" /> Message Buyer
                 </Button>
 
@@ -1175,9 +1177,9 @@ function OrderCard({
                         <SelectTrigger className="flex-1 md:w-40 h-12 rounded-xl bg-[#FF6200] border-none text-black font-black uppercase tracking-widest text-[10px] font-heading shadow-lg shadow-[#FF6200]/10 hover:bg-[#FF7A29] transition-all">
                             <SelectValue placeholder="Dispatch" />
                         </SelectTrigger>
-                        <SelectContent className="bg-zinc-900 border-white/10 text-white font-heading text-[10px] uppercase font-black tracking-widest">
+                        <SelectContent className="bg-white border-zinc-200 text-zinc-900 font-heading text-[10px] uppercase font-black tracking-widest">
                             <SelectItem value="confirmed" className="focus:bg-[#FF6200] focus:text-black">Mark Shipped</SelectItem>
-                            <SelectItem value="cancelled" className="focus:bg-zinc-800 focus:text-white text-[#FF6200]">Cancel Order</SelectItem>
+                            <SelectItem value="cancelled" className="focus:bg-zinc-100 focus:text-zinc-900 text-[#FF6200]">Cancel Order</SelectItem>
                         </SelectContent>
                     </Select>
                 )}

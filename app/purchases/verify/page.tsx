@@ -32,9 +32,9 @@ function VerifyContent() {
     }, [reference]);
 
     return (
-        <div className="min-h-screen bg-black text-white flex items-center justify-center p-6 relative overflow-hidden">
+        <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 flex items-center justify-center p-6 relative overflow-hidden">
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none" />
-            <div className="max-w-md w-full glass-card p-12 rounded-[3rem] border-white/5 relative z-10 text-center space-y-8">
+            <div className="max-w-md w-full bg-white border border-zinc-200 rounded-[2rem] shadow-sm p-12 rounded-[3rem] border-zinc-100 relative z-10 text-center space-y-8">
                 {status === 'verifying' && (
                     <>
                         <div className="h-24 w-24 rounded-3xl border-2 border-[#FF6200]/20 flex items-center justify-center relative animate-pulse mx-auto">
@@ -43,7 +43,7 @@ function VerifyContent() {
                         </div>
                         <div className="space-y-4">
                             <h1 className="text-2xl font-black uppercase tracking-tighter italic font-heading">Verifying Purchase</h1>
-                            <p className="text-white/40 text-sm font-medium italic">{message}</p>
+                            <p className="text-zinc-500 text-sm font-medium italic">{message}</p>
                         </div>
                     </>
                 )}
@@ -55,14 +55,14 @@ function VerifyContent() {
                         </div>
                         <div className="space-y-4">
                             <h1 className="text-2xl font-black uppercase tracking-tighter italic font-heading text-[#FF6200]">System Secure</h1>
-                            <p className="text-white/60 text-sm font-medium italic">{message}</p>
+                            <p className="text-zinc-600 text-sm font-medium italic">{message}</p>
                         </div>
                         <div className="pt-4 flex flex-col gap-3">
                             <Button asChild className="h-14 bg-[#FF6200] text-black hover:bg-[#FF7A29] rounded-2xl font-black uppercase tracking-widest text-xs font-heading italic shadow-xl shadow-[#FF6200]/10 border-none">
                                 <Link href="/purchases">View My Assets <ArrowRight className="ml-2 h-4 w-4" /></Link>
                             </Button>
-                            <Button variant="ghost" asChild className="text-white/40 hover:text-white text-[10px] uppercase font-black tracking-widest">
-                                <Link href="/listings">Continue Shopping</Link>
+                            <Button variant="ghost" asChild className="text-zinc-500 hover:text-zinc-900 text-[10px] uppercase font-black tracking-widest">
+                                <Link href="/marketplace">Continue Shopping</Link>
                             </Button>
                         </div>
                     </>
@@ -75,9 +75,9 @@ function VerifyContent() {
                         </div>
                         <div className="space-y-4">
                             <h1 className="text-2xl font-black uppercase tracking-tighter italic font-heading text-[#FF6200]">Error Occurred</h1>
-                            <p className="text-white/60 text-sm font-medium italic">{message}</p>
+                            <p className="text-zinc-600 text-sm font-medium italic">{message}</p>
                         </div>
-                        <Button onClick={() => router.push('/listings')} className="h-14 w-full bg-white/5 border border-white/10 text-white hover:bg-white/10 rounded-2xl font-black uppercase tracking-widest text-xs font-heading italic">
+                        <Button onClick={() => router.push('/marketplace')} className="h-14 w-full bg-white border border-zinc-200 text-zinc-900 hover:bg-zinc-50 rounded-2xl font-black uppercase tracking-widest text-xs font-heading italic">
                             Back to Stream
                         </Button>
                     </>
@@ -90,7 +90,7 @@ function VerifyContent() {
 export default function VerifyPage() {
     return (
         <Suspense fallback={
-            <div className="min-h-screen bg-black flex items-center justify-center">
+            <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
                 <Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" />
             </div>
         }>

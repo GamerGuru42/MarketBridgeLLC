@@ -230,14 +230,14 @@ export default function OrdersPage() {
 
     if (authLoading || loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-black">
+            <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA]">
                 <Loader2 className="h-8 w-8 animate-spin text-[#FF6200]" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-black text-white relative selection:bg-[#FF6200] selection:text-black pt-28 pb-32">
+        <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 relative selection:bg-[#FF6200] selection:text-black pt-28 pb-32">
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
             <div className="container mx-auto px-6 max-w-5xl relative z-10">
@@ -245,30 +245,30 @@ export default function OrdersPage() {
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
                             <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 font-heading">Secure Escrow Tracking</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading">Secure Escrow Tracking</span>
                         </div>
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
                             My <span className="text-[#FF6200]">Orders</span>
                         </h1>
-                        <p className="text-white/40 font-medium italic">
-                            Tracking <span className="text-white font-bold">{orders.length} active cycles</span> in the trust System.
+                        <p className="text-zinc-500 font-medium italic">
+                            Tracking <span className="text-zinc-900 font-bold">{orders.length} active cycles</span> in the trust System.
                         </p>
                     </div>
 
                     <Link href="/">
-                        <Button variant="outline" className="h-12 border-white/10 text-white/40 hover:text-white rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all font-heading">
+                        <Button variant="outline" className="h-12 border-zinc-200 text-zinc-500 hover:text-zinc-900 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all font-heading">
                             <ArrowLeft className="mr-2 h-3 w-3" /> Return Home
                         </Button>
                     </Link>
                 </div>
                 {orders.length === 0 ? (
-                    <div className="text-center py-40 space-y-8 bg-white/5 border border-white/10 rounded-[3rem]">
+                    <div className="text-center py-40 space-y-8 bg-white border border-zinc-200 rounded-[3rem]">
                         <div className="h-24 w-24 rounded-full bg-[#FF6200]/10 flex items-center justify-center mx-auto border border-[#FF6200]/20">
                             <Package className="h-10 w-10 text-[#FF6200]" />
                         </div>
                         <div>
                             <h3 className="text-2xl font-black uppercase tracking-tighter italic font-heading">No cycles found</h3>
-                            <p className="text-white/40 font-medium mt-2">Start shopping to initiate the trust System.</p>
+                            <p className="text-zinc-500 font-medium mt-2">Start shopping to initiate the trust System.</p>
                         </div>
                         <Button asChild className="h-14 px-10 bg-[#FF6200] text-black hover:bg-[#FF7A29] rounded-2xl font-black uppercase tracking-widest font-heading border-none">
                             <Link href="/listings">Launch Marketplace</Link>
@@ -277,15 +277,15 @@ export default function OrdersPage() {
                 ) : (
                     <div className="space-y-8">
                         {orders.map(order => (
-                            <div key={order.id} className="glass-card p-10 rounded-[3rem] border-white/5 hover:border-[#FF6200]/20 transition-all duration-500 overflow-hidden">
-                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-10 border-b border-white/5">
+                            <div key={order.id} className="bg-white border border-zinc-200 shadow-sm p-10 rounded-[3rem] border-zinc-100 hover:border-[#FF6200]/20 transition-all duration-500 overflow-hidden">
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-10 border-b border-zinc-100">
                                     <div className="space-y-1">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Cycle ID</p>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Cycle ID</p>
                                         <h3 className="text-3xl font-black uppercase tracking-tighter italic font-heading">#{order.id.slice(-8).toUpperCase()}</h3>
                                     </div>
                                     <div className={`px-6 py-3 rounded-2xl border flex items-center gap-3 ${order.status === 'completed' ? 'bg-[#FF6200]/10 border-[#FF6200]/20 text-[#FF6200]' :
                                         order.status === 'disputed' ? 'bg-[#FF6200]/10 border-[#FF6200]/20 text-[#FF6200]' :
-                                            order.status === 'cancelled' ? 'bg-zinc-800 border-zinc-700 text-white/40' :
+                                            order.status === 'cancelled' ? 'bg-zinc-200 border-zinc-300 text-zinc-500' :
                                                 'bg-[#FF6200]/10 border-[#FF6200]/20 text-[#FF6200]'
                                         }`}>
                                         {getStatusIcon(order.status)}
@@ -295,7 +295,7 @@ export default function OrdersPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
                                     <div className="md:col-span-3 space-y-8">
                                         <div className="flex gap-8 group">
-                                            <div className="h-32 w-32 shrink-0 rounded-3xl overflow-hidden border border-white/10 relative">
+                                            <div className="h-32 w-32 shrink-0 rounded-3xl overflow-hidden border border-zinc-200 relative">
                                                 {order.listing?.images?.[0] ? (
                                                     <Image
                                                         src={order.listing.images[0]}
@@ -304,8 +304,8 @@ export default function OrdersPage() {
                                                         className="object-cover group-hover:scale-110 transition-transform duration-700"
                                                     />
                                                 ) : (
-                                                    <div className="h-full w-full bg-zinc-900 flex items-center justify-center">
-                                                        <Package className="h-8 w-8 text-white/10" />
+                                                    <div className="h-full w-full bg-zinc-100 flex items-center justify-center">
+                                                        <Package className="h-8 w-8 text-zinc-900/10" />
                                                     </div>
                                                 )}
                                             </div>
@@ -317,7 +317,7 @@ export default function OrdersPage() {
                                                     </p>
                                                 </div>
                                                 {order.seller && (
-                                                    <div className="flex items-center gap-3 p-3 bg-white/5 rounded-2xl w-fit pr-6">
+                                                    <div className="flex items-center gap-3 p-3 bg-white rounded-2xl w-fit pr-6">
                                                         <div className="h-8 w-8 rounded-full bg-[#FF6200]/10 flex items-center justify-center border border-[#FF6200]/20 overflow-hidden">
                                                             {order.seller.photo_url ? (
                                                                 <img src={order.seller.photo_url} className="h-full w-full object-cover" />
@@ -331,9 +331,9 @@ export default function OrdersPage() {
                                             </div>
                                         </div>
                                         {order.shipping_address && (
-                                            <div className="bg-black/50 border border-white/5 p-6 rounded-3xl space-y-3">
-                                                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/40">Destination Endpoint</p>
-                                                <p className="text-sm text-white/60 font-medium italic">{order.shipping_address}</p>
+                                            <div className="bg-[#FAFAFA]/50 border border-zinc-100 p-6 rounded-3xl space-y-3">
+                                                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500">Destination Endpoint</p>
+                                                <p className="text-sm text-zinc-600 font-medium italic">{order.shipping_address}</p>
                                                 {order.phone_number && (
                                                     <div className="flex items-center gap-2 text-[#FF6200] text-[10px] font-black uppercase tracking-widest">
                                                         <MessageCircle className="h-3 w-3" />
@@ -346,7 +346,7 @@ export default function OrdersPage() {
 
                                     <div className="space-y-8">
                                         <div className="text-right space-y-1">
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Cycle Value</p>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Cycle Value</p>
                                             <p className="text-4xl font-black text-[#FF6200] italic font-heading tracking-tighter">₦{order.amount.toLocaleString()}</p>
                                         </div>
                                         {/* Escrow Status & Actions */}
@@ -356,7 +356,7 @@ export default function OrdersPage() {
                                                     <Clock className="h-5 w-5 animate-pulse" />
                                                     <span className="text-xs font-black uppercase tracking-widest">Awaiting Verification</span>
                                                 </div>
-                                                <p className="text-xs text-white/40 leading-relaxed font-medium italic">
+                                                <p className="text-xs text-zinc-500 leading-relaxed font-medium italic">
                                                     Our System is currently verifying the funds for this cycle. Once verified, the amount will be held in secure escrow.
                                                 </p>
                                             </div>
@@ -369,7 +369,7 @@ export default function OrdersPage() {
                                                         <AlertCircle className="h-5 w-5" />
                                                         <span className="text-xs font-black uppercase tracking-widest">System: Escrow Active</span>
                                                     </div>
-                                                    <p className="text-xs text-white/60 leading-relaxed font-medium italic">
+                                                    <p className="text-xs text-zinc-600 leading-relaxed font-medium italic">
                                                         ₦{order.amount.toLocaleString()} is securely held. The seller has been notified to Dispatch.
                                                     </p>
                                                 </div>
@@ -377,7 +377,7 @@ export default function OrdersPage() {
                                                     <Button
                                                         variant="outline"
                                                         onClick={() => openChat(order)}
-                                                        className="flex-1 h-14 border-white/10 hover:border-[#FF6200]/40 rounded-2xl font-black uppercase tracking-widest text-[10px] font-heading"
+                                                        className="flex-1 h-14 border-zinc-200 hover:border-[#FF6200]/40 rounded-2xl font-black uppercase tracking-widest text-[10px] font-heading"
                                                     >
                                                         <MessageCircle className="mr-2 h-4 w-4" />
                                                         Contact Seller
@@ -385,7 +385,7 @@ export default function OrdersPage() {
                                                     <Button
                                                         asChild
                                                         variant="ghost"
-                                                        className="flex-1 h-14 text-white/40 hover:text-[#FF6200] hover:bg-[#FF6200]/5 rounded-2xl font-black uppercase tracking-widest text-[10px] font-heading"
+                                                        className="flex-1 h-14 text-zinc-500 hover:text-[#FF6200] hover:bg-[#FF6200]/5 rounded-2xl font-black uppercase tracking-widest text-[10px] font-heading"
                                                     >
                                                         <Link href={`/orders/${order.id}/dispute`}>
                                                             <AlertCircle className="mr-2 h-4 w-4" />
@@ -402,7 +402,7 @@ export default function OrdersPage() {
                                                         <Truck className="h-5 w-5" />
                                                         <span className="text-xs font-black uppercase tracking-widest">System: In Transit</span>
                                                     </div>
-                                                    <p className="text-xs text-white leading-relaxed font-bold italic">
+                                                    <p className="text-xs text-zinc-900 leading-relaxed font-bold italic">
                                                         Shipment confirmed. Verify receipt to release the payload.
                                                     </p>
                                                 </div>
@@ -428,14 +428,14 @@ export default function OrdersPage() {
                                                         <Button
                                                             variant="outline"
                                                             onClick={() => openChat(order)}
-                                                            className="flex-1 h-14 border-white/5 text-white/40 rounded-2xl"
+                                                            className="flex-1 h-14 border-zinc-100 text-zinc-500 rounded-2xl"
                                                         >
                                                             <MessageCircle className="h-4 w-4" />
                                                         </Button>
                                                         <Button
                                                             asChild
                                                             variant="ghost"
-                                                            className="flex-[3] h-14 text-white/30 hover:text-[#FF6200] font-black uppercase tracking-widest text-[9px]"
+                                                            className="flex-[3] h-14 text-zinc-900/30 hover:text-[#FF6200] font-black uppercase tracking-widest text-[9px]"
                                                         >
                                                             <Link href={`/orders/${order.id}/dispute`}>
                                                                 Flag issues/Dispute
@@ -451,7 +451,7 @@ export default function OrdersPage() {
                                                     <CheckCircle className="h-5 w-5" />
                                                     <span className="text-xs font-black uppercase tracking-widest">System Terminated: Successful</span>
                                                 </div>
-                                                <p className="text-[10px] text-white/40 leading-relaxed font-medium italic">
+                                                <p className="text-[10px] text-zinc-500 leading-relaxed font-medium italic">
                                                     Payload of ₦{order.amount.toLocaleString()} has been released to the seller.
                                                 </p>
                                             </div>
@@ -462,7 +462,7 @@ export default function OrdersPage() {
                                                     <AlertCircle className="h-5 w-5" />
                                                     <span className="text-xs font-black uppercase tracking-widest">System Intervention: Active Dispute</span>
                                                 </div>
-                                                <p className="text-xs text-white/40 leading-relaxed font-medium italic">
+                                                <p className="text-xs text-zinc-500 leading-relaxed font-medium italic">
                                                     Trust & Safety team is reviewing the cycle logs. Funds are held in cold storage until resolution.
                                                 </p>
                                             </div>
@@ -471,9 +471,9 @@ export default function OrdersPage() {
                                 </div>
 
                                 {order.notes && (
-                                    <div className="mt-8 pt-8 border-t border-white/5">
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-2">Merchant Notes</p>
-                                        <p className="text-xs text-white/40 italic leading-relaxed">{order.notes}</p>
+                                    <div className="mt-8 pt-8 border-t border-zinc-100">
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-zinc-900/30 mb-2">Merchant Notes</p>
+                                        <p className="text-xs text-zinc-500 italic leading-relaxed">{order.notes}</p>
                                     </div>
                                 )}
                             </div>
@@ -483,18 +483,18 @@ export default function OrdersPage() {
             </div>
 
             <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-                <AlertDialogContent className="bg-zinc-900 border-white/10 rounded-[2rem] p-10">
+                <AlertDialogContent className="bg-zinc-100 border-zinc-200 rounded-[2rem] p-10">
                     <AlertDialogHeader>
                         <AlertDialogTitle className="text-2xl font-black uppercase italic tracking-tighter">Authorize Payload Release?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-white/40 font-medium italic py-4">
-                            You are about to authorize the permanent release of <span className="text-white font-bold">₦{selectedOrder?.amount.toLocaleString()}</span> to the seller.
+                        <AlertDialogDescription className="text-zinc-500 font-medium italic py-4">
+                            You are about to authorize the permanent release of <span className="text-zinc-900 font-bold">₦{selectedOrder?.amount.toLocaleString()}</span> to the seller.
                             Confirm only if the asset has been received in the expected condition.
                             <br /><br />
                             <span className="text-[#FF6200] uppercase text-[10px] font-black tracking-widest">System Warning: This action is non-reversible.</span>
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className="gap-4">
-                        <AlertDialogCancel className="h-14 px-8 border-white/10 text-white/40 hover:text-white rounded-2xl font-black uppercase tracking-widest text-[10px]">Abort</AlertDialogCancel>
+                        <AlertDialogCancel className="h-14 px-8 border-zinc-200 text-zinc-500 hover:text-zinc-900 rounded-2xl font-black uppercase tracking-widest text-[10px]">Abort</AlertDialogCancel>
                         <AlertDialogAction onClick={confirmDelivery} className="h-14 px-10 bg-[#FF6200] text-black hover:bg-[#FF7A29] rounded-2xl font-black uppercase tracking-widest text-[10px] border-none">
                             Release Funds
                         </AlertDialogAction>
