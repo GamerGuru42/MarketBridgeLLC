@@ -154,7 +154,7 @@ export const Header = () => {
                                         </div>
 
                                         {/* Primary Seller Action */}
-                                        {['dealer', 'student_seller'].includes(user.role) && (
+                                        {['dealer', 'student_seller', 'seller'].includes(user.role) && (
                                             <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1 outline-none border border-transparent focus:border-white/5">
                                                 <Link href="/seller/dashboard" className="flex items-center gap-4 w-full px-2">
                                                     <div className="h-9 w-9 rounded-xl bg-[#FF6200]/10 border border-[#FF6200]/20 flex items-center justify-center group-hover:bg-[#FF6200]/20 transition-all">

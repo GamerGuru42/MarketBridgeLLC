@@ -4,10 +4,10 @@ import React, { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { createClient } from '@/lib/supabase/client';
 const supabase = createClient();
@@ -48,8 +48,9 @@ interface Listing {
 import { Suspense } from 'react';
 
 function ListingsContent() {
+    const router = useRouter();
     const searchParams = useSearchParams();
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const initialLocation = searchParams?.get('location') || '';
 
     const [listings, setListings] = useState<Listing[]>([]);
@@ -189,14 +190,14 @@ function ListingsContent() {
         fetchListings();
     };
 
-    // Strict Beta Auth Wall: Redirect non-authenticated users instantly back to Waitlist
+    // Strict Beta Auth Wall: Redirect non-authenticated users smoothly back to Home
     useEffect(() => {
-        if (!loading && !user) {
-            window.location.href = '/';
+        if (!authLoading && !user) {
+            router.push('/');
         }
-    }, [user, loading]);
+    }, [user, authLoading, router]);
 
-    if (!loading && !user) {
+    if (authLoading || (!user)) {
         return (
             <div className="min-h-screen bg-black flex items-center justify-center">
                 <Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" />

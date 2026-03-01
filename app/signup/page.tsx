@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
@@ -42,6 +42,17 @@ function SignupContent() {
 
     const [currentStep, setCurrentStep] = useState('role');
     const [role, setRole] = useState<'buyer' | 'student_seller' | 'dealer'>('buyer');
+
+    // Pre-select role from URL if present
+    useEffect(() => {
+        const roleParam = searchParams?.get('role');
+        if (roleParam === 'student_seller' || roleParam === 'seller') {
+            setRole('student_seller');
+        } else if (roleParam === 'dealer') {
+            setRole('dealer');
+        }
+    }, [searchParams]);
+
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -59,16 +70,15 @@ function SignupContent() {
     };
 
     const handleGoogleAuth = async () => {
-        if (role !== 'buyer') {
-            toast('Google Sign Up is only available for Buyers.', 'info');
-            return;
-        }
         setIsLoading(true);
         try {
-            await signInWithGoogle(`${window.location.origin}/auth/callback?next=/listings`);
+            // For sellers, we'll redirect to a complete-profile page if they don't have business info
+            // But for now, we'll allow the login and the dashboard will catch missing info
+            const nextPath = role === 'buyer' ? '/listings' : '/seller/dashboard';
+            await signInWithGoogle(`${window.location.origin}/auth/callback?next=${nextPath}&role=${role}`);
         } catch (err: any) {
             console.error('Google signup error:', err);
-            toast(err.message || 'Google signup failed', 'error');
+            toast(err.message || 'Verification failed. Please check your connection.', 'error');
             setIsLoading(false);
         }
     };

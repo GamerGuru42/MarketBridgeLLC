@@ -7,6 +7,7 @@ export async function GET(request: Request) {
     const code = searchParams.get('code')
     // if "next" is in param, use it as the redirect URL
     const next = searchParams.get('next') ?? '/'
+    const role = searchParams.get('role')
 
     if (code) {
         console.log('Auth Callback: Code detected, initiating exchange...');
@@ -31,13 +32,26 @@ export async function GET(request: Request) {
                 },
             }
         )
-        const { error } = await supabase.auth.exchangeCodeForSession(code)
+        const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
-        if (!error) {
-            console.log('Auth Callback: Exchange successful. Redirecting to:', next);
+        if (!error && data?.user) {
+            console.log('Auth Callback: Exchange successful for:', data.user.email);
+
+            // If a role was passed, ensure the profile reflects it
+            if (role) {
+                console.log('Auth Callback: Upserting profile with role:', role);
+                await supabase.from('users').upsert({
+                    id: data.user.id,
+                    email: data.user.email,
+                    display_name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0],
+                    role: role,
+                    email_verified: true // Social login implies verification
+                }, { onConflict: 'id' });
+            }
+
             return NextResponse.redirect(new URL(next, origin))
         } else {
-            console.error('Auth Callback: Exchange failed:', error.message);
+            console.error('Auth Callback: Exchange failed:', error?.message);
         }
     }
 
