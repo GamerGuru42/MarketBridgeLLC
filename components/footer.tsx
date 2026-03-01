@@ -5,54 +5,54 @@ import { Logo } from '@/components/logo';
 
 export const Footer = () => {
     return (
-        <footer className="bg-white border-t border-zinc-200 pt-24 pb-12 z-50 relative">
+        <footer className="bg-white dark:bg-black border-t border-zinc-200 dark:border-zinc-900 pt-24 pb-12 z-50 relative">
             <div className="container mx-auto px-4 max-w-6xl">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-20">
                     <div className="space-y-6">
                         <Logo />
-                        <p className="text-zinc-500 text-xs font-medium leading-relaxed">
-                            <strong>MarketBridge Campus Beta</strong><br />
+                        <p className="text-zinc-500 dark:text-zinc-400 text-xs font-medium leading-relaxed">
+                            <strong className="text-zinc-900 dark:text-zinc-100">MarketBridge Campus Beta</strong><br />
                             <a href="mailto:support@marketbridge.com.ng?subject=Tech%20Support" className="text-[#FF6200] hover:text-[#FF7A29] transition-colors">
                                 Tech Support: support@marketbridge.com.ng
                             </a><br />
                             <a href="mailto:ops-support@marketbridge.com.ng?subject=Ops%20Support" className="text-[#FF6200] hover:text-[#FF7A29] transition-colors">
                                 Ops / Refunds / Account Help: ops-support@marketbridge.com.ng
                             </a><br />
-                            Website: <a href="https://marketbridge.com.ng" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF6200] transition-colors text-zinc-900">https://marketbridge.com.ng</a><br />
-                            <span className="text-[10px] text-zinc-500 mt-2 block">
-                                <Link href="/terms" className="hover:text-zinc-900">Terms</Link> | <Link href="/privacy" className="hover:text-zinc-900">Privacy</Link> | <Link href="/refund" className="hover:text-zinc-900">Refund</Link> | <Link href="/disclaimer" className="hover:text-zinc-900">Disclaimer</Link>
+                            Website: <a href="https://marketbridge.com.ng" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF6200] transition-colors text-zinc-900 dark:text-zinc-300">https://marketbridge.com.ng</a><br />
+                            <span className="text-[10px] text-zinc-500 dark:text-zinc-600 mt-2 block">
+                                <Link href="/terms" className="hover:text-zinc-900 dark:hover:text-zinc-300">Terms</Link> | <Link href="/privacy" className="hover:text-zinc-900 dark:hover:text-zinc-300">Privacy</Link> | <Link href="/refund" className="hover:text-zinc-900 dark:hover:text-zinc-300">Refund</Link> | <Link href="/disclaimer" className="hover:text-zinc-900 dark:hover:text-zinc-300">Disclaimer</Link>
                             </span>
                         </p>
                     </div>
 
                     <div>
-                        <h3 className="text-zinc-900 font-black uppercase text-[10px] tracking-[0.2em] mb-8">Platform</h3>
-                        <ul className="space-y-4 text-zinc-500 text-xs font-bold uppercase tracking-widest">
-                            <li><Link href="/listings" className="hover:text-zinc-900 transition-colors">Browse Listings</Link></li>
-                            <li><Link href="/dealers" className="hover:text-zinc-900 transition-colors">Founding Sellers</Link></li>
-                            <li><Link href="/pricing" className="hover:text-zinc-900 transition-colors">Beta Access</Link></li>
+                        <h3 className="text-zinc-900 dark:text-zinc-100 font-black uppercase text-[10px] tracking-[0.2em] mb-8">Platform</h3>
+                        <ul className="space-y-4 text-zinc-500 dark:text-zinc-400 text-xs font-bold uppercase tracking-widest">
+                            <li><Link href="/listings" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Browse Listings</Link></li>
+                            <li><Link href="/dealers" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Founding Sellers</Link></li>
+                            <li><Link href="/pricing" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Beta Access</Link></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h3 className="text-zinc-900 font-black uppercase text-[10px] tracking-[0.2em] mb-8">Legal (Beta)</h3>
-                        <ul className="space-y-4 text-zinc-500 text-xs font-bold uppercase tracking-widest">
-                            <li><Link href="/terms" className="hover:text-zinc-900 transition-colors">Terms of Service</Link></li>
-                            <li><Link href="/privacy" className="hover:text-zinc-900 transition-colors">Privacy Policy (NDPA)</Link></li>
-                            <li><Link href="/refund" className="hover:text-zinc-900 transition-colors">Refund & Cancellation</Link></li>
-                            <li><Link href="/disclaimer" className="hover:text-zinc-900 transition-colors">Beta Disclaimer</Link></li>
+                        <h3 className="text-zinc-900 dark:text-zinc-100 font-black uppercase text-[10px] tracking-[0.2em] mb-8">Legal (Beta)</h3>
+                        <ul className="space-y-4 text-zinc-500 dark:text-zinc-400 text-xs font-bold uppercase tracking-widest">
+                            <li><Link href="/terms" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Terms of Service</Link></li>
+                            <li><Link href="/privacy" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Privacy Policy (NDPA)</Link></li>
+                            <li><Link href="/refund" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Refund & Cancellation</Link></li>
+                            <li><Link href="/disclaimer" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Beta Disclaimer</Link></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h3 className="text-zinc-900 font-black uppercase text-[10px] tracking-[0.2em] mb-8">Connect</h3>
+                        <h3 className="text-zinc-900 dark:text-zinc-100 font-black uppercase text-[10px] tracking-[0.2em] mb-8">Connect</h3>
                         <div className="flex space-x-6">
                             {[
                                 { Icon: Instagram, href: "https://instagram.com/marketbridge.ng" },
                                 { Icon: Twitter, href: "https://x.com/marketbridgeng" },
                                 { Icon: Facebook, href: "https://facebook.com/marketbridgeng" }
                             ].map((social, i) => (
-                                <Link key={i} href={social.href} target="_blank" rel="noopener noreferrer" className="h-10 w-10 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center text-zinc-500 hover:text-[#FF6200] hover:border-[#FF6200]/50 transition-all">
+                                <Link key={i} href={social.href} target="_blank" rel="noopener noreferrer" className="h-10 w-10 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl flex items-center justify-center text-zinc-500 dark:text-zinc-400 hover:text-[#FF6200] dark:hover:text-[#FF6200] hover:border-[#FF6200]/50 transition-all">
                                     <social.Icon className="h-4 w-4" />
                                 </Link>
                             ))}
@@ -60,10 +60,10 @@ export const Footer = () => {
                     </div>
                 </div>
 
-                <div className="pt-8 border-t border-zinc-200 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-zinc-500 font-black uppercase tracking-[0.2em]">
+                <div className="pt-8 border-t border-zinc-200 dark:border-zinc-800 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-zinc-500 dark:text-zinc-500 font-black uppercase tracking-[0.2em]">
                     <div className="flex flex-col gap-2 items-center md:items-start text-center md:text-left">
                         <p>&copy; {new Date().getFullYear()} MarketBridge Limited (Beta). All rights reserved.</p>
-                        <p className="text-zinc-900 normal-case tracking-normal">MarketBridge NG Limited | Registered in Abuja, Nigeria</p>
+                        <p className="text-zinc-900 dark:text-zinc-400 normal-case tracking-normal">MarketBridge NG Limited | Registered in Abuja, Nigeria</p>
                     </div>
                     <div className="flex gap-8">
                         <span className="text-[#FF6200] flex items-center gap-2">
