@@ -31,7 +31,7 @@ export default function MainLayout({
                 </div>
             )}
             {!isDashboard && <Header />}
-            <main className={`flex-1 ${!isDashboard ? 'pb-16 md:pb-0' : ''}`}>{children}</main>
+            <main className={`flex-1 pt-16 ${!isDashboard ? 'pb-16 md:pb-0' : ''}`}>{children}</main>
             {!isDashboard && <Footer />}
             {!isDashboard && <MobileBottomNav />}
             <FeedbackModal />

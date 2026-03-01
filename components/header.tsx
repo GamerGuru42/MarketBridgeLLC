@@ -5,9 +5,11 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 import { useAuth } from '@/contexts/AuthContext';
-import { Menu, User, LogOut, LayoutDashboard, Crown, MapPin, Zap } from 'lucide-react';
+import {
+    Menu, User, LogOut, LayoutDashboard, Crown, Zap,
+    ShoppingBag, Store, ChevronDown, X
+} from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
-import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -15,11 +17,6 @@ import {
     DropdownMenuTrigger,
     DropdownMenuPortal,
 } from '@/components/ui/dropdown-menu';
-import {
-    Sheet,
-    SheetContent,
-    SheetTrigger,
-} from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 
 export const Header = () => {
@@ -27,24 +24,6 @@ export const Header = () => {
     const router = useRouter();
     const pathname = usePathname();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [scrolled, setScrolled] = useState(false);
-
-    const { scrollY } = useScroll();
-
-    useMotionValueEvent(scrollY, "change", (latest) => {
-        setScrolled(latest > 20);
-    });
-
-    const handleSignOut = () => {
-        logout();
-        router.push('/');
-    };
-
-    const isActive = (path: string) => {
-        if (path === '/') return pathname === '/';
-        return pathname?.startsWith(path);
-    };
-
     const [currentNode, setCurrentNode] = useState<string>('Abuja');
 
     useEffect(() => {
@@ -56,179 +35,213 @@ export const Header = () => {
         }
     }, []);
 
-    const navLinkClass = (path: string) => cn(
-        "relative text-xs font-bold uppercase tracking-widest transition-colors duration-300",
-        isActive(path) ? "text-white" : "text-zinc-400 hover:text-white"
-    );
+    const handleSignOut = () => {
+        logout();
+        router.push('/');
+    };
+
+    const isActive = (path: string) => {
+        if (path === '/') return pathname === '/';
+        return pathname?.startsWith(path);
+    };
+
+    const navLinks = [
+        { href: '/listings', label: 'Browse' },
+        { href: '/signup?role=student_seller', label: 'Sell on MarketBridge' },
+    ];
 
     return (
-        <motion.header
-            className={cn(
-                "fixed top-0 left-0 right-0 z-[100] transition-all duration-300 border-b",
-                scrolled
-                    ? "bg-black/80 backdrop-blur-xl border-white/5 h-20 shadow-2xl"
-                    : "bg-transparent border-transparent h-24"
-            )}
-            initial={{ y: -100 }}
-            animate={{ y: 0 }}
-            transition={{ duration: 0.5, ease: "circOut" }}
-        >
-            <div className="container mx-auto px-4 h-full flex items-center justify-between">
-                {/* Logo & Node */}
-                <div className="flex items-center gap-6">
-                    <Logo />
-                    <div
-                        className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full cursor-pointer hover:bg-white/10 hover:border-[#FF6200]/30 transition-all group"
-                        onClick={() => { localStorage.removeItem('mb-preferred-node'); window.location.reload(); }}
-                    >
-                        <div className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6200] opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF6200]"></span>
-                        </div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.1em] text-zinc-300 group-hover:text-white transition-colors">{currentNode} Node</span>
+        <>
+            <header className="fixed top-0 left-0 right-0 z-[100] bg-[#0A0A0A] border-b border-white/[0.07] h-16">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between gap-4">
+
+                    {/* Left: Logo + Campus Node */}
+                    <div className="flex items-center gap-3 shrink-0">
+                        <Logo />
+                        <button
+                            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.05] hover:bg-white/[0.08] border border-white/10 rounded-full transition-all group"
+                            onClick={() => {
+                                localStorage.removeItem('mb-preferred-node');
+                                window.location.reload();
+                            }}
+                        >
+                            <span className="relative flex h-1.5 w-1.5">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6200] opacity-75" />
+                                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#FF6200]" />
+                            </span>
+                            <span className="text-[11px] font-bold text-white/60 group-hover:text-white/90 transition-colors">
+                                {currentNode}
+                            </span>
+                            <ChevronDown className="h-3 w-3 text-white/30" />
+                        </button>
+                    </div>
+
+                    {/* Centre: Nav Links (desktop) */}
+                    <nav className="hidden md:flex items-center gap-1">
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                className={cn(
+                                    'px-4 py-2 rounded-full text-sm font-semibold transition-all',
+                                    isActive(link.href)
+                                        ? 'bg-white/10 text-white'
+                                        : 'text-white/55 hover:text-white hover:bg-white/[0.06]'
+                                )}
+                            >
+                                {link.label}
+                            </Link>
+                        ))}
+                    </nav>
+
+                    {/* Right: Auth actions */}
+                    <div className="flex items-center gap-2 shrink-0">
+                        {!loading && !user && (
+                            <div className="hidden md:flex items-center gap-2">
+                                <Link
+                                    href="/login"
+                                    className="px-4 py-2 text-sm font-semibold text-white/60 hover:text-white transition-colors rounded-full hover:bg-white/[0.06]"
+                                >
+                                    Log in
+                                </Link>
+                                <Link
+                                    href="/signup"
+                                    className="px-5 py-2 rounded-full bg-[#FF6200] hover:bg-[#FF7A29] text-black text-sm font-black tracking-tight transition-all hover:scale-105 shadow-[0_4px_16px_rgba(255,98,0,0.35)]"
+                                >
+                                    Sign up
+                                </Link>
+                            </div>
+                        )}
+
+                        {user && (
+                            <div className="hidden md:flex items-center gap-2">
+                                {/* Coins */}
+                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#FF6200]/10 border border-[#FF6200]/20 rounded-full cursor-help" title="MarketCoins balance">
+                                    <Zap className="h-3.5 w-3.5 text-[#FF6200]" />
+                                    <span className="text-xs font-black text-white">{(user.coins_balance || 0).toLocaleString()}</span>
+                                    <span className="text-[9px] font-black text-[#FF6200]/70 uppercase">MC</span>
+                                </div>
+
+                                {/* Profile Dropdown */}
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <button className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-all group">
+                                            <div className="h-7 w-7 rounded-full bg-gradient-to-tr from-[#FF6200] to-amber-400 flex items-center justify-center text-[10px] font-black text-black shrink-0">
+                                                {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}
+                                            </div>
+                                            <span className="text-xs font-semibold text-white/70 group-hover:text-white transition-colors max-w-[80px] truncate">
+                                                {user.displayName?.split(' ')[0] || 'Account'}
+                                            </span>
+                                            <ChevronDown className="h-3 w-3 text-white/30" />
+                                        </button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuPortal>
+                                        <DropdownMenuContent
+                                            align="end"
+                                            sideOffset={12}
+                                            className="w-64 bg-[#111] border border-white/10 p-1.5 text-white z-[999] shadow-[0_20px_50px_rgba(0,0,0,0.8)] rounded-2xl"
+                                        >
+                                            {/* Account info */}
+                                            <div className="px-3 py-3 mb-1 border-b border-white/5">
+                                                <p className="text-xs font-black text-white truncate">{user.displayName || 'MarketBridge User'}</p>
+                                                <p className="text-[11px] text-white/40 truncate mt-0.5">{user.email}</p>
+                                            </div>
+
+                                            {['dealer', 'student_seller', 'seller'].includes(user.role) && (
+                                                <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-white/5 my-0.5">
+                                                    <Link href="/seller/dashboard" className="flex items-center gap-3 px-3 py-2.5">
+                                                        <Store className="h-4 w-4 text-[#FF6200]" />
+                                                        <span className="text-sm font-semibold">Seller Dashboard</span>
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                            )}
+
+                                            <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-white/5 my-0.5">
+                                                <Link href="/listings" className="flex items-center gap-3 px-3 py-2.5">
+                                                    <ShoppingBag className="h-4 w-4 text-white/50" />
+                                                    <span className="text-sm font-semibold">Browse Market</span>
+                                                </Link>
+                                            </DropdownMenuItem>
+
+                                            <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-white/5 my-0.5">
+                                                <Link href="/settings" className="flex items-center gap-3 px-3 py-2.5">
+                                                    <User className="h-4 w-4 text-white/50" />
+                                                    <span className="text-sm font-semibold">My Account</span>
+                                                </Link>
+                                            </DropdownMenuItem>
+
+                                            {['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'].includes(user.role) && (
+                                                <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-white/5 my-0.5">
+                                                    <Link href="/admin" className="flex items-center gap-3 px-3 py-2.5">
+                                                        <Crown className="h-4 w-4 text-[#FF6200]" />
+                                                        <span className="text-sm font-semibold text-[#FF6200]">Admin Panel</span>
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                            )}
+
+                                            <div className="my-1 border-t border-white/5" />
+
+                                            <DropdownMenuItem
+                                                onClick={handleSignOut}
+                                                className="rounded-xl cursor-pointer focus:bg-red-500/10 text-red-400 my-0.5"
+                                            >
+                                                <div className="flex items-center gap-3 px-3 py-2.5 w-full">
+                                                    <LogOut className="h-4 w-4" />
+                                                    <span className="text-sm font-semibold">Log out</span>
+                                                </div>
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenuPortal>
+                                </DropdownMenu>
+
+                                <LayoutDashboard className="hidden" />
+                            </div>
+                        )}
+
+                        {/* Mobile Hamburger */}
+                        <button
+                            className="md:hidden h-9 w-9 flex items-center justify-center rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-all"
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                            aria-label="Toggle menu"
+                        >
+                            {mobileMenuOpen ? <X className="h-4 w-4 text-white" /> : <Menu className="h-4 w-4 text-white" />}
+                        </button>
                     </div>
                 </div>
+            </header>
 
-                {/* Desktop Nav - Removed as per user request */}
-                <div className="hidden lg:flex" />
-
-                {/* Actions */}
-                <div className="flex items-center gap-4">
-
-
-                    {user && (
-                        <div className="flex items-center gap-3">
-                            {/* MarketCoins Display */}
-                            <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#FF6200]/10 border border-[#FF6200]/20 rounded-full group cursor-help" title="Your MarketCoins balance">
-                                <Zap className="h-4 w-4 text-[#FF6200] fill-[#FF6200]/20 group-hover:scale-110 transition-transform" />
-                                <span className="text-[12px] font-black text-white tracking-widest leading-none">
-                                    {(user.coins_balance || 0).toLocaleString()}
-                                </span>
-                                <span className="text-[8px] font-black uppercase text-[#FF6200] tracking-widest opacity-60">MC</span>
-                            </div>
-
-                            {/* External Logout Button for easier access */}
-                            <Button
-                                variant="ghost"
-                                onClick={handleSignOut}
-                                className="hidden md:flex items-center gap-2 h-11 px-5 rounded-full border border-white/10 bg-white/5 hover:bg-red-500/10 hover:border-red-500/50 text-zinc-400 hover:text-red-500 transition-all font-black uppercase text-[10px] tracking-widest group"
-                            >
-                                <LogOut className="h-4 w-4 transition-transform group-hover:scale-110" />
-                                <span>Logout</span>
-                            </Button>
-
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="h-11 w-11 rounded-full p-0 border border-white/10 bg-white/5 hover:bg-white/10 ring-offset-black transition-all hover:scale-105 active:scale-95">
-                                        <div className="relative">
-                                            <User className="h-5 w-5 text-zinc-300" />
-                                            <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6200] opacity-75"></span>
-                                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#FF6200]"></span>
-                                            </span>
-                                        </div>
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuPortal>
-                                    <DropdownMenuContent
-                                        align="end"
-                                        sideOffset={15}
-                                        className="w-72 bg-black border border-white/10 p-2 text-white z-[999] shadow-[0_20px_50px_rgba(0,0,0,0.8)] rounded-3xl backdrop-blur-3xl"
-                                    >
-                                        <div className="px-4 py-4 mb-2 border-b border-white/5 bg-zinc-900/50 rounded-2xl">
-                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Account Protocol</p>
-                                            <p className="text-sm font-black truncate text-white uppercase tracking-tight">{user.displayName || 'MarketBridge User'}</p>
-                                            <p className="text-[10px] text-[#FF6200] font-bold truncate opacity-80">{user.email}</p>
-                                        </div>
-
-                                        {/* Primary Seller Action */}
-                                        {['dealer', 'student_seller', 'seller'].includes(user.role) && (
-                                            <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1 outline-none border border-transparent focus:border-white/5">
-                                                <Link href="/seller/dashboard" className="flex items-center gap-4 w-full px-2">
-                                                    <div className="h-9 w-9 rounded-xl bg-[#FF6200]/10 border border-[#FF6200]/20 flex items-center justify-center group-hover:bg-[#FF6200]/20 transition-all">
-                                                        <LayoutDashboard className="h-4 w-4 text-[#FF6200]" />
-                                                    </div>
-                                                    <span className="font-bold uppercase text-[10px] tracking-widest text-[#FF6200]">Merchant Terminal</span>
-                                                </Link>
-                                            </DropdownMenuItem>
-                                        )}
-
-                                        <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1 outline-none transition-colors border border-transparent focus:border-white/5">
-                                            <Link href="/settings" className="flex items-center gap-4 w-full px-2">
-                                                <div className="h-9 w-9 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center group-hover:border-[#FF6200]/50 transition-colors">
-                                                    <User className="h-4 w-4 text-zinc-500 group-hover:text-[#FF6200]" />
-                                                </div>
-                                                <span className="font-bold uppercase text-[10px] tracking-widest text-zinc-400 group-hover:text-white transition-colors">Profile Node</span>
-                                            </Link>
-                                        </DropdownMenuItem>
-                                        {['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'].includes(user.role) && (
-                                            <DropdownMenuItem asChild className="focus:bg-white/5 rounded-2xl cursor-pointer py-3 group my-1 outline-none border border-transparent focus:border-white/5">
-                                                <Link href="/admin" className="flex items-center gap-4 w-full px-2">
-                                                    <div className="h-9 w-9 rounded-xl bg-[#FF6200]/10 border border-[#FF6200]/20 flex items-center justify-center">
-                                                        <Crown className="h-4 w-4 text-[#FF6200]" />
-                                                    </div>
-                                                    <span className="font-bold uppercase text-[10px] tracking-widest text-[#FF6200]">Master Control</span>
-                                                </Link>
-                                            </DropdownMenuItem>
-                                        )}
-                                        <div className="my-2 border-t border-white/5" />
-                                        <DropdownMenuItem onClick={handleSignOut} className="focus:bg-red-500/10 text-red-500 rounded-2xl cursor-pointer py-3 group my-1 border border-transparent focus:border-red-500/10">
-                                            <span className="flex items-center gap-4 w-full px-2">
-                                                <div className="h-9 w-9 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center group-hover:bg-red-500/20">
-                                                    <LogOut className="h-4 w-4 text-red-500" />
-                                                </div>
-                                                <span className="font-bold uppercase text-[10px] tracking-widest">Disconnect</span>
-                                            </span>
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenuPortal>
-                            </DropdownMenu>
-                        </div>
-                    )}
-
-                    {/* Mobile Menu Toggle */}
-                    <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-                        <SheetTrigger asChild>
-                            <Button variant="ghost" size="icon" className="lg:hidden h-11 w-11 rounded-full border border-white/10 bg-white/5 hover:bg-white/10">
-                                <Menu className="h-5 w-5 text-white" />
-                            </Button>
-                        </SheetTrigger>
-                        <SheetContent side="right" className="w-full bg-black backdrop-blur-2xl border-none p-8 flex flex-col z-[200]">
-                            <div className="flex justify-between items-center mb-16">
-                                <Logo />
-                            </div>
-
-                            <nav className="flex flex-col gap-8 text-3xl font-black uppercase tracking-tighter italic">
-                                {/* Simplified Mobile Nav */}
-                                <Link
-                                    href="/listings"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="transition-all hover:translate-x-4 text-white/40 hover:text-white"
-                                >
-                                    Browse Assets
+            {/* Mobile Slide-down Menu */}
+            {mobileMenuOpen && (
+                <div className="fixed top-16 left-0 right-0 z-[99] bg-[#0A0A0A] border-b border-white/10 px-6 py-6 flex flex-col gap-4 md:hidden">
+                    {navLinks.map((link) => (
+                        <Link
+                            key={link.href}
+                            href={link.href}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="text-white/70 hover:text-white font-semibold text-lg transition-colors"
+                        >
+                            {link.label}
+                        </Link>
+                    ))}
+                    <div className="border-t border-white/5 pt-4 flex flex-col gap-3 mt-2">
+                        {user ? (
+                            <>
+                                <Link href="/settings" onClick={() => setMobileMenuOpen(false)} className="text-white/60 font-semibold">My Account</Link>
+                                <button onClick={() => { setMobileMenuOpen(false); handleSignOut(); }} className="text-red-400 font-semibold text-left">Log out</button>
+                            </>
+                        ) : (
+                            <>
+                                <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="w-full py-3.5 rounded-2xl bg-[#FF6200] text-black font-black text-center text-sm uppercase tracking-widest">
+                                    Sign Up Free
                                 </Link>
-                            </nav>
-
-                            <div className="mt-auto flex flex-col gap-4">
-                                {!user ? (
-                                    <>
-                                        <Button asChild className="h-16 rounded-[2rem] bg-[#FF6200] text-black font-black uppercase tracking-widest border-none hover:bg-[#FF7A29]">
-                                            <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>Create Account</Link>
-                                        </Button>
-                                        <Button variant="outline" asChild className="h-16 rounded-[2rem] bg-transparent border-white/20 text-white font-black uppercase tracking-widest hover:bg-white hover:text-black hover:border-transparent transition-all">
-                                            <Link href="/login" onClick={() => setMobileMenuOpen(false)}>Sign In</Link>
-                                        </Button>
-                                    </>
-                                ) : (
-                                    <Button onClick={handleSignOut} className="h-16 rounded-[2rem] bg-zinc-900 border border-white/10 text-red-500 font-black uppercase tracking-widest hover:bg-red-950/30">
-                                        Log Out
-                                    </Button>
-                                )}
-                            </div>
-                        </SheetContent>
-                    </Sheet>
+                                <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="w-full py-3.5 rounded-2xl border border-white/15 text-white font-semibold text-center text-sm">
+                                    Log In
+                                </Link>
+                            </>
+                        )}
+                    </div>
                 </div>
-            </div>
-        </motion.header>
+            )}
+        </>
     );
 };
