@@ -130,14 +130,12 @@ export default function HomePage() {
             {/* ─── Fixed Nav ─── */}
             <header className="fixed top-0 left-0 right-0 z-50 px-6 md:px-10 py-4 flex items-center justify-between backdrop-blur-xl bg-black/70 border-b border-white/[0.06]">
                 <Logo size="md" />
-                <nav className="hidden md:flex items-center gap-8">
-                    <Link href="/listings" className="text-white/55 hover:text-white font-semibold text-sm tracking-wide transition-colors">Browse</Link>
-                    <Link href="/signup?role=student_seller" className="text-white/55 hover:text-white font-semibold text-sm tracking-wide transition-colors">Sell</Link>
+                <div className="hidden md:flex items-center gap-8">
                     <Link href="/login" className="text-white/55 hover:text-white font-bold text-sm tracking-widest uppercase transition-colors">Log In</Link>
                     <Link href="/signup" className="px-5 py-2.5 bg-[#FF6200] hover:bg-[#FF7A29] text-black rounded-xl font-black text-xs tracking-widest uppercase transition-all hover:scale-105 shadow-[0_0_20px_rgba(255,98,0,0.35)]">
                         Sign Up Free
                     </Link>
-                </nav>
+                </div>
                 <button className="md:hidden text-white/70 hover:text-white" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle menu">
                     {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                 </button>
@@ -153,8 +151,6 @@ export default function HomePage() {
                         className="fixed top-[65px] left-0 right-0 z-40 bg-black/95 backdrop-blur-xl border-b border-white/10 px-6 py-6 flex flex-col gap-5 md:hidden"
                     >
                         {[
-                            { href: '/listings', label: 'Browse Market' },
-                            { href: '/signup?role=student_seller', label: 'Become a Seller' },
                             { href: '/login', label: 'Log In' },
                         ].map(l => (
                             <Link key={l.href} href={l.href} className="text-white font-bold text-lg" onClick={() => setMobileMenuOpen(false)}>{l.label}</Link>
@@ -221,18 +217,10 @@ export default function HomePage() {
                                 className="flex flex-wrap gap-3 pt-1"
                             >
                                 <Link href="/signup" className="flex items-center gap-3 px-7 py-4 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest text-xs rounded-2xl transition-all hover:scale-[1.03] shadow-[0_8px_32px_rgba(255,98,0,0.45)] group">
-                                    Start Buying <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                    Get Started <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </Link>
-                                <button
-                                    onClick={handleGoogleAuth}
-                                    disabled={isLoading}
-                                    className="flex items-center gap-3 px-7 py-4 bg-white/[0.07] hover:bg-white/[0.12] border border-white/10 hover:border-white/20 text-white font-black uppercase tracking-widest text-xs rounded-2xl transition-all hover:scale-[1.03] backdrop-blur-md cursor-pointer disabled:opacity-60"
-                                >
-                                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Globe className="h-4 w-4" />}
-                                    Google Sign Up
-                                </button>
-                                <Link href="/signup?role=student_seller" className="flex items-center gap-3 px-7 py-4 border border-white/10 hover:border-[#FF6200]/40 text-white/55 hover:text-white font-black uppercase tracking-widest text-xs rounded-2xl transition-all hover:scale-[1.03]">
-                                    Become a Seller
+                                <Link href="/login" className="flex items-center gap-3 px-7 py-4 bg-white/[0.07] hover:bg-white/[0.12] border border-white/10 hover:border-white/20 text-white font-black uppercase tracking-widest text-xs rounded-2xl transition-all hover:scale-[1.03] backdrop-blur-md cursor-pointer">
+                                    Sign In
                                 </Link>
                             </motion.div>
 
@@ -439,18 +427,16 @@ export default function HomePage() {
                             ))}
                         </div>
 
-                        {/* Seller CTA banner */}
-                        <div className="mt-12 p-8 bg-gradient-to-r from-[#FF6200]/10 to-transparent border border-[#FF6200]/15 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="mt-12 p-8 bg-gradient-to-r from-[#FF6200]/10 to-transparent border border-[#FF6200]/15 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6 uppercase tracking-tighter italic">
                             <div>
-                                <p className="text-[#FF6200] uppercase tracking-widest text-[10px] font-black mb-1">Don&rsquo;t see your category?</p>
-                                <h3 className="text-white font-black text-xl uppercase tracking-tight italic">Join as a Seller — Add Yours</h3>
-                                <p className="text-white/40 text-sm font-medium mt-1">New categories appear automatically as sellers register and list.</p>
+                                <p className="text-[#FF6200] uppercase tracking-widest text-[10px] font-black mb-1">Join the Ecosystem</p>
+                                <h3 className="text-white font-black text-xl uppercase tracking-tight italic">List your assets on campus</h3>
                             </div>
                             <Link
-                                href="/signup?role=student_seller"
+                                href="/signup"
                                 className="flex items-center gap-3 px-7 py-4 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest text-xs rounded-2xl transition-all hover:scale-105 shadow-[0_8px_30px_rgba(255,98,0,0.4)] shrink-0 group"
                             >
-                                Start Selling <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                Get Started <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                             </Link>
                         </div>
                     </div>
@@ -523,6 +509,6 @@ export default function HomePage() {
                     <p className="text-white/15 text-[11px] font-medium">Built for campus. Powered by Paystack.</p>
                 </div>
             </footer>
-        </div>
+        </div >
     );
 }

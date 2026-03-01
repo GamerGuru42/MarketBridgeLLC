@@ -352,7 +352,7 @@ export default function LoginPage() {
                         </Button>
                     </form>
 
-                    {!['admin', 'student_seller', 'dealer', 'ceo'].includes(role) && (
+                    {role === 'student_buyer' && (
                         <>
                             <div className="relative py-4 flex items-center justify-center">
                                 <div className="absolute inset-x-0 h-px bg-white/10"></div>

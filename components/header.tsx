@@ -89,25 +89,8 @@ export const Header = () => {
                     </div>
                 </div>
 
-                {/* Desktop Nav */}
-                <nav className="hidden lg:flex items-center gap-8 bg-black/50 border border-white/5 px-8 py-3 rounded-full backdrop-blur-md">
-                    <Link href="/listings" className={navLinkClass('/listings')}>
-                        Listings
-                        {isActive('/listings') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6200] rounded-full" />}
-                    </Link>
-                    <Link href="/sellers" className={navLinkClass('/sellers')}>
-                        Sellers
-                        {isActive('/sellers') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6200] rounded-full" />}
-                    </Link>
-                    <Link href="/pricing" className={navLinkClass('/pricing')}>
-                        Pricing
-                        {isActive('/pricing') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6200] rounded-full" />}
-                    </Link>
-                    <Link href="/about" className={navLinkClass('/about')}>
-                        About
-                        {isActive('/about') && <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF6200] rounded-full" />}
-                    </Link>
-                </nav>
+                {/* Desktop Nav - Removed as per user request */}
+                <div className="hidden lg:flex" />
 
                 {/* Actions */}
                 <div className="flex items-center gap-4">
@@ -228,33 +211,13 @@ export const Header = () => {
                             </div>
 
                             <nav className="flex flex-col gap-8 text-3xl font-black uppercase tracking-tighter italic">
+                                {/* Simplified Mobile Nav */}
                                 <Link
                                     href="/listings"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={cn("transition-all hover:translate-x-4", isActive('/listings') ? "text-[#FF6200]" : "text-white/40 hover:text-white")}
+                                    className="transition-all hover:translate-x-4 text-white/40 hover:text-white"
                                 >
-                                    Listings
-                                </Link>
-                                <Link
-                                    href="/sellers"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className={cn("transition-all hover:translate-x-4", isActive('/sellers') ? "text-[#FF6200]" : "text-white/40 hover:text-white")}
-                                >
-                                    Sellers
-                                </Link>
-                                <Link
-                                    href="/pricing"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className={cn("transition-all hover:translate-x-4", isActive('/pricing') ? "text-[#FF6200]" : "text-white/40 hover:text-white")}
-                                >
-                                    Pricing
-                                </Link>
-                                <Link
-                                    href="/about"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className={cn("transition-all hover:translate-x-4", isActive('/about') ? "text-[#FF6200]" : "text-white/40 hover:text-white")}
-                                >
-                                    About
+                                    Browse Assets
                                 </Link>
                             </nav>
 
