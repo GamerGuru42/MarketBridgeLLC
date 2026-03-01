@@ -17,7 +17,6 @@ export default function MainLayout({
 }) {
     const pathname = usePathname();
     const isDashboard = pathname?.startsWith('/dealer') || pathname?.startsWith('/settings');
-    // Homepage manages its own minimal header/footer
     const isHome = pathname === '/';
 
     return (
@@ -31,10 +30,10 @@ export default function MainLayout({
                     </span>
                 </div>
             )}
-            {!isDashboard && !isHome && <Header />}
-            <main className={`flex-1 ${!isDashboard && !isHome ? 'pb-16 md:pb-0' : ''}`}>{children}</main>
-            {!isDashboard && !isHome && <Footer />}
-            {!isDashboard && !isHome && <MobileBottomNav />}
+            {!isDashboard && <Header />}
+            <main className={`flex-1 ${!isDashboard ? 'pb-16 md:pb-0' : ''}`}>{children}</main>
+            {!isDashboard && <Footer />}
+            {!isDashboard && <MobileBottomNav />}
             <FeedbackModal />
         </div>
     );

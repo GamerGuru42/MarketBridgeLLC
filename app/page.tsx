@@ -21,7 +21,7 @@ interface LiveCategory {
 }
 
 export default function HomePage() {
-    const { signInWithGoogle } = useAuth();
+    const { user, signInWithGoogle } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [recentListings, setRecentListings] = useState<any[]>([]);
     const [liveCategories, setLiveCategories] = useState<LiveCategory[]>([]);
@@ -139,44 +139,11 @@ export default function HomePage() {
     ];
 
     return (
-        <div className="flex flex-col min-h-screen bg-[#080808] text-white selection:bg-[#FF6200] selection:text-black overflow-hidden">
+        <div className="flex flex-col min-h-screen bg-[#080808] text-white selection:bg-[#FF6200] selection:text-black">
 
-            {/* ─── Fixed Nav ─── */}
-            <header className="fixed top-0 left-0 right-0 z-50 px-6 md:px-10 py-4 flex items-center justify-between backdrop-blur-xl bg-black/70 border-b border-white/[0.06]">
-                <Logo size="md" />
-                <div className="hidden md:flex items-center gap-8">
-                    <Link href="/login" className="text-white/55 hover:text-white font-bold text-sm tracking-widest uppercase transition-colors">Log In</Link>
-                    <Link href="/signup" className="px-5 py-2.5 bg-[#FF6200] hover:bg-[#FF7A29] text-black rounded-xl font-black text-xs tracking-widest uppercase transition-all hover:scale-105 shadow-[0_0_20px_rgba(255,98,0,0.35)]">
-                        Sign Up Free
-                    </Link>
-                </div>
-                <button className="md:hidden text-white/70 hover:text-white" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle menu">
-                    {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-                </button>
-            </header>
 
-            {/* Mobile Menu */}
-            <AnimatePresence>
-                {mobileMenuOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="fixed top-[65px] left-0 right-0 z-40 bg-black/95 backdrop-blur-xl border-b border-white/10 px-6 py-6 flex flex-col gap-5 md:hidden"
-                    >
-                        {[
-                            { href: '/login', label: 'Log In' },
-                        ].map(l => (
-                            <Link key={l.href} href={l.href} className="text-white font-bold text-lg" onClick={() => setMobileMenuOpen(false)}>{l.label}</Link>
-                        ))}
-                        <Link href="/signup" className="flex items-center justify-center py-4 bg-[#FF6200] text-black font-black uppercase tracking-widest rounded-2xl" onClick={() => setMobileMenuOpen(false)}>
-                            Sign Up Free
-                        </Link>
-                    </motion.div>
-                )}
-            </AnimatePresence>
 
-            <main className="flex-1 w-full pt-[65px]">
+            <main className="flex-1 w-full">
 
                 {/* ─── Hero ─── */}
                 <section className="relative min-h-[calc(100vh-65px)] flex items-center overflow-hidden px-6 md:px-10 lg:px-16">
@@ -230,12 +197,28 @@ export default function HomePage() {
                                 variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
                                 className="flex flex-wrap gap-3 pt-1"
                             >
-                                <Link href="/signup" className="flex items-center gap-3 px-7 py-4 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest text-xs rounded-2xl transition-all hover:scale-[1.03] shadow-[0_8px_32px_rgba(255,98,0,0.45)] group">
-                                    Get Started <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                                </Link>
-                                <Link href="/login" className="flex items-center gap-3 px-7 py-4 bg-white/[0.07] hover:bg-white/[0.12] border border-white/10 hover:border-white/20 text-white font-black uppercase tracking-widest text-xs rounded-2xl transition-all hover:scale-[1.03] backdrop-blur-md cursor-pointer">
-                                    Sign In
-                                </Link>
+                                {user ? (
+                                    <>
+                                        <Link href="/listings" className="flex items-center gap-3 px-7 py-4 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest text-xs rounded-2xl transition-all hover:scale-[1.03] shadow-[0_8px_32px_rgba(255,98,0,0.45)] group">
+                                            Explore Assets <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                        </Link>
+                                        <Link
+                                            href={['admin', 'ceo', 'cofounder'].includes(user.role) ? '/admin' : ['dealer', 'student_seller', 'seller'].includes(user.role) ? '/seller/dashboard' : '/settings'}
+                                            className="flex items-center gap-3 px-7 py-4 bg-white/[0.07] hover:bg-white/[0.12] border border-white/10 hover:border-white/20 text-white font-black uppercase tracking-widest text-xs rounded-2xl transition-all hover:scale-[1.03] backdrop-blur-md cursor-pointer"
+                                        >
+                                            My Dashboard
+                                        </Link>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Link href="/signup" className="flex items-center gap-3 px-7 py-4 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest text-xs rounded-2xl transition-all hover:scale-[1.03] shadow-[0_8px_32px_rgba(255,98,0,0.45)] group">
+                                            Get Started <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                        </Link>
+                                        <Link href="/login" className="flex items-center gap-3 px-7 py-4 bg-white/[0.07] hover:bg-white/[0.12] border border-white/10 hover:border-white/20 text-white font-black uppercase tracking-widest text-xs rounded-2xl transition-all hover:scale-[1.03] backdrop-blur-md cursor-pointer">
+                                            Sign In
+                                        </Link>
+                                    </>
+                                )}
                             </motion.div>
 
                             {/* Trust pills */}
@@ -421,7 +404,7 @@ export default function HomePage() {
 
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                             {displayCategories.map((cat, idx) => (
-                                <Link href={`/listings?q=${encodeURIComponent(cat.slug)}`} key={cat.id}>
+                                <Link href={`/listings?category=${encodeURIComponent(cat.name)}`} key={cat.id}>
                                     <motion.div
                                         whileHover={{ y: -5, scale: 1.04 }}
                                         className="group relative bg-zinc-950 border border-white/[0.06] rounded-3xl p-5 flex flex-col items-center justify-center text-center gap-3.5 hover:border-[#FF6200]/30 transition-all cursor-pointer overflow-hidden"

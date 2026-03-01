@@ -58,7 +58,7 @@ function ListingsContent() {
     const [error, setError] = useState('');
     const [search, setSearch] = useState(searchParams?.get('q') || searchParams?.get('search') || '');
     const [location, setLocation] = useState(initialLocation);
-    const [category, setCategory] = useState('All Categories');
+    const [category, setCategory] = useState(searchParams?.get('category') || 'All Categories');
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
     const [condition, setCondition] = useState('all');
