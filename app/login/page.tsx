@@ -165,39 +165,39 @@ export default function LoginPage() {
 
     if (step === 'role') {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-[#FAFAFA] relative overflow-hidden">
+            <div className="min-h-screen flex items-center justify-center p-4 bg-zinc-50 dark:bg-zinc-950 relative overflow-hidden">
                 <div className="w-full max-w-5xl relative z-10">
                     <div className="text-center mb-16">
-                        <Link href="/" className="inline-flex items-center text-zinc-500 hover:text-zinc-900 mb-6 uppercase text-[10px] font-black tracking-widest transition-colors py-3">
+                        <Link href="/" className="inline-flex items-center text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest transition-colors py-3">
                             <ArrowLeft className="mr-2 h-4 w-4" /> Return to Home
                         </Link>
-                        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-zinc-900 mb-4">Welcome Back</h1>
+                        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-zinc-900 dark:text-white mb-4">Welcome Back</h1>
                         <p className="text-[#FF6200] font-bold uppercase tracking-[0.2em] text-[10px]">Select account type to continue</p>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4 max-w-6xl mx-auto">
                         {[
-                            { id: 'student_buyer', title: 'Buyer', icon: UserIcon, desc: 'Shop campus deals', color: 'text-[#111111]', bg: 'bg-zinc-100', border: 'hover:border-[#FF6200]' },
-                            { id: 'student_seller', title: 'Seller', icon: Briefcase, desc: 'List your items & sell', color: 'text-[#111111]', bg: 'bg-zinc-100', border: 'hover:border-[#FF6200]' },
-                            { id: 'admin', title: 'Admin', icon: ShieldCheck, desc: 'Manage operations', color: 'text-[#111111]', bg: 'bg-zinc-100', border: 'hover:border-[#FF6200]' },
-                            { id: 'ceo', title: 'CEO', icon: Lock, desc: 'Oversee everything', color: 'text-[#111111]', bg: 'bg-zinc-100', border: 'hover:border-[#FF6200]' }
+                            { id: 'student_buyer', title: 'Buyer', icon: UserIcon, desc: 'Shop campus deals', color: 'text-zinc-900 dark:text-white', bg: 'bg-zinc-100 dark:bg-zinc-900', border: 'hover:border-[#FF6200]' },
+                            { id: 'student_seller', title: 'Seller', icon: Briefcase, desc: 'List your items & sell', color: 'text-zinc-900 dark:text-white', bg: 'bg-zinc-100 dark:bg-zinc-900', border: 'hover:border-[#FF6200]' },
+                            { id: 'admin', title: 'Admin', icon: ShieldCheck, desc: 'Manage operations', color: 'text-zinc-900 dark:text-white', bg: 'bg-zinc-100 dark:bg-zinc-900', border: 'hover:border-[#FF6200]' },
+                            { id: 'ceo', title: 'CEO', icon: Lock, desc: 'Oversee everything', color: 'text-zinc-900 dark:text-white', bg: 'bg-zinc-100 dark:bg-zinc-900', border: 'hover:border-[#FF6200]' }
                         ].map(item => (
                             <Card
                                 key={item.id}
-                                className={`bg-white border-zinc-200 rounded-[2rem] p-8 text-center cursor-pointer hover:shadow-xl transition-all duration-300 ${item.border}`}
+                                className={`bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-[2rem] p-8 text-center cursor-pointer hover:shadow-xl transition-all duration-300 ${item.border}`}
                                 onClick={() => handleRoleSelect(item.id as any)}
                             >
                                 <div className={`h-16 w-16 rounded-2xl flex items-center justify-center mx-auto mb-6 ${item.bg}`}>
                                     <item.icon className={`h-8 w-8 ${item.color}`} />
                                 </div>
-                                <h3 className="text-lg font-black text-zinc-900 uppercase tracking-tight mb-2">{item.title}</h3>
-                                <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">{item.desc}</p>
+                                <h3 className="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">{item.title}</h3>
+                                <p className="text-zinc-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-widest">{item.desc}</p>
                             </Card>
                         ))}
                     </div>
 
                     <div className="text-center mt-12">
-                        <p className="text-zinc-600 font-medium text-sm">
+                        <p className="text-zinc-600 dark:text-zinc-400 font-medium text-sm">
                             New here? <Link href="/signup" className="text-[#FF6200] font-bold hover:underline">Register Account</Link>
                         </p>
                     </div>
@@ -208,22 +208,22 @@ export default function LoginPage() {
 
     if (step === 'admin-code') {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-[#FAFAFA]">
-                <Card className="w-full max-w-md bg-white border border-zinc-200 shadow-xl rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden">
+            <div className="min-h-screen flex items-center justify-center p-4 bg-zinc-50 dark:bg-zinc-950">
+                <Card className="w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xl rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden">
                     <CardHeader className="p-0 text-center mb-10">
-                        <Button variant="ghost" onClick={() => setStep('role')} className="text-zinc-500 hover:text-zinc-900 mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
+                        <Button variant="ghost" onClick={() => setStep('role')} className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
                         <div className="mx-auto h-16 w-16 rounded-2xl bg-[#FF6200]/10 flex items-center justify-center mb-6">
                             <Lock className="h-8 w-8 text-[#FF6200]" />
                         </div>
-                        <CardTitle className="text-3xl font-black uppercase tracking-tighter mb-2 text-zinc-900">Restricted</CardTitle>
-                        <CardDescription className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Enter access key</CardDescription>
+                        <CardTitle className="text-3xl font-black uppercase tracking-tighter mb-2 text-zinc-900 dark:text-white">Restricted</CardTitle>
+                        <CardDescription className="text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-widest text-[10px]">Enter access key</CardDescription>
                     </CardHeader>
                     <CardContent className="p-0 space-y-6 pb-8">
-                        {error && <div className="bg-red-50 text-red-600 text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-red-100">{error}</div>}
+                        {error && <div className="bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-red-100 dark:border-red-900/30">{error}</div>}
                         <form onSubmit={handleAdminCodeSubmit} className="space-y-6">
                             <input
                                 type="password"
-                                className="w-full h-16 bg-zinc-50 border border-zinc-200 rounded-2xl text-center tracking-[0.5em] font-mono text-xl focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 text-zinc-900"
+                                className="w-full h-16 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-center tracking-[0.5em] font-mono text-xl focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 text-zinc-900 dark:text-white"
                                 value={accessCode}
                                 onChange={(e) => setAccessCode(e.target.value)}
                                 placeholder="••••••••"
@@ -241,31 +241,31 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-[#FAFAFA] relative">
-            <Card className="w-full max-w-md bg-white border border-zinc-200 shadow-xl rounded-[2.5rem] p-8 md:p-10 relative z-10">
+        <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-zinc-50 dark:bg-zinc-950 relative">
+            <Card className="w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xl rounded-[2.5rem] p-8 md:p-10 relative z-10">
                 <CardHeader className="p-0 mb-8 text-center">
-                    <Button variant="ghost" onClick={() => setStep('role')} className="text-zinc-500 hover:text-zinc-900 mb-4 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> Switch Role</Button>
+                    <Button variant="ghost" onClick={() => setStep('role')} className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white mb-4 uppercase text-[10px] font-black tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> Switch Role</Button>
                     <div className="flex justify-center mb-6">
                         <Logo showText={false} className="scale-125" />
                     </div>
-                    <CardTitle className="text-3xl font-black uppercase tracking-tighter text-zinc-900">MarketBridge</CardTitle>
-                    <CardDescription className="text-zinc-500 font-bold uppercase tracking-widest text-[10px] mt-2">
+                    <CardTitle className="text-3xl font-black uppercase tracking-tighter text-zinc-900 dark:text-white">MarketBridge</CardTitle>
+                    <CardDescription className="text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-widest text-[10px] mt-2">
                         {role === 'admin' ? 'Secure Admin Login' : 'Secure Account Login'}
                     </CardDescription>
                 </CardHeader>
 
                 <CardContent className="p-0 space-y-6">
                     {error && (
-                        <div className="bg-red-50 text-red-600 text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-red-100">
+                        <div className="bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 text-[10px] font-black uppercase tracking-widest p-4 rounded-xl text-center border border-red-100 dark:border-red-900/30">
                             {error}
                         </div>
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="space-y-2">
-                            <label className="text-[10px] uppercase font-black tracking-widest text-zinc-600 ml-2">Email Address</label>
+                            <label className="text-[10px] uppercase font-black tracking-widest text-zinc-600 dark:text-zinc-400 ml-2">Email Address</label>
                             <div className="relative">
-                                <UserIcon className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400" />
+                                <UserIcon className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400 dark:text-zinc-500" />
                                 <input
                                     name="email"
                                     type="text"
@@ -273,18 +273,18 @@ export default function LoginPage() {
                                     onChange={handleChange}
                                     required
                                     placeholder={role === 'admin' ? "admin@marketbridge.io" : "user@example.com"}
-                                    className="w-full h-14 pl-14 pr-6 bg-zinc-50 border border-zinc-200 rounded-2xl text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
+                                    className="w-full h-14 pl-14 pr-6 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-2">
                             <div className="flex justify-between items-center ml-2">
-                                <label className="text-[10px] uppercase font-black tracking-widest text-zinc-600">Password</label>
+                                <label className="text-[10px] uppercase font-black tracking-widest text-zinc-600 dark:text-zinc-400">Password</label>
                                 <Link href="/forgot-password" className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] hover:underline">Reset Key</Link>
                             </div>
                             <div className="relative">
-                                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400" />
+                                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400 dark:text-zinc-500" />
                                 <input
                                     name="password"
                                     type={showPassword ? 'text' : 'password'}
@@ -292,12 +292,12 @@ export default function LoginPage() {
                                     onChange={handleChange}
                                     required
                                     placeholder="••••••••"
-                                    className="w-full h-14 pl-14 pr-16 bg-zinc-50 border border-zinc-200 rounded-2xl text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
+                                    className="w-full h-14 pl-14 pr-16 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-900 transition-colors"
+                                    className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors"
                                 >
                                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                 </button>
@@ -317,18 +317,18 @@ export default function LoginPage() {
                     {role === 'student_buyer' && (
                         <>
                             <div className="relative py-4 flex items-center justify-center">
-                                <div className="absolute inset-x-0 h-px bg-zinc-200"></div>
-                                <span className="relative bg-white px-4 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500">Social Login</span>
+                                <div className="absolute inset-x-0 h-px bg-zinc-200 dark:bg-zinc-800"></div>
+                                <span className="relative bg-white dark:bg-zinc-900 px-4 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500 dark:text-zinc-400">Social Login</span>
                             </div>
 
-                            <Button variant="outline" onClick={handleGoogleLogin} className="w-full h-14 bg-white border-zinc-200 text-zinc-700 font-bold rounded-2xl hover:bg-zinc-50 transition-all shadow-sm">
+                            <Button variant="outline" onClick={handleGoogleLogin} className="w-full h-14 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-bold rounded-2xl hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all shadow-sm">
                                 <Globe className="mr-3 h-5 w-5 text-[#FF6200]" />
                                 Google Login
                             </Button>
                         </>
                     )}
 
-                    <p className="text-center text-zinc-600 text-xs font-semibold mt-6">
+                    <p className="text-center text-zinc-600 dark:text-zinc-400 text-xs font-semibold mt-6">
                         New here? <Link href="/signup" className="text-[#FF6200] hover:underline">Register Account</Link>
                     </p>
                 </CardContent>
