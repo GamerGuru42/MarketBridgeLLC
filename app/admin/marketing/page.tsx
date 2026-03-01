@@ -9,9 +9,9 @@ import { Loader2, TrendingUp, Users, Target, Rocket } from 'lucide-react';
 
 export default function MarketingAdminPage() {
     const [loading, setLoading] = useState(true);
-    const [recentWaitlist, setRecentWaitlist] = useState<any[]>([]);
+    const [recentSignups, setRecentSignups] = useState<any[]>([]);
     const [stats, setStats] = useState({
-        totalWaitlist: 0,
+        totalUsers: 0,
         activeSellers: 0,
         conversionRate: '0%'
     });
@@ -22,19 +22,19 @@ export default function MarketingAdminPage() {
 
     const fetchMarketingData = async () => {
         try {
-            const { data: waitlistData } = await supabase
-                .from('waitlist')
+            const { data: usersData } = await supabase
+                .from('users')
                 .select('*')
                 .order('created_at', { ascending: false })
                 .limit(10);
 
-            if (waitlistData) setRecentWaitlist(waitlistData);
+            if (usersData) setRecentSignups(usersData);
 
-            const { count: totalWaitlist } = await supabase.from('waitlist').select('*', { count: 'exact', head: true });
-            const { count: activeSellers } = await supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'dealer');
+            const { count: totalUsers } = await supabase.from('users').select('*', { count: 'exact', head: true });
+            const { count: activeSellers } = await supabase.from('users').select('*', { count: 'exact', head: true }).in('role', ['dealer', 'seller', 'student_seller']);
 
             setStats({
-                totalWaitlist: totalWaitlist || 0,
+                totalUsers: totalUsers || 0,
                 activeSellers: activeSellers || 0,
                 conversionRate: 'N/A'
             });
@@ -69,8 +69,8 @@ export default function MarketingAdminPage() {
                 <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm group hover:border-[#FF6200]/20 transition-all">
                     <CardContent className="p-6 flex items-center justify-between">
                         <div>
-                            <p className="text-white/40 text-[10px] uppercase font-black tracking-widest">Total Waitlist</p>
-                            <p className="text-4xl font-black text-white font-heading italic">{stats.totalWaitlist}</p>
+                            <p className="text-white/40 text-[10px] uppercase font-black tracking-widest">Total Users</p>
+                            <p className="text-4xl font-black text-white font-heading italic">{stats.totalUsers}</p>
                         </div>
                         <Users className="h-8 w-8 text-white/20 group-hover:text-[#FF6200] transition-colors" />
                     </CardContent>
@@ -79,7 +79,7 @@ export default function MarketingAdminPage() {
                 <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm group hover:border-[#FF6200]/20 transition-all">
                     <CardContent className="p-6 flex items-center justify-between">
                         <div>
-                            <p className="text-white/40 text-[10px] uppercase font-black tracking-widest">Active Campuss</p>
+                            <p className="text-white/40 text-[10px] uppercase font-black tracking-widest">Active Campuses</p>
                             <p className="text-4xl font-black text-[#FF6200] font-heading italic">{stats.activeSellers}</p>
                         </div>
                         <Target className="h-8 w-8 text-white/20 group-hover:text-[#FF6200] transition-colors" />
@@ -89,7 +89,7 @@ export default function MarketingAdminPage() {
                 <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm group hover:border-[#FF6200]/20 transition-all">
                     <CardContent className="p-6 flex items-center justify-between">
                         <div>
-                            <p className="text-white/40 text-[10px] uppercase font-black tracking-widest">Waitlist Velocity</p>
+                            <p className="text-white/40 text-[10px] uppercase font-black tracking-widest">Growth Velocity</p>
                             <p className="text-4xl font-black text-white font-heading italic">+24%</p>
                         </div>
                         <Rocket className="h-8 w-8 text-white/20 group-hover:text-[#FF6200] transition-colors" />
@@ -99,7 +99,7 @@ export default function MarketingAdminPage() {
 
             <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm relative z-10">
                 <CardHeader>
-                    <CardTitle className="text-lg font-black uppercase italic tracking-widest text-[#FF6200]">Recent Waitlist Signups</CardTitle>
+                    <CardTitle className="text-lg font-black uppercase italic tracking-widest text-[#FF6200]">Recent Signups</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Table>
@@ -111,7 +111,7 @@ export default function MarketingAdminPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {recentWaitlist.map((user, idx) => (
+                            {recentSignups.map((user, idx) => (
                                 <TableRow key={user.id} className="border-white/5 hover:bg-white/5">
                                     <TableCell className="text-white/40 font-black italic">{idx + 1}</TableCell>
                                     <TableCell className="text-white font-bold">{user.email}</TableCell>
