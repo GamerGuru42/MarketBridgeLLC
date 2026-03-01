@@ -18,6 +18,7 @@ import {
     DropdownMenuPortal,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export const Header = () => {
     const { user, logout, loading } = useAuth();
@@ -100,7 +101,7 @@ export const Header = () => {
                             <div className="hidden md:flex items-center gap-2">
                                 <Link
                                     href="/login"
-                                    className="px-4 py-2 text-sm font-bold text-zinc-900 border border-zinc-900 hover:bg-zinc-100 transition-colors rounded-full"
+                                    className="px-4 py-2 text-sm font-bold text-zinc-900 dark:text-zinc-100 border border-zinc-900 dark:border-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors rounded-full"
                                 >
                                     Log in
                                 </Link>
@@ -112,6 +113,9 @@ export const Header = () => {
                                 </Link>
                             </div>
                         )}
+                        <div className="hidden md:block">
+                            <ThemeToggle />
+                        </div>
 
                         {user && (
                             <div className="hidden md:flex items-center gap-2">
