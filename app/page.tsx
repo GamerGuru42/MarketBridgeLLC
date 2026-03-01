@@ -26,6 +26,8 @@ export default function HomePage() {
     const [recentListings, setRecentListings] = useState<any[]>([]);
     const [liveCategories, setLiveCategories] = useState<LiveCategory[]>([]);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [listingCount, setListingCount] = useState<number | null>(null);
+    const [userCount, setUserCount] = useState<number | null>(null);
 
     useEffect(() => {
         const supabase = createClient();
@@ -58,6 +60,18 @@ export default function HomePage() {
                     .sort((a, b) => b.count - a.count);
                 setLiveCategories(sorted);
             }
+            // Fetch live listing count
+            const { count: lCount } = await supabase
+                .from('listings')
+                .select('id', { count: 'exact', head: true })
+                .eq('status', 'active');
+            if (lCount !== null) setListingCount(lCount);
+
+            // Fetch total student count
+            const { count: uCount } = await supabase
+                .from('users')
+                .select('id', { count: 'exact', head: true });
+            if (uCount !== null) setUserCount(uCount);
         };
 
         fetchData();
@@ -321,7 +335,7 @@ export default function HomePage() {
                                 </div>
                             </motion.div>
 
-                            {/* Stats pills */}
+                            {/* Live Listings pill */}
                             <motion.div
                                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}
                                 className="absolute top-[14%] right-[4%] bg-black/80 border border-white/10 rounded-2xl px-4 py-3 backdrop-blur-xl z-50 flex items-center gap-3"
@@ -331,10 +345,13 @@ export default function HomePage() {
                                 </div>
                                 <div>
                                     <p className="text-[9px] text-white/25 uppercase font-bold tracking-widest">Live Listings</p>
-                                    <p className="text-white font-black text-sm">Growing Daily</p>
+                                    <p className="text-white font-black text-sm">
+                                        {listingCount !== null ? listingCount.toLocaleString() : '—'}
+                                    </p>
                                 </div>
                             </motion.div>
 
+                            {/* Students pill */}
                             <motion.div
                                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.0 }}
                                 className="absolute bottom-[27%] right-[-1%] bg-black/80 border border-white/10 rounded-2xl px-4 py-3 backdrop-blur-xl z-50 flex items-center gap-3"
@@ -344,7 +361,9 @@ export default function HomePage() {
                                 </div>
                                 <div>
                                     <p className="text-[9px] text-white/25 uppercase font-bold tracking-widest">Students</p>
-                                    <p className="text-white font-black text-sm flex items-center gap-2">Online <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" /></p>
+                                    <p className="text-white font-black text-sm">
+                                        {userCount !== null ? `${userCount.toLocaleString()} joined` : 'Growing...'}
+                                    </p>
                                 </div>
                             </motion.div>
                         </motion.div>
