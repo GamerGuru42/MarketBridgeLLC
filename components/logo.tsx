@@ -26,7 +26,7 @@ export const Logo: React.FC<LogoProps> = ({
         >
             {showText !== false && (
                 <span className={`${textSizeClasses[size]} font-black tracking-tight`}>
-                    <span className="text-zinc-900">Market</span>
+                    <span className="text-zinc-900 dark:text-white">Market</span>
                     <span className="text-[#FF6200]">Bridge</span>
                 </span>
             )}
