@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 import { useAuth } from '@/contexts/AuthContext';
-import { Menu, User, LogOut, LayoutDashboard, Crown, MapPin, ChevronRight, Zap } from 'lucide-react';
+import { Menu, User, LogOut, LayoutDashboard, Crown, MapPin, Zap } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import {
@@ -94,19 +94,7 @@ export const Header = () => {
 
                 {/* Actions */}
                 <div className="flex items-center gap-4">
-                    {!user && !loading && (
-                        <div className="hidden lg:flex items-center gap-4">
-                            <Link href="/login" className="text-white font-bold text-xs uppercase tracking-widest hover:text-[#FF6200] transition-colors">
-                                Sign In
-                            </Link>
-                            <Button asChild className="bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest px-6 rounded-full h-10 transition-all shadow-lg shadow-[#FF6200]/20 hover:shadow-[#FF6200]/40 hover:scale-105 border-none">
-                                <Link href="/signup">
-                                    Get Started
-                                    <ChevronRight className="ml-1 h-4 w-4" />
-                                </Link>
-                            </Button>
-                        </div>
-                    )}
+
 
                     {user && (
                         <div className="flex items-center gap-3">

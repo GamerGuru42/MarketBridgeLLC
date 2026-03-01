@@ -5,11 +5,10 @@ import Image from 'next/image';
 import { Logo } from '@/components/logo';
 import Link from 'next/link';
 import {
-    ArrowRight, ShoppingBag, ShieldCheck, Zap, Globe,
-    Star, Clock, CheckCircle2, Heart, TrendingUp,
-    Users, Menu, X, Loader2
+    ArrowRight, ShoppingBag, ShieldCheck, Zap,
+    CheckCircle2, Heart, TrendingUp, Loader2, Clock, Star
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { createClient } from '@/lib/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
@@ -25,9 +24,7 @@ export default function HomePage() {
     const [isLoading, setIsLoading] = useState(false);
     const [recentListings, setRecentListings] = useState<any[]>([]);
     const [liveCategories, setLiveCategories] = useState<LiveCategory[]>([]);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [listingCount, setListingCount] = useState<number | null>(null);
-    const [userCount, setUserCount] = useState<number | null>(null);
 
     useEffect(() => {
         const supabase = createClient();
@@ -66,12 +63,6 @@ export default function HomePage() {
                 .select('id', { count: 'exact', head: true })
                 .eq('status', 'active');
             if (lCount !== null) setListingCount(lCount);
-
-            // Fetch total student count
-            const { count: uCount } = await supabase
-                .from('users')
-                .select('id', { count: 'exact', head: true });
-            if (uCount !== null) setUserCount(uCount);
         };
 
         fetchData();
@@ -334,21 +325,6 @@ export default function HomePage() {
                                 </div>
                             </motion.div>
 
-                            {/* Students pill */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.0 }}
-                                className="absolute bottom-[27%] right-[-1%] bg-black/80 border border-white/10 rounded-2xl px-4 py-3 backdrop-blur-xl z-50 flex items-center gap-3"
-                            >
-                                <div className="w-8 h-8 rounded-xl bg-[#FF6200]/20 flex items-center justify-center">
-                                    <Users className="w-4 h-4 text-[#FF6200]" />
-                                </div>
-                                <div>
-                                    <p className="text-[9px] text-white/25 uppercase font-bold tracking-widest">Students</p>
-                                    <p className="text-white font-black text-sm">
-                                        {userCount !== null ? `${userCount.toLocaleString()} joined` : 'Growing...'}
-                                    </p>
-                                </div>
-                            </motion.div>
                         </motion.div>
                     </div>
                 </section>
