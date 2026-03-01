@@ -38,7 +38,8 @@ function SignupContent() {
         password: '',
         passwordConfirm: '',
         firstName: '',
-        lastName: ''
+        lastName: '',
+        adminCode: ''
     });
 
     const [isLoading, setIsLoading] = useState(false);
@@ -62,6 +63,14 @@ function SignupContent() {
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (role === 'admin' || role === 'ceo') {
+            const validCodes = ['marketbridge2026', '1029384756', 'MB-FOUNDER-99', 'MB-TECH-2024', 'MB-OPS-2024', 'MB-MKT-2024'];
+            if (!validCodes.includes(formData.adminCode)) {
+                toast('Invalid administrative access code', 'error');
+                return;
+            }
+        }
+
         if (formData.password !== formData.passwordConfirm) {
             toast('Passwords do not match', 'error');
             return;
@@ -76,7 +85,7 @@ function SignupContent() {
 
         setIsLoading(true);
         try {
-            const { data: authData, error: authError } = await supabase.auth.signUp({
+            const signUpPromise = supabase.auth.signUp({
                 email: normalizedEmail,
                 password: formData.password,
                 options: {
@@ -87,6 +96,12 @@ function SignupContent() {
                     }
                 }
             });
+
+            const timeoutPromise = new Promise<{ data: any; error: any }>((_, reject) =>
+                setTimeout(() => reject(new Error("Connection timed out. Please check your network and try again.")), 15000)
+            );
+
+            const { data: authData, error: authError } = await Promise.race([signUpPromise, timeoutPromise]);
 
             if (authError) throw authError;
             if (!authData.user) throw new Error('Signup failed - no user returned');
@@ -103,6 +118,13 @@ function SignupContent() {
             }, { onConflict: 'id' });
 
             if (profileError) throw profileError;
+
+            if (!authData.session) {
+                // Supabase requires email verification
+                toast('Account created successfully! Please check your email inbox (or spam) to verify your account.', 'success');
+                router.push('/login');
+                return;
+            }
 
             toast('Account created successfully!', 'success');
             await refreshUser();
@@ -249,6 +271,21 @@ function SignupContent() {
                                 className="w-full h-14 px-5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
                             />
                         </div>
+
+                        {(role === 'admin' || role === 'ceo') && (
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase font-black tracking-widest text-zinc-600 dark:text-zinc-400 ml-2">Admin Access Code</label>
+                                <input
+                                    name="adminCode"
+                                    type="password"
+                                    value={formData.adminCode}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="Enter authorization code"
+                                    className="w-full h-14 px-5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/50 transition-all font-medium"
+                                />
+                            </div>
+                        )}
 
                         <Button type="submit" className="w-full h-14 bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black uppercase tracking-widest rounded-2xl shadow-lg flex items-center justify-center gap-2 group" disabled={isLoading}>
                             {isLoading ? <Loader2 className="animate-spin h-5 w-5" /> : (

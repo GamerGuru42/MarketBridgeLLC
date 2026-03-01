@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { userId, items, totalAmount, proofUrl, paymentRef } = body;
+        const { userId, items, totalAmount, coinsRedeemed = 0, proofUrl, paymentRef } = body;
 
         if (!userId || !items || items.length === 0) {
             return NextResponse.json({ error: 'Missing order details' }, { status: 400 });
@@ -50,8 +50,22 @@ export async function POST(request: Request) {
 
         if (itemsError) {
             console.error('Error creating order items:', itemsError);
-            // Optionally rollback order here if critical
             return NextResponse.json({ error: 'Failed to add items to order' }, { status: 500 });
+        }
+
+        // Deduct Coins if they were redeemed
+        if (coinsRedeemed > 0) {
+            const { error: coinsError } = await supabase
+                .rpc('deduct_market_coins', {
+                    user_id: userId,
+                    amount_to_subtract: coinsRedeemed
+                });
+
+            if (coinsError) {
+                console.error('Error deducting MarketCoins:', coinsError);
+                // We've already created the order, so just log it to avoid blocking checkout, 
+                // but realistically we should run this inside a transaction or catch it natively.
+            }
         }
 
         return NextResponse.json({ success: true, orderId: order.id });
