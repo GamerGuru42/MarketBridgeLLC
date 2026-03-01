@@ -53,31 +53,74 @@ export default function HomePage() {
                         </div>
                     </div>
 
-                    <div className="flex-1 w-full relative h-[450px] lg:h-[550px] rounded-[3rem] bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden flex items-center justify-center transform hover:scale-[1.01] transition-transform duration-500">
-                        <div className="absolute inset-0 bg-gradient-to-tr from-[#FF6200]/10 to-transparent" />
-                        <div className="relative z-10 space-y-6">
-                            {/* Food Card */}
-                            <div className="bg-white dark:bg-zinc-950 p-4 rounded-3xl shadow-lg border border-zinc-100 dark:border-zinc-800 flex items-center gap-4 w-[280px] hover:-translate-y-2 transition-transform duration-300">
-                                <div className="w-16 h-16 bg-[#FF6200]/10 rounded-2xl flex items-center justify-center">
-                                    <ShoppingBag className="w-8 h-8 text-[#FF6200]" />
+                    <div className="flex-1 w-full relative h-[500px] lg:h-[600px] flex items-center justify-center transform hover:scale-[1.01] transition-transform duration-500">
+                        {/* Soft Glow */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-[#FF6200]/10 dark:bg-[#FF6200]/20 rounded-full blur-[100px] pointer-events-none" />
+
+                        {/* Phone Mockup Frame */}
+                        <div className="relative z-10 w-[280px] h-[560px] bg-zinc-50 dark:bg-zinc-950 border-[8px] border-zinc-200 dark:border-zinc-800 rounded-[3.5rem] shadow-2xl overflow-hidden flex flex-col items-center">
+                            {/* Notch */}
+                            <div className="absolute top-0 w-32 h-6 bg-zinc-200 dark:bg-zinc-800 rounded-b-2xl z-20" />
+
+                            <div className="flex-1 w-full h-full bg-gradient-to-br from-zinc-100 to-zinc-50 dark:from-zinc-900 dark:to-zinc-950 p-4 pt-12 space-y-4">
+                                {/* Simulated App Header */}
+                                <div className="h-6 w-1/3 bg-zinc-200 dark:bg-zinc-800 rounded-full mb-6 mt-2" />
+
+                                {/* Food Card inside Phone */}
+                                <div className="bg-white dark:bg-black p-4 rounded-[1.5rem] shadow-sm border border-zinc-100 dark:border-zinc-800/50 w-full hover:-translate-y-1 transition-transform cursor-pointer">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="w-12 h-12 bg-[#FF6200]/10 rounded-2xl flex items-center justify-center shrink-0">
+                                            <ShoppingBag className="w-6 h-6 text-[#FF6200]" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Delivering</p>
+                                            <h4 className="font-bold text-foreground text-sm leading-tight">Jollof & Chicken</h4>
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between items-center border-t border-zinc-50 dark:border-zinc-800/50 pt-3">
+                                        <p className="text-[#FF6200] font-black">₦3,500</p>
+                                        <div className="w-8 h-8 rounded-full bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center">
+                                            <ArrowRight className="w-4 h-4 text-zinc-400" />
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-1">Delivering</p>
-                                    <h4 className="font-bold text-foreground leading-none">Jollof Rice & Chicken</h4>
-                                    <p className="text-[#FF6200] font-black mt-1">₦3,500</p>
+
+                                {/* Service Card inside Phone */}
+                                <div className="bg-white dark:bg-black p-4 rounded-[1.5rem] shadow-sm border border-zinc-100 dark:border-zinc-800/50 w-full hover:-translate-y-1 transition-transform cursor-pointer">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center shrink-0">
+                                            <Store className="w-6 h-6 text-foreground" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Fixed Cost</p>
+                                            <h4 className="font-bold text-foreground text-sm leading-tight">MacBook Repair</h4>
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between items-center border-t border-zinc-50 dark:border-zinc-800/50 pt-3">
+                                        <p className="text-zinc-500 font-bold text-xs truncate">Campus A</p>
+                                        <div className="w-8 h-8 rounded-full bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center">
+                                            <ArrowRight className="w-4 h-4 text-zinc-400" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            {/* Service Card */}
-                            <div className="bg-white dark:bg-zinc-950 p-4 rounded-3xl shadow-lg border border-zinc-100 dark:border-zinc-800 flex items-center gap-4 w-[280px] ml-12 hover:-translate-y-2 transition-transform duration-300">
-                                <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center">
-                                    <Store className="w-8 h-8 text-foreground" />
-                                </div>
+                        </div>
+
+                        {/* Floating Badges */}
+                        <div className="absolute right-0 bottom-24 z-20 bg-[#111111] dark:bg-zinc-800 text-white dark:text-zinc-100 px-6 py-4 rounded-3xl shadow-2xl rotate-[4deg] animate-float border border-white/10 dark:border-white/5 hidden sm:block">
+                            <div className="flex items-center gap-3">
+                                <Zap className="w-6 h-6 text-[#FF6200]" />
                                 <div>
-                                    <p className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-1">Service</p>
-                                    <h4 className="font-bold text-foreground leading-none">MacBook Repair</h4>
-                                    <p className="text-zinc-600 font-black mt-1">Nile Uni Campus</p>
+                                    <p className="text-[10px] uppercase tracking-widest font-bold opacity-70">ETA To Hostel</p>
+                                    <p className="font-black text-xl leading-none mt-0.5">15 Mins</p>
                                 </div>
                             </div>
+                        </div>
+                        <div className="absolute -left-4 top-40 z-20 bg-white dark:bg-zinc-900 text-foreground px-5 py-3.5 rounded-2xl shadow-xl -rotate-[5deg] animate-float border border-zinc-100 dark:border-zinc-800 hidden sm:flex items-center gap-2.5" style={{ animationDelay: '1s' }}>
+                            <div className="h-6 w-6 rounded-full bg-[#FF6200]/10 flex items-center justify-center">
+                                <CheckCircle2 className="w-4 h-4 text-[#FF6200]" />
+                            </div>
+                            <p className="font-black text-sm tracking-tight text-zinc-800 dark:text-zinc-200">Verified Seller</p>
                         </div>
                     </div>
                 </section>
