@@ -47,7 +47,7 @@ export const Header = () => {
 
     const navLinks = [
         { href: '/marketplace', label: 'Browse' },
-        { href: '/signup?role=student_seller', label: 'Sell on MarketBridge' },
+        { href: '/seller-onboard', label: 'Sell on MarketBridge' },
     ];
 
     return (
@@ -100,7 +100,7 @@ export const Header = () => {
                             <div className="hidden md:flex items-center gap-2">
                                 <Link
                                     href="/login"
-                                    className="px-4 py-2 text-sm font-bold text-zinc-600 hover:text-zinc-900 transition-colors rounded-full hover:bg-zinc-100"
+                                    className="px-4 py-2 text-sm font-bold text-zinc-900 border border-zinc-900 hover:bg-zinc-100 transition-colors rounded-full"
                                 >
                                     Log in
                                 </Link>

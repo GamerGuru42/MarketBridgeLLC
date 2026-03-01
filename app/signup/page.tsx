@@ -139,10 +139,10 @@ function SignupContent() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4 max-w-6xl mx-auto">
                         {[
-                            { id: 'student_buyer', title: 'Buyer', icon: UserIcon, desc: 'Shop campus deals', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'hover:border-emerald-500/50' },
-                            { id: 'student_seller', title: 'Seller', icon: Briefcase, desc: 'List your items', color: 'text-[#FF6200]', bg: 'bg-[#FF6200]/10', border: 'hover:border-[#FF6200]/50' },
-                            { id: 'admin', title: 'Admin', icon: ShieldCheck, desc: 'Manage operations', color: 'text-blue-500', bg: 'bg-blue-500/10', border: 'hover:border-blue-500/50' },
-                            { id: 'ceo', title: 'Executive', icon: Lock, desc: 'Full platform access', color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'hover:border-purple-500/50' }
+                            { id: 'student_buyer', title: 'Buyer', icon: UserIcon, desc: 'Shop campus deals', color: 'text-[#111111]', bg: 'bg-zinc-100', border: 'hover:border-[#FF6200]' },
+                            { id: 'student_seller', title: 'Seller', icon: Briefcase, desc: 'List your items & sell', color: 'text-[#111111]', bg: 'bg-zinc-100', border: 'hover:border-[#FF6200]' },
+                            { id: 'admin', title: 'Admin', icon: ShieldCheck, desc: 'Manage operations', color: 'text-[#111111]', bg: 'bg-zinc-100', border: 'hover:border-[#FF6200]' },
+                            { id: 'ceo', title: 'CEO', icon: Lock, desc: 'Oversee everything', color: 'text-[#111111]', bg: 'bg-zinc-100', border: 'hover:border-[#FF6200]' }
                         ].map(item => (
                             <Card
                                 key={item.id}

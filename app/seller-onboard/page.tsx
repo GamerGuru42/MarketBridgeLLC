@@ -25,7 +25,7 @@ const CATEGORIES = [
 
 export default function SellerOnboardPage() {
     const { toast } = useToast();
-    const { user, refreshUser } = useAuth();
+    const { user, refreshUser, loading } = useAuth();
     const router = useRouter();
     const supabase = createClient();
 
@@ -49,6 +49,10 @@ export default function SellerOnboardPage() {
     });
 
     useEffect(() => {
+        if (!loading && !user) {
+            router.push('/signup?role=student_seller');
+            return;
+        }
         if (!user) return;
 
         async function fetchStatus() {
@@ -75,7 +79,7 @@ export default function SellerOnboardPage() {
         }
 
         fetchStatus();
-    }, [user, supabase, router]);
+    }, [user, loading, supabase, router]);
 
     const handleNext = () => setStep(prev => prev + 1);
     const handlePrev = () => setStep(prev => prev - 1);
@@ -186,12 +190,12 @@ export default function SellerOnboardPage() {
         return (
             <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center p-4">
                 <Card className="w-full max-w-lg bg-white border border-zinc-200 shadow-xl rounded-[2.5rem] p-10 text-center">
-                    <div className="mx-auto h-24 w-24 bg-emerald-50 border border-emerald-100 rounded-full flex items-center justify-center mb-6">
-                        <CheckCircle className="h-12 w-12 text-emerald-500" />
+                    <div className="mx-auto h-24 w-24 bg-[#FF6200]/10 border border-[#FF6200]/20 rounded-full flex items-center justify-center mb-6">
+                        <CheckCircle className="h-12 w-12 text-[#FF6200]" />
                     </div>
                     <h2 className="text-3xl font-black uppercase tracking-tighter text-zinc-900 mb-4">Application Pending</h2>
                     <p className="text-zinc-500 font-medium mb-8">
-                        Your seller application has been securely submitted. We're keeping things trusted, so expect a quick face-to-face or digital check before you can start posting listings.
+                        Your seller application has been securely submitted. We're keeping things trusted, so expect a quick manual approval before you can start posting listings.
                     </p>
                     <Link href="/marketplace">
                         <Button className="w-full h-14 bg-zinc-100 hover:bg-zinc-200 text-zinc-900 font-bold rounded-2xl">
