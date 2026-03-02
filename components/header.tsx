@@ -246,6 +246,20 @@ export const Header = () => {
                     <div className="border-t border-zinc-100 dark:border-zinc-800 pt-4 flex flex-col gap-3 mt-2">
                         {user ? (
                             <>
+                                {/* Coins badge */}
+                                <div className="flex items-center gap-2 px-2 py-2">
+                                    <Zap className="h-4 w-4 text-[#FF6200]" />
+                                    <span className="text-sm font-black text-zinc-900 dark:text-white">{(user.coins_balance || 0).toLocaleString()}</span>
+                                    <span className="text-[10px] font-black text-[#FF6200] uppercase">MarketCoins</span>
+                                </div>
+                                <Link href="/chats" onClick={() => setMobileMenuOpen(false)} className="text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white font-bold p-2 flex items-center gap-2">
+                                    <MessageCircle className="h-4 w-4" /> Messages
+                                </Link>
+                                {['dealer', 'student_seller', 'seller'].includes(user.role) && (
+                                    <Link href="/seller/upgrade" onClick={() => setMobileMenuOpen(false)} className="text-[#FF6200] font-bold p-2 flex items-center gap-2">
+                                        <Crown className="h-4 w-4" /> Upgrade Plan
+                                    </Link>
+                                )}
                                 <Link href="/settings" onClick={() => setMobileMenuOpen(false)} className="text-zinc-600 dark:text-zinc-300 hover:text-white font-bold p-2">My Account</Link>
                                 <button onClick={() => { setMobileMenuOpen(false); handleSignOut(); }} className="text-red-500 font-bold text-left p-2">Log out</button>
                             </>

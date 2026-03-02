@@ -27,6 +27,8 @@ export interface User {
     otp_attempts?: number;
     coins_balance?: number;
     referral_link_code?: string;
+    matricNumber?: string;
+    matric_number?: string;
 }
 
 export interface FirestoreUser {
