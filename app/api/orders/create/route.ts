@@ -56,9 +56,11 @@ export async function POST(request: Request) {
         // Deduct Coins if they were redeemed
         if (coinsRedeemed > 0) {
             const { error: coinsError } = await supabase
-                .rpc('deduct_market_coins', {
+                .rpc('subtract_coins', {
                     user_id: userId,
-                    amount_to_subtract: coinsRedeemed
+                    amount_to_subtract: coinsRedeemed,
+                    trans_type: 'redeem_discount',
+                    trans_desc: `MarketCoins redeemed on order ${order.id}`
                 });
 
             if (coinsError) {
