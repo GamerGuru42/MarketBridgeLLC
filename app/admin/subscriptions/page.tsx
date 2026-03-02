@@ -2,228 +2,218 @@
 
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { formatCurrency } from '@/lib/utils';
-import { CheckCircle, XCircle, Loader2, RefreshCw, ShieldCheck } from 'lucide-react';
-import { useToast } from '@/contexts/ToastContext';
+import { useRouter } from 'next/navigation';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { CheckCircle2, XCircle, Clock, Search, Filter, Crown, Zap, Mail, Phone, Loader2, ArrowUpRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useToast } from '@/contexts/ToastContext';
 
-export default function AdminSubscriptionVerification() {
-    const { user, loading: authLoading } = useAuth();
-    const [verifications, setVerifications] = useState<any[]>([]);
-    const [plans, setPlans] = useState<Record<string, any>>({});
-    const [loading, setLoading] = useState(true);
-    const [actionLoading, setActionLoading] = useState<string | null>(null);
-    const supabase = createClient();
+interface SubscriptionRequest {
+    id: string;
+    user_id: string;
+    plan_id: string;
+    billing_cycle: string;
+    status: string;
+    created_at: string;
+    user?: {
+        display_name: string;
+        email: string;
+        phone_number: string;
+    };
+}
+
+export default function AdminSubscriptionsPage() {
+    const { user: admin, loading: authLoading } = useAuth();
+    const router = useRouter();
     const { toast } = useToast();
+    const supabase = createClient();
+    const [requests, setRequests] = useState<SubscriptionRequest[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [processingId, setProcessingId] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!authLoading) {
-            Promise.all([
-                fetchPendingVerifications(),
-                fetchPlans()
-            ]);
+        if (!authLoading && (!admin || !['admin', 'ceo', 'super_admin', 'cofounder'].includes(admin.role))) {
+            router.push('/');
+            return;
         }
-    }, [authLoading]);
+        if (admin) fetchRequests();
+    }, [admin, authLoading, router]);
 
-    const fetchPlans = async () => {
-        const { data } = await supabase.from('subscription_plans').select('*');
-        if (data) {
-            const planMap = data.reduce((acc: any, plan: any) => {
-                acc[plan.id] = plan;
-                return acc;
-            }, {});
-            setPlans(planMap);
-        }
-    };
-
-    const fetchPendingVerifications = async () => {
+    const fetchRequests = async () => {
         setLoading(true);
         try {
             const { data, error } = await supabase
-                .from('subscriptions')
+                .from('subscription_requests')
                 .select(`
                     *,
-                    user:users(id, email, first_name, last_name, business_name, photo_url)
+                    user:users!user_id(display_name, email, phone_number)
                 `)
-                .or('status.eq.pending,status.eq.active')
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
-
-            const pendingReviews = (data || []).filter(sub =>
-                sub.status === 'pending' ||
-                (sub.status === 'active' && sub.metadata?.provisional === true)
-            );
-            setVerifications(pendingReviews);
+            setRequests(data || []);
         } catch (err) {
-            console.error('Error fetching verifications:', err);
-            toast('Failed to load pending verifications', 'error');
+            console.error('Failed to fetch subscription requests:', err);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleVerify = async (subId: string, approve: boolean) => {
-        setActionLoading(subId);
+    const handleAction = async (requestId: string, userId: string, planId: string, approve: boolean) => {
+        setProcessingId(requestId);
         try {
+            // 1. Update request status
+            const { error: reqError } = await supabase
+                .from('subscription_requests')
+                .update({ status: approve ? 'approved' : 'rejected' })
+                .eq('id', requestId);
+
+            if (reqError) throw reqError;
+
+            // 2. If approved, update user's plan
             if (approve) {
-                const { error: subError } = await supabase
-                    .from('subscriptions')
+                const expiresAt = new Date();
+                // Basic expiry logic: +1 month if monthly, +1 year if annual
+                const req = requests.find(r => r.id === requestId);
+                if (req?.billing_cycle === 'annual') {
+                    expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+                } else {
+                    expiresAt.setMonth(expiresAt.getMonth() + 1);
+                }
+
+                const { error: userError } = await supabase
+                    .from('users')
                     .update({
-                        status: 'active',
-                        trial_end: null,
-                        metadata: {
-                            verified_at: new Date().toISOString(),
-                            provisional: false
-                        }
+                        subscription_plan_id: planId,
+                        subscription_status: 'active',
+                        subscription_start_date: new Date().toISOString(),
+                        subscription_expires_at: expiresAt.toISOString(),
+                        listing_limit: planId === 'pro' ? 30 : planId === 'elite' ? 999999 : 5
                     })
-                    .eq('id', subId);
+                    .eq('id', userId);
 
-                if (subError) throw subError;
-
-                const { error: payError } = await supabase
-                    .from('payments')
-                    .update({ status: 'successful' })
-                    .eq('subscription_id', subId)
-                    .neq('status', 'successful');
-
-                if (payError) console.error('Payment update error', payError);
-                toast('Subscription verified & permanent access granted', 'success');
+                if (userError) throw userError;
+                toast(`Successfully upgraded user to ${planId.toUpperCase()}!`, 'success');
             } else {
-                await supabase
-                    .from('subscriptions')
-                    .update({ status: 'cancelled' })
-                    .eq('id', subId);
-
-                await supabase
-                    .from('payments')
-                    .update({ status: 'failed' })
-                    .eq('subscription_id', subId);
-
-                toast('Access revoked and subscription rejected', 'info');
+                toast('Subscription request rejected.', 'info');
             }
-            fetchPendingVerifications();
-        } catch (err: any) {
-            console.error('Verification action error:', err);
-            toast(err.message || 'Action failed', 'error');
+
+            fetchRequests();
+        } catch (err) {
+            console.error('Failed to process request:', err);
+            toast('Action failed. Check console for details.', 'error');
         } finally {
-            setActionLoading(null);
+            setProcessingId(null);
         }
     };
 
-    if (authLoading) return (
-        <div className="min-h-screen bg-black flex items-center justify-center text-[#FF6200]">
-            <Loader2 className="h-8 w-8 animate-spin" />
+    if (loading) return (
+        <div className="min-h-screen bg-black flex items-center justify-center p-6">
+            <div className="text-center space-y-4">
+                <Loader2 className="h-12 w-12 text-[#FF6200] animate-spin mx-auto" />
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/50 animate-pulse">Scanning Plan Requests...</p>
+            </div>
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-black text-white p-6 md:p-12 font-sans selection:bg-[#FF6200] selection:text-black">
-            <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
+        <div className="min-h-screen bg-black text-white p-6 md:p-12 font-sans relative overflow-hidden">
+            <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#FF6200]/5 rounded-full blur-[120px] pointer-events-none" />
 
-            <div className="max-w-6xl mx-auto relative z-10">
-                <div className="flex justify-between items-end mb-12 border-b border-white/10 pb-6">
-                    <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <ShieldCheck className="h-5 w-5 text-[#FF6200]" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 font-heading">Operations Command</span>
+            <div className="max-w-6xl mx-auto relative z-10 space-y-12">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-white/5 pb-12">
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <Crown className="h-5 w-5 text-[#FF6200]" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">MarketBridge Central</span>
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading">
-                            Sub <span className="text-[#FF6200]">Verification</span>
+                        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic">
+                            Subscription <span className="text-[#FF6200]">Verification</span>
                         </h1>
+                        <p className="text-white/40 font-medium italic max-w-xl">
+                            Command & Control panel for manual subscription upgrades and payment verification.
+                        </p>
                     </div>
-                    <Button
-                        onClick={fetchPendingVerifications}
-                        variant="ghost"
-                        size="sm"
-                        className="text-white/40 hover:text-[#FF6200] hover:bg-[#FF6200]/10 font-mono text-xs uppercase tracking-widest border border-white/10"
-                    >
-                        <RefreshCw className="mr-2 h-3 w-3" /> Sync Database
-                    </Button>
                 </div>
 
-                {loading ? (
-                    <div className="flex justify-center py-24">
-                        <Loader2 className="h-12 w-12 animate-spin text-white/10" />
-                    </div>
-                ) : verifications.length === 0 ? (
-                    <div className="bg-zinc-900/50 border border-dashed border-white/10 p-24 rounded-3xl text-center">
-                        <ShieldCheck className="h-16 w-16 text-white/10 mx-auto mb-6" />
-                        <h3 className="text-white/40 font-black uppercase tracking-widest text-sm font-heading">All Clear</h3>
-                        <p className="text-white/30 text-xs font-mono mt-2">No pending manual verifications in the queue.</p>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 gap-6">
-                        {verifications.map((verification) => (
-                            <div key={verification.id} className="group relative bg-zinc-950/50 backdrop-blur-md border border-white/10 p-8 rounded-2xl overflow-hidden hover:border-[#FF6200]/30 transition-all duration-300">
-                                <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#FF6200] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                <div className="flex flex-col lg:flex-row justify-between gap-8">
-                                    <div className="space-y-6 flex-1">
-                                        <div className="flex items-center gap-4">
-                                            <div className="h-12 w-12 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center font-bold text-white/40">
-                                                {verification.user?.first_name?.charAt(0) || verification.user?.email?.charAt(0)}
-                                            </div>
-                                            <div>
-                                                <div className="flex items-center gap-3">
-                                                    <h3 className="text-xl font-bold text-white">
-                                                        {verification.user?.business_name || 'Individual Seller'}
-                                                    </h3>
-                                                    <Badge variant="outline" className="bg-[#FF6200]/10 text-[#FF6200] border-[#FF6200]/20 font-mono text-[10px] uppercase tracking-widest">
-                                                        {plans[verification.plan_id]?.name || 'Unknown Plan'}
-                                                    </Badge>
-                                                </div>
-                                                <p className="text-sm text-white/40 font-mono">{verification.user?.email}</p>
-                                            </div>
-                                        </div>
+                <div className="grid grid-cols-1 gap-6">
+                    {requests.length === 0 ? (
+                        <div className="py-24 text-center border-2 border-dashed border-white/5 bg-white/[0.02] rounded-[3rem]">
+                            <Zap className="h-16 w-16 text-white/10 mx-auto mb-6" />
+                            <p className="text-white/30 font-black uppercase tracking-widest text-xs italic">Zero pending upgrade requests</p>
+                        </div>
+                    ) : (
+                        requests.map((req) => (
+                            <div key={req.id} className="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center gap-8 group hover:border-[#FF6200]/20 transition-all duration-500">
+                                <div className={cn(
+                                    "h-16 w-16 rounded-3xl flex items-center justify-center shrink-0 border border-white/5",
+                                    req.plan_id === 'elite' ? "bg-amber-500/10 text-amber-500" : "bg-[#FF6200]/10 text-[#FF6200]"
+                                )}>
+                                    <Crown className="h-8 w-8" />
+                                </div>
 
-                                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 bg-white/5 rounded-xl p-6 border border-white/5">
-                                            <div>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-white/30 font-heading mb-1">Payer Name</p>
-                                                <p className="text-sm text-white/70 font-mono">{verification.metadata?.sender_name || 'N/A'}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-white/30 font-heading mb-1">Reference ID</p>
-                                                <p className="text-sm text-white/70 font-mono">{verification.metadata?.manual_payment_ref || 'N/A'}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-white/30 font-heading mb-1">Timestamp</p>
-                                                <p className="text-sm text-white/70 font-mono">{new Date(verification.metadata?.submitted_at || verification.created_at).toLocaleDateString()}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-white/30 font-heading mb-1">Amount Due</p>
-                                                <p className="text-xl font-black text-[#FF6200] font-heading">
-                                                    {formatCurrency(plans[verification.plan_id]?.price_monthly || 0)}
-                                                </p>
-                                            </div>
-                                        </div>
+                                <div className="flex-1 space-y-2 text-center md:text-left">
+                                    <div className="flex items-center justify-center md:justify-start gap-3">
+                                        <h3 className="text-xl font-black uppercase tracking-tighter italic">{req.user?.display_name || 'Legacy Merchant'}</h3>
+                                        <Badge className={cn(
+                                            "px-2 py-0.5 font-black uppercase text-[8px] tracking-widest bg-white/5 text-white/60",
+                                            req.status === 'pending' && "bg-[#FF6200]/10 text-[#FF6200] animate-pulse"
+                                        )}>
+                                            {req.status}
+                                        </Badge>
                                     </div>
-
-                                    <div className="flex flex-col gap-3 justify-center min-w-[200px] border-l border-white/10 pl-8 border-dashed lg:border-solid border-l-0 lg:border-l lg:pl-8 pt-6 lg:pt-0 lg:border-t-0 border-t">
-                                        <Button
-                                            onClick={() => handleVerify(verification.id, true)}
-                                            disabled={!!actionLoading}
-                                            className="bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest text-xs h-12"
-                                        >
-                                            {actionLoading === verification.id ? <Loader2 className="animate-spin h-4 w-4" /> : <CheckCircle className="mr-2 h-4 w-4" />}
-                                            Authorize Access
-                                        </Button>
-                                        <Button
-                                            onClick={() => handleVerify(verification.id, false)}
-                                            disabled={!!actionLoading}
-                                            variant="ghost"
-                                            className="text-white hover:bg-white/5 font-mono uppercase tracking-widest text-xs h-12 border border-white/10"
-                                        >
-                                            <XCircle className="mr-2 h-4 w-4" />
-                                            Deny Request
-                                        </Button>
+                                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs font-medium text-white/40 italic">
+                                        <span className="flex items-center gap-1"><Mail className="h-3 w-3" /> {req.user?.email}</span>
+                                        <span className="flex items-center gap-1"><Phone className="h-3 w-3" /> {req.user?.phone_number || 'No Phone Data'}</span>
                                     </div>
                                 </div>
+
+                                <div className="border-x border-white/5 px-8 hidden lg:block">
+                                    <p className="text-[10px] font-black uppercase text-white/30 tracking-widest mb-1">Target Plan</p>
+                                    <p className="text-lg font-black uppercase italic tracking-tighter">
+                                        {req.plan_id} <span className="text-[10px] text-[#FF6200]/70">/{req.billing_cycle}</span>
+                                    </p>
+                                </div>
+
+                                <div className="flex gap-3">
+                                    {req.status === 'pending' && (
+                                        <>
+                                            <Button
+                                                onClick={() => handleAction(req.id, req.user_id, req.plan_id, true)}
+                                                disabled={!!processingId}
+                                                className="h-14 px-8 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-lg shadow-[#FF6200]/10 shrink-0"
+                                            >
+                                                {processingId === req.id ? <Loader2 className="h-4 w-4 animate-spin" /> : "Approve Plan"}
+                                            </Button>
+                                            <Button
+                                                onClick={() => handleAction(req.id, req.user_id, req.plan_id, false)}
+                                                disabled={!!processingId}
+                                                variant="outline"
+                                                className="h-14 px-8 border-white/10 text-white/60 hover:text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shrink-0"
+                                            >
+                                                Reject
+                                            </Button>
+                                        </>
+                                    )}
+                                    <Button
+                                        onClick={() => router.push(`/admin/users?id=${req.user_id}`)}
+                                        variant="ghost"
+                                        className="h-14 w-14 p-0 text-white/30 hover:text-white rounded-2xl"
+                                    >
+                                        <ArrowUpRight className="h-5 w-5" />
+                                    </Button>
+                                </div>
                             </div>
-                        ))}
-                    </div>
-                )}
+                        ))
+                    )}
+                </div>
+
+                <p className="text-center text-[10px] font-black uppercase text-white/20 tracking-widest italic pt-8 border-t border-white/5">
+                    Authorized Access Only — All manual activations are audited by Central Command.
+                </p>
             </div>
         </div>
     );

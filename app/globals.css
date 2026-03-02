@@ -98,30 +98,30 @@
 
   html {
     @apply scroll-smooth;
-    overflow-x: hidden;
+    width: 100%;
   }
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    /* Prevent mobile horizontal wobbling */
+    /* Support mobile scrolling properly */
     overflow-x: hidden;
-    overflow-y: auto;
     position: relative;
     width: 100%;
-    /* Block only horizontal overscroll; vertical must remain free for mobile scroll */
-    overscroll-behavior-x: none;
+    touch-action: pan-y;
+    overscroll-behavior-y: contain;
 
     background-image: none;
     background-size: 50px 50px;
     background-attachment: fixed;
   }
+}
 
-  /* Only reserve scrollbar space on desktop to prevent layout shift */
-  @media (min-width: 768px) {
-    body {
-      scrollbar-gutter: stable;
-    }
+/* Only reserve scrollbar space on desktop to prevent layout shift */
+@media (min-width: 768px) {
+  body {
+    scrollbar-gutter: stable;
   }
+}
 }
 
 @layer utilities {

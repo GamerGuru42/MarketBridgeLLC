@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { TrendingUp, Users, DollarSign, Activity, MapPin, Video, ShieldCheck, PieChart, Clock, MessageSquare, AlertTriangle, Loader2, Store } from 'lucide-react';
+import { TrendingUp, Users, DollarSign, Activity, MapPin, Video, ShieldCheck, PieChart, Clock, MessageSquare, AlertTriangle, Loader2, Store, Crown, ShoppingBag } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -95,8 +96,8 @@ export default function CEOPage() {
             <div className="container px-6 mx-auto max-w-7xl space-y-12">
 
                 {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-zinc-200 pb-8">
-                    <div className="space-y-4">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 border-b border-zinc-200 pb-12">
+                    <div className="space-y-6">
                         <div className="flex items-center gap-3">
                             <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">Executive Node</span>
@@ -107,6 +108,24 @@ export default function CEOPage() {
                         <p className="text-zinc-500 font-medium italic">
                             Global operations active. Logged in as <span className="text-zinc-900 font-bold">{user.displayName}</span>
                         </p>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 md:mb-2">
+                        {[
+                            { label: 'Subscriptions', href: '/admin/subscriptions', icon: Crown },
+                            { label: 'Verify Sellers', href: '/admin/verify-sellers', icon: ShieldCheck },
+                            { label: 'Payouts', href: '/admin/payouts', icon: DollarSign },
+                            { label: 'Orders', href: '/admin/orders', icon: ShoppingBag },
+                        ].map((link, i) => (
+                            <Link
+                                key={i}
+                                href={link.href}
+                                className="h-12 px-6 flex items-center justify-center bg-white border border-zinc-200 rounded-2xl text-zinc-900 font-black uppercase tracking-widest text-[9px] hover:bg-[#FF6200]/5 hover:border-[#FF6200]/20 transition-all shadow-sm"
+                            >
+                                <link.icon className="h-3.5 w-3.5 mr-2 text-[#FF6200]" />
+                                {link.label}
+                            </Link>
+                        ))}
                     </div>
                 </div>
 

@@ -29,7 +29,8 @@ import {
     Mail,
     ShieldAlert,
     RefreshCw,
-    User
+    User,
+    Crown
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -766,30 +767,36 @@ export default function SellerDashboardPage() {
                 </div>
 
                 {/* Quick Directive Actions */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {[
                         { label: "New Listing", desc: "Deploy new asset to marketplace", href: "/seller/listings/new", icon: Package, primary: true },
                         { label: "Inventory", desc: "Audit and verify live assets", href: "/seller/listings", icon: Eye },
-                        { label: "Dashboard", desc: "Check incoming communications", href: "/chats", icon: MessageCircle },
+                        { label: "Messages", desc: "Check incoming communications", href: "/chats", icon: MessageCircle },
+                        { label: "Upgrade Plan", desc: "Unlock pro features & visibility", href: "/seller/upgrade", icon: Crown, highlight: true },
                     ].map((action, i) => (
                         <Link key={i} href={action.href} className="group h-full">
                             <div className={cn(
-                                "p-8 rounded-[2rem] transition-all duration-500 h-full flex items-center justify-between border",
+                                "p-8 rounded-[2rem] transition-all duration-500 h-full flex flex-col justify-between border",
                                 action.primary
                                     ? "bg-[#FF6200] border-[#FF6200] text-black"
-                                    : "bg-white border-zinc-200 text-zinc-900 hover:border-[#FF6200]/30"
+                                    : action.highlight
+                                        ? "bg-zinc-900 border-zinc-800 text-white hover:border-[#FF6200]/50"
+                                        : "bg-white border-zinc-200 text-zinc-900 hover:border-[#FF6200]/30"
                             )}>
-                                <div className="space-y-1">
-                                    <h4 className="text-xl font-black uppercase tracking-tighter italic font-heading">{action.label}</h4>
-                                    <p className={cn("text-[10px] font-bold uppercase tracking-widest font-heading lowercase italic opacity-60")}>
-                                        {action.desc}
-                                    </p>
-                                </div>
                                 <div className={cn(
-                                    "h-12 w-12 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110",
-                                    action.primary ? "bg-[#FAFAFA]/10" : "bg-white"
+                                    "h-12 w-12 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 mb-6",
+                                    action.primary ? "bg-white/10" : action.highlight ? "bg-[#FF6200]/10 text-[#FF6200]" : "bg-zinc-100"
                                 )}>
                                     <action.icon className="h-6 w-6" />
+                                </div>
+                                <div className="space-y-1">
+                                    <h4 className="text-xl font-black uppercase tracking-tighter italic font-heading">{action.label}</h4>
+                                    <p className={cn(
+                                        "text-[10px] font-bold uppercase tracking-widest font-heading lowercase italic opacity-60",
+                                        action.highlight ? "text-[#FF6200]" : ""
+                                    )}>
+                                        {action.desc}
+                                    </p>
                                 </div>
                             </div>
                         </Link>
