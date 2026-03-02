@@ -122,7 +122,6 @@
     scrollbar-gutter: stable;
   }
 }
-}
 
 @layer utilities {
   .glass-card {
