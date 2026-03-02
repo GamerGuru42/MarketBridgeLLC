@@ -183,217 +183,266 @@ export default function SellerOnboardPage() {
     const isStep3Valid = formData.idCardUrl !== '';
 
     if (isLoadingInitial) {
-        return <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center"><Loader2 className="animate-spin h-8 w-8 text-[#FF6200]" /></div>;
-    }
-
-    if (isSuccess) {
         return (
-            <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center p-4">
-                <Card className="w-full max-w-lg bg-white border border-zinc-200 shadow-xl rounded-[2.5rem] p-10 text-center">
-                    <div className="mx-auto h-24 w-24 bg-[#FF6200]/10 border border-[#FF6200]/20 rounded-full flex items-center justify-center mb-6">
-                        <CheckCircle className="h-12 w-12 text-[#FF6200]" />
-                    </div>
-                    <h2 className="text-3xl font-black uppercase tracking-tighter text-zinc-900 mb-4">Application Pending</h2>
-                    <p className="text-zinc-500 font-medium mb-8">
-                        Your seller application has been securely submitted. We're keeping things trusted, so expect a quick manual approval before you can start posting listings.
-                    </p>
-                    <Link href="/marketplace">
-                        <Button className="w-full h-14 bg-zinc-100 hover:bg-zinc-200 text-zinc-900 font-bold rounded-2xl">
-                            Return to Marketplace
-                        </Button>
-                    </Link>
-                </Card>
+            <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+                <div className="text-center space-y-4">
+                    <Loader2 className="h-12 w-12 text-[#FF6200] animate-spin mx-auto" />
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/30 animate-pulse">Loading your profile...</p>
+                </div>
             </div>
         );
     }
 
-    return (
-        <div className="min-h-screen flex items-center justify-center py-20 px-4 bg-[#FAFAFA]">
-            <Card className="w-full max-w-2xl bg-white border border-zinc-200 shadow-xl rounded-[2.5rem] p-8 md:p-12">
-                <div className="mb-10">
-                    <div className="flex items-center justify-between mb-8">
-                        <h1 className="text-3xl font-black uppercase tracking-tighter text-zinc-900">Seller Setup</h1>
-                        <div className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] bg-[#FF6200]/10 px-3 py-1.5 rounded-full">
-                            Step {step} of 4
-                        </div>
+    if (isSuccess) {
+        return (
+            <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4">
+                <div className="w-full max-w-md text-center space-y-8">
+                    <div className="mx-auto h-28 w-28 bg-[#FF6200]/10 border-2 border-[#FF6200]/20 rounded-full flex items-center justify-center shadow-[0_0_60px_rgba(255,98,0,0.15)]">
+                        <CheckCircle className="h-14 w-14 text-[#FF6200]" />
                     </div>
-
-                    {/* Clean Progress Bar */}
-                    <div className="flex gap-2">
-                        {[1, 2, 3, 4].map(s => (
-                            <div key={s} className={`h-1.5 flex-1 rounded-full transition-colors ${step >= s ? 'bg-[#FF6200]' : 'bg-zinc-100'}`} />
+                    <div className="space-y-3">
+                        <h2 className="text-4xl font-black uppercase tracking-tighter text-white italic">
+                            Application <span className="text-[#FF6200]">Submitted!</span>
+                        </h2>
+                        <p className="text-white/50 font-medium leading-relaxed max-w-sm mx-auto">
+                            Your seller application is under review. Our team will manually verify your details and activate your account within 24 hours.
+                        </p>
+                    </div>
+                    <div className="bg-white/[0.03] border border-white/5 rounded-3xl p-6 text-left space-y-3">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-white/30">What happens next</p>
+                        {["Admin reviews your ID card & details", "You receive an approval notification", "Start listing products immediately"].map((step, i) => (
+                            <div key={i} className="flex items-center gap-3">
+                                <div className="h-6 w-6 rounded-full bg-[#FF6200]/10 flex items-center justify-center shrink-0">
+                                    <span className="text-[10px] font-black text-[#FF6200]">{i + 1}</span>
+                                </div>
+                                <p className="text-white/60 text-sm font-medium">{step}</p>
+                            </div>
                         ))}
                     </div>
+                    <Link href="/marketplace" className="block">
+                        <Button className="w-full h-14 bg-white/5 hover:bg-white/10 text-white border border-white/10 font-black uppercase tracking-widest rounded-2xl transition-all">
+                            Browse Marketplace
+                        </Button>
+                    </Link>
+                </div>
+            </div>
+        );
+    }
+
+    const stepLabels = ['Location', 'Products', 'ID Verify', 'Profile'];
+
+    return (
+        <div className="min-h-screen flex items-center justify-center py-20 px-4 bg-zinc-950 relative">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-[#FF6200]/5 rounded-full blur-[100px] pointer-events-none" />
+            <div className="w-full max-w-2xl relative z-10">
+                {/* Page Header */}
+                <div className="text-center mb-12">
+                    <Link href="/" className="inline-flex items-center text-white/30 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest transition-colors">
+                        <ArrowLeft className="mr-2 h-3.5 w-3.5" /> Back to Home
+                    </Link>
+                    <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-white italic">
+                        Seller <span className="text-[#FF6200]">Setup</span>
+                    </h1>
+                    <p className="text-white/40 font-medium mt-2 text-sm">Complete all 4 steps to apply as a verified seller</p>
                 </div>
 
-                {/* STEP 1: Basics */}
-                {step === 1 && (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="h-10 w-10 rounded-xl bg-orange-100 flex items-center justify-center"><MapPin className="h-5 w-5 text-[#FF6200]" /></div>
-                            <div>
-                                <h2 className="text-lg font-black text-zinc-900">The Basics</h2>
-                                <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Where are you selling?</p>
+                {/* Step Indicators */}
+                <div className="flex items-center gap-2 mb-10">
+                    {[1, 2, 3, 4].map(s => (
+                        <React.Fragment key={s}>
+                            <div className={`flex items-center gap-2 ${s < 4 ? 'flex-1' : ''}`}>
+                                <div className={`h-8 w-8 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 transition-all ${step > s ? 'bg-[#FF6200] text-black' :
+                                    step === s ? 'bg-[#FF6200]/20 text-[#FF6200] border-2 border-[#FF6200]' :
+                                        'bg-white/5 text-white/30 border border-white/10'
+                                    }`}>
+                                    {step > s ? '✓' : s}
+                                </div>
+                                <span className={`text-[9px] font-black uppercase tracking-widest hidden sm:block ${step >= s ? 'text-white/60' : 'text-white/20'}`}>
+                                    {stepLabels[s - 1]}
+                                </span>
                             </div>
-                        </div>
+                            {s < 4 && <div className={`h-px flex-1 transition-colors ${step > s ? 'bg-[#FF6200]' : 'bg-white/10'}`} />}
+                        </React.Fragment>
+                    ))}
+                </div>
 
-                        <div className="space-y-4">
-                            <div>
-                                <label className="text-[10px] uppercase font-black tracking-widest text-zinc-500 ml-1">University *</label>
-                                <select
-                                    value={formData.university}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, university: e.target.value }))}
-                                    className="w-full h-14 px-4 bg-zinc-50 border border-zinc-200 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] rounded-2xl text-zinc-900 font-medium mt-1 outline-none appearance-none"
-                                >
-                                    <option value="" disabled>Select your university</option>
-                                    {UNIVERSITIES.map(u => <option key={u} value={u}>{u}</option>)}
-                                </select>
-                            </div>
+                <div className="bg-zinc-900/80 border border-white/5 rounded-[2.5rem] p-8 md:p-10 backdrop-blur-sm">
 
-                            <div>
-                                <label className="text-[10px] uppercase font-black tracking-widest text-zinc-500 ml-1">Campus Area / Hostel *</label>
-                                <input
-                                    type="text"
-                                    value={formData.campusArea}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, campusArea: e.target.value }))}
-                                    placeholder="e.g. Main Campus, Block C"
-                                    className="w-full h-14 px-4 bg-zinc-50 border border-zinc-200 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] rounded-2xl text-zinc-900 font-medium mt-1 outline-none"
-                                />
+                    {/* STEP 1: Basics */}
+                    {step === 1 && (
+                        <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="h-10 w-10 rounded-xl bg-[#FF6200]/10 flex items-center justify-center"><MapPin className="h-5 w-5 text-[#FF6200]" /></div>
+                                <div>
+                                    <h2 className="text-lg font-black text-white">Location & Contact</h2>
+                                    <p className="text-xs font-bold text-white/40 uppercase tracking-widest">Where are you selling from?</p>
+                                </div>
                             </div>
 
-                            <div>
-                                <label className="text-[10px] uppercase font-black tracking-widest text-zinc-500 ml-1">WhatsApp / Phone Number *</label>
-                                <input
-                                    type="tel"
-                                    value={formData.phoneNumber}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
-                                    placeholder="080XXXXXXXX"
-                                    className="w-full h-14 px-4 bg-zinc-50 border border-zinc-200 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] rounded-2xl text-zinc-900 font-medium mt-1 outline-none"
-                                />
+                            <div className="space-y-5">
+                                <div>
+                                    <label className="text-[10px] uppercase font-black tracking-widest text-white/40 ml-1">University *</label>
+                                    <select
+                                        value={formData.university}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, university: e.target.value }))}
+                                        aria-label="Select your university"
+                                        title="Select your university"
+                                        className="w-full h-14 px-4 bg-zinc-950 border border-zinc-700 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200]/30 rounded-2xl text-white font-medium mt-2 outline-none appearance-none transition-colors"
+                                    >
+                                        <option value="" disabled>Select your university</option>
+                                        {UNIVERSITIES.map(u => <option key={u} value={u}>{u}</option>)}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="text-[10px] uppercase font-black tracking-widest text-white/40 ml-1">Campus Area / Hostel *</label>
+                                    <input
+                                        type="text"
+                                        value={formData.campusArea}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, campusArea: e.target.value }))}
+                                        placeholder="e.g. Main Campus, Block C"
+                                        className="w-full h-14 px-4 bg-zinc-950 border border-zinc-700 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200]/30 rounded-2xl text-white placeholder:text-zinc-600 font-medium mt-2 outline-none transition-colors"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-[10px] uppercase font-black tracking-widest text-white/40 ml-1">WhatsApp / Phone Number *</label>
+                                    <input
+                                        type="tel"
+                                        value={formData.phoneNumber}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                                        placeholder="080XXXXXXXX"
+                                        className="w-full h-14 px-4 bg-zinc-950 border border-zinc-700 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200]/30 rounded-2xl text-white placeholder:text-zinc-600 font-medium mt-2 outline-none transition-colors"
+                                    />
+                                </div>
                             </div>
-                        </div>
 
-                        <Button onClick={handleNext} disabled={!isStep1Valid} className="w-full h-14 mt-8 bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black uppercase tracking-widest rounded-2xl shadow-lg">
-                            Next: Business Details <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
-                    </div>
-                )}
-
-                {/* STEP 2: Business */}
-                {step === 2 && (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="h-10 w-10 rounded-xl bg-orange-100 flex items-center justify-center"><Briefcase className="h-5 w-5 text-[#FF6200]" /></div>
-                            <div>
-                                <h2 className="text-lg font-black text-zinc-900">What do you sell?</h2>
-                                <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Select your primary crates</p>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3">
-                            {CATEGORIES.map(cat => (
-                                <button
-                                    key={cat}
-                                    onClick={() => handleCategoryToggle(cat)}
-                                    className={`h-14 flex items-center justify-center px-4 rounded-xl border-2 font-bold text-sm transition-all ${formData.sellCategories.includes(cat) ? 'bg-[#FF6200]/10 border-[#FF6200] text-[#FF6200]' : 'bg-white border-zinc-200 text-zinc-600 hover:border-zinc-300'}`}
-                                >
-                                    {cat}
-                                </button>
-                            ))}
-                        </div>
-
-                        <div className="flex gap-4 mt-8">
-                            <Button onClick={handlePrev} variant="outline" className="flex-1 h-14 rounded-2xl font-bold border-zinc-200">Back</Button>
-                            <Button onClick={handleNext} disabled={!isStep2Valid} className="flex-1 h-14 bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black uppercase tracking-widest rounded-2xl shadow-lg">
-                                Next <ArrowRight className="ml-2 h-4 w-4" />
+                            <Button onClick={handleNext} disabled={!isStep1Valid} className="w-full h-14 mt-4 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-[#FF6200]/10 transition-all">
+                                Next: Products <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                {/* STEP 3: Verification */}
-                {step === 3 && (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="h-10 w-10 rounded-xl bg-orange-100 flex items-center justify-center"><User className="h-5 w-5 text-[#FF6200]" /></div>
-                            <div>
-                                <h2 className="text-lg font-black text-zinc-900">Student ID Check</h2>
-                                <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Keep buyers safe</p>
+                    {/* STEP 2: Business */}
+                    {step === 2 && (
+                        <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="h-10 w-10 rounded-xl bg-[#FF6200]/10 flex items-center justify-center"><Briefcase className="h-5 w-5 text-[#FF6200]" /></div>
+                                <div>
+                                    <h2 className="text-lg font-black text-white">What do you sell?</h2>
+                                    <p className="text-xs font-bold text-white/40 uppercase tracking-widest">Select all that apply</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                {CATEGORIES.map(cat => (
+                                    <button
+                                        key={cat}
+                                        onClick={() => handleCategoryToggle(cat)}
+                                        className={`h-14 flex items-center justify-center px-4 rounded-2xl border-2 font-bold text-sm transition-all ${formData.sellCategories.includes(cat)
+                                            ? 'bg-[#FF6200]/10 border-[#FF6200] text-[#FF6200]'
+                                            : 'bg-zinc-950 border-zinc-700 text-white/60 hover:border-zinc-500'
+                                            }`}
+                                    >
+                                        {cat}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div className="flex gap-4 mt-6">
+                                <Button onClick={handlePrev} variant="outline" className="flex-1 h-14 rounded-2xl font-bold border-zinc-700 bg-transparent text-white/60 hover:text-white hover:bg-white/5">Back</Button>
+                                <Button onClick={handleNext} disabled={!isStep2Valid} className="flex-1 h-14 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-[#FF6200]/10">
+                                    Next <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
                             </div>
                         </div>
+                    )}
 
-                        <div className="border-2 border-dashed border-zinc-200 hover:border-[#FF6200] transition-colors rounded-2xl p-10 flex flex-col items-center justify-center bg-zinc-50 relative cursor-pointer group">
-                            {formData.idCardUrl ? (
-                                <div className="flex flex-col items-center">
-                                    <CheckCircle className="h-12 w-12 text-[#FF6200] mb-3" />
-                                    <span className="text-sm font-bold text-zinc-900">Uploaded Successfully</span>
-                                    <span className="text-xs text-[#FF6200] mt-2 group-hover:underline">Click to change</span>
+                    {/* STEP 3: Verification */}
+                    {step === 3 && (
+                        <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="h-10 w-10 rounded-xl bg-[#FF6200]/10 flex items-center justify-center"><User className="h-5 w-5 text-[#FF6200]" /></div>
+                                <div>
+                                    <h2 className="text-lg font-black text-white">Student ID Verification</h2>
+                                    <p className="text-xs font-bold text-white/40 uppercase tracking-widest">Keeps the platform safe & trusted</p>
                                 </div>
-                            ) : isUploading ? (
-                                <div className="flex flex-col items-center">
-                                    <Loader2 className="h-10 w-10 text-[#FF6200] animate-spin mb-3" />
-                                    <span className="text-sm font-bold text-zinc-600">Compressing & Uploading...</span>
-                                </div>
-                            ) : (
-                                <>
-                                    <Upload className="h-12 w-12 text-zinc-400 mb-4 group-hover:text-[#FF6200] transition-colors" />
-                                    <span className="text-base font-bold text-zinc-900 mb-1">Upload Student ID</span>
-                                    <span className="text-sm text-zinc-500 text-center font-medium">Clear photo of your Uni ID Card (Max 5MB)</span>
-                                </>
-                            )}
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleFileUpload}
-                                className="absolute inset-0 opacity-0 cursor-pointer"
-                                title="Upload Student ID"
-                            />
-                        </div>
-
-                        <div className="flex gap-4 mt-8">
-                            <Button onClick={handlePrev} variant="outline" className="flex-1 h-14 rounded-2xl font-bold border-zinc-200">Back</Button>
-                            <Button onClick={handleNext} disabled={!isStep3Valid} className="flex-1 h-14 bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black uppercase tracking-widest rounded-2xl shadow-lg">
-                                Next <ArrowRight className="ml-2 h-4 w-4" />
-                            </Button>
-                        </div>
-                    </div>
-                )}
-
-                {/* STEP 4: Bio & Submit */}
-                {step === 4 && (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="h-10 w-10 rounded-xl bg-orange-100 flex items-center justify-center"><FileText className="h-5 w-5 text-[#FF6200]" /></div>
-                            <div>
-                                <h2 className="text-lg font-black text-zinc-900">Store Profile</h2>
-                                <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">A short description</p>
                             </div>
-                        </div>
 
-                        <div>
-                            <label className="text-[10px] uppercase font-black tracking-widest text-zinc-500 ml-1">Store Description / Bio (Optional)</label>
-                            <textarea
-                                rows={4}
-                                value={formData.bio}
-                                onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
-                                placeholder="I sell the freshest cookies in Block C. Delivery times from 6pm to 9pm daily."
-                                className="w-full p-4 bg-zinc-50 border border-zinc-200 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] rounded-2xl text-zinc-900 font-medium mt-1 outline-none resize-none"
-                            />
-                        </div>
-
-                        <div className="flex gap-4 mt-8">
-                            <Button onClick={handlePrev} variant="outline" className="flex-1 h-14 rounded-2xl font-bold border-zinc-200" disabled={isSubmitting}>Back</Button>
-                            <Button onClick={handleSubmit} disabled={isSubmitting} className="flex-[2] h-14 bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black uppercase tracking-widest rounded-2xl shadow-lg flex items-center justify-center gap-2">
-                                {isSubmitting ? (
-                                    <><Loader2 className="animate-spin h-5 w-5" /> Submitting...</>
+                            <div className="border-2 border-dashed border-zinc-700 hover:border-[#FF6200] transition-colors rounded-3xl p-12 flex flex-col items-center justify-center bg-zinc-950 relative cursor-pointer group">
+                                {formData.idCardUrl ? (
+                                    <div className="flex flex-col items-center gap-3">
+                                        <div className="h-16 w-16 rounded-full bg-[#FF6200]/10 flex items-center justify-center">
+                                            <CheckCircle className="h-8 w-8 text-[#FF6200]" />
+                                        </div>
+                                        <span className="text-white font-black uppercase tracking-wider">ID Uploaded!</span>
+                                        <span className="text-[#FF6200] text-xs font-bold uppercase tracking-wider group-hover:underline">Click to change</span>
+                                    </div>
+                                ) : isUploading ? (
+                                    <div className="flex flex-col items-center gap-3">
+                                        <Loader2 className="h-10 w-10 text-[#FF6200] animate-spin" />
+                                        <span className="text-white/60 font-bold text-sm">Uploading...</span>
+                                    </div>
                                 ) : (
-                                    <><Store className="h-5 w-5" /> Submit Setup</>
+                                    <>
+                                        <Upload className="h-12 w-12 text-white/20 mb-4 group-hover:text-[#FF6200] transition-colors" />
+                                        <span className="text-white font-black uppercase tracking-wide mb-2">Upload Student ID Card</span>
+                                        <span className="text-white/40 text-sm text-center font-medium">JPG, PNG or WEBP — max 5MB</span>
+                                    </>
                                 )}
-                            </Button>
+                                <input type="file" accept="image/*" onChange={handleFileUpload} className="absolute inset-0 opacity-0 cursor-pointer" title="Upload Student ID" />
+                            </div>
+
+                            <div className="flex gap-4">
+                                <Button onClick={handlePrev} variant="outline" className="flex-1 h-14 rounded-2xl font-bold border-zinc-700 bg-transparent text-white/60 hover:text-white hover:bg-white/5">Back</Button>
+                                <Button onClick={handleNext} disabled={!isStep3Valid} className="flex-1 h-14 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-[#FF6200]/10">
+                                    Next <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                            </div>
                         </div>
-                    </div>
-                )}
-            </Card>
+                    )}
+
+                    {/* STEP 4: Bio & Submit */}
+                    {step === 4 && (
+                        <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="h-10 w-10 rounded-xl bg-[#FF6200]/10 flex items-center justify-center"><FileText className="h-5 w-5 text-[#FF6200]" /></div>
+                                <div>
+                                    <h2 className="text-lg font-black text-white">Store Profile</h2>
+                                    <p className="text-xs font-bold text-white/40 uppercase tracking-widest">Tell buyers about your store</p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="text-[10px] uppercase font-black tracking-widest text-white/40 ml-1">Store Bio (Optional)</label>
+                                <textarea
+                                    rows={5}
+                                    value={formData.bio}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
+                                    placeholder="Tell buyers what you sell and when you're available. e.g. I sell fresh snacks in Block C, available 6pm–10pm daily."
+                                    className="w-full p-5 bg-zinc-950 border border-zinc-700 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200]/30 rounded-2xl text-white placeholder:text-zinc-600 font-medium mt-2 outline-none resize-none transition-colors"
+                                />
+                            </div>
+
+                            <div className="bg-[#FF6200]/5 border border-[#FF6200]/10 rounded-2xl p-4">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-[#FF6200]/60 mb-2">Ready to submit</p>
+                                <p className="text-white/50 text-xs font-medium">Your application will be reviewed by our team within 24 hours. You'll be notified once approved.</p>
+                            </div>
+
+                            <div className="flex gap-4">
+                                <Button onClick={handlePrev} variant="outline" className="flex-1 h-14 rounded-2xl font-bold border-zinc-700 bg-transparent text-white/60 hover:text-white hover:bg-white/5" disabled={isSubmitting}>Back</Button>
+                                <Button onClick={handleSubmit} disabled={isSubmitting} className="flex-[2] h-14 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-[#FF6200]/10 flex items-center justify-center gap-2">
+                                    {isSubmitting ? (
+                                        <><Loader2 className="animate-spin h-5 w-5" /> Submitting...</>
+                                    ) : (
+                                        <><Store className="h-5 w-5" /> Submit Application</>
+                                    )}
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }
