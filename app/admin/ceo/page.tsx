@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { TrendingUp, Users, DollarSign, Activity, MapPin, Video, ShieldCheck, PieChart, Clock, MessageSquare, AlertTriangle, Loader2 } from 'lucide-react';
+import { TrendingUp, Users, DollarSign, Activity, MapPin, Video, ShieldCheck, PieChart, Clock, MessageSquare, AlertTriangle, Loader2, Store } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';

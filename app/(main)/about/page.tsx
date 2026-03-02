@@ -52,7 +52,7 @@ export default function AboutPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-40">
                     <div className="lg:col-span-2 glass-card p-12 md:p-20 rounded-[4rem] border-white/5 relative overflow-hidden bg-gradient-to-br from-zinc-900 to-black">
                         <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
-                            <Logo size="xl" hideText />
+                            <Logo size="xl" showText={false} />
                         </div>
 
                         <div className="relative z-10 space-y-12">
@@ -186,7 +186,7 @@ export default function AboutPage() {
                 <div className="max-w-4xl mx-auto text-center space-y-12">
                     <div className="flex items-center justify-center gap-4">
                         <div className="h-[1px] w-20 bg-white/5" />
-                        <Logo hideText className="opacity-20 hover:opacity-100 transition-opacity duration-1000" />
+                        <Logo showText={false} className="opacity-20 hover:opacity-100 transition-opacity duration-1000" />
                         <div className="h-[1px] w-20 bg-white/5" />
                     </div>
 
