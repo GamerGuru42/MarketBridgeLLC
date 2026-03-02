@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, ShoppingBag, Store, MapPin, Zap, CheckCircle2 } from 'lucide-react';
-import { QRCodeSVG } from 'qrcode.react';
+import QRCode from 'react-qr-code';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 
@@ -180,13 +180,11 @@ export default function HomePage() {
 
                         <div className="relative z-10 hidden md:flex flex-col items-center bg-white/5 border border-white/10 p-6 rounded-[2rem] backdrop-blur-sm transform hover:scale-105 transition-transform duration-300">
                             <div className="bg-white p-4 rounded-2xl mb-4 shadow-lg">
-                                <QRCodeSVG
+                                <QRCode
                                     value="https://marketbridge.com.ng/seller-onboard"
                                     size={120}
-                                    bgColor="#FFFFFF"
-                                    fgColor="#111111"
-                                    level="H"
-                                    includeMargin={false}
+                                    style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                                    viewBox={`0 0 120 120`}
                                 />
                             </div>
                             <p className="text-white font-black uppercase tracking-widest text-xs">Scan to Sell Fast</p>
