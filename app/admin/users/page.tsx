@@ -34,6 +34,7 @@ interface UserProfile {
     phone_number?: string;
     business_name?: string;
     photo_url?: string;
+    coins_balance?: number;
 }
 
 export default function AdminUsersPage() {
@@ -66,27 +67,41 @@ export default function AdminUsersPage() {
         fetchUsers();
     }, [filterRole]);
 
-    const handleAction = async (userId: string, action: 'verify' | 'unverify' | 'make_dealer' | 'ban') => {
+    const handleAction = async (userId: string, action: 'verify' | 'unverify' | 'make_dealer' | 'ban' | 'manage_coins') => {
         try {
             let updates: any = {};
             let message = '';
-            switch (action) {
-                case 'verify':
-                    updates = { is_verified: true };
-                    message = 'Identity Verified';
-                    break;
-                case 'unverify':
-                    updates = { is_verified: false };
-                    message = 'Verification Revoked';
-                    break;
-                case 'make_dealer':
-                    updates = { role: 'dealer' };
-                    message = 'Promoted to Dealer Status';
-                    break;
-                case 'ban':
-                    toast('Ban System not fully implemented in UI', 'info');
-                    return;
+
+            if (action === 'manage_coins') {
+                const input = window.prompt("Enter amount to add or subtract (e.g., '100' or '-50'):", "0");
+                if (input === null || isNaN(Number(input))) return;
+
+                const user = users.find(u => u.id === userId);
+                if (!user) return;
+
+                const currentBalance = user.coins_balance || 0;
+                updates = { coins_balance: Math.max(0, currentBalance + Number(input)) };
+                message = `MarketCoins adjusted by ${Number(input)}`;
+            } else {
+                switch (action) {
+                    case 'verify':
+                        updates = { is_verified: true };
+                        message = 'Identity Verified';
+                        break;
+                    case 'unverify':
+                        updates = { is_verified: false };
+                        message = 'Verification Revoked';
+                        break;
+                    case 'make_dealer':
+                        updates = { role: 'dealer' };
+                        message = 'Promoted to Dealer Status';
+                        break;
+                    case 'ban':
+                        toast('Ban System not fully implemented in UI', 'info');
+                        return;
+                }
             }
+
             const { error } = await supabase.from('users').update(updates).eq('id', userId);
             if (error) throw error;
             toast(message, 'success');
@@ -163,6 +178,7 @@ export default function AdminUsersPage() {
                                 <TableRow className="border-zinc-100 hover:bg-transparent">
                                     <TableHead className="w-[300px] text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading">Identified Entity</TableHead>
                                     <TableHead className="text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading">Clearance</TableHead>
+                                    <TableHead className="text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading">Coins</TableHead>
                                     <TableHead className="text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading">Status</TableHead>
                                     <TableHead className="text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading">Inception</TableHead>
                                     <TableHead className="text-right text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading px-6">Controls</TableHead>
@@ -199,6 +215,12 @@ export default function AdminUsersPage() {
                                                 </div>
                                             </TableCell>
                                             <TableCell>{getRoleBadge(u.role)}</TableCell>
+                                            <TableCell>
+                                                <div className="flex items-center gap-1">
+                                                    <span className="text-[#FF6200] font-black">{u.coins_balance || 0}</span>
+                                                    <span className="text-[9px] uppercase font-black text-zinc-500">MC</span>
+                                                </div>
+                                            </TableCell>
                                             <TableCell>
                                                 {u.is_verified ? (
                                                     <div className="flex items-center gap-1.5 text-zinc-900">
@@ -237,6 +259,10 @@ export default function AdminUsersPage() {
                                                         </DropdownMenuTrigger>
                                                         <DropdownMenuContent align="end" className="w-56 bg-zinc-50 border-zinc-200 text-zinc-700">
                                                             <DropdownMenuLabel className="text-[10px] font-black uppercase text-zinc-500 font-heading">Entity Control</DropdownMenuLabel>
+                                                            <DropdownMenuItem onClick={() => handleAction(u.id, 'manage_coins')} className="gap-2 cursor-pointer focus:border-zinc-200">
+                                                                MarketCoins: {u.coins_balance || 0}
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuSeparator className="border-zinc-200" />
                                                             {u.is_verified ? (
                                                                 <DropdownMenuItem onClick={() => handleAction(u.id, 'unverify')} className="gap-2 cursor-pointer focus:border-zinc-200">
                                                                     <ShieldAlert className="h-4 w-4" /> Revoke Verification

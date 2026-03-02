@@ -15,7 +15,9 @@ import {
     Eye,
     Clock,
     MoreHorizontal,
-    AlertTriangle
+    AlertTriangle,
+    Star,
+    Zap
 } from 'lucide-react';
 import {
     DropdownMenu,
@@ -39,6 +41,8 @@ interface Listing {
     created_at: string;
     dealer_id: string;
     verification_status: string;
+    is_promoted: boolean;
+    promoted_until: string | null;
     dealer?: {
         display_name: string;
     };
@@ -55,6 +59,7 @@ export default function AdminListingsPage() {
             const { data: listingsData, error: listingsError } = await supabase
                 .from('listings')
                 .select('*')
+                .order('is_promoted', { ascending: false })
                 .order('created_at', { ascending: false });
 
             if (listingsError) throw listingsError;
@@ -78,6 +83,30 @@ export default function AdminListingsPage() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const togglePromote = async (listing: Listing) => {
+        const nowPromoted = !listing.is_promoted;
+        const promotedUntil = nowPromoted
+            ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+            : null;
+
+        const { error } = await supabase
+            .from('listings')
+            .update({ is_promoted: nowPromoted, promoted_until: promotedUntil })
+            .eq('id', listing.id);
+
+        if (error) {
+            console.error('Failed to toggle promotion:', error);
+            return;
+        }
+
+        // Optimistic local update
+        setListings(prev => prev.map(l =>
+            l.id === listing.id
+                ? { ...l, is_promoted: nowPromoted, promoted_until: promotedUntil }
+                : l
+        ));
     };
 
     useEffect(() => {
@@ -132,6 +161,7 @@ export default function AdminListingsPage() {
                                 <TableHead className="w-[400px] uppercase text-[10px] font-black tracking-widest text-white/40 font-heading">Asset Data</TableHead>
                                 <TableHead className="uppercase text-[10px] font-black tracking-widest text-white/40 font-heading">Origin/Dealer</TableHead>
                                 <TableHead className="uppercase text-[10px] font-black tracking-widest text-white/40 font-heading">Status</TableHead>
+                                <TableHead className="uppercase text-[10px] font-black tracking-widest text-white/40 font-heading">Boost</TableHead>
                                 <TableHead className="uppercase text-[10px] font-black tracking-widest text-white/40 text-right pr-8 font-heading">Valuation</TableHead>
                                 <TableHead className="w-16"></TableHead>
                             </TableRow>
@@ -197,6 +227,16 @@ export default function AdminListingsPage() {
                                                 )}
                                             </div>
                                         </TableCell>
+                                        <TableCell>
+                                            {listing.is_promoted ? (
+                                                <div className="flex items-center gap-1.5">
+                                                    <Star className="h-3.5 w-3.5 fill-[#FF6200] text-[#FF6200]" />
+                                                    <span className="text-[10px] font-black uppercase tracking-wider text-[#FF6200]">Sponsored</span>
+                                                </div>
+                                            ) : (
+                                                <span className="text-[10px] text-white/20 font-mono">—</span>
+                                            )}
+                                        </TableCell>
                                         <TableCell className="text-right pr-8">
                                             <span className="text-sm font-black text-white font-mono tracking-tighter">
                                                 ₦{listing.price.toLocaleString()}
@@ -216,6 +256,13 @@ export default function AdminListingsPage() {
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem className="gap-2 cursor-pointer focus:bg-[#FF6200]/10 focus:text-[#FF6200]">
                                                         <CheckCircle2 className="h-4 w-4" /> Approve Listing
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        className="gap-2 cursor-pointer focus:bg-[#FF6200]/10 focus:text-[#FF6200]"
+                                                        onClick={() => togglePromote(listing)}
+                                                    >
+                                                        <Zap className="h-4 w-4" />
+                                                        {listing.is_promoted ? 'Remove Promotion' : 'Promote (7 days)'}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem className="gap-2 cursor-pointer focus:bg-white/10 text-white">
                                                         <AlertTriangle className="h-4 w-4 text-[#FF6200]" /> Flag Violation

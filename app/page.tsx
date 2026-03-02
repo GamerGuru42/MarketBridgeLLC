@@ -2,7 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, ShoppingBag, Store, MapPin, Zap, CheckCircle2, QrCode } from 'lucide-react';
+import { ArrowRight, ShoppingBag, Store, MapPin, Zap, CheckCircle2 } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 
@@ -116,7 +117,7 @@ export default function HomePage() {
                                 </div>
                             </div>
                         </div>
-                        <div className="absolute -left-4 top-40 z-20 bg-white dark:bg-zinc-900 text-foreground px-5 py-3.5 rounded-2xl shadow-xl -rotate-[5deg] animate-float border border-zinc-100 dark:border-zinc-800 hidden sm:flex items-center gap-2.5" style={{ animationDelay: '1s' }}>
+                        <div className="absolute -left-4 top-40 z-20 bg-white dark:bg-zinc-900 text-foreground px-5 py-3.5 rounded-2xl shadow-xl -rotate-[5deg] animate-float [animation-delay:1s] border border-zinc-100 dark:border-zinc-800 hidden sm:flex items-center gap-2.5">
                             <div className="h-6 w-6 rounded-full bg-[#FF6200]/10 flex items-center justify-center">
                                 <CheckCircle2 className="w-4 h-4 text-[#FF6200]" />
                             </div>
@@ -178,11 +179,18 @@ export default function HomePage() {
                         </div>
 
                         <div className="relative z-10 hidden md:flex flex-col items-center bg-white/5 border border-white/10 p-6 rounded-[2rem] backdrop-blur-sm transform hover:scale-105 transition-transform duration-300">
-                            <div className="bg-white p-4 rounded-2xl mb-4 text-[#111111] flex items-center justify-center shadow-lg">
-                                <QrCode className="h-24 w-24" strokeWidth={1.5} />
+                            <div className="bg-white p-4 rounded-2xl mb-4 shadow-lg">
+                                <QRCodeSVG
+                                    value="https://marketbridge.com.ng/seller-onboard"
+                                    size={120}
+                                    bgColor="#FFFFFF"
+                                    fgColor="#111111"
+                                    level="H"
+                                    includeMargin={false}
+                                />
                             </div>
                             <p className="text-white font-black uppercase tracking-widest text-xs">Scan to Sell Fast</p>
-                            <p className="text-[#FF6200] text-[10px] uppercase font-bold tracking-widest mt-1">Open Camera App</p>
+                            <p className="text-[#FF6200] text-[10px] uppercase font-bold tracking-widest mt-1">Opens Seller Form</p>
                         </div>
                     </div>
                 </section>

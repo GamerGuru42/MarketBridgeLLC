@@ -8,19 +8,24 @@
   :root {
     --radius: 1rem;
     /* MarketBridge Clean Light Theme (Chowdeck style) */
-    --background: 0 0% 98%; /* #FAFAFA */
-    --foreground: 0 0% 10%; /* #1A1A1A */
+    --background: 0 0% 98%;
+    /* #FAFAFA */
+    --foreground: 0 0% 10%;
+    /* #1A1A1A */
 
-    --card: 0 0% 100%; /* #FFF */
+    --card: 0 0% 100%;
+    /* #FFF */
     --card-foreground: 0 0% 10%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
 
-    --primary: 23 100% 50%; /* #FF6200 */
+    --primary: 23 100% 50%;
+    /* #FF6200 */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 96%; /* #F5F5F5 */
+    --secondary: 0 0% 96%;
+    /* #F5F5F5 */
     --secondary-foreground: 0 0% 10%;
 
     --muted: 0 0% 90%;
@@ -100,10 +105,11 @@
     @apply bg-background text-foreground font-sans antialiased;
     /* Prevent mobile horizontal wobbling */
     overflow-x: hidden;
+    overflow-y: auto;
     position: relative;
     width: 100%;
-    overscroll-behavior-y: none;
-    /* Prevents "bounce" refresh effect */
+    /* Block only horizontal overscroll; vertical must remain free for mobile scroll */
+    overscroll-behavior-x: none;
 
     background-image: none;
     background-size: 50px 50px;
@@ -196,8 +202,8 @@
   }
 
   .mask-linear-fade {
-    mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
     -webkit-mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
+    mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
   }
 }
 
@@ -210,10 +216,9 @@
     min-height: 44px;
   }
 
-  /* Prevent text selection on tap */
+  /* Remove blue flash on tap — but keep native touch behavior */
   * {
     -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
   }
 
   /* Smooth scrolling */

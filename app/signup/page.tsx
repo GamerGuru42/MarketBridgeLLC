@@ -114,7 +114,8 @@ function SignupContent() {
                 last_name: formData.lastName,
                 role: role,
                 email_verified: false,
-                isVerified: false // Explicitly unverified initially
+                isVerified: false, // Explicitly unverified initially
+                coins_balance: role === 'student_buyer' ? 100 : 0
             }, { onConflict: 'id' });
 
             if (profileError) throw profileError;
