@@ -14,12 +14,43 @@ export async function POST(req: Request) {
   if (!reqRow) return NextResponse.json({ error: 'not found' }, { status: 404 })
 
   if (approve) {
-    // set user as verified seller
-    await supabase.from('users').update({ is_verified_seller: true }).eq('id', reqRow.user_id)
-    await supabase.from('seller_verification_requests').update({ status: 'approved', admin_id: adminId || null, admin_note: note || null, updated_at: new Date().toISOString() }).eq('id', requestId)
+    // Update the verification request status
+    await supabase
+      .from('seller_verification_requests')
+      .update({ status: 'approved', admin_id: adminId || null, admin_note: note || null, updated_at: new Date().toISOString() })
+      .eq('id', requestId)
+
+    // Update user: set is_verified=true (what AuthContext reads), is_verified_seller=true, and role=student_seller
+    await supabase
+      .from('users')
+      .update({
+        is_verified_seller: true,
+        is_verified: true,       // AuthContext maps this to user.isVerified
+        isVerified: true,        // Also set camelCase column if it exists in DB
+        role: 'student_seller',  // Ensure they have seller role to access dashboard
+      })
+      .eq('id', reqRow.user_id)
+
+    // Also update any matching seller_applications to approved
+    await supabase
+      .from('seller_applications')
+      .update({ status: 'approved' })
+      .eq('user_id', reqRow.user_id)
+
     return NextResponse.json({ success: true })
   } else {
-    await supabase.from('seller_verification_requests').update({ status: 'rejected', admin_id: adminId || null, admin_note: note || null, updated_at: new Date().toISOString() }).eq('id', requestId)
+    await supabase
+      .from('seller_verification_requests')
+      .update({ status: 'rejected', admin_id: adminId || null, admin_note: note || null, updated_at: new Date().toISOString() })
+      .eq('id', requestId)
+
+    // Also update any matching seller_applications to rejected
+    await supabase
+      .from('seller_applications')
+      .update({ status: 'rejected' })
+      .eq('user_id', reqRow.user_id)
+
     return NextResponse.json({ success: true })
   }
 }
+

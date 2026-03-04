@@ -48,15 +48,22 @@ export async function POST(req: Request) {
             throw updateError;
         }
 
-        // Generate Invite Token (using UUID for simplicity, could be JWT)
+        // Grant the user seller access immediately
+        if (application.user_id) {
+            await supabaseAdmin
+                .from('users')
+                .update({
+                    role: 'student_seller',
+                    is_verified: true,
+                    is_verified_seller: true,
+                    isVerified: true,
+                })
+                .eq('id', application.user_id);
+        }
+
+        // Generate Invite Link (invite token for audit trail)
         const inviteToken = crypto.randomUUID();
-
-        // In a real scenario, you might store this token in a `seller_invites` table.
-        // For now, we'll embed the applicationId and email in the URL as a proof-of-concept,
-        // or just direct them to SIGNUP with a special flag.
-
-        // Ensure they go to a controlled signup page:
-        const inviteLink = `${process.env.NEXT_PUBLIC_APP_URL || 'https://marketbridge.com.ng'}/admin/signup?intent=sell&email=${encodeURIComponent(application.student_email)}&token=${inviteToken}`;
+        const inviteLink = `${process.env.NEXT_PUBLIC_APP_URL || 'https://marketbridge.com.ng'}/seller/dashboard`;
 
         // Send Approval Email
         await sendEmail(
