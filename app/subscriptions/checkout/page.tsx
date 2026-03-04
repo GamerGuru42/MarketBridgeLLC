@@ -32,11 +32,11 @@ export default function SubscriptionCheckout() {
         }
       }
 
-      alert('Unable to start payment. Check console.')
+      console.warn('UI_ALERT:', )
       console.error(data)
     } catch (e) {
       console.error(e)
-      alert('Payment initiation failed')
+      console.warn('UI_ALERT:', )
     } finally {
       setLoading(false)
     }

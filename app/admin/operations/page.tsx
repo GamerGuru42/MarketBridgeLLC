@@ -78,11 +78,11 @@ export default function OperationsAdminPage() {
             } else {
                 const err = await res.json();
                 console.error('Approval failed:', err);
-                alert(err.error || 'Failed to approve');
+                console.warn('UI_ALERT:', );
             }
         } catch (e) {
             console.error('Approval failed:', e);
-            alert('Failed to approve seller');
+            console.warn('UI_ALERT:', );
         }
     };
 
@@ -100,11 +100,11 @@ export default function OperationsAdminPage() {
                 fetchOpsData();
             } else {
                 console.error('Decline failed:', error);
-                alert('Failed to decline');
+                console.warn('UI_ALERT:', );
             }
         } catch (e) {
             console.error('Decline error:', e);
-            alert('Failed to decline seller');
+            console.warn('UI_ALERT:', );
         }
     };
 

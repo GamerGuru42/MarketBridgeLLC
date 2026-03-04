@@ -152,7 +152,7 @@ export default function OrdersPage() {
             fetchOrders();
         } catch (err) {
             console.error('Failed to confirm delivery:', err);
-            alert('Failed to confirm delivery. Please try again.');
+            console.warn('UI_ALERT:', );
         } finally {
             setConfirmingOrder(null);
         }

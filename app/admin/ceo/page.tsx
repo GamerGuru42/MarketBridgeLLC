@@ -4,25 +4,14 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { TrendingUp, Users, DollarSign, Activity, MapPin, Video, ShieldCheck, PieChart, Clock, MessageSquare, AlertTriangle, Loader2, Store, Crown, ShoppingBag } from 'lucide-react';
+import { TrendingUp, Users, DollarSign, Activity, MapPin, ShieldCheck, MessageSquare, AlertTriangle, Loader2, Store, Crown, ShoppingBag } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { fetchCEOStats, fetchProposals, Proposal, CEOStats } from '@/lib/analytics';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
 
-// Mock historical data for visualizations tracking User Growth & Listings over time
-const HISTORICAL_DATA = [
-    { name: 'Week 1', users: 120, listings: 45 },
-    { name: 'Week 2', users: 200, listings: 85 },
-    { name: 'Week 3', users: 350, listings: 150 },
-    { name: 'Week 4', users: 480, listings: 220 },
-    { name: 'Week 5', users: 600, listings: 310 },
-    { name: 'Week 6', users: 850, listings: 490 },
-    { name: 'Week 7', users: 1100, listings: 600 }
-];
 
 export default function CEOPage() {
     const { user, loading } = useAuth();
@@ -157,48 +146,6 @@ export default function CEOPage() {
                     </Card>
                 </div>
 
-                {/* Analytical Charts Module */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <Card className="bg-white border-zinc-200 shadow-sm rounded-3xl p-6">
-                        <h3 className="text-sm font-black uppercase tracking-[0.2em] text-zinc-900 mb-6 flex items-center gap-2">
-                            <TrendingUp className="h-4 w-4 text-[#FF6200]" /> Network User Penetration
-                        </h3>
-                        <div className="h-[300px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={HISTORICAL_DATA}>
-                                    <defs>
-                                        <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#FF6200" stopOpacity={0.3} />
-                                            <stop offset="95%" stopColor="#FF6200" stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f4f4f5" />
-                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#a1a1aa' }} dy={10} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#a1a1aa' }} dx={-10} />
-                                    <Tooltip contentStyle={{ borderRadius: '16px', border: '1px solid #e4e4e7', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }} />
-                                    <Area type="monotone" dataKey="users" stroke="#FF6200" strokeWidth={3} fillOpacity={1} fill="url(#colorUsers)" />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </Card>
-
-                    <Card className="bg-white border-zinc-200 shadow-sm rounded-3xl p-6">
-                        <h3 className="text-sm font-black uppercase tracking-[0.2em] text-zinc-900 mb-6 flex items-center gap-2">
-                            <Video className="h-4 w-4 text-[#00A355]" /> Total Active Listings
-                        </h3>
-                        <div className="h-[300px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={HISTORICAL_DATA}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f4f4f5" />
-                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#a1a1aa' }} dy={10} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#a1a1aa' }} dx={-10} />
-                                    <Tooltip cursor={{ fill: '#f4f4f5' }} contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }} />
-                                    <Bar dataKey="listings" fill="#00A355" radius={[4, 4, 0, 0]} />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </Card>
-                </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                     {/* Proposal Queue */}

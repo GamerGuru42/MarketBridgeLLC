@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -267,7 +267,7 @@ export default function ListingDetailContent() {
         } catch (err: unknown) {
             console.error('Error starting chat:', err);
             const message = err instanceof Error ? err.message : 'Failed to start chat';
-            alert(message);
+            console.warn('UI_ALERT:', );
         } finally {
             setActionLoading(false);
         }
@@ -297,7 +297,7 @@ export default function ListingDetailContent() {
 
         const price = parseFloat(offerPrice);
         if (isNaN(price) || price <= 0) {
-            alert("Please enter a valid price identifier.");
+            console.warn('UI_ALERT:', );
             return;
         }
 
@@ -335,7 +335,7 @@ export default function ListingDetailContent() {
             // Revert on error
             setActiveOffer(previousOffer);
             setIsOfferOpen(true);
-            alert(err.message || "Signal transmission failed. Please try again.");
+            console.warn('UI_ALERT:', );
         } finally {
             setIsSubmittingOffer(false);
         }
@@ -343,7 +343,7 @@ export default function ListingDetailContent() {
 
     const handleCallDealer = () => {
         if (!listing?.dealer?.phone_number) {
-            alert('Dealer phone number not available');
+            console.warn('UI_ALERT:', );
             return;
         }
         window.location.href = `tel:${listing.dealer.phone_number}`;
@@ -360,7 +360,7 @@ export default function ListingDetailContent() {
             image: listing.images[0] || '',
             dealerId: listing.dealer.id,
         });
-        alert('Added to cart!');
+        console.warn('UI_ALERT:', );
     };
 
     const handlePlaceOrder = async () => {
@@ -395,7 +395,7 @@ export default function ListingDetailContent() {
 
         } catch (err: any) {
             console.error('Checkout Error:', err);
-            alert(err.message || 'Payment system offline. Please try again later.');
+            console.warn('UI_ALERT:', );
             setActionLoading(false);
         }
     };
@@ -834,7 +834,7 @@ export default function ListingDetailContent() {
                                 const body = `Reporting Listing: ${listing.title} (ID: ${listing.id})\nDealer: ${listing.dealer.display_name}\nReason: ${reportReason}\nDetails: ${reportDetails}\n\nSubmitted by User: ${user?.email || 'Anonymous'}`;
                                 window.location.href = `mailto:safety@marketbridge.ng?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                                 setIsReportOpen(false);
-                                alert("Report Client Initialized. Please send the generated email.");
+                                console.warn('UI_ALERT:', );
                             }}
                             className="bg-red-600 text-zinc-900 hover:bg-red-700 font-bold uppercase tracking-widest text-xs"
                         >

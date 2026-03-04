@@ -47,11 +47,11 @@ export default function AdminOrdersPage() {
         try {
             const { error } = await supabase.from('orders').update({ status: newStatus }).eq('id', orderId);
             if (error) throw error;
-            alert(`Order marked as ${newStatus}`);
+            console.warn('UI_ALERT:', );
             fetchOrders();
         } catch (err) {
             console.error('Error updating order:', err);
-            alert('Failed to update order status');
+            console.warn('UI_ALERT:', );
         } finally {
             setActionLoading(null);
         }

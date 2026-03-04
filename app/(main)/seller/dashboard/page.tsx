@@ -259,7 +259,7 @@ export default function SellerDashboardPage() {
             if (data.status) {
                 setBankDetails(prev => ({ ...prev, accountName: data.data.account_name }));
             } else {
-                alert('Could not resolve account name. Please verify details.');
+                toast('Could not resolve account name. Please double-check your account number and bank.', 'error');
             }
         } catch (err) {
             console.error('Resolution error:', err);
@@ -294,10 +294,10 @@ export default function SellerDashboardPage() {
             const data = await res.json();
             if (!res.ok) throw new Error(data.error);
 
-            alert('Payout system synchronized with Paystack. Your earnings will now settle automatically.');
+            toast('Payout account linked! Your earnings will now settle automatically.', 'success');
         } catch (err: any) {
             console.error('Failed to update bank details:', err);
-            alert(err.message || 'Failed to update bank details');
+            toast(err.message || 'Failed to update payout details', 'error');
         } finally {
             setSubmittingBank(false);
         }
@@ -492,7 +492,7 @@ export default function SellerDashboardPage() {
                     console.error("Chat notification failed:", e);
                 }
 
-                alert("Offer accepted and listing price updated.");
+                toast('✅ Offer accepted! Buyer notified via chat.', 'success');
             } else {
                 const { error: offerError } = await supabase
                     .from('offers')
@@ -500,12 +500,12 @@ export default function SellerDashboardPage() {
                     .eq('id', offer.id);
 
                 if (offerError) throw offerError;
-                alert("Offer rejected.");
+                toast('Offer rejected.', 'info');
             }
             fetchOffers();
         } catch (err: any) {
             console.error("Offer action failed:", err);
-            alert(err.message || "Action failed");
+            toast(err.message || 'Action failed. Please try again.', 'error');
         } finally {
             setProcessingOffer(null);
         }
@@ -548,7 +548,7 @@ export default function SellerDashboardPage() {
             fetchOrders();
         } catch (err) {
             console.error('Failed to update order:', err);
-            alert('Failed to update order status');
+            toast('Failed to update order status. Please try again.', 'error');
         } finally {
             setUpdatingOrder(null);
         }
@@ -609,14 +609,14 @@ export default function SellerDashboardPage() {
         const isEmailMethod = verificationMethod === 'school_email';
 
         const resendEmail = async () => {
-            alert("Re-transmitting verification Notice...");
+            toast('Sending verification email...', 'info');
             try {
                 const { error } = await supabase.auth.resend({
                     type: 'signup',
                     email: user.email,
                 });
-                if (error) alert(error.message);
-                else alert("Code Sent. Check your inbox.");
+                if (error) toast(error.message, 'error');
+                else toast('Verification email sent! Check your inbox.', 'success');
             } catch (e) {
                 console.error(e);
             }
@@ -997,7 +997,7 @@ export default function SellerDashboardPage() {
                                                     onClick={() => {
                                                         const link = `${window.location.origin}/signup?ref=${user?.referral_link_code}`;
                                                         navigator.clipboard.writeText(link);
-                                                        alert('Transmission link copied to clipboard!');
+                                                        toast('Referral link copied to clipboard! 🔗', 'success');
                                                     }}
                                                     className="h-14 px-6 bg-white text-black font-black uppercase tracking-widest rounded-xl hover:bg-zinc-200 transition-colors"
                                                 >

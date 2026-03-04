@@ -184,7 +184,7 @@ export default function ExecutiveChatPage() {
             if (error) {
                 console.error('Send failed:', error);
                 setNewMessage(content); // Restore if failed
-                alert('Failed to transmit message.');
+                console.warn('UI_ALERT:', );
             }
         } catch (err) {
             console.error('Send error:', err);

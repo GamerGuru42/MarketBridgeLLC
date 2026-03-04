@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import {
     Loader2, ShieldCheck, XCircle, Search, UserCheck, Check, AlertTriangle, ChevronRight, Activity
 } from 'lucide-react';
+import { useToast } from '@/contexts/ToastContext';
 import Image from 'next/image';
 
 interface Application {
@@ -30,6 +31,7 @@ export default function AdminOperationsPage() {
     const { user, loading: authLoading } = useAuth();
     const router = useRouter();
     const supabase = createClient();
+    const { toast } = useToast();
 
     const [applications, setApplications] = useState<Application[]>([]);
     const [loading, setLoading] = useState(true);
@@ -86,7 +88,7 @@ export default function AdminOperationsPage() {
             // Remove from local state
             setApplications(prev => prev.filter(a => a.id !== app.id));
         } catch (error) {
-            alert("Action failed to execute. Check logs.");
+            toast('Action failed. Please check your connection and try again.', 'error');
         } finally {
             setActioningId(null);
         }
@@ -180,7 +182,7 @@ export default function AdminOperationsPage() {
                                             </td>
                                             <td className="p-4">
                                                 {app.id_card_url ? (
-                                                    <a href={app.id_card_url} target="_blank" rel="noopener noreferrer" className="block relative w-20 h-12 bg-zinc-100 rounded-lg overflow-hidden border border-zinc-200 hover:border-[#FF6200] transition-colors group">
+                                                    <a href={app.id_card_url} target="_blank" rel="noopener noreferrer" aria-label="View uploaded ID card" className="block relative w-20 h-12 bg-zinc-100 rounded-lg overflow-hidden border border-zinc-200 hover:border-[#FF6200] transition-colors group">
                                                         <Image src={app.id_card_url} alt="ID" fill className="object-cover opacity-80 group-hover:opacity-100" />
                                                     </a>
                                                 ) : <span className="text-xs text-zinc-400 italic">No Upload</span>}

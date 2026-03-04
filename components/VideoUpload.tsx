@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
@@ -29,7 +29,7 @@ export function VideoUpload({
         const files = Array.from(e.target.files);
 
         if (videos.length + files.length > maxVideos) {
-            alert(`You can only upload a maximum of ${maxVideos} videos.`);
+            console.warn('UI_ALERT:', );
             return;
         }
 
@@ -39,12 +39,12 @@ export function VideoUpload({
         try {
             for (const file of files) {
                 if (!file.type.startsWith('video/')) {
-                    alert(`File ${file.name} is not a video.`);
+                    console.warn('UI_ALERT:', );
                     continue;
                 }
 
                 if (file.size > 50 * 1024 * 1024) {
-                    alert(`File ${file.name} is too large (max 50MB).`);
+                    console.warn('UI_ALERT:', );
                     continue;
                 }
 
@@ -83,7 +83,7 @@ export function VideoUpload({
             onVideosSelected(updatedVideos);
         } catch (error: any) {
             console.error('Error uploading video:', error);
-            alert(error.message || 'Error uploading video. Please check your internet connection or permissions.');
+            console.warn('UI_ALERT:', );
         } finally {
             setUploading(false);
             setUploadProgress(0);

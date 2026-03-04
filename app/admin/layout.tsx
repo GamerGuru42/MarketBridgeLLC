@@ -33,7 +33,7 @@ export default function AdminLayout({
     if (isAuthPage) return <>{children}</>;
 
     if (loading) return (
-        <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="min-h-screen flex items-center justify-center bg-white dark:bg-zinc-950">
             <Loader2 className="h-12 w-12 animate-spin text-[#FF6200]" />
         </div>
     );
@@ -99,7 +99,7 @@ export default function AdminLayout({
     const filteredItems = getSidebarItems();
 
     return (
-        <div className="flex min-h-screen bg-black">
+        <div className="flex min-h-screen bg-[#FAFAFA] dark:bg-zinc-950">
             <div className="hidden md:block w-72 fixed h-full z-20">
                 <Sidebar items={filteredItems} title="VISION COMMAND" />
             </div>

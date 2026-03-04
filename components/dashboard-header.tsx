@@ -3,6 +3,7 @@ import React from 'react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Menu, User, Bell, LogOut, Globe } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { Sidebar, SidebarItem } from '@/components/sidebar';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -24,7 +25,7 @@ export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
     const router = useRouter();
 
     return (
-        <header className="sticky top-0 z-40 flex h-24 w-full items-center justify-between border-b border-zinc-100 bg-[#FAFAFA]/40 backdrop-blur-2xl px-6 md:px-12">
+        <header className="sticky top-0 z-40 flex h-24 w-full items-center justify-between border-b border-zinc-100 dark:border-zinc-800 bg-[#FAFAFA]/90 dark:bg-zinc-950/90 backdrop-blur-2xl px-6 md:px-12">
             <div className="flex items-center gap-6">
                 <Sheet>
                     <SheetTrigger asChild>
@@ -48,10 +49,12 @@ export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
             </div>
 
             <div className="flex items-center gap-4 md:gap-8">
-                <Link href="/" className="hidden md:flex items-center gap-2 text-zinc-500 hover:text-zinc-900 transition-colors text-xs uppercase font-bold tracking-widest bg-white px-4 py-2 rounded-full border border-zinc-200 hover:border-zinc-200">
+                <Link href="/" className="hidden md:flex items-center gap-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors text-xs uppercase font-bold tracking-widest bg-white dark:bg-zinc-900 px-4 py-2 rounded-full border border-zinc-200 dark:border-zinc-700 hover:border-zinc-300">
                     <Globe className="h-4 w-4" />
                     Back to Public Site
                 </Link>
+
+                <ThemeToggle />
 
                 <Button variant="outline" className="hidden md:flex items-center gap-2 border-red-500/20 text-red-500 hover:bg-red-500/10 hover:text-red-400 transition-colors uppercase tracking-widest text-[10px] font-black" onClick={async () => { await logout(); router.push('/'); }}>
                     <LogOut className="h-4 w-4" />

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -423,7 +423,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
             fetchActiveEscrow(); // Refresh steps
         } catch (error) {
             console.error('Error creating escrow:', error);
-            alert('Failed to create escrow agreement. Please try again.');
+            console.warn('UI_ALERT:', );
         }
     };
 
@@ -432,7 +432,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
         const file = e.target.files?.[0];
         if (file) {
             if (file.size > 5 * 1024 * 1024) {
-                alert('Image must be less than 5MB');
+                console.warn('UI_ALERT:', );
                 return;
             }
             setSelectedImage(file);
