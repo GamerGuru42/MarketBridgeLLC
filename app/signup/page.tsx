@@ -139,7 +139,8 @@ function SignupContent() {
                 last_name: formData.lastName,
                 role: role,
                 email_verified: false,
-                isVerified: false,
+                is_verified: false,
+                is_verified_seller: false,
                 coins_balance: role === 'student_buyer' ? 100 : 0
             }, { onConflict: 'id' });
 

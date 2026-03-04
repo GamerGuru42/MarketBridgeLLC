@@ -46,10 +46,7 @@ export const Header = () => {
         return pathname?.startsWith(path);
     };
 
-    const navLinks = [
-        { href: '/marketplace', label: 'Browse' },
-        { href: '/seller-onboard', label: 'Sell on MarketBridge' },
-    ];
+    const navLinks: { href: string; label: string }[] = [];
 
     return (
         <>
@@ -76,24 +73,6 @@ export const Header = () => {
                             <ChevronDown className="h-3 w-3 text-zinc-400 dark:text-zinc-500" />
                         </button>
                     </div>
-
-                    {/* Centre: Nav Links (desktop) */}
-                    <nav className="hidden md:flex items-center gap-1">
-                        {navLinks.map((link) => (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                className={cn(
-                                    'px-4 py-2 rounded-full text-sm font-bold transition-all',
-                                    isActive(link.href)
-                                        ? 'bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-800'
-                                        : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-900/50'
-                                )}
-                            >
-                                {link.label}
-                            </Link>
-                        ))}
-                    </nav>
 
                     {/* Right: Auth actions */}
                     <div className="flex items-center gap-2 shrink-0">
@@ -233,47 +212,35 @@ export const Header = () => {
             {/* Mobile Slide-down Menu */}
             {mobileMenuOpen && (
                 <div className="fixed top-16 left-0 right-0 z-[99] bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 px-6 py-8 flex flex-col gap-4 md:hidden shadow-2xl overflow-y-auto max-h-[calc(100vh-64px)]">
-                    {navLinks.map((link) => (
-                        <Link
-                            key={link.href}
-                            href={link.href}
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white font-bold text-lg transition-colors p-2"
-                        >
-                            {link.label}
-                        </Link>
-                    ))}
-                    <div className="border-t border-zinc-100 dark:border-zinc-800 pt-4 flex flex-col gap-3 mt-2">
-                        {user ? (
-                            <>
-                                {/* Coins badge */}
-                                <div className="flex items-center gap-2 px-2 py-2">
-                                    <Zap className="h-4 w-4 text-[#FF6200]" />
-                                    <span className="text-sm font-black text-zinc-900 dark:text-white">{(user.coins_balance || 0).toLocaleString()}</span>
-                                    <span className="text-[10px] font-black text-[#FF6200] uppercase">MarketCoins</span>
-                                </div>
-                                <Link href="/chats" onClick={() => setMobileMenuOpen(false)} className="text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white font-bold p-2 flex items-center gap-2">
-                                    <MessageCircle className="h-4 w-4" /> Messages
+                    {user ? (
+                        <>
+                            {/* Coins badge */}
+                            <div className="flex items-center gap-2 px-2 py-2">
+                                <Zap className="h-4 w-4 text-[#FF6200]" />
+                                <span className="text-sm font-black text-zinc-900 dark:text-white">{(user.coins_balance || 0).toLocaleString()}</span>
+                                <span className="text-[10px] font-black text-[#FF6200] uppercase">MarketCoins</span>
+                            </div>
+                            <Link href="/chats" onClick={() => setMobileMenuOpen(false)} className="text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white font-bold p-2 flex items-center gap-2">
+                                <MessageCircle className="h-4 w-4" /> Messages
+                            </Link>
+                            {['dealer', 'student_seller', 'seller'].includes(user.role) && (
+                                <Link href="/seller/upgrade" onClick={() => setMobileMenuOpen(false)} className="text-[#FF6200] font-bold p-2 flex items-center gap-2">
+                                    <Crown className="h-4 w-4" /> Upgrade Plan
                                 </Link>
-                                {['dealer', 'student_seller', 'seller'].includes(user.role) && (
-                                    <Link href="/seller/upgrade" onClick={() => setMobileMenuOpen(false)} className="text-[#FF6200] font-bold p-2 flex items-center gap-2">
-                                        <Crown className="h-4 w-4" /> Upgrade Plan
-                                    </Link>
-                                )}
-                                <Link href="/settings" onClick={() => setMobileMenuOpen(false)} className="text-zinc-600 dark:text-zinc-300 hover:text-white font-bold p-2">My Account</Link>
-                                <button onClick={() => { setMobileMenuOpen(false); handleSignOut(); }} className="text-red-500 font-bold text-left p-2">Log out</button>
-                            </>
-                        ) : (
-                            <>
-                                <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="w-full py-4 rounded-2xl bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black text-center text-sm uppercase tracking-widest shadow-md">
-                                    Sign Up Free
-                                </Link>
-                                <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="w-full py-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-900 dark:text-white font-bold text-center text-sm">
-                                    Log In
-                                </Link>
-                            </>
-                        )}
-                    </div>
+                            )}
+                            <Link href="/settings" onClick={() => setMobileMenuOpen(false)} className="text-zinc-600 dark:text-zinc-300 hover:text-white font-bold p-2">My Account</Link>
+                            <button onClick={() => { setMobileMenuOpen(false); handleSignOut(); }} className="text-red-500 font-bold text-left p-2">Log out</button>
+                        </>
+                    ) : (
+                        <>
+                            <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="w-full py-4 rounded-2xl bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black text-center text-sm uppercase tracking-widest shadow-md">
+                                Sign Up Free
+                            </Link>
+                            <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="w-full py-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-900 dark:text-white font-bold text-center text-sm">
+                                Log In
+                            </Link>
+                        </>
+                    )}
                 </div>
             )}
         </>

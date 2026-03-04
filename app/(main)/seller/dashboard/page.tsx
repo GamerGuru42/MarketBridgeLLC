@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/contexts/ToastContext';
 import {
     Package,
     ShoppingBag,
@@ -102,6 +103,7 @@ export default function SellerDashboardPage() {
     const { user, sessionUser, loading: authLoading } = useAuth();
     const router = useRouter();
     const supabase = createClient();
+    const { toast } = useToast();
     const [orders, setOrders] = useState<Order[]>([]);
     const [stats, setStats] = useState<Stats>({
         totalOrders: 0,
@@ -148,8 +150,7 @@ export default function SellerDashboardPage() {
 
     useEffect(() => {
         if (searchParams?.get('subscription') === 'success') {
-            alert("Subscription updated successfully! \n\nNeed help with your subscription? Contact ops-support@marketbridge.com.ng");
-            // Optional: clear the param
+            toast('Subscription updated successfully! Need help? Contact ops-support@marketbridge.com.ng', 'success');
             router.replace('/seller/dashboard');
         }
     }, [searchParams, router]);
@@ -168,14 +169,8 @@ export default function SellerDashboardPage() {
         // 3. Profile Guard: Wait for the user profile to be fully loaded
         if (!user) return;
 
-        // MANDATORY EMAIL VERIFICATION CHECK
-        if (!user.email_verified) {
-            router.push('/verify-email');
-            return;
-        }
-
         // 4. Access Control: Only redirect IF we have the user and the role is objectively wrong
-        const validRoles = ['dealer', 'student_seller'];
+        const validRoles = ['dealer', 'student_seller', 'seller'];
         if (!validRoles.includes(user.role)) {
             console.warn("Access Denied: Role mismatch for seller dashboard", user.role);
             router.push('/');

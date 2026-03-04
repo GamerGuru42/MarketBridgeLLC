@@ -124,12 +124,12 @@ export default function LoginPage() {
                 try {
                     const { data: profile } = await supabase
                         .from('users')
-                        .select('role, isVerified')
+                        .select('role, is_verified, is_verified_seller')
                         .eq('id', data.user.id)
                         .single();
 
                     if (profile?.role) userRole = profile.role;
-                    if (profile?.isVerified) isVerified = profile.isVerified;
+                    if (profile?.is_verified || profile?.is_verified_seller) isVerified = true;
                 } catch {
                 }
 
