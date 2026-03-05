@@ -83,6 +83,7 @@ function SignupContent() {
 
         const normalizedEmail = normalizeIdentifier(formData.email);
         setIsLoading(true);
+
         try {
             const signUpPromise = supabase.auth.signUp({
                 email: normalizedEmail,
@@ -91,56 +92,90 @@ function SignupContent() {
                     data: {
                         first_name: formData.firstName,
                         last_name: formData.lastName,
-                        role: role
+                        role,
                     }
                 }
             });
 
             const timeoutPromise = new Promise<{ data: any; error: any }>((_, reject) =>
-                setTimeout(() => reject(new Error("Connection timed out. Please check your network and try again.")), 15000)
+                setTimeout(() => reject(new Error('Connection timed out. Check your network and try again.')), 8000)
             );
 
             const { data: authData, error: authError } = await Promise.race([signUpPromise, timeoutPromise]);
 
-            if (authError) throw authError;
-            if (!authData.user) throw new Error('Signup failed - no user returned');
+            // Hard auth error
+            if (authError) {
+                // Supabase returns this when email already exists in auth.users
+                if (authError.message?.toLowerCase().includes('already registered') ||
+                    authError.message?.toLowerCase().includes('already exists') ||
+                    authError.status === 422) {
+                    toast('An account with this email already exists. Redirecting to login...', 'info');
+                    setTimeout(() => router.push(`/login?email=${encodeURIComponent(normalizedEmail)}`), 1500);
+                    return;
+                }
+                throw authError;
+            }
 
+            // Supabase silently returns a user with no session + empty identities when email
+            // is already registered but unconfirmed — detect and handle it
+            if (!authData?.user) {
+                throw new Error('Account creation failed. Please try again.');
+            }
+
+            const isGhostUser =
+                !authData.session &&
+                Array.isArray(authData.user?.identities) &&
+                authData.user.identities.length === 0;
+
+            if (isGhostUser) {
+                toast('An account with this email already exists. Please log in or reset your password.', 'info');
+                setTimeout(() => router.push(`/login`), 1800);
+                return;
+            }
+
+            // Write profile to users table — use upsert so re-attempts don't fail
             const { error: profileError } = await supabase.from('users').upsert({
                 id: authData.user.id,
                 email: normalizedEmail,
                 display_name: `${formData.firstName} ${formData.lastName}`.trim(),
                 first_name: formData.firstName,
                 last_name: formData.lastName,
-                role: role,
+                role,
                 email_verified: false,
                 is_verified: false,
                 is_verified_seller: false,
-                coins_balance: role === 'student_buyer' ? 100 : 0
+                coins_balance: role === 'student_buyer' ? 100 : 0,
             }, { onConflict: 'id' });
 
-            if (profileError) throw profileError;
-
-            if (!authData.session) {
-                toast('Account created! Please check your email to verify your account.', 'success');
+            if (profileError) {
+                // Profile failed but auth succeeded — user can still log in, profile syncs on login
+                console.error('Profile creation error (non-fatal):', profileError);
+                toast('Account created! Profile sync will complete on first login.', 'success');
                 router.push('/login');
                 return;
             }
 
-            toast('Account created successfully!', 'success');
+            // Email confirmation required
+            if (!authData.session) {
+                toast('Account created! Check your email to verify your account.', 'success');
+                router.push('/login');
+                return;
+            }
+
+            // Fully signed in
+            toast('Welcome to MarketBridge! 🎉', 'success');
             await refreshUser();
 
-            if (role === 'student_buyer') {
-                router.push('/marketplace');
-            } else if (role === 'student_seller') {
-                router.push('/seller-onboard');
-            } else if (role === 'admin') {
-                router.push('/admin');
-            } else if (role === 'ceo') {
-                router.push('/admin/ceo');
-            }
+            router.push(role === 'student_buyer' ? '/marketplace' : '/seller-onboard');
+
         } catch (err: any) {
             console.error('Signup error:', err);
-            toast(err.message || 'Initialization failed', 'error');
+            const msg = err.message || 'Something went wrong. Please try again.';
+            if (msg.toLowerCase().includes('timed out') || msg.toLowerCase().includes('network')) {
+                toast('Connection issue. Please check your internet and try again.', 'error');
+            } else {
+                toast(msg, 'error');
+            }
         } finally {
             setIsLoading(false);
         }
