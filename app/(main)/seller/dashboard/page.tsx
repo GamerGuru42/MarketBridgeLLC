@@ -31,7 +31,10 @@ import {
     ShieldAlert,
     RefreshCw,
     User,
-    Crown
+    Crown,
+    Star,
+    Sparkles,
+    X,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -124,6 +127,9 @@ export default function SellerDashboardPage() {
     const [processingOffer, setProcessingOffer] = useState<string | null>(null);
     const [referralStats, setReferralStats] = useState({ totalInvited: 0, coinsEarned: 0 });
     const [revenueTrend, setRevenueTrend] = useState<string>('—');
+    const [applicationStatus, setApplicationStatus] = useState<'none' | 'pending' | 'approved' | 'rejected' | 'loading'>('loading');
+    const [trialExpiresAt, setTrialExpiresAt] = useState<Date | null>(null);
+    const [showPlanPrompt, setShowPlanPrompt] = useState(false);
 
     const fetchBankDetails = async () => {
         if (!user) return;
@@ -156,42 +162,91 @@ export default function SellerDashboardPage() {
     }, [searchParams, router]);
 
     useEffect(() => {
-        // 1. Loading Guard: Don't make any decisions while auth/profile is loading
         if (authLoading) return;
-
-        // 2. Auth Guard: If no session exists after loading, they must login
         if (!sessionUser) {
             setSessionLost(true);
-            router.push('/login'); // Force redirect to login if session is truly missing
+            router.push('/login');
             return;
         }
-
-        // 3. Profile Guard: Wait for the user profile to be fully loaded
         if (!user) return;
 
-        // 4. Access Control: Only redirect IF we have the user and the role is objectively wrong
-        const validRoles = ['dealer', 'student_seller', 'seller'];
-        if (!validRoles.includes(user.role)) {
-            console.warn("Access Denied: Role mismatch for seller dashboard", user.role);
-            router.push('/');
+        // Sellers (approved) go straight to dashboard
+        const approvedRoles = ['dealer', 'student_seller', 'seller'];
+        if (approvedRoles.includes(user.role)) {
+            setApplicationStatus('approved');
+            setSessionLost(false);
+            fetchOrders();
+            fetchBankDetails();
+            fetchOffers();
+            fetchReferralStats();
+            const unsubscribeOrders = subscribeToOrders();
+            const unsubscribeOffers = subscribeToOffers();
+            checkSubscriptionStatus();
+            return () => {
+                if (unsubscribeOrders) unsubscribeOrders();
+                if (unsubscribeOffers) unsubscribeOffers();
+            };
+        }
+
+        // Buyers who submitted a seller application — check status
+        if (user.role === 'student_buyer') {
+            checkApplicationStatus();
             return;
         }
 
-        // 5. Success: Session is active and role is correct
-        setSessionLost(false);
-        fetchOrders();
-        fetchBankDetails();
-        fetchOffers();
-        fetchReferralStats();
-        const unsubscribeOrders = subscribeToOrders();
-        const unsubscribeOffers = subscribeToOffers();
-        checkSubscriptionStatus();
-
-        return () => {
-            if (unsubscribeOrders) unsubscribeOrders();
-            if (unsubscribeOffers) unsubscribeOffers();
-        };
+        // Completely unrelated role — redirect home
+        console.warn('Seller dashboard: unrecognized role', user.role);
+        router.push('/');
     }, [user, sessionUser, authLoading, router]);
+
+    const checkApplicationStatus = async () => {
+        if (!user) return;
+        try {
+            const { data } = await supabase
+                .from('seller_applications')
+                .select('status, created_at')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+            if (!data) {
+                setApplicationStatus('none');
+            } else {
+                const status = data.status as 'pending' | 'approved' | 'rejected';
+                setApplicationStatus(status);
+
+                if (status === 'pending') {
+                    // 14-day free trial from application date
+                    const submittedAt = new Date(data.created_at);
+                    const expires = new Date(submittedAt.getTime() + 14 * 24 * 60 * 60 * 1000);
+                    setTrialExpiresAt(expires);
+
+                    const isTrialActive = new Date() < expires;
+                    if (isTrialActive) {
+                        // Grant full dashboard access during trial
+                        setSessionLost(false);
+                        fetchOrders();
+                        fetchBankDetails();
+                        fetchOffers();
+                        fetchReferralStats();
+                        // Show plan prompt once per session for new sellers
+                        const seenKey = `mb_plan_prompt_${user.id}`;
+                        if (!sessionStorage.getItem(seenKey)) {
+                            setShowPlanPrompt(true);
+                            sessionStorage.setItem(seenKey, '1');
+                        }
+                    }
+                    // If trial expired, we show the upgrade wall (handled in render)
+                }
+            }
+        } catch (err) {
+            console.error('Failed to check application status:', err);
+            setApplicationStatus('none');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const fetchReferralStats = async () => {
         if (!user) return;
@@ -569,7 +624,7 @@ export default function SellerDashboardPage() {
         setMounted(true);
     }, []);
 
-    if (authLoading || loading || (!mounted && !sessionLost)) {
+    if (authLoading || (loading && applicationStatus === 'loading') || (!mounted && !sessionLost)) {
         return (
             <div className="min-h-[80vh] flex items-center justify-center bg-[#FAFAFA] relative overflow-hidden text-zinc-900">
                 <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20 pointer-events-none" />
@@ -603,87 +658,199 @@ export default function SellerDashboardPage() {
         );
     }
 
-    if (user && !user.isVerified) {
-        // Safe access to metadata
-        const verificationMethod = (user as any).metadata?.verification_method;
-        const isEmailMethod = verificationMethod === 'school_email';
-
-        const resendEmail = async () => {
-            toast('Sending verification email...', 'info');
-            try {
-                const { error } = await supabase.auth.resend({
-                    type: 'signup',
-                    email: user.email,
-                });
-                if (error) toast(error.message, 'error');
-                else toast('Verification email sent! Check your inbox.', 'success');
-            } catch (e) {
-                console.error(e);
-            }
-        };
-
+    // ─── NEW SELLER: No application yet — prompt them to onboard ───
+    if (applicationStatus === 'none') {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] text-zinc-900 p-6 relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none" />
-                <div className="max-w-xl w-full bg-white border border-zinc-200 shadow-sm p-12 rounded-[3rem] text-center relative z-10 border border-zinc-200 shadow-2xl">
-                    <div className="h-24 w-24 rounded-3xl bg-[#FF6200]/10 border border-[#FF6200]/20 flex items-center justify-center mx-auto mb-8 relative">
-                        {isEmailMethod ? (
-                            <Mail className="h-10 w-10 text-[#FF6200]" />
-                        ) : (
-                            <ShieldAlert className="h-10 w-10 text-[#FF6200]" />
-                        )}
-                        <div className="absolute inset-0 rounded-3xl border border-[#FF6200]/30 animate-pulse" />
+            <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] dark:bg-zinc-950 text-zinc-900 dark:text-white p-6">
+                <div className="max-w-lg w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl p-12 rounded-[3rem] text-center space-y-6">
+                    <div className="h-24 w-24 rounded-3xl bg-[#FF6200]/10 border border-[#FF6200]/20 flex items-center justify-center mx-auto">
+                        <Package className="h-10 w-10 text-[#FF6200]" />
                     </div>
-
-                    <h2 className="text-4xl font-black uppercase italic tracking-tighter mb-4">
-                        {isEmailMethod ? "Verify Identity" : "System Pending"}
-                    </h2>
-
-                    <p className="text-zinc-500 font-medium mb-10 leading-relaxed max-w-sm mx-auto">
-                        {isEmailMethod
-                            ? <span>We have transmitted a secure link to <span className="text-zinc-900 font-bold">{user.email}</span>. Please authorize this Campus to activate your dashboard.</span>
-                            : (
-                                <>
-                                    Your merchant credentials are under review by central command. Access will be granted upon successful ID verification.
-                                    <br /><br />
-                                    <span className="text-[10px] uppercase font-bold text-zinc-900/30">
-                                        For verification questions, email <a href="mailto:ops-support@marketbridge.com.ng?subject=Account%20Verification" className="text-[#FF6200] hover:underline">ops-support@marketbridge.com.ng</a>
-                                    </span>
-                                </>
-                            )
-                        }
+                    <h2 className="text-3xl font-black uppercase tracking-tighter">Complete Your Setup</h2>
+                    <p className="text-zinc-500 dark:text-zinc-400 font-medium leading-relaxed">
+                        You haven't submitted your seller application yet. Complete it in under 2 minutes to start selling on campus.
                     </p>
-
-                    {isEmailMethod ? (
-                        <div className="space-y-4">
-                            <Button onClick={() => window.location.reload()} className="w-full h-16 bg-[#FF6200] text-black font-black uppercase tracking-widest rounded-2xl hover:bg-[#FF7A29] transition-all shadow-[0_0_30px_rgba(255,98,0,0.2)]">
-                                <RefreshCw className="mr-3 h-5 w-5" /> I Have Verified
-                            </Button>
-                            <button onClick={resendEmail} className="text-[10px] font-black uppercase tracking-widest text-zinc-900/30 hover:text-[#FF6200] transition-colors">
-                                Re-transmit Notice
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="bg-white0 rounded-2xl p-6 border border-zinc-100">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-900/30 mb-2">Estimated Arrival</p>
-                            <p className="text-xl font-black text-zinc-900 italic">~24 Hours</p>
-                        </div>
-                    )}
-
-                    <div className="mt-12 pt-8 border-t border-zinc-100">
-                        <Button variant="ghost" onClick={() => router.push('/marketplace')} className="text-zinc-500 hover:text-zinc-900 font-black uppercase tracking-widest text-[10px]">
-                            Return to Base
+                    <Link href="/seller-onboard">
+                        <Button className="w-full h-14 bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black uppercase tracking-widest rounded-2xl text-sm shadow-[0_8px_30px_rgba(255,98,0,0.3)] transition-all hover:scale-105">
+                            Start Seller Application <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
+                    </Link>
+                    <Link href="/marketplace" className="block text-sm text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 font-bold transition-colors">
+                        Browse Marketplace Instead
+                    </Link>
+                </div>
+            </div>
+        );
+    }
+
+    // ─── PENDING: check trial status ───
+    if (applicationStatus === 'pending') {
+        const trialActive = trialExpiresAt ? new Date() < trialExpiresAt : false;
+        const daysLeft = trialExpiresAt
+            ? Math.max(0, Math.ceil((trialExpiresAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+            : 0;
+
+        // Trial expired — force upgrade wall
+        if (!trialActive) {
+            return (
+                <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] dark:bg-zinc-950 text-zinc-900 dark:text-white p-6 relative overflow-hidden">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[#FF6200]/8 blur-[150px] rounded-full pointer-events-none" />
+                    <div className="max-w-lg w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl p-12 rounded-[3rem] text-center space-y-6 relative z-10">
+                        <div className="h-24 w-24 rounded-3xl bg-[#FF6200]/10 border border-[#FF6200]/30 flex items-center justify-center mx-auto">
+                            <Zap className="h-10 w-10 text-[#FF6200]" />
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#FF6200] mb-2">Free Trial Ended</p>
+                            <h2 className="text-3xl font-black uppercase tracking-tighter">Pick Your Plan</h2>
+                        </div>
+                        <p className="text-zinc-500 dark:text-zinc-400 font-medium leading-relaxed">
+                            Your 14-day free trial has ended. Choose a plan to keep selling on MarketBridge and unlock more features.
+                        </p>
+                        <div className="grid gap-3">
+                            <Link href="/seller/upgrade">
+                                <Button className="w-full h-14 bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black uppercase tracking-widest rounded-2xl shadow-[0_8px_30px_rgba(255,98,0,0.3)] transition-all hover:scale-105">
+                                    <Crown className="h-4 w-4 mr-2" /> View Pricing Plans
+                                </Button>
+                            </Link>
+                            <a href="https://wa.me/2349012345678?text=My%20MarketBridge%20seller%20trial%20expired" target="_blank" rel="noopener noreferrer">
+                                <Button variant="outline" className="w-full h-12 border-zinc-200 dark:border-zinc-700 font-black uppercase tracking-widest text-xs">
+                                    Contact Support
+                                </Button>
+                            </a>
+                        </div>
+                        <p className="text-[10px] text-zinc-400 font-medium">
+                            Plans start at <strong className="text-zinc-700 dark:text-zinc-200">₦2,500/month</strong>. Cancel anytime.
+                        </p>
                     </div>
+                </div>
+            );
+        }
+
+        // Trial still active — fall through to render full dashboard below
+        // (trialActive is passed to main return via trialExpiresAt/applicationStatus)
+    }
+
+    // ─── REJECTED ───
+    if (applicationStatus === 'rejected') {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] dark:bg-zinc-950 text-zinc-900 dark:text-white p-6">
+                <div className="max-w-lg w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl p-12 rounded-[3rem] text-center space-y-6">
+                    <div className="h-24 w-24 rounded-3xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto">
+                        <AlertCircle className="h-10 w-10 text-red-500" />
+                    </div>
+                    <h2 className="text-3xl font-black uppercase tracking-tighter">Application Declined</h2>
+                    <p className="text-zinc-500 dark:text-zinc-400 font-medium leading-relaxed">
+                        Unfortunately, your application wasn't approved this time. You can re-apply with updated information.
+                    </p>
+                    <Link href="/seller-onboard">
+                        <Button className="w-full h-14 bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black uppercase tracking-widest rounded-2xl text-sm shadow-[0_8px_30px_rgba(255,98,0,0.3)]">
+                            Re-Apply Now <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                    </Link>
+                    <a href="https://wa.me/2349012345678?text=My%20seller%20application%20was%20declined" target="_blank" rel="noopener noreferrer" className="block text-xs text-zinc-400 hover:text-red-500 font-bold transition-colors">
+                        Contact support for more info →
+                    </a>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 relative flex flex-col selection:bg-[#FF6200] selection:text-black">
+        <div className="min-h-screen bg-[#FAFAFA] dark:bg-zinc-950 text-zinc-900 dark:text-white relative flex flex-col selection:bg-[#FF6200] selection:text-black">
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
+
+            {/* ─── PLAN PROMPT MODAL (first-time, trial sellers) ─── */}
+            {showPlanPrompt && (
+                <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+                    <div className="relative w-full max-w-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2.5rem] p-8 md:p-10 shadow-2xl overflow-y-auto max-h-[90vh]">
+                        <button
+                            onClick={() => setShowPlanPrompt(false)}
+                            aria-label="Close"
+                            className="absolute top-5 right-5 h-9 w-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                        >
+                            <X className="h-4 w-4" />
+                        </button>
+
+                        <div className="text-center mb-8">
+                            <div className="h-16 w-16 rounded-2xl bg-[#FF6200]/10 border border-[#FF6200]/20 flex items-center justify-center mx-auto mb-4">
+                                <Sparkles className="h-8 w-8 text-[#FF6200]" />
+                            </div>
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#FF6200] mb-1">Welcome to Your Dashboard</p>
+                            <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">You're on a Free Trial!</h2>
+                            <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium mt-2">
+                                Enjoy <strong className="text-zinc-900 dark:text-white">14 days free</strong> — then pick the plan that fits your hustle.
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                            {[
+                                { name: 'Starter', price: '₦0', period: 'Free forever', icon: Star, features: ['5 listings', 'Basic profile', 'Messaging'], highlight: false },
+                                { name: 'Pro Seller', price: '₦2,500', period: '/month', icon: Zap, features: ['30 listings', 'Priority search', 'Analytics', 'Verified badge'], highlight: true },
+                                { name: 'Elite Store', price: '₦6,000', period: '/month', icon: Crown, features: ['Unlimited listings', 'Homepage slot', 'Store banner', 'Account manager'], highlight: false },
+                            ].map((plan) => (
+                                <div key={plan.name} className={`relative rounded-2xl p-5 border ${plan.highlight
+                                        ? 'border-[#FF6200] bg-[#FF6200]/5'
+                                        : 'border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50'
+                                    }`}>
+                                    {plan.highlight && (
+                                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FF6200] text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
+                                            Most Popular
+                                        </div>
+                                    )}
+                                    <plan.icon className={`h-6 w-6 mb-3 ${plan.highlight ? 'text-[#FF6200]' : 'text-zinc-500'}`} />
+                                    <p className="font-black text-sm uppercase tracking-tight">{plan.name}</p>
+                                    <p className="text-xl font-black mt-1">{plan.price}<span className="text-xs font-bold text-zinc-400">{plan.period}</span></p>
+                                    <ul className="mt-3 space-y-1">
+                                        {plan.features.map(f => (
+                                            <li key={f} className="flex items-center gap-1.5 text-xs text-zinc-600 dark:text-zinc-300">
+                                                <CheckCircle className="h-3 w-3 text-[#FF6200] shrink-0" /> {f}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <Link href="/seller/upgrade" className="flex-1">
+                                <Button className="w-full h-12 bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black uppercase tracking-widest rounded-xl text-xs shadow-[0_4px_20px_rgba(255,98,0,0.3)]">
+                                    Choose a Plan <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                                </Button>
+                            </Link>
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowPlanPrompt(false)}
+                                className="flex-1 h-12 border-zinc-200 dark:border-zinc-700 font-black uppercase tracking-widest text-xs"
+                            >
+                                Continue with Free Trial
+                            </Button>
+                        </div>
+                        <p className="text-center text-[10px] text-zinc-400 mt-4">You can upgrade anytime from your dashboard settings.</p>
+                    </div>
+                </div>
+            )}
+
+            {/* ─── TRIAL COUNTDOWN BANNER (pending sellers on trial) ─── */}
+            {applicationStatus === 'pending' && trialExpiresAt && (() => {
+                const daysLeft = Math.max(0, Math.ceil((trialExpiresAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+                return (
+                    <div className="sticky top-0 z-50 w-full bg-gradient-to-r from-[#FF6200] to-amber-500 text-white px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-2 shadow-lg">
+                        <div className="flex items-center gap-3 text-sm font-bold">
+                            <Zap className="h-4 w-4 shrink-0" />
+                            <span>
+                                <strong>{daysLeft} day{daysLeft !== 1 ? 's' : ''}</strong> left on your free trial.
+                                {daysLeft <= 3 && ' ⚠️ Trial ending soon!'}
+                            </span>
+                        </div>
+                        <Link href="/seller/upgrade">
+                            <Button size="sm" className="h-8 px-5 bg-white text-[#FF6200] hover:bg-zinc-100 font-black uppercase tracking-widest text-[10px] rounded-full shrink-0">
+                                Upgrade Now
+                            </Button>
+                        </Link>
+                    </div>
+                );
+            })()}
 
             <SellerGuide />
             <div className="container mx-auto px-6 mt-6 relative z-10"><SellerWeatherWidget /></div>
