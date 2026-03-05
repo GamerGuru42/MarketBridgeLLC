@@ -429,21 +429,25 @@ function LoginContent() {
                         </Button>
                     </form>
 
-                    {/* Google login — instant, no role needed */}
-                    <div className="relative flex items-center justify-center">
-                        <div className="absolute inset-x-0 h-px bg-zinc-800" />
-                        <span className="relative bg-zinc-900 px-4 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500">Or</span>
-                    </div>
+                    {/* Google login — restricted to public roles */}
+                    {!['admin', 'ceo', 'technical_admin', 'operations_admin'].includes(loginRole) && (
+                        <>
+                            <div className="relative flex items-center justify-center">
+                                <div className="absolute inset-x-0 h-px bg-zinc-800" />
+                                <span className="relative bg-zinc-900 px-4 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500">Or</span>
+                            </div>
 
-                    <Button
-                        variant="outline"
-                        onClick={handleGoogleLogin}
-                        disabled={isLoading}
-                        className="w-full h-12 bg-transparent border-zinc-700 text-white/70 font-bold rounded-2xl hover:bg-zinc-800 hover:text-white transition-all"
-                    >
-                        <Globe className="mr-3 h-5 w-5 text-[#FF6200]" />
-                        Continue with Google
-                    </Button>
+                            <Button
+                                variant="outline"
+                                onClick={handleGoogleLogin}
+                                disabled={isLoading}
+                                className="w-full h-12 bg-transparent border-zinc-700 text-white/70 font-bold rounded-2xl hover:bg-zinc-800 hover:text-white transition-all"
+                            >
+                                <Globe className="mr-3 h-5 w-5 text-[#FF6200]" />
+                                Continue with Google
+                            </Button>
+                        </>
+                    )}
 
                     <div className="flex items-center justify-between pt-2">
                         <p className="text-white/30 text-xs">
