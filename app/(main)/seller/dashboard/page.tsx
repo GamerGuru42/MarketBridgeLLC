@@ -170,11 +170,12 @@ export default function SellerDashboardPage() {
         }
         if (!user) return;
 
-        // Sellers (approved) go straight to dashboard
         const approvedRoles = ['dealer', 'student_seller', 'seller'];
         if (approvedRoles.includes(user.role)) {
             setApplicationStatus('approved');
             setSessionLost(false);
+            // Check subscription/trial status for approved sellers too
+            checkSubscriptionTrial();
             fetchOrders();
             fetchBankDetails();
             fetchOffers();
@@ -188,7 +189,7 @@ export default function SellerDashboardPage() {
             };
         }
 
-        // Buyers who submitted a seller application — check status
+        // Buyers who submitted a seller application — check application status
         if (user.role === 'student_buyer') {
             checkApplicationStatus();
             return;
@@ -199,49 +200,95 @@ export default function SellerDashboardPage() {
         router.push('/');
     }, [user, sessionUser, authLoading, router]);
 
-    const checkApplicationStatus = async () => {
+    // Query the subscriptions table — the single source of truth for trial state
+    const checkSubscriptionTrial = async () => {
         if (!user) return;
         try {
-            const { data } = await supabase
-                .from('seller_applications')
-                .select('status, created_at')
+            const { data: sub } = await supabase
+                .from('subscriptions')
+                .select('status, trial_start, trial_end')
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false })
                 .limit(1)
                 .maybeSingle();
 
-            if (!data) {
-                setApplicationStatus('none');
-            } else {
-                const status = data.status as 'pending' | 'approved' | 'rejected';
-                setApplicationStatus(status);
+            if (sub?.status === 'trialing' && sub.trial_end) {
+                const expires = new Date(sub.trial_end);
+                setTrialExpiresAt(expires);
 
-                if (status === 'pending') {
-                    // 14-day free trial from application date
-                    const submittedAt = new Date(data.created_at);
-                    const expires = new Date(submittedAt.getTime() + 14 * 24 * 60 * 60 * 1000);
-                    setTrialExpiresAt(expires);
-
-                    const isTrialActive = new Date() < expires;
-                    if (isTrialActive) {
-                        // Grant full dashboard access during trial
-                        setSessionLost(false);
-                        fetchOrders();
-                        fetchBankDetails();
-                        fetchOffers();
-                        fetchReferralStats();
-                        // Show plan prompt once per session for new sellers
-                        const seenKey = `mb_plan_prompt_${user.id}`;
-                        if (!sessionStorage.getItem(seenKey)) {
-                            setShowPlanPrompt(true);
-                            sessionStorage.setItem(seenKey, '1');
-                        }
-                    }
-                    // If trial expired, we show the upgrade wall (handled in render)
+                // Show the plan prompt once per session
+                const seenKey = `mb_plan_prompt_${user.id}`;
+                if (!sessionStorage.getItem(seenKey) && new Date() < expires) {
+                    setShowPlanPrompt(true);
+                    sessionStorage.setItem(seenKey, '1');
                 }
             }
         } catch (err) {
-            console.error('Failed to check application status:', err);
+            console.error('Failed to check subscription trial:', err);
+        }
+    };
+
+    const checkApplicationStatus = async () => {
+        if (!user) return;
+        try {
+            const [appResult, subResult] = await Promise.all([
+                supabase
+                    .from('seller_applications')
+                    .select('status, created_at')
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .maybeSingle(),
+                supabase
+                    .from('subscriptions')
+                    .select('status, trial_start, trial_end')
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .maybeSingle()
+            ]);
+
+            const app = appResult.data;
+            const sub = subResult.data;
+
+            if (!app) {
+                setApplicationStatus('none');
+                setLoading(false);
+                return;
+            }
+
+            const status = app.status as 'pending' | 'approved' | 'rejected';
+            setApplicationStatus(status);
+
+            if (status === 'pending') {
+                // Use subscription trial_end if available (set by the API on submit)
+                // Fall back to 14 days from application creation
+                let expires: Date;
+                if (sub?.status === 'trialing' && sub.trial_end) {
+                    expires = new Date(sub.trial_end);
+                } else {
+                    const submittedAt = new Date(app.created_at);
+                    expires = new Date(submittedAt.getTime() + 14 * 24 * 60 * 60 * 1000);
+                }
+                setTrialExpiresAt(expires);
+
+                const isTrialActive = new Date() < expires;
+                if (isTrialActive) {
+                    setSessionLost(false);
+                    fetchOrders();
+                    fetchBankDetails();
+                    fetchOffers();
+                    fetchReferralStats();
+                    // Show plan prompt once per session
+                    const seenKey = `mb_plan_prompt_${user.id}`;
+                    if (!sessionStorage.getItem(seenKey)) {
+                        setShowPlanPrompt(true);
+                        sessionStorage.setItem(seenKey, '1');
+                    }
+                }
+            }
+        } catch (err) {
+            console.error('Failed to check application/subscription status:', err);
             setApplicationStatus('none');
         } finally {
             setLoading(false);
@@ -790,8 +837,8 @@ export default function SellerDashboardPage() {
                                 { name: 'Elite Store', price: '₦6,000', period: '/month', icon: Crown, features: ['Unlimited listings', 'Homepage slot', 'Store banner', 'Account manager'], highlight: false },
                             ].map((plan) => (
                                 <div key={plan.name} className={`relative rounded-2xl p-5 border ${plan.highlight
-                                        ? 'border-[#FF6200] bg-[#FF6200]/5'
-                                        : 'border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50'
+                                    ? 'border-[#FF6200] bg-[#FF6200]/5'
+                                    : 'border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50'
                                     }`}>
                                     {plan.highlight && (
                                         <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FF6200] text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full">

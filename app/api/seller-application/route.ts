@@ -26,10 +26,12 @@ export async function POST(req: Request) {
             bio
         } = body;
 
+        // userId is REQUIRED — the dashboard trial lookup depends on it
         if (!userId || !fullName || !phoneNumber || !university || !campusArea || !studentEmail || !sellCategories) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
+        // Upsert by user_id — prevents duplicate applications from same user
         const { error } = await supabaseAdmin
             .from('seller_applications')
             .upsert({
@@ -43,43 +45,74 @@ export async function POST(req: Request) {
                 id_card_url: idCardUrl || null,
                 bio: bio || null,
                 status: 'pending'
-            }, { onConflict: 'user_id' }); // Assuming we can upsert by user_id or email
+            }, { onConflict: 'user_id' });
 
         if (error) {
-            console.error('Application insert error:', error);
-            // If the column `user_id` doesn't exist yet, we might need a fallback or migration.
-            // Using a simple insert if upsert fails.
-            const { error: insertErr } = await supabaseAdmin
-                .from('seller_applications')
-                .insert({
-                    full_name: fullName,
-                    phone_number: phoneNumber,
-                    university: university,
-                    campus_area: campusArea,
-                    student_email: studentEmail.toLowerCase(),
-                    sell_categories: sellCategories,
-                    id_card_url: idCardUrl || null,
-                    bio: bio || null,
-                    status: 'pending'
+            console.error('Application upsert error:', error);
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+
+        // Create a 14-day trial subscription for this seller if one doesn't exist yet
+        const trialEnd = new Date();
+        trialEnd.setDate(trialEnd.getDate() + 14);
+
+        // Check if they already have an active subscription/trial
+        const { data: existingSub } = await supabaseAdmin
+            .from('subscriptions')
+            .select('id')
+            .eq('user_id', userId)
+            .in('status', ['active', 'trialing'])
+            .limit(1)
+            .maybeSingle();
+
+        if (!existingSub) {
+            // Get the free/starter plan id
+            const { data: freePlan } = await supabaseAdmin
+                .from('subscription_plans')
+                .select('id')
+                .or('name.ilike.%starter%,name.ilike.%free%')
+                .limit(1)
+                .maybeSingle();
+
+            if (freePlan) {
+                await supabaseAdmin.from('subscriptions').insert({
+                    user_id: userId,
+                    plan_id: freePlan.id,
+                    status: 'trialing',
+                    trial_start: new Date().toISOString(),
+                    trial_end: trialEnd.toISOString(),
+                    current_period_start: new Date().toISOString(),
+                    current_period_end: trialEnd.toISOString(),
                 });
-            if (insertErr) {
-                console.error('Secondary insert error:', insertErr);
-                return NextResponse.json({ error: insertErr.message }, { status: 500 });
             }
         }
 
         // Send Welcome/Received Email to the Applicant
-        await sendEmail(
-            studentEmail,
-            'Application Received 📝',
-            getSellerApplicationTemplate(fullName)
-        );
+        try {
+            await sendEmail(
+                studentEmail,
+                'Application Received 📝 — Your 14-Day Free Trial Has Started!',
+                getSellerApplicationTemplate(fullName)
+            );
+        } catch (emailErr) {
+            console.warn('Applicant email failed (non-fatal):', emailErr);
+        }
 
-        await sendEmail(
-            'ops-support@marketbridge.com.ng',
-            `New Seller Application: ${fullName}`,
-            `<p>New application received from ${fullName} (${university} - ${campusArea}). Log in to the operations dashboard to review.</p>`
-        );
+        // Notify ops team
+        try {
+            await sendEmail(
+                'ops-support@marketbridge.com.ng',
+                `New Seller Application: ${fullName}`,
+                `<p>New application received from <strong>${fullName}</strong> (${university} - ${campusArea}).<br/>
+                User ID: ${userId}<br/>
+                Contact: ${phoneNumber} | ${studentEmail}<br/>
+                ID Uploaded: ${idCardUrl ? 'Yes' : 'No'}<br/>
+                Categories: ${sellCategories.join(', ')}<br/><br/>
+                Log in to the <a href="https://marketbridge.com.ng/admin">operations dashboard</a> to review.</p>`
+            );
+        } catch (emailErr) {
+            console.warn('Ops email failed (non-fatal):', emailErr);
+        }
 
         return NextResponse.json({ success: true }, { status: 200 });
     } catch (error: any) {
