@@ -63,11 +63,11 @@ function AdminAccessContent() {
         }
     }, [user, sessionUser, loading, router]);
 
-    // Support ?role=admin or ?role=ceo URL params (for direct deep-linking by team)
+    // Support ?target=admin or ?target=ceo URL params
     useEffect(() => {
-        const roleParam = searchParams?.get('role');
-        if (roleParam === 'admin') { setRole('admin'); setStep('pin'); }
-        if (roleParam === 'ceo') { setRole('ceo'); setStep('pin'); }
+        const target = searchParams?.get('target') || searchParams?.get('role');
+        if (target === 'admin') { setRole('admin'); setStep('pin'); }
+        if (target === 'ceo') { setRole('ceo'); setStep('pin'); }
     }, [searchParams]);
 
     const handlePinSubmit = (e: React.FormEvent) => {
@@ -154,6 +154,9 @@ function AdminAccessContent() {
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-[#FF6200]/5 rounded-full blur-[120px] pointer-events-none" />
 
                 <div className="w-full max-w-md relative z-10 text-center">
+                    <Link href="/" className="inline-flex items-center text-white/40 hover:text-white mb-8 uppercase text-[10px] font-black tracking-widest transition-colors py-3">
+                        <ArrowLeft className="mr-2 h-4 w-4" /> Return to Home
+                    </Link>
                     <div className="flex justify-center mb-8">
                         <Logo showText={false} />
                     </div>
@@ -209,13 +212,18 @@ function AdminAccessContent() {
             <div className="min-h-screen flex items-center justify-center p-4 bg-zinc-950">
                 <Card className="w-full max-w-sm bg-zinc-900 border border-zinc-800 shadow-2xl rounded-[2.5rem]">
                     <CardHeader className="p-8 pb-0 text-center">
-                        <Button
-                            variant="ghost"
-                            onClick={() => setStep('role')}
-                            className="text-white/40 hover:text-white mb-4 uppercase text-[10px] font-black tracking-widest w-full justify-start"
-                        >
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Back
-                        </Button>
+                        <div className="flex justify-between items-center mb-4">
+                            <Button
+                                variant="ghost"
+                                onClick={() => setStep('role')}
+                                className="text-white/40 hover:text-white uppercase text-[10px] font-black tracking-widest"
+                            >
+                                <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                            </Button>
+                            <Link href="/" className="text-white/20 hover:text-white uppercase text-[10px] font-black tracking-widest transition-colors">
+                                Home
+                            </Link>
+                        </div>
                         <div className="mx-auto h-20 w-20 rounded-3xl bg-zinc-800 border border-zinc-700 flex items-center justify-center mb-5">
                             <KeyRound className="h-10 w-10 text-[#FF6200]" />
                         </div>
@@ -267,13 +275,18 @@ function AdminAccessContent() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-[#FF6200]/5 rounded-full blur-[100px] pointer-events-none" />
             <Card className="w-full max-w-md bg-zinc-900 border border-zinc-800 shadow-2xl rounded-[2.5rem] p-8 md:p-10 relative z-10">
                 <CardHeader className="p-0 mb-8 text-center">
-                    <Button
-                        variant="ghost"
-                        onClick={() => setStep('pin')}
-                        className="text-white/40 hover:text-white mb-4 uppercase text-[10px] font-black tracking-widest"
-                    >
-                        <ArrowLeft className="mr-2 h-4 w-4" /> Back
-                    </Button>
+                    <div className="flex justify-between items-center mb-4">
+                        <Button
+                            variant="ghost"
+                            onClick={() => setStep('pin')}
+                            className="text-white/40 hover:text-white uppercase text-[10px] font-black tracking-widest"
+                        >
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                        </Button>
+                        <Link href="/" className="text-white/20 hover:text-white uppercase text-[10px] font-black tracking-widest transition-colors">
+                            Home
+                        </Link>
+                    </div>
                     <div className="flex justify-center mb-6">
                         <Logo showText={false} className="scale-125" />
                     </div>

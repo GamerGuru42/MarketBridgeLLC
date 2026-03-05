@@ -232,7 +232,7 @@ function SignupContent() {
 
                         {/* Admin */}
                         <Link
-                            href="/admin-access"
+                            href="/admin-access?target=admin"
                             className="group bg-white/[0.04] border border-white/10 rounded-[2rem] p-6 text-center cursor-pointer hover:bg-white/[0.07] hover:border-[#FF6200]/30 transition-all duration-300 flex flex-col items-center"
                         >
                             <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center mb-4 group-hover:bg-[#FF6200]/10 transition-colors">
@@ -274,14 +274,18 @@ function SignupContent() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-[#FF6200]/5 rounded-full blur-[100px] pointer-events-none" />
             <Card className="w-full max-w-md bg-zinc-900 border border-zinc-800 shadow-2xl rounded-[2.5rem] p-8 md:p-10 relative z-10">
                 <CardHeader className="p-0 mb-8 text-center">
-                    <Button
-                        variant="ghost"
-                        onClick={() => setCurrentStep('role')}
-                        className="text-white/40 hover:text-white mb-4 uppercase text-[10px] font-black tracking-widest"
-                    >
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Change Role
-                    </Button>
+                    <div className="flex justify-between items-center mb-4">
+                        <Button
+                            variant="ghost"
+                            onClick={() => setCurrentStep('role')}
+                            className="text-white/40 hover:text-white uppercase text-[10px] font-black tracking-widest"
+                        >
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Role
+                        </Button>
+                        <Link href="/" className="text-white/20 hover:text-white uppercase text-[10px] font-black tracking-widest transition-colors">
+                            Home
+                        </Link>
+                    </div>
                     <div className="flex justify-center mb-6">
                         <Logo showText={false} className="scale-125" />
                     </div>

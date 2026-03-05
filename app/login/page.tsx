@@ -330,16 +330,21 @@ function LoginContent() {
             {/* Main Login Card */}
             <div className="w-full max-w-md relative z-10">
                 <div className="text-center mb-8">
-                    <Button
-                        variant="ghost"
-                        onClick={() => {
-                            setCurrentStep('role');
-                            setAdminVerified(false);
-                        }}
-                        className="inline-flex items-center text-white/30 hover:text-white text-[10px] font-black uppercase tracking-widest transition-colors mb-6"
-                    >
-                        ← Change Role
-                    </Button>
+                    <div className="flex justify-between items-center mb-6">
+                        <Button
+                            variant="ghost"
+                            onClick={() => {
+                                setCurrentStep('role');
+                                setAdminVerified(false);
+                            }}
+                            className="inline-flex items-center text-white/30 hover:text-white text-[10px] font-black uppercase tracking-widest transition-colors"
+                        >
+                            ← Role
+                        </Button>
+                        <Link href="/" className="text-white/20 hover:text-white text-[10px] font-black uppercase tracking-widest transition-colors">
+                            Home
+                        </Link>
+                    </div>
                     <div className="flex justify-center mb-5">
                         <Logo showText={false} />
                     </div>
