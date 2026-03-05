@@ -210,40 +210,54 @@ function LoginContent() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-sm mx-auto">
+                    <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
                         {/* Buyer */}
                         <button
                             onClick={() => handleRoleSelect('student_buyer')}
-                            className="group bg-white/[0.04] border border-white/10 rounded-[2rem] p-8 text-center cursor-pointer hover:bg-white/[0.07] hover:border-[#FF6200]/30 transition-all duration-300 flex flex-col items-center"
+                            className="group bg-white/[0.04] border border-white/10 rounded-[2rem] p-6 text-center cursor-pointer hover:bg-white/[0.07] hover:border-[#FF6200]/30 transition-all duration-300 flex flex-col items-center"
                         >
-                            <div className="h-16 w-16 rounded-2xl bg-white/5 flex items-center justify-center mb-5 group-hover:bg-[#FF6200]/10 transition-colors">
-                                <UserIcon className="h-8 w-8 text-white/60 group-hover:text-[#FF6200] transition-colors" />
+                            <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center mb-4 group-hover:bg-[#FF6200]/10 transition-colors">
+                                <UserIcon className="h-6 w-6 text-white/60 group-hover:text-[#FF6200] transition-colors" />
                             </div>
-                            <h3 className="text-base font-black text-white uppercase tracking-tight mb-2">Buyer</h3>
-                            <p className="text-white/40 text-[9px] font-bold uppercase tracking-widest">Shop &amp; Order</p>
+                            <h3 className="text-sm font-black text-white uppercase tracking-tight mb-1">Buyer</h3>
+                            <p className="text-white/40 text-[8px] font-bold uppercase tracking-widest">Shop</p>
                         </button>
 
                         {/* Seller */}
                         <button
                             onClick={() => handleRoleSelect('student_seller')}
-                            className="group bg-white/[0.04] border border-white/10 rounded-[2rem] p-8 text-center cursor-pointer hover:bg-white/[0.07] hover:border-[#FF6200]/30 transition-all duration-300 flex flex-col items-center"
+                            className="group bg-white/[0.04] border border-white/10 rounded-[2rem] p-6 text-center cursor-pointer hover:bg-white/[0.07] hover:border-[#FF6200]/30 transition-all duration-300 flex flex-col items-center"
                         >
-                            <div className="h-16 w-16 rounded-2xl bg-white/5 flex items-center justify-center mb-5 group-hover:bg-[#FF6200]/10 transition-colors">
-                                <Store className="h-8 w-8 text-white/60 group-hover:text-[#FF6200] transition-colors" />
+                            <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center mb-4 group-hover:bg-[#FF6200]/10 transition-colors">
+                                <Store className="h-6 w-6 text-white/60 group-hover:text-[#FF6200] transition-colors" />
                             </div>
-                            <h3 className="text-base font-black text-white uppercase tracking-tight mb-2">Seller</h3>
-                            <p className="text-white/40 text-[9px] font-bold uppercase tracking-widest">Manage Store</p>
+                            <h3 className="text-sm font-black text-white uppercase tracking-tight mb-1">Seller</h3>
+                            <p className="text-white/40 text-[8px] font-bold uppercase tracking-widest">Sell</p>
                         </button>
 
-                        {/* Admin — smaller but present */}
-                        <div className="sm:col-span-2 mt-4 text-center">
-                            <button
-                                onClick={() => handleRoleSelect('admin')}
-                                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white hover:bg-[#FF6200]/20 hover:border-[#FF6200]/40 transition-all"
-                            >
-                                <Lock className="h-3 w-3" /> Team &amp; Executive Access
-                            </button>
-                        </div>
+                        {/* Admin */}
+                        <button
+                            onClick={() => handleRoleSelect('admin')}
+                            className="group bg-white/[0.04] border border-white/10 rounded-[2rem] p-6 text-center cursor-pointer hover:bg-white/[0.07] hover:border-[#FF6200]/30 transition-all duration-300 flex flex-col items-center"
+                        >
+                            <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center mb-4 group-hover:bg-[#FF6200]/10 transition-colors">
+                                <Lock className="h-6 w-6 text-white/60 group-hover:text-[#FF6200] transition-colors" />
+                            </div>
+                            <h3 className="text-sm font-black text-white uppercase tracking-tight mb-1">Admin</h3>
+                            <p className="text-white/40 text-[8px] font-bold uppercase tracking-widest">Ops</p>
+                        </button>
+
+                        {/* CEO */}
+                        <button
+                            onClick={() => handleRoleSelect('ceo')}
+                            className="group bg-[#FF6200]/5 border border-[#FF6200]/20 rounded-[2rem] p-6 text-center cursor-pointer hover:bg-[#FF6200]/10 hover:border-[#FF6200]/50 transition-all duration-300 flex flex-col items-center"
+                        >
+                            <div className="h-12 w-12 rounded-xl bg-[#FF6200]/10 flex items-center justify-center mb-4">
+                                <KeyRound className="h-6 w-6 text-[#FF6200]" />
+                            </div>
+                            <h3 className="text-sm font-black text-[#FF6200] uppercase tracking-tight mb-1">CEO</h3>
+                            <p className="text-white/40 text-[8px] font-bold uppercase tracking-widest">Growth</p>
+                        </button>
                     </div>
 
                     <div className="text-center mt-12">
