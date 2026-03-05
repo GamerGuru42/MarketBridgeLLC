@@ -79,7 +79,7 @@ export default function PricingPage() {
 
         // If user is a buyer, redirect them to onboarding to become a seller first
         if (user.role === 'student_buyer') {
-            router.push(`/onboarding?role=student_seller&plan=${planId}&cycle=${isAnnual ? 'annual' : 'monthly'}`);
+            router.push(`/seller-onboard?role=student_seller&plan=${planId}&cycle=${isAnnual ? 'annual' : 'monthly'}`);
             return;
         }
 

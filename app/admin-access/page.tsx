@@ -235,11 +235,13 @@ function AdminAccessContent() {
                         )}
                         <form onSubmit={handlePinSubmit} className="space-y-4">
                             <input
+                                name="pin"
                                 type="password"
-                                className="w-full h-16 bg-zinc-950 border border-zinc-700 rounded-2xl text-center tracking-[0.5em] font-mono text-xl focus:outline-none focus:ring-2 focus:ring-[#FF6200]/40 text-white placeholder:text-zinc-700 transition-all"
+                                className="w-full h-16 bg-zinc-950 border border-zinc-700 rounded-2xl text-center tracking-[0.5em] font-mono text-xl focus:outline-none focus:ring-2 focus:ring-[#FF6200]/40 text-white placeholder:text-zinc-700 transition-all font-password"
                                 value={pinValue}
                                 onChange={e => setPinValue(e.target.value)}
                                 placeholder="••••••••"
+                                title="Enter authorized security PIN"
                                 autoFocus
                                 required
                             />
@@ -295,6 +297,8 @@ function AdminAccessContent() {
                                     value={formData.firstName}
                                     onChange={handleChange}
                                     required
+                                    placeholder="John"
+                                    title="Enter your first name"
                                     className="w-full h-12 px-4 bg-zinc-950 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/40 transition-all font-medium"
                                 />
                             </div>
@@ -305,6 +309,8 @@ function AdminAccessContent() {
                                     type="text"
                                     value={formData.lastName}
                                     onChange={handleChange}
+                                    placeholder="Doe"
+                                    title="Enter your last name"
                                     required
                                     className="w-full h-12 px-4 bg-zinc-950 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/40 transition-all font-medium"
                                 />
@@ -344,6 +350,8 @@ function AdminAccessContent() {
                                 type="password"
                                 value={formData.passwordConfirm}
                                 onChange={handleChange}
+                                placeholder="••••••••"
+                                title="Confirm your secure password"
                                 required
                                 className="w-full h-12 px-4 bg-zinc-950 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/40 transition-all font-medium"
                             />
