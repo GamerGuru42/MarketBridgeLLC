@@ -1,5 +1,10 @@
 'use client';
 
+/** 
+ * Deployment Trigger: v1.0.1
+ * Seller Dashboard - Full Real Logic & Trial System
+ */
+
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
