@@ -133,27 +133,49 @@ export default function SellerOnboardPage() {
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || e.target.files.length === 0) return;
         const file = e.target.files[0];
-        if (file.size > 5 * 1024 * 1024) {
-            toast('File too large. Please select an image under 5MB.', 'error');
+
+        const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+        if (file.size > MAX_SIZE) {
+            toast('File too large. Please select an image or PDF under 10MB.', 'error');
             return;
         }
+
         setIsUploading(true);
         try {
-            const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1024, useWebWorker: true, fileType: 'image/webp' as const };
-            const compressedFile = await imageCompression(file, options);
-            const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.webp`;
+            let uploadFile: File | Blob = file;
+            let ext = 'webp';
+
+            const isPDF = file.type === 'application/pdf';
+            if (!isPDF && file.type.startsWith('image/')) {
+                // Compress images to WebP
+                const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1024, useWebWorker: true, fileType: 'image/webp' as const };
+                uploadFile = await imageCompression(file, options);
+            } else if (isPDF) {
+                ext = 'pdf';
+            } else {
+                throw new Error('Only image files (JPG, PNG, WebP) or PDF are accepted.');
+            }
+
+            const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${ext}`;
             const filePath = `id_cards/${fileName}`;
 
             const { error: uploadError } = await supabase.storage
                 .from('seller_docs')
-                .upload(filePath, compressedFile);
-            if (uploadError) throw uploadError;
+                .upload(filePath, uploadFile, { upsert: true, contentType: isPDF ? 'application/pdf' : 'image/webp' });
+
+            if (uploadError) {
+                if (uploadError.message?.includes('bucket') || uploadError.message?.includes('404')) {
+                    throw new Error('Storage not configured. Please contact support or run the setup script.');
+                }
+                throw uploadError;
+            }
 
             const { data: { publicUrl } } = supabase.storage.from('seller_docs').getPublicUrl(filePath);
             setFormData(prev => ({ ...prev, idCardUrl: publicUrl }));
-            toast('ID Card uploaded! ✅', 'success');
+            toast('ID uploaded! ✅', 'success');
         } catch (error: any) {
-            toast(error.message || 'Upload failed. Try again!', 'error');
+            console.error('Upload error:', error);
+            toast(error.message || 'Upload failed. Check your connection and try again.', 'error');
         } finally {
             setIsUploading(false);
         }

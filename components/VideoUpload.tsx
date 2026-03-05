@@ -2,8 +2,8 @@
 
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/lib/supabase';
-import { Loader2, Upload, X, Video as VideoIcon, Play } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
+import { Loader2, Upload, X, Video as VideoIcon } from 'lucide-react';
 
 interface VideoUploadProps {
     onVideosSelected: (urls: string[]) => void;
@@ -18,9 +18,11 @@ export function VideoUpload({
     maxVideos = 3,
     bucketName = 'listings-videos'
 }: VideoUploadProps) {
+    const supabase = createClient();
     const [videos, setVideos] = useState<string[]>(defaultVideos);
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState<number>(0);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,9 +31,11 @@ export function VideoUpload({
         const files = Array.from(e.target.files);
 
         if (videos.length + files.length > maxVideos) {
-            console.warn('UI_ALERT:', );
+            setErrorMsg(`Maximum ${maxVideos} videos allowed.`);
             return;
         }
+
+        setErrorMsg(null);
 
         setUploading(true);
         const newUrls: string[] = [];
@@ -39,12 +43,12 @@ export function VideoUpload({
         try {
             for (const file of files) {
                 if (!file.type.startsWith('video/')) {
-                    console.warn('UI_ALERT:', );
+                    setErrorMsg(`"${file.name}" is not a valid video file.`);
                     continue;
                 }
 
                 if (file.size > 50 * 1024 * 1024) {
-                    console.warn('UI_ALERT:', );
+                    setErrorMsg(`"${file.name}" is too large. Max 50 MB per video.`);
                     continue;
                 }
 
@@ -83,7 +87,7 @@ export function VideoUpload({
             onVideosSelected(updatedVideos);
         } catch (error: any) {
             console.error('Error uploading video:', error);
-            console.warn('UI_ALERT:', );
+            setErrorMsg(error.message || 'Upload failed. Please try again.');
         } finally {
             setUploading(false);
             setUploadProgress(0);
@@ -114,6 +118,8 @@ export function VideoUpload({
                         </video>
                         <button
                             type="button"
+                            aria-label="Remove video"
+                            title="Remove video"
                             onClick={() => removeVideo(index)}
                             className="absolute top-2 right-2 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
                         >
@@ -147,12 +153,20 @@ export function VideoUpload({
             <input
                 type="file"
                 ref={fileInputRef}
+                title="Upload video files"
+                aria-label="Upload video files"
                 onChange={handleFileChange}
                 accept="video/mp4,video/quicktime,video/x-msvideo,video/webm"
                 multiple
                 className="hidden"
                 disabled={uploading}
             />
+
+            {errorMsg && (
+                <p className="text-xs text-red-400 font-bold flex items-center gap-1.5">
+                    <span>⚠️</span> {errorMsg}
+                </p>
+            )}
 
             <p className="text-xs text-muted-foreground">
                 Supported formats: MP4, MOV, AVI, WEBM. Max size: 50MB per video. Max {maxVideos} videos.
