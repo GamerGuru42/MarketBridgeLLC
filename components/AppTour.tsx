@@ -70,6 +70,15 @@ export function AppTour() {
         }
     }, []);
 
+    useEffect(() => {
+        const handleTrigger = () => {
+            setCurrentStep(0);
+            setIsOpen(true);
+        };
+        window.addEventListener('mb-trigger-tour', handleTrigger);
+        return () => window.removeEventListener('mb-trigger-tour', handleTrigger);
+    }, []);
+
     const handleNext = () => {
         if (currentStep < TOUR_STEPS.length - 1) {
             setCurrentStep(currentStep + 1);

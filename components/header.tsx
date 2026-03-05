@@ -169,6 +169,16 @@ export const Header = () => {
                                                 </Link>
                                             </DropdownMenuItem>
 
+                                            <DropdownMenuItem
+                                                onClick={() => window.dispatchEvent(new CustomEvent('mb-trigger-tour'))}
+                                                className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5"
+                                            >
+                                                <div className="flex items-center gap-3 px-3 py-2.5 w-full">
+                                                    <Zap className="h-4 w-4 text-[#FF6200]" />
+                                                    <span className="text-sm font-bold">Platform Tour</span>
+                                                </div>
+                                            </DropdownMenuItem>
+
                                             {['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'].includes(user.role) && (
                                                 <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5">
                                                     <Link href="/admin" className="flex items-center gap-3 px-3 py-2.5">

@@ -294,7 +294,7 @@ function AuthenticatedHome({ user }: { user: any }) {
                             Welcome, <br />
                             <span className="text-primary">{firstName}</span>.
                         </h1>
-                        <p className="text-muted-foreground font-medium text-lg leading-relaxed max-w-sm opacity-50 italic">
+                        <p className="text-muted-foreground font-medium text-lg leading-relaxed max-w-sm italic">
                             Your secure campus command is active.
                         </p>
                     </div>
@@ -321,9 +321,9 @@ function AuthenticatedHome({ user }: { user: any }) {
                         { label: 'Chats', icon: MessageCircle, color: 'text-green-500', href: '/messages' },
                     ].map((btn, i) => (
                         <Link key={i} href={btn.href} className="flex-1">
-                            <Button variant="outline" className="w-full h-16 rounded-2xl border-border bg-card/50 hover:bg-card hover:border-primary/20 hover:scale-[1.02] transition-all flex items-center gap-3 px-6 shadow-sm group">
+                            <Button variant="outline" className="w-full h-16 rounded-2xl border-border bg-card/60 hover:bg-card hover:border-primary/30 hover:scale-[1.02] transition-all flex items-center gap-3 px-6 shadow-md group">
                                 <btn.icon className={`h-5 w-5 ${btn.color} group-hover:scale-110 transition-transform`} />
-                                <span className="font-black uppercase tracking-widest text-[11px] italic">{btn.label}</span>
+                                <span className="font-black uppercase tracking-widest text-[11px] italic text-foreground">{btn.label}</span>
                             </Button>
                         </Link>
                     ))}
