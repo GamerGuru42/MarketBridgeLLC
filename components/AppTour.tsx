@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { useAuth } from '@/contexts/AuthContext';
+import { usePathname } from 'next/navigation';
 
 interface Step {
     title: string;
@@ -58,17 +60,21 @@ const TOUR_STEPS: Step[] = [
 ];
 
 export function AppTour() {
+    const { user } = useAuth();
+    const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
 
+    // Auto-start logic only for new authenticated users on the main home/dashboard
     useEffect(() => {
+        if (!user || pathname !== '/') return;
+
         const hasSeenTour = localStorage.getItem('mb-onboarding-complete');
         if (!hasSeenTour) {
-            // Delay slightly for better entrance
-            const timer = setTimeout(() => setIsOpen(true), 1500);
+            const timer = setTimeout(() => setIsOpen(true), 2000);
             return () => clearTimeout(timer);
         }
-    }, []);
+    }, [user, pathname]);
 
     useEffect(() => {
         const handleTrigger = () => {
