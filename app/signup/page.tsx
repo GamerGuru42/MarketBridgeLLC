@@ -28,6 +28,7 @@ function SignupContent() {
     const { refreshUser, signInWithGoogle } = useAuth();
     const { toast } = useToast();
 
+    const [currentStep, setCurrentStep] = useState<Step>('role');
     const [role, setRole] = useState<Role>('student_buyer');
 
     const [formData, setFormData] = useState({
@@ -43,11 +44,17 @@ function SignupContent() {
         const roleParam = searchParams?.get('role');
         if (roleParam === 'student_seller' || roleParam === 'seller') {
             setRole('student_seller');
+            setCurrentStep('details');
         }
     }, [searchParams]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const handleRoleSelect = (selectedRole: Role) => {
+        setRole(selectedRole);
+        setCurrentStep('details');
     };
 
 
@@ -175,15 +182,85 @@ function SignupContent() {
     };
 
 
+    // ─── STEP 1: Role Selector ───
+    if (currentStep === 'role') {
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4 bg-zinc-950 relative overflow-hidden">
+                {/* Background glow */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#FF6200]/5 rounded-full blur-[120px] pointer-events-none" />
+
+                <div className="w-full max-w-lg relative z-10">
+                    <div className="text-center mb-16">
+                        <Link href="/" className="inline-flex items-center text-white/40 hover:text-white mb-8 uppercase text-[10px] font-black tracking-widest transition-colors py-3">
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Return to Home
+                        </Link>
+                        <div className="flex justify-center mb-6">
+                            <Logo showText={false} />
+                        </div>
+                        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white mb-4 italic">
+                            Join Market<span className="text-[#FF6200]">Bridge</span>
+                        </h1>
+                        <p className="text-white/40 font-bold uppercase tracking-[0.2em] text-[10px]">
+                            Select how you want to use the platform
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+                        {/* Buyer */}
+                        <button
+                            onClick={() => handleRoleSelect('student_buyer')}
+                            className="group bg-white/[0.04] border border-white/10 rounded-[2rem] p-8 text-center cursor-pointer hover:bg-white/[0.07] hover:border-[#FF6200]/30 transition-all duration-300 flex flex-col items-center"
+                        >
+                            <div className="h-16 w-16 rounded-2xl bg-white/5 flex items-center justify-center mb-5 group-hover:bg-[#FF6200]/10 transition-colors">
+                                <UserIcon className="h-8 w-8 text-white/60 group-hover:text-[#FF6200] transition-colors" />
+                            </div>
+                            <h3 className="text-base font-black text-white uppercase tracking-tight mb-2">Buyer</h3>
+                            <p className="text-white/40 text-[9px] font-bold uppercase tracking-widest">Shop campus deals</p>
+                        </button>
+
+                        {/* Seller — highlighted */}
+                        <button
+                            onClick={() => handleRoleSelect('student_seller')}
+                            className="group bg-[#FF6200]/10 border-2 border-[#FF6200]/40 rounded-[2rem] p-8 text-center cursor-pointer hover:bg-[#FF6200]/15 hover:border-[#FF6200] transition-all duration-300 flex flex-col items-center relative"
+                        >
+                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FF6200] text-black text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
+                                Start Selling
+                            </div>
+                            <div className="h-16 w-16 rounded-2xl bg-[#FF6200]/20 flex items-center justify-center mb-5">
+                                <Briefcase className="h-8 w-8 text-[#FF6200]" />
+                            </div>
+                            <h3 className="text-base font-black text-white uppercase tracking-tight mb-2">Seller</h3>
+                            <p className="text-white/40 text-[9px] font-bold uppercase tracking-widest">List &amp; sell items</p>
+                        </button>
+                    </div>
+
+                    <div className="text-center mt-12">
+                        <p className="text-white/40 font-medium text-sm">
+                            Already have an account?{' '}
+                            <Link href="/login" className="text-[#FF6200] font-bold hover:underline">
+                                Log In
+                            </Link>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     // ─── STEP 2: Signup Form ───
     return (
         <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-zinc-950 relative">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-[#FF6200]/5 rounded-full blur-[100px] pointer-events-none" />
             <Card className="w-full max-w-md bg-zinc-900 border border-zinc-800 shadow-2xl rounded-[2.5rem] p-8 md:p-10 relative z-10">
                 <CardHeader className="p-0 mb-8 text-center">
-                    <Link href="/" className="inline-flex items-center text-white/20 hover:text-white mb-6 uppercase text-[9px] font-black tracking-widest transition-colors">
-                        <ArrowLeft className="mr-2 h-3.5 w-3.5" /> Return to Home
-                    </Link>
+                    <Button
+                        variant="ghost"
+                        onClick={() => setCurrentStep('role')}
+                        className="text-white/40 hover:text-white mb-4 uppercase text-[10px] font-black tracking-widest"
+                    >
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Change Role
+                    </Button>
                     <div className="flex justify-center mb-6">
                         <Logo showText={false} className="scale-125" />
                     </div>

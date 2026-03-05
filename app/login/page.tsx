@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
-import { Eye, EyeOff, Loader2, ChevronRight, Lock, User as UserIcon, Globe, KeyRound, AlertTriangle } from 'lucide-react';
+import { Eye, EyeOff, Loader2, ChevronRight, Lock, User as UserIcon, Globe, KeyRound, AlertTriangle, Store } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
@@ -19,6 +19,8 @@ function LoginContent() {
     const searchParams = useSearchParams();
     const redirectUrl = searchParams?.get('redirect') || searchParams?.get('next');
 
+    const [currentStep, setCurrentStep] = useState<'role' | 'details'>('role');
+    const [loginRole, setLoginRole] = useState<string>('student_buyer');
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -163,6 +165,14 @@ function LoginContent() {
         }
     };
 
+    const handleRoleSelect = (role: string) => {
+        setLoginRole(role);
+        setCurrentStep('details');
+        if (role === 'admin') {
+            setShowAdminPin(true);
+        }
+    };
+
     // Show nothing while checking existing session (prevents flicker)
     if (loading) {
         return (
@@ -171,6 +181,78 @@ function LoginContent() {
                     <Logo showText={false} />
                     <div className="h-1 w-32 bg-zinc-800 rounded-full overflow-hidden">
                         <div className="h-full bg-[#FF6200] w-1/2 animate-pulse rounded-full" />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // ─── STEP 1: Role Selector ───
+    if (currentStep === 'role') {
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4 bg-zinc-950 relative overflow-hidden">
+                {/* Background glow */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#FF6200]/5 rounded-full blur-[120px] pointer-events-none" />
+
+                <div className="w-full max-w-lg relative z-10">
+                    <div className="text-center mb-16">
+                        <Link href="/" className="inline-flex items-center text-white/40 hover:text-white mb-8 uppercase text-[10px] font-black tracking-widest transition-colors py-3">
+                            ← Return to Home
+                        </Link>
+                        <div className="flex justify-center mb-6">
+                            <Logo showText={false} />
+                        </div>
+                        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white mb-4 italic">
+                            Welcome <span className="text-[#FF6200]">Back</span>
+                        </h1>
+                        <p className="text-white/40 font-bold uppercase tracking-[0.2em] text-[10px]">
+                            Choose your workspace to continue
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-sm mx-auto">
+                        {/* Buyer */}
+                        <button
+                            onClick={() => handleRoleSelect('student_buyer')}
+                            className="group bg-white/[0.04] border border-white/10 rounded-[2rem] p-8 text-center cursor-pointer hover:bg-white/[0.07] hover:border-[#FF6200]/30 transition-all duration-300 flex flex-col items-center"
+                        >
+                            <div className="h-16 w-16 rounded-2xl bg-white/5 flex items-center justify-center mb-5 group-hover:bg-[#FF6200]/10 transition-colors">
+                                <UserIcon className="h-8 w-8 text-white/60 group-hover:text-[#FF6200] transition-colors" />
+                            </div>
+                            <h3 className="text-base font-black text-white uppercase tracking-tight mb-2">Buyer</h3>
+                            <p className="text-white/40 text-[9px] font-bold uppercase tracking-widest">Shop &amp; Order</p>
+                        </button>
+
+                        {/* Seller */}
+                        <button
+                            onClick={() => handleRoleSelect('student_seller')}
+                            className="group bg-white/[0.04] border border-white/10 rounded-[2rem] p-8 text-center cursor-pointer hover:bg-white/[0.07] hover:border-[#FF6200]/30 transition-all duration-300 flex flex-col items-center"
+                        >
+                            <div className="h-16 w-16 rounded-2xl bg-white/5 flex items-center justify-center mb-5 group-hover:bg-[#FF6200]/10 transition-colors">
+                                <Store className="h-8 w-8 text-white/60 group-hover:text-[#FF6200] transition-colors" />
+                            </div>
+                            <h3 className="text-base font-black text-white uppercase tracking-tight mb-2">Seller</h3>
+                            <p className="text-white/40 text-[9px] font-bold uppercase tracking-widest">Manage Store</p>
+                        </button>
+
+                        {/* Admin — smaller but present */}
+                        <div className="sm:col-span-2 mt-4 text-center">
+                            <button
+                                onClick={() => handleRoleSelect('admin')}
+                                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white hover:bg-[#FF6200]/20 hover:border-[#FF6200]/40 transition-all"
+                            >
+                                <Lock className="h-3 w-3" /> Team &amp; Executive Access
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="text-center mt-12">
+                        <p className="text-white/40 font-medium text-sm">
+                            No account?{' '}
+                            <Link href="/signup" className="text-[#FF6200] font-bold hover:underline">
+                                Sign up
+                            </Link>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -234,9 +316,16 @@ function LoginContent() {
             {/* Main Login Card */}
             <div className="w-full max-w-md relative z-10">
                 <div className="text-center mb-8">
-                    <Link href="/" className="inline-flex items-center text-white/30 hover:text-white text-[10px] font-black uppercase tracking-widest transition-colors mb-6">
-                        ← Home
-                    </Link>
+                    <Button
+                        variant="ghost"
+                        onClick={() => {
+                            setCurrentStep('role');
+                            setAdminVerified(false);
+                        }}
+                        className="inline-flex items-center text-white/30 hover:text-white text-[10px] font-black uppercase tracking-widest transition-colors mb-6"
+                    >
+                        ← Change Role
+                    </Button>
                     <div className="flex justify-center mb-5">
                         <Logo showText={false} />
                     </div>
