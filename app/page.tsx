@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
     ArrowRight,
@@ -9,21 +9,15 @@ import {
     MapPin,
     Zap,
     CheckCircle2,
-    User,
-    Package,
     MessageCircle,
     Wallet,
     PlusCircle,
-    TrendingUp,
     Compass,
-    Bell,
     ChevronRight,
     Star,
     Clock,
-    Heart,
     ShieldCheck,
-    AlertCircle,
-    Search
+    Loader2
 } from 'lucide-react';
 import QRCode from 'react-qr-code';
 import { Header } from '@/components/header';
@@ -33,6 +27,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
+import { supabase } from '@/lib/supabase';
+import Image from 'next/image';
 
 export default function HomePage() {
     const { user, loading } = useAuth();
@@ -244,237 +240,207 @@ export default function HomePage() {
 
 function AuthenticatedHome({ user }: { user: any }) {
     const firstName = user?.displayName?.split(' ')?.[0] || 'User';
+    const [listings, setListings] = useState<any[]>([]);
+    const [stats, setStats] = useState({ orders: 0, hustles: 0 });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchPersonalSync() {
+            try {
+                // Fetch real listings from Supabase for recommendations
+                const { data: listData } = await supabase
+                    .from('listings')
+                    .select('*, dealer:users(id, display_name, is_verified)')
+                    .eq('status', 'active')
+                    .order('created_at', { ascending: false })
+                    .limit(4);
+
+                setListings(listData || []);
+
+                // Fetch real stats for the user
+                const [ordersCount, listingsCount] = await Promise.all([
+                    supabase.from('orders').select('*', { count: 'exact', head: true }).or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`),
+                    supabase.from('listings').select('*', { count: 'exact', head: true }).eq('dealer_id', user.id)
+                ]);
+
+                setStats({
+                    orders: ordersCount.count || 0,
+                    hustles: listingsCount.count || 0
+                });
+
+            } catch (err) {
+                console.error('Personal sync error:', err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        if (user?.id) fetchPersonalSync();
+    }, [user.id]);
 
     return (
-        <div className="flex flex-col min-h-screen bg-[#050505] text-[#F0F0F0] selection:bg-primary selection:text-white overflow-x-hidden">
+        <div className="flex flex-col min-h-screen bg-background text-foreground transition-all duration-300 selection:bg-primary selection:text-white">
             <Header />
 
-            {/* Sidebar-lite Overlay / Side Effects */}
-            <div className="fixed top-20 left-6 bottom-6 w-1 space-y-2 hidden xl:flex flex-col items-center pointer-events-none opacity-20">
-                <div className="w-1 flex-1 bg-gradient-to-b from-transparent via-primary to-transparent" />
-                <div className="text-[10px] font-black uppercase tracking-[1em] rotate-180 [writing-mode:vertical-lr]">MARKETBRIDGE_OS</div>
-                <div className="w-1 flex-1 bg-gradient-to-t from-transparent via-primary to-transparent" />
-            </div>
+            <main className="flex-1 w-full pt-28 px-4 md:px-12 lg:px-24 space-y-20 pb-20 max-w-7xl mx-auto animate-in fade-in duration-700">
 
-            <main className="flex-1 w-full pt-28 px-4 md:px-12 lg:px-20 space-y-16 pb-32 max-w-[1920px] mx-auto">
-
-                {/* ─── Tactical Intelligence Header ─── */}
-                <div className="relative flex flex-col lg:flex-row lg:items-end justify-between gap-12 group">
-                    <div className="space-y-6 max-w-2xl relative z-10">
-                        <div className="flex flex-wrap items-center gap-4 animate-in fade-in slide-in-from-left-4 duration-700">
-                            <Badge className="bg-primary/10 text-primary border-primary/20 font-black uppercase tracking-[0.3em] text-[10px] py-1.5 px-4 rounded-full flex items-center gap-2">
-                                <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-40"></span>
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                                </span>
-                                Uplink Active
-                            </Badge>
-                            <div className="flex items-center gap-2 text-muted-foreground/40 text-[10px] font-black uppercase tracking-widest italic">
-                                <Clock className="h-3 w-3" />
-                                Sync: {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </div>
+                {/* ─── Simplified Hero / Context HUD ─── */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pt-4">
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                            <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground opacity-60">Identity Link Active</span>
                         </div>
-
-                        <div className="space-y-2">
-                            <h1 className="text-5xl md:text-8xl font-black uppercase italic tracking-tighter leading-[0.85] animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-                                <span className="opacity-40">HELLO,</span> <br />
-                                <span className="text-primary drop-shadow-[0_0_30px_rgba(255,98,0,0.15)]">{firstName}</span>.
-                            </h1>
-                        </div>
-
-                        <p className="text-muted-foreground font-medium text-lg leading-relaxed max-w-lg opacity-60 italic animate-in fade-in slide-in-from-bottom-2 duration-700 delay-200">
-                            Operational sector <span className="text-white font-bold">AbujaHQ</span> is online. Your marketplace influence is currently <span className="text-primary font-black uppercase text-sm tracking-widest">Active</span>.
+                        <h1 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter leading-none">
+                            Welcome, <br />
+                            <span className="text-primary">{firstName}</span>.
+                        </h1>
+                        <p className="text-muted-foreground font-medium text-lg leading-relaxed max-w-sm opacity-50 italic">
+                            Your secure campus command is active.
                         </p>
-
-                        <div className="flex flex-wrap gap-4 pt-4 animate-in fade-in zoom-in-95 duration-500 delay-300">
-                            <Link href="/marketplace">
-                                <Button className="h-16 px-10 bg-primary hover:opacity-90 text-primary-foreground font-black uppercase tracking-[0.2em] rounded-2xl shadow-2xl shadow-primary/20 border-none group">
-                                    Enter Market <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-2 transition-transform" />
-                                </Button>
-                            </Link>
-                            <Link href="/seller-onboard">
-                                <Button variant="outline" className="h-16 px-10 bg-white/5 border-white/10 hover:bg-white/10 text-white font-black uppercase tracking-[0.2em] rounded-2xl backdrop-blur-sm">
-                                    Provision Hustle
-                                </Button>
-                            </Link>
-                        </div>
                     </div>
 
-                    {/* Stats HUD */}
-                    <div className="grid grid-cols-2 gap-4 lg:w-[450px] relative animate-in fade-in slide-in-from-right-8 duration-700 delay-400">
-                        <div className="absolute inset-0 bg-primary/5 blur-[100px] pointer-events-none -z-10" />
-                        <Card className="bg-card/40 backdrop-blur-xl border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between h-48 hover:border-primary/20 transition-colors group">
-                            <Wallet className="h-10 w-10 text-primary opacity-20 group-hover:opacity-100 transition-opacity" />
-                            <div>
-                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Balance</p>
-                                <p className="text-3xl font-black italic tracking-tighter">₦{user?.coins_balance?.toLocaleString() || '0'}</p>
+                    <div className="flex flex-col items-end gap-2 text-right">
+                        <div className="flex items-center gap-4 px-8 py-5 bg-card border border-border rounded-[2.5rem] shadow-sm hover:border-primary/20 transition-colors">
+                            <div className="space-y-1">
+                                <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest leading-none">Nexus Balance</p>
+                                <p className="text-3xl font-black italic tracking-tighter text-foreground">₦{user?.coins_balance?.toLocaleString() || '0'}</p>
                             </div>
-                        </Card>
-                        <Card className="bg-card/40 backdrop-blur-xl border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between h-48 hover:border-primary/20 transition-colors group">
-                            <TrendingUp className="h-10 w-10 text-blue-500 opacity-20 group-hover:opacity-100 transition-opacity" />
-                            <div>
-                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Impact</p>
-                                <p className="text-3xl font-black italic tracking-tighter">Level 1</p>
+                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+                                <Wallet className="h-6 w-6 text-primary" />
                             </div>
-                        </Card>
+                        </div>
                     </div>
                 </div>
 
-                {/* ─── Grid Activity & Modules ─── */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                {/* ─── Streamlined Action Nodes ─── */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-2">
+                    {[
+                        { label: 'Market', icon: ShoppingBag, color: 'text-blue-500', href: '/marketplace' },
+                        { label: 'Sell', icon: PlusCircle, color: 'text-primary', href: '/seller-onboard' },
+                        { label: 'Orders', icon: Compass, color: 'text-zinc-500', href: '/orders' },
+                        { label: 'Chats', icon: MessageCircle, color: 'text-green-500', href: '/messages' },
+                    ].map((btn, i) => (
+                        <Link key={i} href={btn.href} className="flex-1">
+                            <Button variant="outline" className="w-full h-16 rounded-2xl border-border bg-card/50 hover:bg-card hover:border-primary/20 hover:scale-[1.02] transition-all flex items-center gap-3 px-6 shadow-sm group">
+                                <btn.icon className={`h-5 w-5 ${btn.color} group-hover:scale-110 transition-transform`} />
+                                <span className="font-black uppercase tracking-widest text-[11px] italic">{btn.label}</span>
+                            </Button>
+                        </Link>
+                    ))}
+                </div>
 
-                    {/* Main Feed */}
-                    <div className="lg:col-span-8 space-y-10">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                            <div className="flex items-center gap-4">
-                                <div className="h-10 w-10 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                                    <ShoppingBag className="h-5 w-5 text-primary" />
-                                </div>
-                                <div>
-                                    <h2 className="text-2xl font-black italic uppercase tracking-tighter">Recommended <span className="text-primary">Ops</span></h2>
-                                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground opacity-30 mt-0.5">Scanned Listings Matching Portfolio</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2 bg-white/5 p-1 rounded-full border border-white/5">
-                                <Button size="sm" variant="ghost" className="rounded-full px-4 text-[10px] font-black uppercase tracking-widest bg-primary text-primary-foreground hover:bg-primary">Hot</Button>
-                                <Button size="sm" variant="ghost" className="rounded-full px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Nearby</Button>
-                                <Button size="sm" variant="ghost" className="rounded-full px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">New</Button>
-                            </div>
-                        </div>
+                {/* ─── Decongested Content Grid ─── */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            {[
-                                { title: 'Premium Jollof Box', price: '4,500', seller: 'Chef K.', rating: '4.9', category: 'Food' },
-                                { title: 'Dorm Desk Lamp LED', price: '8,500', seller: 'HomeGear', rating: '5.0', category: 'Home' },
-                                { title: 'Economics 101 Guide', price: '2,500', seller: 'BookWorm', rating: '4.8', category: 'Books' },
-                                { title: 'Wireless Pods Gen 2', price: '12,000', seller: 'TechPlug', rating: '4.7', category: 'Gadgets' },
-                            ].map((item, i) => (
-                                <Card key={i} className="bg-[#0A0A0A] border-white/5 rounded-[3rem] overflow-hidden group hover:border-primary/40 transition-all duration-500 hover:-translate-y-1 shadow-2xl">
-                                    <div className="aspect-[16/10] bg-zinc-900 overflow-hidden relative">
-                                        <div className="absolute top-6 left-6 z-10">
-                                            <Badge className="bg-black/50 backdrop-blur-md text-[9px] font-black uppercase tracking-widest border-white/10 px-3 py-1">{item.category}</Badge>
-                                        </div>
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
-                                    </div>
-                                    <CardContent className="p-10 space-y-6">
-                                        <div className="space-y-2">
-                                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest italic opacity-40">{item.seller} • Campus A</p>
-                                            <h4 className="text-2xl font-black italic tracking-tighter uppercase leading-none group-hover:text-primary transition-colors">{item.title}</h4>
-                                        </div>
-                                        <div className="flex items-center justify-between pt-6 border-t border-white/5">
-                                            <div className="space-y-1">
-                                                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-30">Acquisition Cost</p>
-                                                <p className="text-2xl font-black italic tracking-tighter text-white">₦{item.price}</p>
-                                            </div>
-                                            <Button size="icon" className="h-14 w-14 rounded-2xl bg-white/5 hover:bg-primary hover:text-white border border-white/5 transition-all text-white">
-                                                <PlusCircle className="h-6 w-6" />
-                                            </Button>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Sidebar HUD */}
-                    <div className="lg:col-span-4 space-y-10">
-
-                        {/* Identity Sector */}
-                        <div className="space-y-6">
+                    {/* Live Ops (Real Data Recommendations) */}
+                    <div className="lg:col-span-8 space-y-12">
+                        <div className="flex items-center justify-between border-b border-border/50 pb-6">
                             <div className="flex items-center gap-3">
-                                <Compass className="h-5 w-5 text-primary" />
-                                <h2 className="text-xl font-black uppercase tracking-widest italic">Identity <span className="text-primary">Node</span></h2>
+                                <Zap className="h-5 w-5 text-primary" />
+                                <h2 className="text-xl font-black uppercase tracking-widest italic leading-none">Live Ops</h2>
                             </div>
-                            <Card className="bg-gradient-to-br from-primary/10 to-transparent border-primary/20 rounded-[3rem] p-10 space-y-8 relative overflow-hidden group">
-                                <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                                    <ShieldCheck className="h-24 w-24 text-primary rotate-12" />
-                                </div>
-
-                                <div className="flex items-center gap-6 relative z-10">
-                                    <div className="relative">
-                                        <Avatar className="h-24 w-24 border-4 border-[#050505] shadow-2xl ring-2 ring-primary">
-                                            <AvatarImage src={user?.photoUrl} />
-                                            <AvatarFallback className="text-3xl font-black bg-zinc-900 text-primary">{firstName[0]}</AvatarFallback>
-                                        </Avatar>
-                                        <div className="absolute -bottom-1 -right-1 h-7 w-7 bg-green-500 border-4 border-[#050505] rounded-full" />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <p className="text-2xl font-black uppercase italic tracking-tighter text-white leading-none">{user?.displayName}</p>
-                                        <div className="flex items-center gap-2">
-                                            <Badge className="bg-primary/20 text-primary border-none text-[8px] font-black uppercase tracking-widest rounded-md px-2">
-                                                {user?.role?.replace('_', ' ')}
-                                            </Badge>
-                                            <span className="text-[10px] font-black text-muted-foreground opacity-30 italic">#EST-2026</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-6 relative z-10">
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="bg-black/40 backdrop-blur-md p-5 rounded-3xl border border-white/5 hover:border-primary/20 transition-colors">
-                                            <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-40 mb-2">Acquisitions</p>
-                                            <div className="flex items-end gap-2">
-                                                <p className="text-3xl font-black italic tracking-tighter leading-none">12</p>
-                                                <Package className="h-4 w-4 text-primary opacity-40 mb-1" />
-                                            </div>
-                                        </div>
-                                        <div className="bg-black/40 backdrop-blur-md p-5 rounded-3xl border border-white/5 hover:border-primary/20 transition-colors">
-                                            <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-40 mb-2">Intelligence</p>
-                                            <div className="flex items-end gap-2">
-                                                <p className="text-3xl font-black italic tracking-tighter leading-none">05</p>
-                                                <MessageCircle className="h-4 w-4 text-primary opacity-40 mb-1" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <Button className="w-full h-16 rounded-2xl bg-white text-black hover:bg-zinc-200 font-black uppercase tracking-[0.2em] text-xs">
-                                        Nexus Profile Settings
-                                    </Button>
-                                </div>
-                            </Card>
+                            <Link href="/marketplace" className="text-[10px] font-black uppercase tracking-widest text-primary hover:translate-x-1 transition-all flex items-center gap-2">
+                                Scanned Index <ArrowRight className="h-3 w-3" />
+                            </Link>
                         </div>
 
-                        {/* Recent Alerts */}
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <Bell className="h-5 w-5 text-primary" />
-                                    <h2 className="text-xl font-black uppercase tracking-widest italic">Signal <span className="text-primary">Logs</span></h2>
-                                </div>
-                                <span className="text-[9px] font-black uppercase tracking-widest text-primary">03 NEW</span>
-                            </div>
-                            <div className="space-y-3">
-                                {[
-                                    { icon: Package, text: 'Order #4102 Delivered', time: '12m', color: 'text-primary' },
-                                    { icon: MessageCircle, text: 'Signal from Chef K.', time: '1h', color: 'text-blue-500' },
-                                    { icon: AlertCircle, text: 'New Market Regulation', time: '4h', color: 'text-yellow-500' },
-                                ].map((alert, i) => (
-                                    <div key={i} className="flex items-center justify-between p-6 bg-card/20 hover:bg-card/40 border border-white/5 rounded-3xl transition-all cursor-pointer group">
-                                        <div className="flex items-center gap-4">
-                                            <alert.icon className={`h-4 w-4 ${alert.color}`} />
-                                            <p className="text-xs font-black uppercase tracking-tight italic text-zinc-400 group-hover:text-white transition-colors">{alert.text}</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                            {loading ? (
+                                Array(4).fill(0).map((_, i) => (
+                                    <div key={i} className="h-64 bg-muted animate-pulse rounded-[2.5rem]" />
+                                ))
+                            ) : listings.length > 0 ? (
+                                listings.map((item) => (
+                                    <Link key={item.id} href={`/listings/${item.id}`}>
+                                        <div className="bg-card border border-border rounded-[2.5rem] overflow-hidden group hover:border-primary/40 transition-all duration-500 shadow-sm hover:shadow-xl flex flex-col h-full bg-gradient-to-br from-card to-muted/5">
+                                            <div className="aspect-[16/10] bg-muted relative overflow-hidden border-b border-border">
+                                                {item.images?.[0] ? (
+                                                    <Image src={item.images[0]} alt={item.title} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
+                                                ) : (
+                                                    <div className="flex items-center justify-center h-full opacity-10"><Store className="h-16 w-16" /></div>
+                                                )}
+                                                <Badge className="absolute top-6 left-6 bg-black/60 backdrop-blur-lg text-[8px] font-black uppercase border-white/10 px-3 py-1.5">{item.category}</Badge>
+                                            </div>
+                                            <div className="p-8 space-y-4">
+                                                <div className="space-y-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-40 italic">{item.dealer?.display_name || 'Verified Seller'}</p>
+                                                        {item.dealer?.is_verified && <ShieldCheck className="h-3 w-3 text-primary" />}
+                                                    </div>
+                                                    <h4 className="text-xl font-black italic tracking-tighter uppercase leading-tight group-hover:text-primary transition-colors line-clamp-1">{item.title}</h4>
+                                                </div>
+                                                <div className="flex items-center justify-between pt-4">
+                                                    <p className="text-2xl font-black italic tracking-tighter text-foreground leading-none">₦{item.price.toLocaleString()}</p>
+                                                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                                                        <ArrowRight className="h-5 w-5" />
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <span className="text-[9px] font-black text-muted-foreground opacity-30">{alert.time}</span>
-                                    </div>
-                                ))}
-                            </div>
+                                    </Link>
+                                ))
+                            ) : (
+                                <div className="col-span-full py-24 flex flex-col items-center justify-center text-center bg-muted/20 border border-dashed border-border rounded-[3rem] opacity-40">
+                                    <ShoppingBag className="h-16 w-16 mb-4 text-muted-foreground" />
+                                    <p className="text-xs font-black uppercase tracking-[0.3em] italic text-muted-foreground">Market Node Idle.</p>
+                                </div>
+                            )}
                         </div>
                     </div>
-                </div>
 
-                {/* ─── Bottom CTA / Quick Access ─── */}
-                <div className="pt-10 border-t border-white/5">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {[
-                            { label: 'Marketplace', icon: Compass, href: '/marketplace' },
-                            { label: 'Support Node', icon: ShieldCheck, href: '/contact' },
-                            { label: 'Network FAQ', icon: AlertCircle, href: '/faq' },
-                            { label: 'Privacy Protocol', icon: Star, href: '/privacy' },
-                        ].map((link, i) => (
-                            <Link key={i} href={link.href} className="p-6 rounded-3xl bg-white/5 hover:bg-primary/5 border border-white/5 hover:border-primary/20 transition-all flex flex-col items-center gap-3 text-center group">
-                                <link.icon className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
-                                <span className="text-[10px] font-black uppercase tracking-widest">{link.label}</span>
+                    {/* Compact Identity Sync */}
+                    <div className="lg:col-span-4 space-y-12">
+                        <div className="flex items-center gap-3 border-b border-border/50 pb-6">
+                            <ShieldCheck className="h-5 w-5 text-primary" />
+                            <h2 className="text-xl font-black uppercase tracking-widest italic leading-none">Sync</h2>
+                        </div>
+
+                        <Card className="bg-muted/40 border border-border rounded-[3rem] p-10 flex flex-col items-center text-center space-y-8 shadow-sm">
+                            <div className="relative group/avatar">
+                                <Avatar className="h-32 w-32 border-4 border-card shadow-2xl transition-transform group-hover/avatar:scale-105 duration-500">
+                                    <AvatarImage src={user?.photoUrl} />
+                                    <AvatarFallback className="text-4xl font-black bg-zinc-900 text-primary">{firstName[0]}</AvatarFallback>
+                                </Avatar>
+                                <div className="absolute bottom-2 right-2 h-6 w-6 bg-green-500 border-4 border-card rounded-full shadow-lg" />
+                            </div>
+
+                            <div className="space-y-2">
+                                <h3 className="text-2xl font-black uppercase italic tracking-tighter text-foreground leading-none">{user?.displayName}</h3>
+                                <Badge variant="secondary" className="bg-primary/20 text-primary border-none text-[9px] font-black uppercase tracking-[0.2em] rounded-md px-3 py-1">{user?.role?.replace('_', ' ')}</Badge>
+                            </div>
+
+                            <div className="w-full flex items-center justify-around py-2">
+                                <div className="text-center group/stat">
+                                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-40 mb-1 group-hover/stat:text-primary transition-colors">Orders</p>
+                                    <p className="text-3xl font-black italic tracking-tighter text-foreground">{stats.orders}</p>
+                                </div>
+                                <div className="h-10 w-[1px] bg-border/50" />
+                                <div className="text-center group/stat">
+                                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-40 mb-1 group-hover/stat:text-primary transition-colors">Hustles</p>
+                                    <p className="text-3xl font-black italic tracking-tighter text-foreground">{stats.hustles}</p>
+                                </div>
+                            </div>
+
+                            <Link href="/settings" className="w-full">
+                                <Button variant="outline" className="w-full h-14 rounded-2xl border-border bg-card/40 hover:border-primary font-black uppercase text-[10px] tracking-[0.2em] transition-all group/btn shadow-sm">
+                                    Nexus Registry <ChevronRight className="h-3 w-3 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                                </Button>
                             </Link>
-                        ))}
+                        </Card>
+
+                        {/* Quick Context Alerts */}
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between px-2">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-40">Context Logs</span>
+                                <Badge className="bg-primary text-white text-[8px] font-black rounded-full px-2">Live</Badge>
+                            </div>
+                            <div className="p-6 bg-card border border-border rounded-3xl opacity-30 hover:opacity-100 transition-all cursor-not-allowed group">
+                                <div className="flex items-center gap-4">
+                                    <Clock className="h-4 w-4 text-primary group-hover:animate-spin" />
+                                    <p className="text-[10px] font-black uppercase tracking-widest italic text-muted-foreground">Scanning Network Signals...</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -482,8 +448,4 @@ function AuthenticatedHome({ user }: { user: any }) {
             <Footer />
         </div>
     );
-}
-
-function Separator({ className }: { className?: string }) {
-    return <div className={`h-[1px] w-full ${className}`} />;
 }
