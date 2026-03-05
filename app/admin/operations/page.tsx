@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, UserCheck, CreditCard, ShieldCheck } from 'lucide-react';
+import { Loader2, UserCheck, CreditCard, ShieldCheck, TrendingUp, DollarSign, Activity, ChevronRight, Scale, Inbox } from 'lucide-react';
+import { useToast } from '@/contexts/ToastContext';
 
 export default function OperationsAdminPage() {
     const [loading, setLoading] = useState(true);
@@ -18,6 +19,7 @@ export default function OperationsAdminPage() {
         totalVolume: 0,
         totalCommission: 0
     });
+    const { toast } = useToast();
 
     useEffect(() => {
         fetchOpsData();
@@ -74,15 +76,13 @@ export default function OperationsAdminPage() {
             });
 
             if (res.ok) {
+                toast('Seller approved successfully!', 'success');
                 fetchOpsData();
             } else {
-                const err = await res.json();
-                console.error('Approval failed:', err);
-                console.warn('UI_ALERT:', );
+                toast('Approval failed', 'error');
             }
         } catch (e) {
-            console.error('Approval failed:', e);
-            console.warn('UI_ALERT:', );
+            toast('Operation error', 'error');
         }
     };
 
@@ -97,104 +97,107 @@ export default function OperationsAdminPage() {
                 .eq('id', applicationId);
 
             if (!error) {
+                toast('Application declined', 'info');
                 fetchOpsData();
             } else {
-                console.error('Decline failed:', error);
-                console.warn('UI_ALERT:', );
+                toast('Decline failed', 'error');
             }
         } catch (e) {
-            console.error('Decline error:', e);
-            console.warn('UI_ALERT:', );
+            toast('Operation error', 'error');
         }
     };
 
     if (loading) return (
-        <div className="flex justify-center items-center h-screen bg-black text-white">
-            <Loader2 className="h-8 w-8 animate-spin text-[#FF6200]" />
+        <div className="flex justify-center items-center h-screen bg-background transition-colors duration-300">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-black text-white p-8 space-y-8 relative overflow-x-hidden">
-            <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
+        <div className="min-h-screen bg-background text-foreground transition-colors duration-300 p-4 md:p-10 space-y-10 relative overflow-x-hidden">
+            <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03] pointer-events-none z-0" />
 
-            <div className="relative z-10 space-y-2">
+            <div className="relative z-10 space-y-4">
                 <div className="flex items-center gap-3">
-                    <ShieldCheck className="h-5 w-5 text-[#FF6200]" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 font-heading">Operations Dashboard</span>
+                    <ShieldCheck className="h-5 w-5 text-primary" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground font-heading">Operations Dashboard</span>
                 </div>
-                <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading">
-                    Operations <span className="text-[#FF6200]">Control</span>
+                <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic font-heading">
+                    Operations <span className="text-primary">Control</span>
                 </h1>
-                <p className="text-white/40 text-xs font-bold uppercase tracking-widest leading-relaxed">
-                    Verification Process, Subscription Management & Compliance Monitoring
+                <p className="text-muted-foreground text-xs font-black uppercase tracking-widest leading-relaxed opacity-60">
+                    Verification Engine // Subscription Nodes // Financial Recon
                 </p>
             </div>
 
-            <Tabs defaultValue="sellers" className="space-y-8 relative z-10 w-full">
-                <TabsList className="bg-zinc-900/50 border border-white/5 rounded-xl p-1 h-14 w-full md:w-auto overflow-x-auto no-scrollbar">
-                    <TabsTrigger value="sellers" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black text-white/60 uppercase font-black text-[10px] tracking-widest h-12 rounded-lg transition-all min-w-[120px]">
-                        Sellers ({pendingSellers.length})
-                    </TabsTrigger>
-                    <TabsTrigger value="subscriptions" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black text-white/60 uppercase font-black text-[10px] tracking-widest h-12 rounded-lg transition-all min-w-[120px]">
-                        Subs ({subscriptions.length})
-                    </TabsTrigger>
-                    <TabsTrigger value="feedback" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black text-white/60 uppercase font-black text-[10px] tracking-widest h-12 rounded-lg transition-all min-w-[120px]">
-                        Feedback
-                    </TabsTrigger>
-                    <TabsTrigger value="revenue" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black text-white/60 uppercase font-black text-[10px] tracking-widest h-12 rounded-lg transition-all min-w-[120px]">
-                        Revenue
-                    </TabsTrigger>
+            <Tabs defaultValue="sellers" className="space-y-10 relative z-10 w-full">
+                <TabsList className="bg-card border border-border rounded-2xl p-1.5 h-16 w-full md:w-auto overflow-x-auto no-scrollbar shadow-sm">
+                    {[
+                        { val: 'sellers', label: 'Verifications', count: pendingSellers.length, icon: UserCheck },
+                        { val: 'subscriptions', label: 'Subscriptions', count: subscriptions.length, icon: CreditCard },
+                        { val: 'feedback', label: 'Intelligence', count: feedback.length, icon: Activity },
+                        { val: 'revenue', label: 'Financials', count: null, icon: DollarSign },
+                    ].map((tab) => (
+                        <TabsTrigger
+                            key={tab.val}
+                            value={tab.val}
+                            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-muted-foreground uppercase font-black text-[10px] tracking-widest h-12 rounded-xl transition-all px-8 flex items-center gap-3 border-none"
+                        >
+                            <tab.icon className="h-4 w-4" />
+                            {tab.label} {tab.count !== null && `(${tab.count})`}
+                        </TabsTrigger>
+                    ))}
                 </TabsList>
 
                 <TabsContent value="sellers">
-                    <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm rounded-[2rem] overflow-hidden">
-                        <CardHeader className="bg-white/5 py-8">
-                            <CardTitle className="text-lg font-black uppercase italic tracking-widest text-[#FF6200]">Pending Verifications</CardTitle>
+                    <Card className="bg-card border-border shadow-sm rounded-[3rem] overflow-hidden transition-colors duration-300">
+                        <CardHeader className="bg-muted/20 py-10 px-10 border-b border-border">
+                            <CardTitle className="text-3xl font-black uppercase italic tracking-tighter">Queue: <span className="text-primary">Pending</span></CardTitle>
                         </CardHeader>
-                        <CardContent className="p-8 space-y-4">
+                        <CardContent className="p-10 space-y-4">
                             {pendingSellers.map((seller) => (
-                                <div key={seller.id} className="flex flex-col sm:flex-row sm:items-center justify-between bg-black/40 p-6 rounded-2xl border border-white/5 gap-6">
-                                    <div className="flex items-center gap-6">
-                                        <div className="h-14 w-14 bg-zinc-800 rounded-2xl flex items-center justify-center border border-white/5">
-                                            <UserCheck className="h-6 w-6 text-white" />
+                                <div key={seller.id} className="flex flex-col lg:flex-row lg:items-center justify-between bg-muted/40 p-8 rounded-[2rem] border border-border/50 gap-8 group hover:border-primary/20 transition-all">
+                                    <div className="flex items-center gap-8">
+                                        <div className="h-20 w-20 bg-card rounded-3xl flex items-center justify-center border border-border shadow-sm group-hover:scale-105 transition-transform">
+                                            <UserCheck className="h-8 w-8 text-primary" />
                                         </div>
-                                        <div>
-                                            <p className="text-lg font-black text-white italic font-heading tracking-tight uppercase">{seller.full_name}</p>
-                                            <p className="text-[10px] text-white/40 font-mono tracking-widest">{seller.student_email}</p>
-                                            <div className="flex gap-4 mt-2">
-                                                <Badge variant="outline" className="border-zinc-800 text-[#FF6200] text-[9px] font-black uppercase tracking-widest">{seller.university}</Badge>
-                                                <Badge variant="outline" className="border-zinc-800 text-white text-[9px] font-black uppercase tracking-widest">{seller.items_ready} items</Badge>
+                                        <div className="space-y-2">
+                                            <p className="text-2xl font-black text-foreground italic font-heading tracking-tighter uppercase">{seller.full_name}</p>
+                                            <p className="text-[10px] text-muted-foreground font-bold tracking-[0.2em]">{seller.student_email}</p>
+                                            <div className="flex gap-4">
+                                                <Badge variant="outline" className="border-border text-primary text-[9px] font-black uppercase tracking-widest bg-card">{seller.university}</Badge>
+                                                <Badge variant="outline" className="border-border text-foreground/40 text-[9px] font-black uppercase tracking-widest bg-card">{seller.items_ready} ITEMS READY</Badge>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex flex-col gap-2 items-end">
-                                        {seller.id_card_url && (
-                                            <a href={seller.id_card_url} target="_blank" rel="noreferrer" className="text-[10px] text-[#FF6200] hover:underline uppercase font-black tracking-widest">
-                                                View ID Card
-                                            </a>
-                                        )}
-                                        <div className="flex flex-col gap-2 w-full mt-4 sm:mt-0">
+                                    <div className="flex flex-col gap-4 items-end min-w-[240px]">
+                                        <div className="flex gap-3 w-full">
                                             <Button
                                                 onClick={() => handleVerify(seller.id)}
-                                                className="bg-[#FF6200] text-black hover:bg-[#FF8533] font-black uppercase text-[10px] tracking-[0.2em] h-12 w-full px-8 rounded-xl"
+                                                className="bg-primary text-primary-foreground hover:opacity-90 font-black uppercase text-[10px] tracking-widest h-14 flex-1 rounded-2xl border-none shadow-lg shadow-primary/10"
                                             >
-                                                Approve User
+                                                Authorize
                                             </Button>
                                             <Button
                                                 onClick={() => handleDecline(seller.id)}
                                                 variant="outline"
-                                                className="border-white/10 text-white/50 hover:border-red-500 hover:text-red-500 font-black uppercase text-[10px] tracking-[0.2em] h-12 w-full px-8 rounded-xl transition-colors"
+                                                className="border-red-500/20 text-red-500 hover:bg-red-500/10 font-black uppercase text-[10px] tracking-widest h-14 flex-1 rounded-2xl"
                                             >
-                                                Decline User
+                                                Decline
                                             </Button>
                                         </div>
+                                        {seller.id_card_url && (
+                                            <a href={seller.id_card_url} target="_blank" rel="noreferrer" className="text-[10px] text-primary hover:underline uppercase font-black tracking-widest flex items-center gap-2 pr-2">
+                                                Scan ID Certificate <ChevronRight className="h-3 w-3" />
+                                            </a>
+                                        )}
                                     </div>
                                 </div>
                             ))}
                             {pendingSellers.length === 0 && (
-                                <div className="text-center py-20 bg-black/20 rounded-2xl border border-white/5 border-dashed">
-                                    <p className="text-white/30 font-black uppercase tracking-[0.3em] text-[10px]">Verification Queues Empty</p>
+                                <div className="text-center py-32 bg-muted/20 rounded-3xl border border-border border-dashed">
+                                    <Inbox className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
+                                    <p className="text-muted-foreground font-black uppercase tracking-[0.5em] text-[9px]">Ingestion Pipeline Idle</p>
                                 </div>
                             )}
                         </CardContent>
@@ -202,26 +205,28 @@ export default function OperationsAdminPage() {
                 </TabsContent>
 
                 <TabsContent value="subscriptions">
-                    <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm rounded-[2rem] overflow-hidden">
-                        <CardHeader className="bg-white/5 py-8">
-                            <CardTitle className="text-lg font-black uppercase italic tracking-widest text-[#FF6200]">Active Subscriptions</CardTitle>
+                    <Card className="bg-card border-border shadow-sm rounded-[3rem] overflow-hidden">
+                        <CardHeader className="bg-muted/20 py-10 px-10 border-b border-border">
+                            <CardTitle className="text-3xl font-black uppercase italic tracking-tighter">Active <span className="text-primary">Protocols</span></CardTitle>
                         </CardHeader>
-                        <CardContent className="p-8 space-y-4">
+                        <CardContent className="p-10 space-y-4">
                             {subscriptions.map((sub) => (
-                                <div key={sub.id} className="flex items-center justify-between bg-black/40 p-6 rounded-2xl border border-white/5">
+                                <div key={sub.id} className="flex items-center justify-between bg-muted/40 p-8 rounded-[2rem] border border-border/50 group">
                                     <div className="flex items-center gap-6">
-                                        <CreditCard className="h-6 w-6 text-white/30" />
+                                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                                            <CreditCard className="h-6 w-6" />
+                                        </div>
                                         <div>
-                                            <p className="text-sm font-black text-white italic font-heading tracking-wide uppercase">{sub.users?.email}</p>
-                                            <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest mt-1">Status: <span className="text-[#FF6200]">Operational</span></p>
+                                            <p className="text-base font-black text-foreground italic uppercase tracking-tight">{sub.users?.email}</p>
+                                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1 italic">Protocol Status: <span className="text-primary">OPERATIONAL</span></p>
                                         </div>
                                     </div>
-                                    <Badge className="bg-[#FF6200] text-black font-black uppercase text-[10px] tracking-widest px-3 py-1 animate-pulse">Active</Badge>
+                                    <Badge className="bg-primary text-primary-foreground font-black uppercase text-[10px] tracking-widest px-4 py-2 rounded-xl animate-pulse border-none shadow-lg shadow-primary/20">Active Node</Badge>
                                 </div>
                             ))}
                             {subscriptions.length === 0 && (
-                                <div className="text-center py-20">
-                                    <p className="text-white/30 font-black uppercase tracking-[0.3em] text-[10px]">No Active Subscriptions Found</p>
+                                <div className="text-center py-32">
+                                    <p className="text-muted-foreground font-black uppercase tracking-[0.5em] text-[9px] opacity-30">Zero active subscriptions in grid</p>
                                 </div>
                             )}
                         </CardContent>
@@ -229,84 +234,98 @@ export default function OperationsAdminPage() {
                 </TabsContent>
 
                 <TabsContent value="feedback">
-                    <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm rounded-[2rem] overflow-hidden">
-                        <CardHeader className="bg-white/5 py-8">
-                            <CardTitle className="text-lg font-black uppercase italic tracking-widest text-[#FF6200]">System Intelligence (Feedback)</CardTitle>
+                    <Card className="bg-card border-border shadow-sm rounded-[3rem] overflow-hidden">
+                        <CardHeader className="bg-muted/20 py-10 px-10 border-b border-border">
+                            <CardTitle className="text-3xl font-black uppercase italic tracking-tighter">Feedback <span className="text-primary">Relay</span></CardTitle>
                         </CardHeader>
-                        <CardContent className="p-8 space-y-6">
+                        <CardContent className="p-10 space-y-8">
                             {feedback.map((item) => (
-                                <div key={item.id} className="bg-black/40 p-6 rounded-3xl border border-white/5 space-y-4 relative overflow-hidden group">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-[#FF6200]/10 transition-colors" />
+                                <div key={item.id} className="bg-muted/40 p-10 rounded-[2.5rem] border border-border/50 space-y-6 relative overflow-hidden group hover:bg-muted/60 transition-colors">
+                                    <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-[100px] -mr-24 -mt-24 group-hover:bg-primary/10 transition-colors" />
                                     <div className="flex justify-between items-start relative z-10">
-                                        <p className="text-[10px] text-white/40 font-black uppercase tracking-widest">{item.users?.email}</p>
-                                        <Badge variant="outline" className="text-[#FF6200] border-[#FF6200]/30 italic font-black uppercase tracking-tighter text-[10px]">{item.rating} / 5 SCORE</Badge>
+                                        <div className="flex items-center gap-4">
+                                            <div className="h-10 w-10 rounded-full bg-muted border border-border flex items-center justify-center font-black text-xs text-muted-foreground uppercase">{item.users?.email?.[0]}</div>
+                                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">{item.users?.email}</p>
+                                        </div>
+                                        <Badge variant="outline" className="text-primary border-primary/30 italic font-black uppercase tracking-widest text-[10px] h-8 px-4 bg-primary/5">{item.rating} / 5 SCORE</Badge>
                                     </div>
-                                    <p className="text-sm text-white italic leading-relaxed relative z-10">"{item.comments}"</p>
-                                    <div className="pt-4 border-t border-white/5 flex justify-between items-center relative z-10">
-                                        <span className="text-[9px] text-white/30 uppercase font-black tracking-[0.2em]">Net Promoter Score (NPS): {item.nps_score}</span>
-                                        <span className="text-[9px] text-white/20 font-mono italic">ID: {item.id.slice(0, 8)}</span>
+                                    <div className="p-8 bg-card rounded-3xl border border-border/50 relative z-10">
+                                        <p className="text-base text-foreground/80 italic font-medium leading-relaxed">"{item.comments}"</p>
+                                    </div>
+                                    <div className="pt-6 border-t border-border/30 flex justify-between items-center relative z-10">
+                                        <span className="text-[10px] text-muted-foreground/60 uppercase font-black tracking-[0.3em] flex items-center gap-2">
+                                            <Scale className="h-3 w-3" /> NPS Score: <span className="text-foreground">{item.nps_score}</span>
+                                        </span>
+                                        <span className="text-[9px] text-muted-foreground/30 font-mono italic">NODE-TX-ID: {item.id.toUpperCase().slice(0, 12)}</span>
                                     </div>
                                 </div>
                             ))}
                             {feedback.length === 0 && (
-                                <p className="text-center text-white/30 font-black uppercase tracking-[0.3em] text-[10px] py-20">Diagnostic Feedback Loop Empty</p>
+                                <p className="text-center text-muted-foreground font-black uppercase tracking-[0.5em] text-[9px] py-32 opacity-30 italic">Diagnostic stream clear</p>
                             )}
                         </CardContent>
                     </Card>
                 </TabsContent>
 
                 <TabsContent value="revenue">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                        <Card className="bg-zinc-900/50 border-white/5 rounded-[2rem] relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-3xl -mr-12 -mt-12" />
-                            <CardContent className="p-10">
-                                <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.4em] mb-4">Gross Asset Flow</p>
-                                <p className="text-4xl md:text-5xl font-black text-white italic font-heading tracking-tighter leading-none">
-                                    ₦{revenue.totalVolume.toLocaleString()}
-                                </p>
-                            </CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
+                        <Card className="bg-card border-border shadow-xl rounded-[3rem] p-12 relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-[80px] -mr-24 -mt-24 transition-all group-hover:bg-primary/10" />
+                            <p className="text-[11px] text-muted-foreground font-black uppercase tracking-[0.5em] mb-6 flex items-center gap-3">
+                                <Activity className="h-4 w-4" /> Gross Network Volume
+                            </p>
+                            <p className="text-5xl md:text-7xl font-black text-foreground italic font-heading tracking-tighter leading-none mb-4 group-hover:scale-105 transition-transform origin-left">
+                                ₦{revenue.totalVolume.toLocaleString()}
+                            </p>
+                            <div className="flex items-center gap-2 text-green-500 text-[10px] font-black uppercase tracking-widest">
+                                <TrendingUp className="h-4 w-4" /> Live Liquidity Stream
+                            </div>
                         </Card>
-                        <Card className="bg-zinc-900/50 border-white/5 rounded-[2rem] relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-24 h-24 bg-[#FF6200]/5 rounded-full blur-3xl -mr-12 -mt-12" />
-                            <CardContent className="p-10">
-                                <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.4em] mb-4">Platform Yield (Commission)</p>
-                                <p className="text-4xl md:text-5xl font-black text-[#FF6200] italic font-heading tracking-tighter leading-none">
-                                    ₦{revenue.totalCommission.toLocaleString()}
-                                </p>
-                            </CardContent>
+                        <Card className="bg-primary text-primary-foreground border-none shadow-[0_20px_60px_rgba(255,98,0,0.2)] rounded-[3rem] p-12 relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-[80px] -mr-24 -mt-24 transition-all group-hover:bg-white/10" />
+                            <p className="text-[11px] opacity-60 font-black uppercase tracking-[0.5em] mb-6 flex items-center gap-3">
+                                <Crown className="h-4 w-4" /> Platform Yield
+                            </p>
+                            <p className="text-5xl md:text-7xl font-black italic font-heading tracking-tighter leading-none mb-4 group-hover:scale-105 transition-transform origin-left">
+                                ₦{revenue.totalCommission.toLocaleString()}
+                            </p>
+                            <div className="flex items-center gap-2 opacity-80 text-[10px] font-black uppercase tracking-widest">
+                                <Activity className="h-4 w-4" /> Net Capital Accrual
+                            </div>
                         </Card>
                     </div>
 
-                    <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-sm rounded-[2rem] overflow-hidden">
-                        <CardHeader className="bg-white/5 py-8">
-                            <CardTitle className="text-lg font-black uppercase italic tracking-widest text-[#FF6200]">Financial Ledger</CardTitle>
+                    <Card className="bg-card border-border shadow-sm rounded-[3rem] overflow-hidden">
+                        <CardHeader className="bg-muted/20 py-10 px-10 border-b border-border">
+                            <CardTitle className="text-3xl font-black uppercase italic tracking-tighter">Financial <span className="text-primary">Registry</span></CardTitle>
                         </CardHeader>
-                        <CardContent className="p-8">
-                            <div className="space-y-4">
+                        <CardContent className="p-10">
+                            <div className="space-y-6">
                                 {revenue.transactions.map((txn) => (
-                                    <div key={txn.id} className="grid grid-cols-1 md:grid-cols-4 gap-6 bg-black/40 p-6 rounded-2xl border border-white/5 items-center">
-                                        <div className="space-y-1">
-                                            <span className="text-[9px] text-white/30 uppercase font-black tracking-widest">System Ref</span>
-                                            <p className="text-xs text-white font-mono truncate">#{txn.paystack_reference}</p>
+                                    <div key={txn.id} className="grid grid-cols-1 md:grid-cols-4 gap-8 bg-muted/40 p-8 rounded-[2rem] border border-border/50 items-center hover:bg-muted/60 transition-colors">
+                                        <div className="space-y-2">
+                                            <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-60 flex items-center gap-2"><div className="h-1 w-1 bg-primary rounded-full animate-pulse" /> Signal Ref</span>
+                                            <p className="text-sm text-foreground font-black italic tracking-tight">{txn.paystack_reference || 'LEGACY-TX'}</p>
                                         </div>
-                                        <div className="space-y-1">
-                                            <span className="text-[9px] text-white/30 uppercase font-black tracking-widest">Campus ID</span>
-                                            <p className="text-xs text-white italic truncate font-bold font-heading">{txn.seller?.display_name || 'Anonymous Campus'}</p>
+                                        <div className="space-y-2">
+                                            <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-60">Node Origin</span>
+                                            <p className="text-sm text-foreground font-black uppercase tracking-tighter italic truncate">{txn.seller?.display_name || 'SYSTEM CORE'}</p>
                                         </div>
-                                        <div className="space-y-1">
-                                            <span className="text-[9px] text-white/30 uppercase font-black tracking-widest">Asset Value / Net</span>
-                                            <p className="text-xs text-white font-black italic">
-                                                ₦{txn.amount_total.toLocaleString()} / <span className="text-[#FF6200]">₦{txn.amount_platform.toLocaleString()}</span>
+                                        <div className="space-y-2">
+                                            <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-60">TXN Value / Fee</span>
+                                            <p className="text-lg font-black italic font-mono tracking-tighter">
+                                                ₦{txn.amount_total.toLocaleString()} <span className="text-primary opacity-40 mx-2">//</span> <span className="text-primary">₦{txn.amount_platform.toLocaleString()}</span>
                                             </p>
                                         </div>
                                         <div className="flex md:justify-end">
-                                            <Badge className="bg-[#FF6200]/10 text-[#FF6200] border border-[#FF6200]/30 font-black uppercase text-[9px] tracking-[0.2em] px-3 py-1 rounded-md">Validated</Badge>
+                                            <Badge className="bg-primary/20 text-primary border border-primary/20 font-black uppercase text-[10px] tracking-widest px-6 py-2 rounded-xl h-10">Validated</Badge>
                                         </div>
                                     </div>
                                 ))}
                                 {revenue.transactions.length === 0 && (
-                                    <div className="text-center py-20">
-                                        <p className="text-white/30 font-black uppercase tracking-[0.3em] text-[10px]">Financial Stream Idle</p>
+                                    <div className="text-center py-32 border border-border/50 border-dashed rounded-3xl">
+                                        <Activity className="h-10 w-10 text-muted-foreground/10 mx-auto mb-4" />
+                                        <p className="text-muted-foreground font-black uppercase tracking-[0.5em] text-[10px] opacity-30 italic">Financial river idle</p>
                                     </div>
                                 )}
                             </div>
@@ -315,8 +334,8 @@ export default function OperationsAdminPage() {
                 </TabsContent>
             </Tabs>
 
-            <div className="text-center py-10 text-white/10 text-[9px] font-black uppercase tracking-[0.5em] font-heading relative z-10">
-                Data Stream End-to-End Encrypted // MarketBridge Alpha Control
+            <div className="text-center py-20 text-muted-foreground/20 text-[9px] font-black uppercase tracking-[0.8em] font-heading relative z-10 transition-opacity hover:opacity-100">
+                Data Stream // End-to-End Integrity // Secure Node Omega
             </div>
         </div>
     );

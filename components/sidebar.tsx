@@ -25,13 +25,13 @@ export function Sidebar({ items, title, className }: SidebarProps) {
     const { logout } = useAuth();
 
     return (
-        <div className={cn("pb-12 min-h-screen border-r border-zinc-100 bg-[#FAFAFA]/40 backdrop-blur-2xl flex flex-col", className)}>
-            <div className="space-y-8 py-8 px-6">
-                <div className="px-3">
-                    <div className="mb-12">
-                        <Logo showText={true} />
+        <div className={cn("pb-12 min-h-screen border-r border-border bg-card/60 backdrop-blur-2xl flex flex-col transition-colors duration-300", className)}>
+            <div className="space-y-10 py-10 px-8">
+                <div className="px-2">
+                    <div className="mb-14">
+                        <Logo showText={true} className="scale-110" />
                         {title && (
-                            <p className="mt-4 text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] italic text-center">
+                            <p className="mt-6 text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.4em] italic text-center">
                                 // {title}
                             </p>
                         )}
@@ -48,18 +48,18 @@ export function Sidebar({ items, title, className }: SidebarProps) {
                                     key={item.href}
                                     href={item.href}
                                     className={cn(
-                                        "flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 group relative",
+                                        "flex items-center gap-5 px-5 py-4 rounded-2xl transition-all duration-300 group relative",
                                         isActive
-                                            ? "bg-white text-[#FF6200] shadow-[0_0_20px_rgba(255,184,0,0.05)]"
-                                            : "text-zinc-500 hover:text-zinc-900 hover:bg-white"
+                                            ? "bg-primary text-primary-foreground shadow-[0_8px_30px_rgba(255,98,0,0.25)]"
+                                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                                     )}
                                 >
                                     {isActive && (
-                                        <div className="absolute left-[-2px] top-1/2 -translate-y-1/2 w-1 h-6 bg-[#FF6200] rounded-full shadow-[0_0_10px_#FF6200]" />
+                                        <div className="absolute left-[-2px] top-1/2 -translate-y-1/2 w-1.5 h-8 bg-white rounded-full opacity-80" />
                                     )}
                                     <item.icon className={cn(
                                         "h-5 w-5 transition-transform group-hover:scale-110",
-                                        isActive ? "text-[#FF6200]" : "text-zinc-700"
+                                        isActive ? "text-primary-foreground" : "text-muted-foreground opacity-70 group-hover:opacity-100"
                                     )} />
                                     <span className="text-[11px] font-black uppercase tracking-widest italic truncate">
                                         {item.label}
@@ -71,13 +71,13 @@ export function Sidebar({ items, title, className }: SidebarProps) {
                 </div>
             </div>
 
-            <div className="mt-auto px-8 py-8 border-t border-zinc-100">
+            <div className="mt-auto px-10 py-10 border-t border-border">
                 <button
-                    className="flex items-center gap-4 w-full px-4 py-3 text-zinc-600 hover:text-red-500 transition-colors group"
+                    className="flex items-center gap-5 w-full px-4 py-4 text-muted-foreground hover:text-red-500 transition-all duration-300 group rounded-2xl hover:bg-red-500/5 active:scale-95"
                     onClick={() => logout()}
                 >
                     <LogOut className="h-5 w-5 group-hover:rotate-12 transition-transform" />
-                    <span className="text-[11px] font-black uppercase tracking-widest italic">Terminate</span>
+                    <span className="text-[11px] font-black uppercase tracking-[0.2em] italic">Terminate</span>
                 </button>
             </div>
         </div>

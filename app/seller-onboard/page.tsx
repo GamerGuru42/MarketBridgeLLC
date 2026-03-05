@@ -80,7 +80,6 @@ export default function SellerOnboardPage() {
         bio: '',
     });
 
-    // Derived slug preview
     const shopSlug = makeSlug(formData.shopName || (user?.displayName?.split(' ')[0] || '') + 's-shop');
 
     useEffect(() => {
@@ -126,7 +125,7 @@ export default function SellerOnboardPage() {
             } else if (temp.length < 3) {
                 return { ...prev, sellCategories: [...temp, value] };
             }
-            return prev; // max 3 for Starter
+            return prev;
         });
     };
 
@@ -134,7 +133,7 @@ export default function SellerOnboardPage() {
         if (!e.target.files || e.target.files.length === 0) return;
         const file = e.target.files[0];
 
-        const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+        const MAX_SIZE = 10 * 1024 * 1024;
         if (file.size > MAX_SIZE) {
             toast('File too large. Please select an image or PDF under 10MB.', 'error');
             return;
@@ -147,7 +146,6 @@ export default function SellerOnboardPage() {
 
             const isPDF = file.type === 'application/pdf';
             if (!isPDF && file.type.startsWith('image/')) {
-                // Compress images to WebP
                 const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1024, useWebWorker: true, fileType: 'image/webp' as const };
                 uploadFile = await imageCompression(file, options);
             } else if (isPDF) {
@@ -212,7 +210,6 @@ export default function SellerOnboardPage() {
             const resData = await res.json();
             if (!res.ok) throw new Error(resData.error || 'Submission failed');
 
-            // Fix: use is_verified (snake_case) not isVerified
             await supabase.from('users').update({
                 is_verified: false,
                 phone_number: formData.phoneNumber,
@@ -228,23 +225,19 @@ export default function SellerOnboardPage() {
         }
     };
 
-    // Validation
-    const isOnlyServices = formData.sellCategories.length > 0 &&
-        formData.sellCategories.every(c => c === 'Services');
     const isStep1Valid = formData.university !== '' &&
         (formData.university !== 'Other (specify below)' || formData.universityOther.trim().length > 2) &&
         formData.campusZone !== '' &&
         formData.phoneNumber.length >= 10;
     const isStep2Valid = formData.sellCategories.length > 0;
-    // Step 3 (ID) is always valid — ID upload is optional, sellers get 14-day trial regardless
     const isStep3Valid = true;
 
     if (isLoadingInitial) {
         return (
-            <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+            <div className="min-h-screen bg-background flex items-center justify-center transition-colors duration-300">
                 <div className="text-center space-y-4">
-                    <Loader2 className="h-12 w-12 text-[#FF6200] animate-spin mx-auto" />
-                    <p className="text-[10px] font-black uppercase tracking-widest text-white/30 animate-pulse">Loading your profile...</p>
+                    <Loader2 className="h-12 w-12 text-primary animate-spin mx-auto" />
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground animate-pulse">Loading your profile...</p>
                 </div>
             </div>
         );
@@ -252,42 +245,42 @@ export default function SellerOnboardPage() {
 
     if (isSuccess) {
         return (
-            <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4">
+            <div className="min-h-screen bg-background flex items-center justify-center p-4 transition-colors duration-300">
                 <div className="w-full max-w-md text-center space-y-8">
-                    <div className="mx-auto h-28 w-28 bg-[#FF6200]/10 border-2 border-[#FF6200]/20 rounded-full flex items-center justify-center shadow-[0_0_60px_rgba(255,98,0,0.15)]">
-                        <CheckCircle className="h-14 w-14 text-[#FF6200]" />
+                    <div className="mx-auto h-28 w-28 bg-primary/10 border-2 border-primary/20 rounded-full flex items-center justify-center shadow-[0_0_60px_rgba(255,98,0,0.15)]">
+                        <CheckCircle className="h-14 w-14 text-primary" />
                     </div>
                     <div className="space-y-3">
-                        <h2 className="text-4xl font-black uppercase tracking-tighter text-white italic">
-                            You're <span className="text-[#FF6200]">In!</span>
+                        <h2 className="text-4xl font-black uppercase tracking-tighter text-foreground italic">
+                            You're <span className="text-primary">In!</span>
                         </h2>
-                        <p className="text-white/50 font-medium leading-relaxed max-w-sm mx-auto">
+                        <p className="text-muted-foreground font-medium leading-relaxed max-w-sm mx-auto">
                             Your seller application is under review. Our team verifies details within 2–24 hours. You'll get a WhatsApp notification when approved!
                         </p>
                     </div>
-                    <div className="bg-white/[0.03] border border-white/5 rounded-3xl p-6 text-left space-y-4">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-white/30">What happens next</p>
+                    <div className="bg-card border border-border rounded-3xl p-6 text-left space-y-4">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">What happens next</p>
                         {[
                             "Admin reviews your ID & shop details",
                             "You get a WhatsApp approval notification",
                             "Start listing & making money 🔥",
                         ].map((s, i) => (
                             <div key={i} className="flex items-center gap-3">
-                                <div className="h-6 w-6 rounded-full bg-[#FF6200]/10 flex items-center justify-center shrink-0">
-                                    <span className="text-[10px] font-black text-[#FF6200]">{i + 1}</span>
+                                <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                                    <span className="text-[10px] font-black text-primary">{i + 1}</span>
                                 </div>
-                                <p className="text-white/60 text-sm font-medium">{s}</p>
+                                <p className="text-muted-foreground text-sm font-medium">{s}</p>
                             </div>
                         ))}
                     </div>
-                    <div className="bg-[#FF6200]/5 border border-[#FF6200]/10 rounded-2xl p-4 flex items-center gap-3">
-                        <Zap className="h-5 w-5 text-[#FF6200] shrink-0" />
-                        <p className="text-white/60 text-sm font-medium text-left">
-                            <strong className="text-[#FF6200]">₦500 MarketCredit</strong> will be added to your account on your first sale. 🎁
+                    <div className="bg-primary/5 border border-primary/10 rounded-2xl p-4 flex items-center gap-3">
+                        <Zap className="h-5 w-5 text-primary shrink-0" />
+                        <p className="text-muted-foreground text-sm font-medium text-left">
+                            <strong className="text-primary">₦500 MarketCredit</strong> will be added to your account on your first sale. 🎁
                         </p>
                     </div>
-                    <Link href="/marketplace">
-                        <Button className="w-full h-14 bg-white/5 hover:bg-white/10 text-white border border-white/10 font-black uppercase tracking-widest rounded-2xl transition-all">
+                    <Link href="/marketplace" className="block w-full">
+                        <Button className="w-full h-14 bg-secondary hover:bg-secondary/80 text-foreground border border-border font-black uppercase tracking-widest rounded-2xl transition-all">
                             Browse Marketplace While You Wait
                         </Button>
                     </Link>
@@ -299,126 +292,117 @@ export default function SellerOnboardPage() {
     const stepLabels = ['Campus Info', 'Your Shop', 'ID (Optional)', 'Profile & Submit'];
 
     return (
-        <div className="min-h-screen flex items-center justify-center py-20 px-4 bg-zinc-950 relative">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-[#FF6200]/5 rounded-full blur-[100px] pointer-events-none" />
+        <div className="min-h-screen flex items-center justify-center py-20 px-4 bg-background relative transition-colors duration-300">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
             <div className="w-full max-w-2xl relative z-10">
 
-                {/* Page Header */}
                 <div className="text-center mb-10">
-                    <Link href="/" className="inline-flex items-center text-white/30 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest transition-colors">
+                    <Link href="/" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-6 uppercase text-[10px] font-black tracking-widest transition-colors">
                         <ArrowLeft className="mr-2 h-3.5 w-3.5" /> Back to Home
                     </Link>
-                    <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-white italic">
-                        Start <span className="text-[#FF6200]">Selling</span>
+                    <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic">
+                        Start <span className="text-primary">Selling</span>
                     </h1>
-                    <p className="text-white/40 font-medium mt-2 text-sm">
+                    <p className="text-muted-foreground font-medium mt-2 text-sm">
                         No CAC required — perfect for campus side hustles ✨
                     </p>
                 </div>
 
-                {/* Incentive Banner */}
-                <div className="flex items-center gap-3 bg-[#FF6200]/10 border border-[#FF6200]/20 rounded-2xl px-5 py-3 mb-8">
-                    <Zap className="h-5 w-5 text-[#FF6200] shrink-0" />
-                    <p className="text-white/70 text-sm font-bold">
-                        <span className="text-[#FF6200]">⚡ Complete setup today</span> — earn ₦500 MarketCredit on your first sale
+                <div className="flex items-center gap-3 bg-primary/10 border border-primary/20 rounded-2xl px-5 py-3 mb-8">
+                    <Zap className="h-5 w-5 text-primary shrink-0" />
+                    <p className="text-muted-foreground text-sm font-bold">
+                        <span className="text-primary">⚡ Complete setup today</span> — earn ₦500 MarketCredit on your first sale
                     </p>
                 </div>
 
-                {/* Step Indicators */}
                 <div className="flex items-center gap-1.5 mb-8">
                     {[1, 2, 3, 4].map(s => (
                         <React.Fragment key={s}>
                             <div className={`flex items-center gap-1.5 ${s < 4 ? 'flex-1' : ''}`}>
-                                <div className={`h-8 w-8 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 transition-all ${step > s ? 'bg-[#FF6200] text-black' :
-                                    step === s ? 'bg-[#FF6200]/20 text-[#FF6200] border-2 border-[#FF6200]' :
-                                        'bg-white/5 text-white/30 border border-white/10'
+                                <div className={`h-8 w-8 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 transition-all ${step > s ? 'bg-primary text-primary-foreground' :
+                                    step === s ? 'bg-primary/20 text-primary border-2 border-primary' :
+                                        'bg-muted text-muted-foreground border border-border'
                                     }`}>
                                     {step > s ? '✓' : s}
                                 </div>
-                                <span className={`text-[9px] font-black uppercase tracking-widest hidden sm:block ${step >= s ? 'text-white/50' : 'text-white/20'}`}>
+                                <span className={`text-[9px] font-black uppercase tracking-widest hidden sm:block ${step >= s ? 'text-foreground/50' : 'text-muted-foreground/30'}`}>
                                     {stepLabels[s - 1]}
                                 </span>
                             </div>
-                            {s < 4 && <div className={`h-px flex-1 transition-colors ${step > s ? 'bg-[#FF6200]' : 'bg-white/10'}`} />}
+                            {s < 4 && <div className={`h-px flex-1 transition-colors ${step > s ? 'bg-primary' : 'bg-border'}`} />}
                         </React.Fragment>
                     ))}
                 </div>
 
-                <div className="bg-zinc-900/80 border border-white/5 rounded-[2.5rem] p-8 md:p-10 backdrop-blur-sm">
+                <div className="bg-card border border-border rounded-[2.5rem] p-8 md:p-10 backdrop-blur-sm shadow-xl">
 
-                    {/* ─── STEP 1: Campus Info ─── */}
                     {step === 1 && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
                             <div className="flex items-center gap-3 mb-4">
-                                <div className="h-10 w-10 rounded-xl bg-[#FF6200]/10 flex items-center justify-center"><MapPin className="h-5 w-5 text-[#FF6200]" /></div>
+                                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center"><MapPin className="h-5 w-5 text-primary" /></div>
                                 <div>
-                                    <h2 className="text-lg font-black text-white">Campus Info</h2>
-                                    <p className="text-xs font-bold text-white/40 uppercase tracking-widest">Where are you selling from?</p>
+                                    <h2 className="text-lg font-black text-foreground">Campus Info</h2>
+                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Where are you selling from?</p>
                                 </div>
                             </div>
 
                             <div className="space-y-5">
-                                {/* University */}
                                 <div>
-                                    <label className="text-[10px] uppercase font-black tracking-widest text-white/40 ml-1">University *</label>
+                                    <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">University *</label>
                                     <select
                                         value={formData.university}
                                         onChange={e => setFormData(prev => ({ ...prev, university: e.target.value, universityOther: '' }))}
                                         aria-label="Select your university"
                                         title="Select your university"
-                                        className="w-full h-14 px-4 bg-zinc-950 border border-zinc-700 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200]/30 rounded-2xl text-white font-medium mt-2 outline-none appearance-none transition-colors"
+                                        className="w-full h-14 px-4 bg-muted border border-input focus:ring-1 focus:ring-primary/30 rounded-2xl text-foreground font-medium mt-2 outline-none appearance-none transition-colors"
                                     >
-                                        <option value="" disabled>Select your university</option>
-                                        {UNIVERSITIES.map(u => <option key={u} value={u}>{u}</option>)}
+                                        <option value="" disabled className="bg-card">Select your university</option>
+                                        {UNIVERSITIES.map(u => <option key={u} value={u} className="bg-card">{u}</option>)}
                                     </select>
                                 </div>
 
-                                {/* If "Other" university */}
                                 {formData.university === 'Other (specify below)' && (
                                     <div>
-                                        <label className="text-[10px] uppercase font-black tracking-widest text-white/40 ml-1">Your University Name *</label>
+                                        <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">Your University Name *</label>
                                         <input
                                             type="text"
                                             value={formData.universityOther}
                                             onChange={e => setFormData(prev => ({ ...prev, universityOther: e.target.value }))}
                                             placeholder="e.g. Summit University Offa"
-                                            className="w-full h-14 px-4 bg-zinc-950 border border-zinc-700 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200]/30 rounded-2xl text-white placeholder:text-zinc-600 font-medium mt-2 outline-none transition-colors"
+                                            className="w-full h-14 px-4 bg-muted border border-input focus:ring-1 focus:ring-primary/30 rounded-2xl text-foreground placeholder:text-muted-foreground font-medium mt-2 outline-none transition-colors"
                                         />
                                     </div>
                                 )}
 
-                                {/* Hostel / Campus Zone */}
                                 <div>
-                                    <label className="text-[10px] uppercase font-black tracking-widest text-white/40 ml-1">Hostel / Campus Zone *</label>
+                                    <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">Hostel / Campus Zone *</label>
                                     <select
                                         value={formData.campusZone}
                                         onChange={e => setFormData(prev => ({ ...prev, campusZone: e.target.value }))}
                                         aria-label="Select your campus zone"
                                         title="Select your campus zone"
-                                        className="w-full h-14 px-4 bg-zinc-950 border border-zinc-700 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200]/30 rounded-2xl text-white font-medium mt-2 outline-none appearance-none transition-colors"
+                                        className="w-full h-14 px-4 bg-muted border border-input focus:ring-1 focus:ring-primary/30 rounded-2xl text-foreground font-medium mt-2 outline-none appearance-none transition-colors"
                                     >
-                                        <option value="" disabled>Where will buyers find you?</option>
-                                        {HOSTEL_ZONES.map(z => <option key={z} value={z}>{z}</option>)}
+                                        <option value="" disabled className="bg-card">Where will buyers find you?</option>
+                                        {HOSTEL_ZONES.map(z => <option key={z} value={z} className="bg-card">{z}</option>)}
                                     </select>
-                                    <p className="text-[10px] text-white/30 font-medium mt-1.5 ml-1">Affects your delivery ETA shown to buyers</p>
+                                    <p className="text-[10px] text-muted-foreground/50 font-medium mt-1.5 ml-1">Affects your delivery ETA shown to buyers</p>
                                 </div>
 
-                                {/* Pickup Spot */}
                                 <div>
-                                    <label className="text-[10px] uppercase font-black tracking-widest text-white/40 ml-1">Preferred Pickup Spot (Optional)</label>
+                                    <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">Preferred Pickup Spot (Optional)</label>
                                     <input
                                         type="text"
                                         value={formData.pickupSpot}
                                         onChange={e => setFormData(prev => ({ ...prev, pickupSpot: e.target.value }))}
                                         placeholder="e.g. SUG complex gate, Block C canteen"
-                                        className="w-full h-14 px-4 bg-zinc-950 border border-zinc-700 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200]/30 rounded-2xl text-white placeholder:text-zinc-600 font-medium mt-2 outline-none transition-colors"
+                                        className="w-full h-14 px-4 bg-muted border border-input focus:ring-1 focus:ring-primary/30 rounded-2xl text-foreground placeholder:text-muted-foreground font-medium mt-2 outline-none transition-colors"
                                     />
                                 </div>
 
-                                {/* WhatsApp Number */}
                                 <div>
-                                    <label className="text-[10px] uppercase font-black tracking-widest text-white/40 ml-1 flex items-center gap-1.5">
-                                        <span className="text-green-400 text-sm">📱</span> WhatsApp Number *
+                                    <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1 flex items-center gap-1.5">
+                                        <span className="text-green-500 text-sm">📱</span> WhatsApp Number *
                                     </label>
                                     <input
                                         type="tel"
@@ -427,41 +411,39 @@ export default function SellerOnboardPage() {
                                         onChange={e => setFormData(prev => ({ ...prev, phoneNumber: e.target.value.replace(/\D/g, '').slice(0, 11) }))}
                                         placeholder="080XXXXXXXX"
                                         maxLength={11}
-                                        className="w-full h-14 px-4 bg-zinc-950 border border-zinc-700 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200]/30 rounded-2xl text-white placeholder:text-zinc-600 font-medium mt-2 outline-none transition-colors"
+                                        className="w-full h-14 px-4 bg-muted border border-input focus:ring-1 focus:ring-primary/30 rounded-2xl text-foreground placeholder:text-muted-foreground font-medium mt-2 outline-none transition-colors"
                                     />
-                                    <p className="text-[10px] text-white/30 font-medium mt-1.5 ml-1">Order alerts & buyer messages come here via WhatsApp</p>
+                                    <p className="text-[10px] text-muted-foreground/50 font-medium mt-1.5 ml-1">Order alerts & buyer messages come here via WhatsApp</p>
                                 </div>
                             </div>
 
-                            <Button onClick={handleNext} disabled={!isStep1Valid} className="w-full h-14 mt-2 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-[#FF6200]/10 transition-all">
+                            <Button onClick={handleNext} disabled={!isStep1Valid} className="w-full h-14 mt-2 bg-primary hover:opacity-90 text-primary-foreground font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-primary/10 transition-all border-none">
                                 Next: Your Shop <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         </div>
                     )}
 
-                    {/* ─── STEP 2: Your Shop ─── */}
                     {step === 2 && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
                             <div className="flex items-center gap-3 mb-4">
-                                <div className="h-10 w-10 rounded-xl bg-[#FF6200]/10 flex items-center justify-center"><Briefcase className="h-5 w-5 text-[#FF6200]" /></div>
+                                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center"><Briefcase className="h-5 w-5 text-primary" /></div>
                                 <div>
-                                    <h2 className="text-lg font-black text-white">Your Shop</h2>
-                                    <p className="text-xs font-bold text-white/40 uppercase tracking-widest">Tell buyers what you sell</p>
+                                    <h2 className="text-lg font-black text-foreground">Your Shop</h2>
+                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Tell buyers what you sell</p>
                                 </div>
                             </div>
 
-                            {/* Business Type */}
                             <div>
-                                <label className="text-[10px] uppercase font-black tracking-widest text-white/40 ml-1">Business Type</label>
+                                <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">Business Type</label>
                                 <div className="grid grid-cols-2 gap-3 mt-2">
                                     {[
-                                        { value: 'side_hustler', label: 'Student / Side Hustler', sub: 'No CAC needed ✓', color: 'border-[#FF6200] bg-[#FF6200]/10 text-white' },
-                                        { value: 'registered_business', label: 'Registered Business', sub: 'Have CAC docs', color: 'border-zinc-700 bg-zinc-950 text-white/60' },
+                                        { value: 'side_hustler', label: 'Student / Side Hustler', sub: 'No CAC needed ✓' },
+                                        { value: 'registered_business', label: 'Registered Business', sub: 'Have CAC docs' },
                                     ].map(opt => (
                                         <button
                                             key={opt.value}
                                             onClick={() => setFormData(prev => ({ ...prev, businessType: opt.value as any }))}
-                                            className={`p-4 rounded-2xl border-2 text-left transition-all ${formData.businessType === opt.value ? opt.color : 'border-zinc-800 bg-zinc-950/50 text-white/40'}`}
+                                            className={`p-4 rounded-2xl border-2 text-left transition-all ${formData.businessType === opt.value ? 'border-primary bg-primary/10 text-foreground' : 'border-border bg-muted/50 text-muted-foreground'}`}
                                         >
                                             <p className="text-sm font-black">{opt.label}</p>
                                             <p className="text-[10px] font-bold opacity-70 mt-0.5">{opt.sub}</p>
@@ -469,34 +451,32 @@ export default function SellerOnboardPage() {
                                     ))}
                                 </div>
                                 {formData.businessType === 'side_hustler' && (
-                                    <p className="text-[10px] text-[#FF6200]/70 font-bold mt-2 ml-1">
+                                    <p className="text-[10px] text-primary/80 font-bold mt-2 ml-1">
                                         🎉 No CAC registration needed — perfect for campus hustles!
                                     </p>
                                 )}
                             </div>
 
-                            {/* Shop Name */}
                             <div>
-                                <label className="text-[10px] uppercase font-black tracking-widest text-white/40 ml-1">Shop / Store Name (Optional)</label>
+                                <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">Shop / Store Name (Optional)</label>
                                 <input
                                     type="text"
                                     value={formData.shopName}
                                     onChange={e => setFormData(prev => ({ ...prev, shopName: e.target.value.slice(0, 40) }))}
                                     placeholder={`${user?.displayName?.split(' ')[0] || 'Your'}'s Shop`}
                                     maxLength={40}
-                                    className="w-full h-14 px-4 bg-zinc-950 border border-zinc-700 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200]/30 rounded-2xl text-white placeholder:text-zinc-600 font-medium mt-2 outline-none transition-colors"
+                                    className="w-full h-14 px-4 bg-muted border border-input focus:ring-1 focus:ring-primary/30 rounded-2xl text-foreground placeholder:text-muted-foreground font-medium mt-2 outline-none transition-colors"
                                 />
                                 {shopSlug && (
-                                    <p className="text-[10px] text-white/30 font-mono mt-1.5 ml-1 truncate">
-                                        🔗 marketbridge.com.ng/shop/<span className="text-[#FF6200]/70">{shopSlug}</span>
+                                    <p className="text-[10px] text-muted-foreground/50 font-mono mt-1.5 ml-1 truncate">
+                                        🔗 marketbridge.com.ng/shop/<span className="text-primary/70">{shopSlug}</span>
                                     </p>
                                 )}
                             </div>
 
-                            {/* Categories */}
                             <div>
-                                <label className="text-[10px] uppercase font-black tracking-widest text-white/40 ml-1">
-                                    What do you sell? * {formData.sellCategories.length > 0 && <span className="text-[#FF6200]">({formData.sellCategories.length}/3 selected)</span>}
+                                <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">
+                                    What do you sell? * {formData.sellCategories.length > 0 && <span className="text-primary">({formData.sellCategories.length}/3 selected)</span>}
                                 </label>
                                 <div className="grid grid-cols-2 gap-3 mt-2">
                                     {CATEGORIES.map(cat => {
@@ -508,10 +488,10 @@ export default function SellerOnboardPage() {
                                                 onClick={() => handleCategoryToggle(cat.value)}
                                                 disabled={maxReached}
                                                 className={`h-14 flex items-center gap-3 px-4 rounded-2xl border-2 font-bold text-sm transition-all text-left ${selected
-                                                    ? 'bg-[#FF6200]/10 border-[#FF6200] text-[#FF6200]'
+                                                    ? 'bg-primary/10 border-primary text-primary'
                                                     : maxReached
-                                                        ? 'bg-zinc-950/50 border-zinc-800 text-white/20 cursor-not-allowed'
-                                                        : 'bg-zinc-950 border-zinc-700 text-white/60 hover:border-zinc-500'
+                                                        ? 'bg-muted/50 border-border text-muted-foreground/30 cursor-not-allowed'
+                                                        : 'bg-muted border-input text-muted-foreground hover:border-foreground/30'
                                                     }`}
                                             >
                                                 <span className="text-xl">{cat.emoji}</span>
@@ -520,13 +500,12 @@ export default function SellerOnboardPage() {
                                         );
                                     })}
                                 </div>
-                                <p className="text-[10px] text-white/20 mt-2 ml-1">Max 3 categories on Starter plan</p>
+                                <p className="text-[10px] text-muted-foreground/30 mt-2 ml-1">Max 3 categories on Starter plan</p>
                             </div>
 
-                            {/* Service mode — only visible if Services is selected */}
                             {formData.sellCategories.includes('Services') && (
                                 <div>
-                                    <label className="text-[10px] uppercase font-black tracking-widest text-white/40 ml-1">How do you provide your service?</label>
+                                    <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">How do you provide your service?</label>
                                     <div className="grid grid-cols-3 gap-2 mt-2">
                                         {[
                                             { value: 'in_person', label: 'In-Person' },
@@ -537,8 +516,8 @@ export default function SellerOnboardPage() {
                                                 key={opt.value}
                                                 onClick={() => setFormData(prev => ({ ...prev, serviceMode: opt.value as any }))}
                                                 className={`h-12 rounded-xl border-2 font-bold text-sm transition-all ${formData.serviceMode === opt.value
-                                                    ? 'bg-[#FF6200]/10 border-[#FF6200] text-[#FF6200]'
-                                                    : 'bg-zinc-950 border-zinc-700 text-white/50 hover:border-zinc-500'
+                                                    ? 'bg-primary/10 border-primary text-primary'
+                                                    : 'bg-muted border-input text-muted-foreground hover:border-foreground/30'
                                                     }`}
                                             >
                                                 {opt.label}
@@ -549,52 +528,51 @@ export default function SellerOnboardPage() {
                             )}
 
                             <div className="flex gap-4">
-                                <Button onClick={handlePrev} variant="outline" className="flex-1 h-14 rounded-2xl font-bold border-zinc-700 bg-transparent text-white/60 hover:text-white hover:bg-white/5">Back</Button>
-                                <Button onClick={handleNext} disabled={!isStep2Valid} className="flex-1 h-14 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-[#FF6200]/10">
+                                <Button onClick={handlePrev} variant="outline" className="flex-1 h-14 rounded-2xl font-bold border-input bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted">Back</Button>
+                                <Button onClick={handleNext} disabled={!isStep2Valid} className="flex-1 h-14 bg-primary hover:opacity-90 text-primary-foreground font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-primary/10 border-none">
                                     Next <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
                             </div>
                         </div>
                     )}
 
-                    {/* ─── STEP 3: ID Verify ─── */}
                     {step === 3 && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
                             <div className="flex items-center gap-3 mb-4">
-                                <div className="h-10 w-10 rounded-xl bg-[#FF6200]/10 flex items-center justify-center"><User className="h-5 w-5 text-[#FF6200]" /></div>
+                                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center"><User className="h-5 w-5 text-primary" /></div>
                                 <div>
-                                    <h2 className="text-lg font-black text-white">Student ID Verification</h2>
-                                    <p className="text-xs font-bold text-white/40 uppercase tracking-widest">Keeps campus MarketBridge safe & trusted 🎓</p>
+                                    <h2 className="text-lg font-black text-foreground">Student ID Verification</h2>
+                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Keeps campus MarketBridge safe & trusted 🎓</p>
                                 </div>
                             </div>
 
-                            <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex items-start gap-3">
-                                <ShieldCheck className="h-5 w-5 text-[#FF6200] shrink-0 mt-0.5" />
-                                <p className="text-white/50 text-xs font-medium leading-relaxed">
-                                    Upload your <strong className="text-white/70">School ID, NIN Slip, or any government-issued ID</strong>. Blur your photo if needed — we only check name & school. Review takes 2–24 hours.
+                            <div className="bg-primary/5 border border-primary/10 rounded-2xl p-4 flex items-start gap-3">
+                                <ShieldCheck className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                                <p className="text-muted-foreground text-xs font-medium leading-relaxed">
+                                    Upload your <strong className="text-foreground/70">School ID, NIN Slip, or any government-issued ID</strong>. Blur your photo if needed — we only check name & school. Review takes 2–24 hours.
                                 </p>
                             </div>
 
-                            <div className="border-2 border-dashed border-zinc-700 hover:border-[#FF6200] transition-colors rounded-3xl p-12 flex flex-col items-center justify-center bg-zinc-950 relative cursor-pointer group">
+                            <div className="border-2 border-dashed border-input hover:border-primary transition-colors rounded-3xl p-12 flex flex-col items-center justify-center bg-muted relative cursor-pointer group">
                                 {formData.idCardUrl ? (
                                     <div className="flex flex-col items-center gap-3">
-                                        <div className="h-16 w-16 rounded-full bg-[#FF6200]/10 flex items-center justify-center">
-                                            <CheckCircle className="h-8 w-8 text-[#FF6200]" />
+                                        <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+                                            <CheckCircle className="h-8 w-8 text-primary" />
                                         </div>
-                                        <span className="text-white font-black uppercase tracking-wider">ID Uploaded! ✅</span>
-                                        <span className="text-[#FF6200] text-xs font-bold uppercase tracking-wider group-hover:underline">Tap to change</span>
+                                        <span className="text-foreground font-black uppercase tracking-wider">ID Uploaded! ✅</span>
+                                        <span className="text-primary text-xs font-bold uppercase tracking-wider group-hover:underline">Tap to change</span>
                                     </div>
                                 ) : isUploading ? (
                                     <div className="flex flex-col items-center gap-3">
-                                        <Loader2 className="h-10 w-10 text-[#FF6200] animate-spin" />
-                                        <span className="text-white/60 font-bold text-sm">Uploading... hang tight 📤</span>
+                                        <Loader2 className="h-10 w-10 text-primary animate-spin" />
+                                        <span className="text-muted-foreground font-bold text-sm">Uploading... hang tight 📤</span>
                                     </div>
                                 ) : (
                                     <>
-                                        <Upload className="h-12 w-12 text-white/20 mb-4 group-hover:text-[#FF6200] transition-colors" />
-                                        <span className="text-white font-black uppercase tracking-wide mb-1">Upload Your ID Card</span>
-                                        <span className="text-white/40 text-sm text-center font-medium">School ID, NIN Slip, Voter's Card · max 5MB</span>
-                                        <span className="text-white/20 text-[10px] mt-2">Tap or drag & drop</span>
+                                        <Upload className="h-12 w-12 text-muted-foreground/30 mb-4 group-hover:text-primary transition-colors" />
+                                        <span className="text-foreground font-black uppercase tracking-wide mb-1">Upload Your ID Card</span>
+                                        <span className="text-muted-foreground text-sm text-center font-medium">School ID, NIN Slip, Voter's Card · max 10MB</span>
+                                        <span className="text-muted-foreground/40 text-[10px] mt-2">Tap or drag & drop</span>
                                     </>
                                 )}
                                 <input
@@ -609,28 +587,27 @@ export default function SellerOnboardPage() {
                             </div>
 
                             <div className="flex gap-4">
-                                <Button onClick={handlePrev} variant="outline" className="flex-1 h-14 rounded-2xl font-bold border-zinc-700 bg-transparent text-white/60 hover:text-white hover:bg-white/5">Back</Button>
-                                <Button onClick={handleNext} disabled={!isStep3Valid} className="flex-1 h-14 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-[#FF6200]/10">
+                                <Button onClick={handlePrev} variant="outline" className="flex-1 h-14 rounded-2xl font-bold border-input bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted">Back</Button>
+                                <Button onClick={handleNext} disabled={!isStep3Valid} className="flex-1 h-14 bg-primary hover:opacity-90 text-primary-foreground font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-primary/10 border-none">
                                     Next <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
                             </div>
                         </div>
                     )}
 
-                    {/* ─── STEP 4: Bio & Submit ─── */}
                     {step === 4 && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
                             <div className="flex items-center gap-3 mb-4">
-                                <div className="h-10 w-10 rounded-xl bg-[#FF6200]/10 flex items-center justify-center"><FileText className="h-5 w-5 text-[#FF6200]" /></div>
+                                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center"><FileText className="h-5 w-5 text-primary" /></div>
                                 <div>
-                                    <h2 className="text-lg font-black text-white">Store Profile</h2>
-                                    <p className="text-xs font-bold text-white/40 uppercase tracking-widest">One last thing — tell buyers about you!</p>
+                                    <h2 className="text-lg font-black text-foreground">Store Profile</h2>
+                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">One last thing — tell buyers about you!</p>
                                 </div>
                             </div>
 
                             <div>
-                                <label className="text-[10px] uppercase font-black tracking-widest text-white/40 ml-1">
-                                    Your Bio <span className="text-white/20">(Optional — but highly recommended)</span>
+                                <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">
+                                    Your Bio <span className="text-muted-foreground/50">(Optional — but recommended)</span>
                                 </label>
                                 <textarea
                                     rows={4}
@@ -638,14 +615,13 @@ export default function SellerOnboardPage() {
                                     onChange={e => setFormData(prev => ({ ...prev, bio: e.target.value.slice(0, 200) }))}
                                     placeholder={`e.g. 2nd year UniAbuja student. Fresh UK thrift drops every Friday 🔥 DM to order!`}
                                     maxLength={200}
-                                    className="w-full p-5 bg-zinc-950 border border-zinc-700 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200]/30 rounded-2xl text-white placeholder:text-zinc-600 font-medium mt-2 outline-none resize-none transition-colors"
+                                    className="w-full p-5 bg-muted border border-input focus:ring-1 focus:ring-primary/30 rounded-2xl text-foreground placeholder:text-muted-foreground font-medium mt-2 outline-none resize-none transition-colors"
                                 />
-                                <p className="text-[10px] text-white/20 mt-1 ml-1 text-right">{formData.bio.length}/200</p>
+                                <p className="text-[10px] text-muted-foreground/30 mt-1 ml-1 text-right">{formData.bio.length}/200</p>
                             </div>
 
-                            {/* Summary card */}
-                            <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-5 space-y-3">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-white/20">Application Summary</p>
+                            <div className="bg-muted/30 border border-border rounded-3xl p-5 space-y-3">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">Application Summary</p>
                                 {[
                                     { label: 'University', val: formData.university === 'Other (specify below)' ? formData.universityOther : formData.university },
                                     { label: 'Zone', val: formData.campusZone },
@@ -654,20 +630,20 @@ export default function SellerOnboardPage() {
                                     { label: 'Type', val: formData.businessType === 'side_hustler' ? 'Student / Side Hustler' : 'Registered Business' },
                                 ].filter(r => r.val).map(row => (
                                     <div key={row.label} className="flex justify-between items-start gap-4">
-                                        <span className="text-[10px] font-black uppercase text-white/30">{row.label}</span>
-                                        <span className="text-sm font-bold text-white/60 text-right max-w-[60%] truncate">{row.val}</span>
+                                        <span className="text-[10px] font-black uppercase text-muted-foreground/50">{row.label}</span>
+                                        <span className="text-sm font-bold text-foreground/80 text-right max-w-[60%] truncate">{row.val}</span>
                                     </div>
                                 ))}
                             </div>
 
-                            <div className="bg-[#FF6200]/5 border border-[#FF6200]/10 rounded-2xl p-4">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-[#FF6200]/60 mb-1">No CAC · No stress · Review in 2–24 hrs</p>
-                                <p className="text-white/40 text-xs font-medium">You'll receive a WhatsApp message when your account is approved and ready to sell!</p>
+                            <div className="bg-primary/5 border border-primary/10 rounded-2xl p-4">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-primary/70 mb-1">No CAC · No stress · Review in 2–24 hrs</p>
+                                <p className="text-muted-foreground text-xs font-medium">You'll receive a WhatsApp message when your account is approved and ready to sell!</p>
                             </div>
 
                             <div className="flex gap-4">
-                                <Button onClick={handlePrev} variant="outline" className="flex-1 h-14 rounded-2xl font-bold border-zinc-700 bg-transparent text-white/60 hover:text-white hover:bg-white/5" disabled={isSubmitting}>Back</Button>
-                                <Button onClick={handleSubmit} disabled={isSubmitting} className="flex-[2] h-14 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-[#FF6200]/10 flex items-center justify-center gap-2">
+                                <Button onClick={handlePrev} variant="outline" className="flex-1 h-14 rounded-2xl font-bold border-input bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted" disabled={isSubmitting}>Back</Button>
+                                <Button onClick={handleSubmit} disabled={isSubmitting} className="flex-[2] h-14 bg-primary hover:opacity-90 text-primary-foreground font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-primary/10 flex items-center justify-center gap-2 border-none">
                                     {isSubmitting ? (
                                         <><Loader2 className="animate-spin h-5 w-5" /> Submitting...</>
                                     ) : (
@@ -679,9 +655,8 @@ export default function SellerOnboardPage() {
                     )}
                 </div>
 
-                {/* Support Link */}
-                <p className="text-center mt-6 text-white/20 text-[10px] font-bold">
-                    Stuck? <a href="https://wa.me/2348000000000?text=Hi%2C%20I%20need%20help%20setting%20up%20my%20seller%20account" target="_blank" rel="noopener noreferrer" className="text-[#FF6200]/60 hover:text-[#FF6200] transition-colors">Chat us on WhatsApp →</a>
+                <p className="text-center mt-6 text-muted-foreground/30 text-[10px] font-bold">
+                    Stuck? <a href="https://wa.me/2348000000000?text=Hi%2C%20I%20need%20help%20setting%20up%20my%20seller%20account" target="_blank" rel="noopener noreferrer" className="text-primary/60 hover:text-primary transition-colors">Chat us on WhatsApp →</a>
                 </p>
             </div>
         </div>

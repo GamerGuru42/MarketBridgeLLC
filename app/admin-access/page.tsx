@@ -150,24 +150,24 @@ function AdminAccessContent() {
     // ─── STEP 1: Role Select ───
     if (step === 'role') {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-zinc-950 relative overflow-hidden">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-[#FF6200]/5 rounded-full blur-[120px] pointer-events-none" />
+            <div className="min-h-screen flex items-center justify-center p-4 bg-background relative overflow-hidden transition-colors duration-300">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
                 <div className="w-full max-w-md relative z-10 text-center">
-                    <Link href="/" className="inline-flex items-center text-white/40 hover:text-white mb-8 uppercase text-[10px] font-black tracking-widest transition-colors py-3">
+                    <Link href="/" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-8 uppercase text-[10px] font-black tracking-widest transition-colors py-3">
                         <ArrowLeft className="mr-2 h-4 w-4" /> Return to Home
                     </Link>
                     <div className="flex justify-center mb-8">
                         <Logo showText={false} />
                     </div>
-                    <div className="inline-flex items-center gap-2 bg-red-950/30 border border-red-900/30 rounded-full px-4 py-1.5 mb-6">
-                        <Lock className="h-3 w-3 text-red-400" />
-                        <span className="text-[9px] font-black uppercase tracking-widest text-red-400">Internal Access Only</span>
+                    <div className="inline-flex items-center gap-2 bg-destructive/10 border border-destructive/20 rounded-full px-4 py-1.5 mb-6">
+                        <Lock className="h-3 w-3 text-destructive" />
+                        <span className="text-[9px] font-black uppercase tracking-widest text-destructive">Internal Access Only</span>
                     </div>
-                    <h1 className="text-4xl font-black uppercase tracking-tighter text-white italic mb-2">
-                        Team <span className="text-[#FF6200]">Access</span>
+                    <h1 className="text-4xl font-black uppercase tracking-tighter text-foreground italic mb-2">
+                        Team <span className="text-primary">Access</span>
                     </h1>
-                    <p className="text-white/30 text-xs font-medium mb-10">
+                    <p className="text-muted-foreground text-xs font-medium mb-10">
                         MarketBridge internal team registration. Not for public use.
                     </p>
 
@@ -175,31 +175,31 @@ function AdminAccessContent() {
                         {/* Admin */}
                         <button
                             onClick={() => { setRole('admin'); setStep('pin'); }}
-                            className="group bg-zinc-900 border-2 border-zinc-700 rounded-[2rem] p-8 text-center hover:border-[#FF6200]/40 transition-all duration-300 flex flex-col items-center"
+                            className="group bg-card border-2 border-border rounded-[2rem] p-8 text-center hover:border-primary/40 transition-all duration-300 flex flex-col items-center"
                         >
-                            <div className="h-16 w-16 rounded-2xl bg-zinc-800 flex items-center justify-center mb-5 group-hover:bg-[#FF6200]/10 transition-colors">
-                                <ShieldCheck className="h-8 w-8 text-zinc-400 group-hover:text-[#FF6200] transition-colors" />
+                            <div className="h-16 w-16 rounded-2xl bg-muted flex items-center justify-center mb-5 group-hover:bg-primary/10 transition-colors">
+                                <ShieldCheck className="h-8 w-8 text-muted-foreground group-hover:text-primary transition-colors" />
                             </div>
-                            <h3 className="text-base font-black text-white uppercase tracking-tight mb-1">Admin</h3>
-                            <p className="text-zinc-500 text-[9px] font-bold uppercase tracking-widest">Operations team</p>
+                            <h3 className="text-base font-black text-foreground uppercase tracking-tight mb-1">Admin</h3>
+                            <p className="text-muted-foreground text-[9px] font-bold uppercase tracking-widest">Operations team</p>
                         </button>
 
                         {/* CEO */}
                         <button
                             onClick={() => { setRole('ceo'); setStep('pin'); }}
-                            className="group bg-[#FF6200]/10 border-2 border-[#FF6200]/30 rounded-[2rem] p-8 text-center hover:border-[#FF6200] transition-all duration-300 flex flex-col items-center"
+                            className="group bg-primary/5 border-2 border-primary/30 rounded-[2rem] p-8 text-center hover:border-primary transition-all duration-300 flex flex-col items-center"
                         >
-                            <div className="h-16 w-16 rounded-2xl bg-[#FF6200]/20 flex items-center justify-center mb-5">
-                                <Crown className="h-8 w-8 text-[#FF6200]" />
+                            <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-5">
+                                <Crown className="h-8 w-8 text-primary" />
                             </div>
-                            <h3 className="text-base font-black text-white uppercase tracking-tight mb-1">CEO</h3>
-                            <p className="text-zinc-500 text-[9px] font-bold uppercase tracking-widest">Executive access</p>
+                            <h3 className="text-base font-black text-foreground uppercase tracking-tight mb-1">CEO</h3>
+                            <p className="text-muted-foreground text-[9px] font-bold uppercase tracking-widest">Executive access</p>
                         </button>
                     </div>
 
-                    <p className="text-white/20 text-xs">
+                    <p className="text-muted-foreground text-xs font-semibold">
                         Already have an account?{' '}
-                        <Link href="/login" className="text-[#FF6200] hover:underline font-bold">Log In</Link>
+                        <Link href="/login" className="text-primary hover:underline font-bold">Log In</Link>
                     </p>
                 </div>
             </div>
@@ -209,43 +209,43 @@ function AdminAccessContent() {
     // ─── STEP 2: PIN Gate ───
     if (step === 'pin') {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-zinc-950">
-                <Card className="w-full max-w-sm bg-zinc-900 border border-zinc-800 shadow-2xl rounded-[2.5rem]">
+            <div className="min-h-screen flex items-center justify-center p-4 bg-background transition-colors duration-300">
+                <Card className="w-full max-w-sm bg-card border border-border shadow-2xl rounded-[2.5rem]">
                     <CardHeader className="p-8 pb-0 text-center">
                         <div className="flex justify-between items-center mb-4">
                             <Button
                                 variant="ghost"
                                 onClick={() => setStep('role')}
-                                className="text-white/40 hover:text-white uppercase text-[10px] font-black tracking-widest"
+                                className="text-muted-foreground hover:text-foreground uppercase text-[10px] font-black tracking-widest"
                             >
                                 <ArrowLeft className="mr-2 h-4 w-4" /> Back
                             </Button>
-                            <Link href="/" className="text-white/20 hover:text-white uppercase text-[10px] font-black tracking-widest transition-colors">
+                            <Link href="/" className="text-muted-foreground hover:text-foreground uppercase text-[10px] font-black tracking-widest transition-colors">
                                 Home
                             </Link>
                         </div>
-                        <div className="mx-auto h-20 w-20 rounded-3xl bg-zinc-800 border border-zinc-700 flex items-center justify-center mb-5">
-                            <KeyRound className="h-10 w-10 text-[#FF6200]" />
+                        <div className="mx-auto h-20 w-20 rounded-3xl bg-muted border border-border flex items-center justify-center mb-5">
+                            <KeyRound className="h-10 w-10 text-primary" />
                         </div>
-                        <CardTitle className="text-2xl font-black uppercase tracking-tighter text-white mb-1">
+                        <CardTitle className="text-2xl font-black uppercase tracking-tighter text-foreground mb-1">
                             {role === 'ceo' ? 'CEO' : 'Admin'} Authorization
                         </CardTitle>
-                        <CardDescription className="text-white/40 text-[10px] font-bold uppercase tracking-widest">
+                        <CardDescription className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest">
                             Enter your team access code
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="p-8 space-y-5">
                         {pinError && (
-                            <div className="bg-red-950/30 border border-red-900/40 rounded-2xl p-3 flex items-center gap-3">
-                                <AlertTriangle className="h-4 w-4 text-red-500 shrink-0" />
-                                <p className="text-red-400 text-[10px] font-black uppercase tracking-wider">{pinError}</p>
+                            <div className="bg-destructive/10 border border-destructive/20 rounded-2xl p-3 flex items-center gap-3">
+                                <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
+                                <p className="text-destructive text-[10px] font-black uppercase tracking-wider">{pinError}</p>
                             </div>
                         )}
                         <form onSubmit={handlePinSubmit} className="space-y-4">
                             <input
                                 name="pin"
                                 type="password"
-                                className="w-full h-16 bg-zinc-950 border border-zinc-700 rounded-2xl text-center tracking-[0.5em] font-mono text-xl focus:outline-none focus:ring-2 focus:ring-[#FF6200]/40 text-white placeholder:text-zinc-700 transition-all font-password"
+                                className="w-full h-16 bg-muted border border-input rounded-2xl text-center tracking-[0.5em] font-mono text-xl focus:outline-none focus:ring-2 focus:ring-primary/40 text-foreground placeholder:text-muted-foreground transition-all font-password"
                                 value={pinValue}
                                 onChange={e => setPinValue(e.target.value)}
                                 placeholder="••••••••"
@@ -255,12 +255,12 @@ function AdminAccessContent() {
                             />
                             <Button
                                 type="submit"
-                                className="w-full h-12 rounded-2xl bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest"
+                                className="w-full h-12 rounded-2xl bg-primary hover:opacity-90 text-primary-foreground font-black uppercase tracking-widest border-none"
                             >
                                 <Lock className="h-4 w-4 mr-2" /> Verify Access
                             </Button>
                         </form>
-                        <p className="text-center text-white/20 text-[9px] font-bold uppercase tracking-widest">
+                        <p className="text-center text-muted-foreground/30 text-[9px] font-bold uppercase tracking-widest">
                             All access attempts are logged
                         </p>
                     </CardContent>
@@ -271,30 +271,30 @@ function AdminAccessContent() {
 
     // ─── STEP 3: Create Account ───
     return (
-        <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-zinc-950 relative">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-[#FF6200]/5 rounded-full blur-[100px] pointer-events-none" />
-            <Card className="w-full max-w-md bg-zinc-900 border border-zinc-800 shadow-2xl rounded-[2.5rem] p-8 md:p-10 relative z-10">
+        <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-background relative transition-colors duration-300">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+            <Card className="w-full max-w-md bg-card border-border shadow-2xl rounded-[2.5rem] p-8 md:p-10 relative z-10">
                 <CardHeader className="p-0 mb-8 text-center">
                     <div className="flex justify-between items-center mb-4">
                         <Button
                             variant="ghost"
                             onClick={() => setStep('pin')}
-                            className="text-white/40 hover:text-white uppercase text-[10px] font-black tracking-widest"
+                            className="text-muted-foreground hover:text-foreground uppercase text-[10px] font-black tracking-widest"
                         >
                             <ArrowLeft className="mr-2 h-4 w-4" /> Back
                         </Button>
-                        <Link href="/" className="text-white/20 hover:text-white uppercase text-[10px] font-black tracking-widest transition-colors">
+                        <Link href="/" className="text-muted-foreground hover:text-foreground uppercase text-[10px] font-black tracking-widest transition-colors">
                             Home
                         </Link>
                     </div>
                     <div className="flex justify-center mb-6">
                         <Logo showText={false} className="scale-125" />
                     </div>
-                    <CardTitle className="text-3xl font-black uppercase tracking-tighter text-white">
+                    <CardTitle className="text-3xl font-black uppercase tracking-tighter text-foreground">
                         Create {role === 'ceo' ? 'CEO' : 'Admin'} Account
                     </CardTitle>
-                    <CardDescription className="text-white/40 font-bold uppercase tracking-widest text-[10px] mt-2">
-                        Access level: <span className="text-[#FF6200]">{role === 'ceo' ? 'Executive (Full)' : 'Operations Admin'}</span>
+                    <CardDescription className="text-muted-foreground font-bold uppercase tracking-widest text-[10px] mt-2">
+                        Access level: <span className="text-primary">{role === 'ceo' ? 'Executive (Full)' : 'Operations Admin'}</span>
                     </CardDescription>
                 </CardHeader>
 
@@ -302,7 +302,7 @@ function AdminAccessContent() {
                     <form onSubmit={handleSignup} className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1.5">
-                                <label className="text-[10px] uppercase font-black tracking-widest text-white/40">First Name</label>
+                                <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-2">First Name</label>
                                 <input
                                     name="firstName"
                                     type="text"
@@ -312,11 +312,11 @@ function AdminAccessContent() {
                                     required
                                     placeholder="John"
                                     title="Enter your first name"
-                                    className="w-full h-12 px-4 bg-zinc-950 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/40 transition-all font-medium"
+                                    className="w-full h-12 px-4 bg-muted border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-medium"
                                 />
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-[10px] uppercase font-black tracking-widest text-white/40">Last Name</label>
+                                <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-2">Last Name</label>
                                 <input
                                     name="lastName"
                                     type="text"
@@ -325,13 +325,13 @@ function AdminAccessContent() {
                                     placeholder="Doe"
                                     title="Enter your last name"
                                     required
-                                    className="w-full h-12 px-4 bg-zinc-950 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/40 transition-all font-medium"
+                                    className="w-full h-12 px-4 bg-muted border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-medium"
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-1.5">
-                            <label className="text-[10px] uppercase font-black tracking-widest text-white/40">Email Address</label>
+                            <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-2">Email Address</label>
                             <input
                                 name="email"
                                 type="email"
@@ -339,12 +339,12 @@ function AdminAccessContent() {
                                 onChange={handleChange}
                                 required
                                 placeholder="team@marketbridge.com.ng"
-                                className="w-full h-12 px-4 bg-zinc-950 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/40 transition-all font-medium"
+                                className="w-full h-12 px-4 bg-muted border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-medium"
                             />
                         </div>
 
                         <div className="space-y-1.5">
-                            <label className="text-[10px] uppercase font-black tracking-widest text-white/40">Password</label>
+                            <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-2">Password</label>
                             <input
                                 name="password"
                                 type="password"
@@ -352,12 +352,12 @@ function AdminAccessContent() {
                                 onChange={handleChange}
                                 required
                                 placeholder="Min 8 characters"
-                                className="w-full h-12 px-4 bg-zinc-950 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/40 transition-all font-medium"
+                                className="w-full h-12 px-4 bg-muted border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-medium"
                             />
                         </div>
 
                         <div className="space-y-1.5">
-                            <label className="text-[10px] uppercase font-black tracking-widest text-white/40">Confirm Password</label>
+                            <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-2">Confirm Password</label>
                             <input
                                 name="passwordConfirm"
                                 type="password"
@@ -366,13 +366,13 @@ function AdminAccessContent() {
                                 placeholder="••••••••"
                                 title="Confirm your secure password"
                                 required
-                                className="w-full h-12 px-4 bg-zinc-950 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/40 transition-all font-medium"
+                                className="w-full h-12 px-4 bg-muted border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-medium"
                             />
                         </div>
 
                         <Button
                             type="submit"
-                            className="w-full h-12 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest rounded-xl shadow-lg shadow-[#FF6200]/10 flex items-center justify-center gap-2 group mt-2"
+                            className="w-full h-12 bg-primary hover:opacity-90 text-primary-foreground font-black uppercase tracking-widest rounded-xl shadow-lg shadow-primary/10 flex items-center justify-center gap-2 group mt-2 border-none"
                             disabled={isLoading}
                         >
                             {isLoading ? <Loader2 className="animate-spin h-5 w-5" /> : (
@@ -384,7 +384,7 @@ function AdminAccessContent() {
                         </Button>
                     </form>
 
-                    <p className="text-center text-white/20 text-[10px] font-bold uppercase tracking-widest mt-6">
+                    <p className="text-center text-muted-foreground/30 text-[10px] font-bold uppercase tracking-widest mt-6">
                         This page is for internal MarketBridge team only
                     </p>
                 </CardContent>
@@ -396,8 +396,8 @@ function AdminAccessContent() {
 export default function AdminAccessPage() {
     return (
         <Suspense fallback={
-            <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
-                <Loader2 className="animate-spin h-8 w-8 text-[#FF6200]" />
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <Loader2 className="animate-spin h-8 w-8 text-primary" />
             </div>
         }>
             <AdminAccessContent />

@@ -4,14 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { TrendingUp, Users, DollarSign, Activity, MapPin, ShieldCheck, MessageSquare, AlertTriangle, Loader2, Store, Crown, ShoppingBag } from 'lucide-react';
+import { TrendingUp, Users, DollarSign, Activity, MapPin, ShieldCheck, MessageSquare, AlertTriangle, Loader2, Store, Crown, ShoppingBag, ArrowUpRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { fetchCEOStats, fetchProposals, Proposal, CEOStats } from '@/lib/analytics';
-
 
 export default function CEOPage() {
     const { user, loading } = useAuth();
@@ -25,8 +24,8 @@ export default function CEOPage() {
     const [regionalStats, setRegionalStats] = useState({ abuja: 0, lagos: 0 });
 
     React.useEffect(() => {
-        if (!loading && (!user || (user.role !== 'ceo' && user.role !== 'cofounder'))) {
-            router.push('/login');
+        if (!loading && (!user || !['ceo', 'cofounder'].includes(user.role))) {
+            router.replace('/login');
         }
     }, [user, loading, router]);
 
@@ -47,13 +46,13 @@ export default function CEOPage() {
                 const { count: lagosCount } = await supabase.from('users').select('*', { count: 'exact', head: true }).ilike('location', '%Lagos%');
                 setRegionalStats({ abuja: abujaCount || 0, lagos: lagosCount || 0 });
 
-                // 4. Fetch Live Comms (Fallback to general admin channel)
+                // 4. Fetch Live Comms
                 try {
                     const { data: recentMsgs } = await supabase
                         .from('admin_channel_messages')
                         .select('*, sender:users!sender_id(display_name)')
                         .order('created_at', { ascending: false })
-                        .limit(6);
+                        .limit(8);
                     setMessages(recentMsgs || []);
                 } catch (e) { setMessages([]); }
 
@@ -68,131 +67,129 @@ export default function CEOPage() {
     }, [user]);
 
     const handleAction = async (id: string, action: 'approve' | 'decline') => {
-        // Optimistic UI Update
         setProposals(prev => prev.map(p => p.id === id ? { ...p, status: action === 'approve' ? 'approved' : 'declined' } : p));
-        // Real app would patch the Supabase proposal table here
+        // Real logic would update database
     };
 
     if (loading || loadingData) return (
-        <div className="min-h-screen bg-[#FAFAFA] dark:bg-zinc-950 flex items-center justify-center">
-            <Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" />
+        <div className="min-h-screen bg-background flex items-center justify-center transition-colors duration-300">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
         </div>
     );
-    if (!user || (user.role !== 'ceo' && user.role !== 'cofounder')) return null;
+
+    if (!user || !['ceo', 'cofounder'].includes(user.role)) return null;
 
     return (
-        <div className="min-h-screen bg-[#FAFAFA] dark:bg-zinc-950 text-zinc-900 dark:text-white selection:bg-[#FF6200] selection:text-white pt-28 pb-20">
-            <div className="container px-6 mx-auto max-w-7xl space-y-12">
+        <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground transition-colors duration-300 pt-32 pb-20">
+            <div className="container px-4 mx-auto max-w-7xl space-y-12">
 
                 {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 border-b border-zinc-200 pb-12">
-                    <div className="space-y-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 border-b border-border pb-12 relative overflow-hidden">
+                    <div className="space-y-6 relative z-10">
                         <div className="flex items-center gap-3">
-                            <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">Executive Node</span>
+                            <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground">Command Center</span>
                         </div>
-                        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic">
-                            CEO <span className="text-[#FF6200]">Command</span>
+                        <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic">
+                            Vision <span className="text-primary">Command</span>
                         </h1>
-                        <p className="text-zinc-500 font-medium italic">
-                            Global operations active. Logged in as <span className="text-zinc-900 font-bold">{user.displayName}</span>
+                        <p className="text-muted-foreground font-medium italic flex items-center gap-2">
+                            Welcome back, <span className="text-foreground font-black uppercase tracking-tight">{user.displayName}</span> — CEO Dashboard
                         </p>
                     </div>
 
-                    <div className="flex flex-wrap gap-2 md:mb-2">
+                    <div className="flex flex-wrap gap-3 relative z-10">
                         {[
-                            { label: 'Subscriptions', href: '/admin/subscriptions', icon: Crown },
-                            { label: 'Verify Sellers', href: '/admin/verify-sellers', icon: ShieldCheck },
-                            { label: 'Payouts', href: '/admin/payouts', icon: DollarSign },
-                            { label: 'Orders', href: '/admin/orders', icon: ShoppingBag },
+                            { label: 'Market Insights', href: '/admin/operations', icon: TrendingUp },
+                            { label: 'Security Protocols', href: '/admin/technical', icon: ShieldCheck },
+                            { label: 'Direct Relay', href: '/admin/executive-chat', icon: MessageSquare },
                         ].map((link, i) => (
                             <Link
                                 key={i}
                                 href={link.href}
-                                className="h-12 px-6 flex items-center justify-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-zinc-900 dark:text-white font-black uppercase tracking-widest text-[9px] hover:bg-[#FF6200]/5 hover:border-[#FF6200]/20 transition-all shadow-sm"
+                                className="h-14 px-8 flex items-center justify-center bg-card border border-border rounded-[1.25rem] text-foreground font-black uppercase tracking-widest text-[10px] hover:border-primary/30 hover:bg-muted/50 transition-all shadow-sm group"
                             >
-                                <link.icon className="h-3.5 w-3.5 mr-2 text-[#FF6200]" />
+                                <link.icon className="h-4 w-4 mr-3 text-primary group-hover:scale-110 transition-transform" />
                                 {link.label}
+                                <ArrowUpRight className="h-3 w-3 ml-2 opacity-30 group-hover:opacity-100 transition-opacity" />
                             </Link>
                         ))}
                     </div>
                 </div>
 
-                {/* Strategic KPIs */}
+                {/* Primary Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <Card className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm rounded-3xl p-6 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-6 opacity-5"><DollarSign className="h-20 w-20 text-[#00A355]" /></div>
-                        <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] mb-4">Total Liquid Volume</p>
-                        <div className="text-4xl font-black text-zinc-900 dark:text-white italic font-heading tracking-tighter">₦{stats?.gmv.toLocaleString() || '0'}</div>
-                        <p className="text-xs text-[#00A355] font-bold mt-2 flex items-center"><TrendingUp className="h-3 w-3 mr-1" /> Verified Revenue</p>
-                    </Card>
-                    <Card className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm rounded-3xl p-6 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-6 opacity-5"><Store className="h-20 w-20 text-[#FF6200]" /></div>
-                        <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] mb-4">Certified Dealers</p>
-                        <div className="text-4xl font-black text-zinc-900 dark:text-white italic font-heading tracking-tighter">{stats?.activeDealers || 0}</div>
-                        <p className="text-xs text-[#FF6200] font-bold mt-2">Verified Sellers Mapped</p>
-                    </Card>
-                    <Card className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm rounded-3xl p-6 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-6 opacity-5"><Activity className="h-20 w-20 text-blue-500" /></div>
-                        <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] mb-4">Active Listings</p>
-                        <div className="text-4xl font-black text-zinc-900 dark:text-white italic font-heading tracking-tighter">{stats?.activeListings || 0}</div>
-                        <p className="text-xs text-blue-500 font-bold mt-2">Live Inventory Count</p>
-                    </Card>
-                    <Card className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm rounded-3xl p-6 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-6 opacity-5"><ShieldCheck className="h-20 w-20 text-purple-500" /></div>
-                        <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] mb-4">Platform Users</p>
-                        <div className="text-4xl font-black text-zinc-900 dark:text-white italic font-heading tracking-tighter">{stats?.totalUsers || 0}</div>
-                        <p className="text-xs text-purple-500 font-bold mt-2">Trust Score: {Math.round(stats?.trustScore || 100)}%</p>
-                    </Card>
+                    {[
+                        { label: 'Liquid Volume', value: `₦${stats?.gmv.toLocaleString() || '0'}`, icon: DollarSign, sub: 'Verified Revenue', color: 'text-green-500' },
+                        { label: 'Certified Entities', value: stats?.activeDealers || 0, icon: Store, sub: 'Dealers Mapped', color: 'text-primary' },
+                        { label: 'Active Assets', value: stats?.activeListings || 0, icon: ShoppingBag, sub: 'Inventory Count', color: 'text-orange-500' },
+                        { label: 'Trust Index', value: `${Math.round(stats?.trustScore || 100)}%`, icon: ShieldCheck, sub: 'Platform Stability', color: 'text-purple-500' },
+                    ].map((card, i) => (
+                        <Card key={i} className="bg-card border-border shadow-sm rounded-[2.5rem] p-8 relative overflow-hidden hover:border-primary/20 transition-all group">
+                            <div className={`absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity ${card.color}`}>
+                                <card.icon className="h-24 w-24" />
+                            </div>
+                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] mb-4">{card.label}</p>
+                            <div className="text-4xl font-black text-foreground italic font-heading tracking-tighter mb-2">{card.value}</div>
+                            <p className={`text-[10px] font-black uppercase tracking-widest ${card.color} flex items-center`}>
+                                <TrendingUp className="h-3 w-3 mr-2" /> {card.sub}
+                            </p>
+                        </Card>
+                    ))}
                 </div>
 
-
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                    {/* Proposal Queue */}
-                    <Card className="lg:col-span-3 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm rounded-[2rem] overflow-hidden">
-                        <div className="p-6 bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-                            <div>
-                                <h3 className="text-lg font-black uppercase tracking-tighter text-zinc-900 dark:text-white">Strategic Proposals</h3>
-                                <p className="text-xs text-zinc-500 font-medium">Live memos from operational divisions.</p>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                    {/* Proposal Nexus */}
+                    <Card className="lg:col-span-2 bg-card border-border shadow-sm rounded-[3rem] overflow-hidden transition-colors duration-300">
+                        <CardHeader className="p-10 border-b border-border bg-muted/20">
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <h3 className="text-2xl font-black uppercase tracking-tighter italic">Strategic Proposals</h3>
+                                    <p className="text-xs text-muted-foreground font-black uppercase tracking-widest mt-1 opacity-60">Operations & Strategy Memos</p>
+                                </div>
+                                <Badge className="bg-primary/20 text-primary border-none text-[10px] font-black h-8 px-4 rounded-full">
+                                    {proposals.filter(p => p.status === 'pending').length} Pending
+                                </Badge>
                             </div>
-                            <Badge className="bg-[#FF6200]/10 text-[#FF6200] border-none shadow-none text-xs font-black uppercase">{proposals.filter(p => p.status === 'pending').length} Actionable</Badge>
-                        </div>
-                        <div className="divide-y divide-zinc-100">
+                        </CardHeader>
+                        <div className="divide-y divide-border">
                             {proposals.length === 0 ? (
-                                <div className="p-16 text-center">
-                                    <AlertTriangle className="h-12 w-12 text-zinc-300 mx-auto mb-4" />
-                                    <h4 className="text-zinc-500 font-black uppercase tracking-widest text-sm">Dashboard Clear</h4>
+                                <div className="p-32 text-center">
+                                    <Activity className="h-16 w-16 text-muted-foreground/10 mx-auto mb-6" />
+                                    <h4 className="text-muted-foreground font-black uppercase tracking-widest text-xs opacity-30 italic">No proposals in queue</h4>
                                 </div>
                             ) : (
                                 proposals.map(proposal => (
-                                    <div key={proposal.id} className="p-6 hover:bg-zinc-50 transition-colors">
-                                        <div className="flex justify-between items-start mb-4">
-                                            <div className="flex gap-4">
-                                                <div className="h-12 w-12 rounded-xl bg-[#FF6200]/10 flex items-center justify-center text-[#FF6200]">
-                                                    <Activity className="h-6 w-6" />
+                                    <div key={proposal.id} className="p-10 hover:bg-muted/5 transition-colors group">
+                                        <div className="flex justify-between items-start mb-6">
+                                            <div className="flex gap-6">
+                                                <div className="h-14 w-14 rounded-2xl bg-muted border border-border flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                                                    <Crown className="h-7 w-7" />
                                                 </div>
                                                 <div>
-                                                    <h4 className="font-black text-zinc-900 italic tracking-tighter uppercase">{proposal.title}</h4>
-                                                    <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">
-                                                        Author ID: {proposal.author_id ? proposal.author_id.substring(0, 8) : 'Sys'} // {proposal.created_at ? new Date(proposal.created_at).toLocaleDateString() : 'N/A'}
+                                                    <h4 className="font-black text-foreground italic tracking-tighter uppercase text-lg group-hover:text-primary transition-colors">{proposal.title}</h4>
+                                                    <p className="text-[9px] text-muted-foreground font-black uppercase tracking-[0.2em] mt-1 opacity-60">
+                                                        Auth-Signature: {proposal.author_id ? proposal.author_id.substring(0, 8).toUpperCase() : 'SYSTEM'} // {new Date().toLocaleDateString()}
                                                     </p>
                                                 </div>
                                             </div>
                                             <Badge className={
-                                                proposal.status === 'pending' ? 'bg-[#FF6200]/10 text-[#FF6200] border-none shadow-none' :
-                                                    proposal.status === 'approved' ? 'bg-[#00A355]/10 text-[#00A355] border-none shadow-none' :
-                                                        'bg-red-50 text-red-600 border-none shadow-none'
+                                                proposal.status === 'pending' ? 'bg-orange-500/10 text-orange-500' :
+                                                    proposal.status === 'approved' ? 'bg-green-500/10 text-green-500' :
+                                                        'bg-red-500/10 text-red-500'
                                             }>
                                                 {proposal.status.toUpperCase()}
                                             </Badge>
                                         </div>
-                                        <p className="text-sm text-zinc-600 italic font-medium leading-relaxed mb-6 bg-zinc-50 p-4 rounded-2xl">
-                                            "{proposal.description}"
-                                        </p>
+                                        <div className="p-6 bg-muted/40 rounded-2xl mb-8 border border-border/50">
+                                            <p className="text-sm text-foreground/80 italic font-medium leading-relaxed">
+                                                "{proposal.description}"
+                                            </p>
+                                        </div>
                                         {proposal.status === 'pending' && (
-                                            <div className="flex gap-3">
-                                                <Button size="sm" onClick={() => handleAction(proposal.id, 'approve')} className="bg-green-600 hover:bg-green-700 text-white font-black uppercase tracking-widest text-[9px] h-8 px-6">Ratify Memo</Button>
-                                                <Button size="sm" onClick={() => handleAction(proposal.id, 'decline')} variant="outline" className="border-red-200 text-red-600 hover:bg-red-50 text-[9px] font-black uppercase tracking-widest h-8 px-6">Veto Memo</Button>
+                                            <div className="flex gap-4">
+                                                <Button size="sm" onClick={() => handleAction(proposal.id, 'approve')} className="bg-primary hover:opacity-90 text-primary-foreground font-black uppercase tracking-widest text-[10px] h-11 px-8 rounded-xl border-none shadow-lg shadow-primary/10">Ratify Proposal</Button>
+                                                <Button size="sm" onClick={() => handleAction(proposal.id, 'decline')} variant="outline" className="border-red-500/20 text-red-500 hover:bg-red-500/10 text-[10px] font-black uppercase tracking-widest h-11 px-8 rounded-xl">Veto Memo</Button>
                                             </div>
                                         )}
                                     </div>
@@ -201,60 +198,68 @@ export default function CEOPage() {
                         </div>
                     </Card>
 
-                    {/* Regional & System Sidebar */}
-                    <div className="space-y-8">
-                        {/* Regional Penetration */}
-                        <Card className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm rounded-3xl p-6">
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 flex items-center gap-2 mb-6">
-                                <MapPin className="h-3 w-3 text-[#FF6200]" /> Regional Saturation
+                    {/* Regional & Intel */}
+                    <div className="lg:col-span-1 space-y-8">
+                        {/* Market Penetration */}
+                        <Card className="bg-card border-border shadow-sm rounded-[2.5rem] p-10 transition-colors duration-300">
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground flex items-center gap-3 mb-10">
+                                <MapPin className="h-4 w-4 text-primary" /> Regional Saturation
                             </h3>
-                            <div className="space-y-6">
-                                <div>
-                                    <div className="flex justify-between text-xs font-black uppercase mb-2">
-                                        <span className="text-zinc-900">Abuja (HQ)</span>
-                                        <span className="text-[#FF6200]">{regionalStats.abuja}</span>
+                            <div className="space-y-10">
+                                {[
+                                    { label: 'Abuja (HQ)', value: regionalStats.abuja, color: 'bg-primary' },
+                                    { label: 'Lagos Island', value: regionalStats.lagos, color: 'bg-green-500' },
+                                ].map((reg, i) => (
+                                    <div key={i} className="group">
+                                        <div className="flex justify-between items-end mb-3">
+                                            <span className="text-sm font-black uppercase tracking-tighter italic">{reg.label}</span>
+                                            <span className="text-xl font-black text-primary font-mono">{reg.value}</span>
+                                        </div>
+                                        <div className="h-2.5 w-full bg-muted rounded-full overflow-hidden border border-border">
+                                            <div className={`h-full ${reg.color} transition-all duration-1000 ease-out`} style={{ width: `${Math.min((reg.value / (stats?.totalUsers || 1)) * 100, 100)}%` }}></div>
+                                        </div>
                                     </div>
-                                    <div className="h-2 w-full bg-zinc-100 rounded-full overflow-hidden">
-                                        <div className="h-full bg-[#FF6200]" style={{ width: `${Math.min((regionalStats.abuja / (stats?.totalUsers || 1)) * 100, 100)}%` }}></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div className="flex justify-between text-xs font-black uppercase mb-2">
-                                        <span className="text-zinc-900">Lagos</span>
-                                        <span className="text-[#00A355]">{regionalStats.lagos}</span>
-                                    </div>
-                                    <div className="h-2 w-full bg-zinc-100 rounded-full overflow-hidden">
-                                        <div className="h-full bg-[#00A355]" style={{ width: `${Math.min((regionalStats.lagos / (stats?.totalUsers || 1)) * 100, 100)}%` }}></div>
-                                    </div>
-                                </div>
+                                ))}
                             </div>
                         </Card>
 
-                        {/* Live Comms Relay */}
-                        <Card className="bg-zinc-900 text-white border-none shadow-xl shadow-[#FF6200]/10 rounded-3xl overflow-hidden flex flex-col h-[350px]">
-                            <div className="p-4 bg-zinc-950 flex items-center justify-between">
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white flex items-center gap-2">
-                                    <div className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" /> Live Relay
+                        {/* Intelligence Relay */}
+                        <Card className="bg-black text-white border-none shadow-2xl shadow-primary/10 rounded-[2.5rem] overflow-hidden flex flex-col h-[500px]">
+                            <div className="p-6 bg-zinc-950/50 flex items-center justify-between border-b border-white/5">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50 flex items-center gap-3">
+                                    <div className="h-2 w-2 rounded-full bg-primary animate-pulse" /> Live Intel Relay
                                 </h3>
-                                <MessageSquare className="h-3 w-3 text-white/40" />
+                                <MessageSquare className="h-4 w-4 text-white/20" />
                             </div>
-                            <div className="p-4 flex-1 overflow-y-auto space-y-4">
+                            <div className="p-6 flex-1 overflow-y-auto space-y-6 scrollbar-hide">
                                 {messages.length === 0 ? (
-                                    <p className="text-white/40 italic text-center text-[10px] uppercase font-bold mt-10 tracking-widest">No Transmissions</p>
+                                    <div className="flex flex-col items-center justify-center h-full opacity-20">
+                                        <Activity className="h-10 w-10 mb-4" />
+                                        <p className="italic text-[10px] uppercase font-black tracking-widest text-center">Zero Signal Detected</p>
+                                    </div>
                                 ) : (
                                     messages.map((msg: any) => (
-                                        <div key={msg.id} className="bg-white/5 p-3 rounded-xl border-l-[3px] border-[#FF6200]">
-                                            <p className="font-bold text-white mb-1 text-xs">{msg.sender?.display_name || msg.sender_name || 'System'}</p>
-                                            <p className="text-white/60 italic text-xs leading-relaxed">"{msg.content}"</p>
+                                        <div key={msg.id} className="bg-white/5 p-5 rounded-2xl border border-white/10 hover:bg-white/10 transition-colors group">
+                                            <div className="flex justify-between items-center mb-2">
+                                                <p className="font-black text-primary group-hover:scale-105 transition-transform text-[10px] uppercase tracking-widest">{msg.sender?.display_name || 'CO-PILOT'}</p>
+                                                <span className="text-[8px] font-bold text-white/30">{new Date(msg.created_at).toLocaleTimeString()}</span>
+                                            </div>
+                                            <p className="text-white/70 italic text-xs leading-relaxed">"{msg.content}"</p>
                                         </div>
                                     ))
                                 )}
                             </div>
+                            <Link href="/admin/executive-chat" className="p-4 bg-primary text-primary-foreground text-center font-black uppercase text-[10px] tracking-widest hover:bg-primary/90 transition-all">
+                                Open Secure Terminal
+                            </Link>
                         </Card>
                     </div>
+                </div>
+
+                <div className="text-center py-20 opacity-20 hover:opacity-100 transition-opacity">
+                    <p className="text-[9px] font-black uppercase tracking-[0.6em] text-muted-foreground">MarketBridge Intelligence Network // Echelon Zero Verified</p>
                 </div>
             </div>
         </div>
     );
 }
-

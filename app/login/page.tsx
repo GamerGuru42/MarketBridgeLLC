@@ -122,7 +122,7 @@ function LoginContent() {
                 return;
             }
 
-            // Fetch profile (or auto-create if missing — handles deleted profiles)
+            // Fetch profile (or auto-create if missing)
             let userRole = data.user.user_metadata?.role as string;
             const { data: profile } = await supabase
                 .from('users')
@@ -131,7 +131,6 @@ function LoginContent() {
                 .maybeSingle();
 
             if (!profile) {
-                // Auto-heal — create missing profile so they're not stuck
                 const meta = data.user.user_metadata || {};
                 const healedRole = meta.role || 'student_buyer';
                 await supabase.from('users').upsert({
@@ -152,10 +151,7 @@ function LoginContent() {
                 userRole = profile.role || userRole;
             }
 
-            // Refresh context (non-blocking)
             refreshUser(data.user.id).catch(err => console.warn('Context refresh:', err));
-
-            // Redirect immediately — no waiting
             router.replace(redirectUrl || getRoleDestination(userRole));
 
         } catch (err: any) {
@@ -173,14 +169,13 @@ function LoginContent() {
         }
     };
 
-    // Show nothing while checking existing session (prevents flicker)
     if (loading) {
         return (
-            <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+            <div className="min-h-screen bg-background flex items-center justify-center transition-colors duration-300">
                 <div className="flex flex-col items-center gap-4">
                     <Logo showText={false} />
-                    <div className="h-1 w-32 bg-zinc-800 rounded-full overflow-hidden">
-                        <div className="h-full bg-[#FF6200] w-1/2 animate-pulse rounded-full" />
+                    <div className="h-1 w-32 bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-primary w-1/2 animate-pulse rounded-full" />
                     </div>
                 </div>
             </div>
@@ -190,22 +185,22 @@ function LoginContent() {
     // ─── STEP 1: Role Selector ───
     if (currentStep === 'role') {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-zinc-950 relative overflow-hidden">
+            <div className="min-h-screen flex items-center justify-center p-4 bg-background relative overflow-hidden transition-colors duration-300">
                 {/* Background glow */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#FF6200]/5 rounded-full blur-[120px] pointer-events-none" />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
                 <div className="w-full max-w-lg relative z-10">
                     <div className="text-center mb-16">
-                        <Link href="/" className="inline-flex items-center text-white/40 hover:text-white mb-8 uppercase text-[10px] font-black tracking-widest transition-colors py-3">
+                        <Link href="/" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-8 uppercase text-[10px] font-black tracking-widest transition-colors py-3">
                             ← Return to Home
                         </Link>
                         <div className="flex justify-center mb-6">
                             <Logo showText={false} />
                         </div>
-                        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white mb-4 italic">
-                            Welcome <span className="text-[#FF6200]">Back</span>
+                        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-foreground mb-4 italic">
+                            Welcome <span className="text-primary">Back</span>
                         </h1>
-                        <p className="text-white/40 font-bold uppercase tracking-[0.2em] text-[10px]">
+                        <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px]">
                             Choose your workspace to continue
                         </p>
                     </div>
@@ -214,56 +209,56 @@ function LoginContent() {
                         {/* Buyer */}
                         <button
                             onClick={() => handleRoleSelect('student_buyer')}
-                            className="group bg-white/[0.04] border border-white/10 rounded-[2rem] p-6 text-center cursor-pointer hover:bg-white/[0.07] hover:border-[#FF6200]/30 transition-all duration-300 flex flex-col items-center"
+                            className="group bg-card border border-border rounded-[2rem] p-6 text-center cursor-pointer hover:bg-secondary hover:border-primary/30 transition-all duration-300 flex flex-col items-center shadow-sm"
                         >
-                            <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center mb-4 group-hover:bg-[#FF6200]/10 transition-colors">
-                                <UserIcon className="h-6 w-6 text-white/60 group-hover:text-[#FF6200] transition-colors" />
+                            <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
+                                <UserIcon className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
                             </div>
-                            <h3 className="text-sm font-black text-white uppercase tracking-tight mb-1">Buyer</h3>
-                            <p className="text-white/40 text-[8px] font-bold uppercase tracking-widest">Shop</p>
+                            <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Buyer</h3>
+                            <p className="text-muted-foreground text-[8px] font-bold uppercase tracking-widest">Shop</p>
                         </button>
 
                         {/* Seller */}
                         <button
                             onClick={() => handleRoleSelect('student_seller')}
-                            className="group bg-white/[0.04] border border-white/10 rounded-[2rem] p-6 text-center cursor-pointer hover:bg-white/[0.07] hover:border-[#FF6200]/30 transition-all duration-300 flex flex-col items-center"
+                            className="group bg-card border border-border rounded-[2rem] p-6 text-center cursor-pointer hover:bg-secondary hover:border-primary/30 transition-all duration-300 flex flex-col items-center shadow-sm"
                         >
-                            <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center mb-4 group-hover:bg-[#FF6200]/10 transition-colors">
-                                <Store className="h-6 w-6 text-white/60 group-hover:text-[#FF6200] transition-colors" />
+                            <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
+                                <Store className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
                             </div>
-                            <h3 className="text-sm font-black text-white uppercase tracking-tight mb-1">Seller</h3>
-                            <p className="text-white/40 text-[8px] font-bold uppercase tracking-widest">Sell</p>
+                            <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Seller</h3>
+                            <p className="text-muted-foreground text-[8px] font-bold uppercase tracking-widest">Sell</p>
                         </button>
 
                         {/* Admin */}
                         <button
                             onClick={() => handleRoleSelect('admin')}
-                            className="group bg-white/[0.04] border border-white/10 rounded-[2rem] p-6 text-center cursor-pointer hover:bg-white/[0.07] hover:border-[#FF6200]/30 transition-all duration-300 flex flex-col items-center"
+                            className="group bg-card border border-border rounded-[2rem] p-6 text-center cursor-pointer hover:bg-secondary hover:border-primary/30 transition-all duration-300 flex flex-col items-center shadow-sm"
                         >
-                            <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center mb-4 group-hover:bg-[#FF6200]/10 transition-colors">
-                                <Lock className="h-6 w-6 text-white/60 group-hover:text-[#FF6200] transition-colors" />
+                            <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
+                                <Lock className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
                             </div>
-                            <h3 className="text-sm font-black text-white uppercase tracking-tight mb-1">Admin</h3>
-                            <p className="text-white/40 text-[8px] font-bold uppercase tracking-widest">Ops</p>
+                            <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Admin</h3>
+                            <p className="text-muted-foreground text-[8px] font-bold uppercase tracking-widest">Ops</p>
                         </button>
 
                         {/* CEO */}
                         <button
                             onClick={() => handleRoleSelect('ceo')}
-                            className="group bg-[#FF6200]/5 border border-[#FF6200]/20 rounded-[2rem] p-6 text-center cursor-pointer hover:bg-[#FF6200]/10 hover:border-[#FF6200]/50 transition-all duration-300 flex flex-col items-center"
+                            className="group bg-primary/5 border border-primary/20 rounded-[2rem] p-6 text-center cursor-pointer hover:bg-primary/10 hover:border-primary/50 transition-all duration-300 flex flex-col items-center shadow-sm"
                         >
-                            <div className="h-12 w-12 rounded-xl bg-[#FF6200]/10 flex items-center justify-center mb-4">
-                                <KeyRound className="h-6 w-6 text-[#FF6200]" />
+                            <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                                <KeyRound className="h-6 w-6 text-primary" />
                             </div>
-                            <h3 className="text-sm font-black text-[#FF6200] uppercase tracking-tight mb-1">CEO</h3>
-                            <p className="text-white/40 text-[8px] font-bold uppercase tracking-widest">Growth</p>
+                            <h3 className="text-sm font-black text-primary uppercase tracking-tight mb-1">CEO</h3>
+                            <p className="text-muted-foreground text-[8px] font-bold uppercase tracking-widest">Growth</p>
                         </button>
                     </div>
 
                     <div className="text-center mt-12">
-                        <p className="text-white/40 font-medium text-sm">
+                        <p className="text-muted-foreground font-medium text-sm">
                             No account?{' '}
-                            <Link href="/signup" className="text-[#FF6200] font-bold hover:underline">
+                            <Link href="/signup" className="text-primary font-bold hover:underline">
                                 Sign up
                             </Link>
                         </p>
@@ -274,25 +269,25 @@ function LoginContent() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-zinc-950 relative overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-background relative overflow-hidden transition-colors duration-300">
             {/* Background glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-[#FF6200]/5 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
             {/* Admin PIN Modal */}
             {showAdminPin && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-                    <div className="w-full max-w-sm bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8 space-y-5 shadow-2xl">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="w-full max-w-sm bg-card border border-border rounded-[2rem] p-8 space-y-5 shadow-2xl">
                         <div className="text-center">
-                            <div className="mx-auto h-14 w-14 rounded-2xl bg-zinc-800 flex items-center justify-center mb-4">
-                                <KeyRound className="h-7 w-7 text-[#FF6200]" />
+                            <div className="mx-auto h-14 w-14 rounded-2xl bg-muted flex items-center justify-center mb-4">
+                                <KeyRound className="h-7 w-7 text-primary" />
                             </div>
-                            <h3 className="text-xl font-black uppercase tracking-tighter text-white">Team Access</h3>
-                            <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mt-1">Enter your access code</p>
+                            <h3 className="text-xl font-black uppercase tracking-tighter text-foreground">Team Access</h3>
+                            <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mt-1">Enter your access code</p>
                         </div>
                         {adminPinError && (
-                            <div className="bg-red-950/30 border border-red-900/40 rounded-xl p-3 flex items-center gap-2">
-                                <AlertTriangle className="h-4 w-4 text-red-400 shrink-0" />
-                                <p className="text-red-400 text-xs font-bold">{adminPinError}</p>
+                            <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 flex items-center gap-2">
+                                <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
+                                <p className="text-destructive text-xs font-bold">{adminPinError}</p>
                             </div>
                         )}
                         <form onSubmit={handleAdminPinSubmit} className="space-y-3">
@@ -300,7 +295,7 @@ function LoginContent() {
                                 type="password"
                                 aria-label="Admin access code"
                                 placeholder="Access code"
-                                className="w-full h-14 bg-zinc-950 border border-zinc-700 rounded-xl text-center tracking-[0.5em] font-mono text-lg focus:outline-none focus:ring-2 focus:ring-[#FF6200]/40 text-white placeholder:text-zinc-700 transition-all"
+                                className="w-full h-14 bg-muted border border-input rounded-xl text-center tracking-[0.5em] font-mono text-lg focus:outline-none focus:ring-2 focus:ring-primary/40 text-foreground placeholder:text-muted-foreground transition-all"
                                 value={adminPin}
                                 onChange={e => setAdminPin(e.target.value)}
                                 autoFocus
@@ -311,13 +306,13 @@ function LoginContent() {
                                     type="button"
                                     variant="ghost"
                                     onClick={() => { setShowAdminPin(false); setAdminPin(''); setAdminPinError(''); }}
-                                    className="flex-1 h-12 text-white/40 hover:text-white rounded-xl"
+                                    className="flex-1 h-12 text-muted-foreground hover:text-foreground rounded-xl"
                                 >
                                     Cancel
                                 </Button>
                                 <Button
                                     type="submit"
-                                    className="flex-1 h-12 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest rounded-xl"
+                                    className="flex-1 h-12 bg-primary hover:opacity-90 text-primary-foreground font-black uppercase tracking-widest rounded-xl border-none"
                                 >
                                     <Lock className="h-4 w-4 mr-1" /> Verify
                                 </Button>
@@ -337,40 +332,40 @@ function LoginContent() {
                                 setCurrentStep('role');
                                 setAdminVerified(false);
                             }}
-                            className="inline-flex items-center text-white/30 hover:text-white text-[10px] font-black uppercase tracking-widest transition-colors"
+                            className="inline-flex items-center text-muted-foreground hover:text-foreground text-[10px] font-black uppercase tracking-widest transition-colors"
                         >
                             ← Role
                         </Button>
-                        <Link href="/" className="text-white/20 hover:text-white text-[10px] font-black uppercase tracking-widest transition-colors">
+                        <Link href="/" className="text-muted-foreground hover:text-foreground text-[10px] font-black uppercase tracking-widest transition-colors">
                             Home
                         </Link>
                     </div>
                     <div className="flex justify-center mb-5">
                         <Logo showText={false} />
                     </div>
-                    <h1 className="text-3xl font-black uppercase tracking-tighter text-white italic">
-                        Welcome <span className="text-[#FF6200]">Back</span>
+                    <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground italic">
+                        Welcome <span className="text-primary">Back</span>
                     </h1>
-                    <p className="text-white/30 text-xs font-medium mt-1">
+                    <p className="text-muted-foreground text-xs font-medium mt-1">
                         {adminVerified ? '🔒 Team access granted. Enter your credentials.' : 'Sign in to your account'}
                     </p>
                 </div>
 
-                <div className="bg-zinc-900/80 border border-white/5 rounded-[2.5rem] p-8 backdrop-blur-sm space-y-5">
+                <div className="bg-card border border-border shadow-xl rounded-[2.5rem] p-8 backdrop-blur-sm space-y-5">
                     {error && (
-                        <div className="bg-red-950/30 border border-red-900/40 rounded-xl p-3 flex items-center gap-3">
-                            <AlertTriangle className="h-4 w-4 text-red-400 shrink-0" />
-                            <p className="text-red-400 text-xs font-bold">{error}</p>
+                        <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 flex items-center gap-3">
+                            <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
+                            <p className="text-destructive text-xs font-bold">{error}</p>
                         </div>
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-1.5">
-                            <label htmlFor="email" className="text-[10px] uppercase font-black tracking-widest text-white/40">
+                            <label htmlFor="email" className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-2">
                                 Email Address
                             </label>
                             <div className="relative">
-                                <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                                <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                 <input
                                     id="email"
                                     name="email"
@@ -380,22 +375,22 @@ function LoginContent() {
                                     required
                                     autoComplete="email"
                                     placeholder="you@example.com"
-                                    className="w-full h-14 pl-12 pr-4 bg-zinc-950 border border-zinc-700 rounded-2xl text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/40 transition-all font-medium"
+                                    className="w-full h-14 pl-12 pr-4 bg-muted border border-input rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-medium"
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-1.5">
-                            <div className="flex justify-between items-center">
-                                <label htmlFor="password" className="text-[10px] uppercase font-black tracking-widest text-white/40">
+                            <div className="flex justify-between items-center px-2">
+                                <label htmlFor="password" className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">
                                     Password
                                 </label>
-                                <Link href="/forgot-password" className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] hover:underline">
+                                <Link href="/forgot-password" className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline transition-all">
                                     Forgot?
                                 </Link>
                             </div>
                             <div className="relative">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                 <input
                                     id="password"
                                     name="password"
@@ -405,12 +400,12 @@ function LoginContent() {
                                     required
                                     autoComplete="current-password"
                                     placeholder="••••••••"
-                                    className="w-full h-14 pl-12 pr-14 bg-zinc-950 border border-zinc-700 rounded-2xl text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-[#FF6200]/40 transition-all font-medium"
+                                    className="w-full h-14 pl-12 pr-14 bg-muted border border-input rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-medium"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                                 >
                                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -420,7 +415,7 @@ function LoginContent() {
 
                         <Button
                             type="submit"
-                            className="w-full h-14 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-[#FF6200]/10 flex items-center justify-center gap-2 group transition-all"
+                            className="w-full h-14 bg-primary hover:opacity-90 text-primary-foreground font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-primary/10 flex items-center justify-center gap-2 group transition-all border-none"
                             disabled={isLoading}
                         >
                             {isLoading ? (
@@ -434,43 +429,41 @@ function LoginContent() {
                         </Button>
                     </form>
 
-                    {/* Google login — restricted to public roles */}
                     {!['admin', 'ceo', 'technical_admin', 'operations_admin'].includes(loginRole) && (
                         <>
                             <div className="relative flex items-center justify-center">
-                                <div className="absolute inset-x-0 h-px bg-zinc-800" />
-                                <span className="relative bg-zinc-900 px-4 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500">Or</span>
+                                <div className="absolute inset-x-0 h-px bg-border" />
+                                <span className="relative bg-card px-4 text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground">Or</span>
                             </div>
 
                             <Button
                                 variant="outline"
                                 onClick={handleGoogleLogin}
                                 disabled={isLoading}
-                                className="w-full h-12 bg-transparent border-zinc-700 text-white/70 font-bold rounded-2xl hover:bg-zinc-800 hover:text-white transition-all"
+                                className="w-full h-12 bg-transparent border-input text-muted-foreground font-bold rounded-2xl hover:bg-secondary hover:text-foreground transition-all"
                             >
-                                <Globe className="mr-3 h-5 w-5 text-[#FF6200]" />
-                                Continue with Google
+                                <Globe className="mr-3 h-5 w-5 text-primary" />
+                                Google Log In
                             </Button>
                         </>
                     )}
 
-                    <div className="flex items-center justify-between pt-2">
-                        <p className="text-white/30 text-xs">
+                    <div className="flex items-center justify-between pt-2 px-2">
+                        <p className="text-muted-foreground text-xs font-semibold">
                             No account?{' '}
-                            <Link href="/signup" className="text-[#FF6200] font-bold hover:underline">Sign up</Link>
+                            <Link href="/signup" className="text-primary font-bold hover:underline">Sign up</Link>
                         </p>
-                        {/* Discrete Team Login link — only visible if actively needed */}
                         {!adminVerified ? (
                             <button
                                 type="button"
                                 onClick={() => setShowAdminPin(true)}
-                                className="text-[9px] font-black uppercase tracking-widest text-zinc-600 hover:text-zinc-400 transition-colors flex items-center gap-1"
+                                className="text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
                             >
                                 <Lock className="h-2.5 w-2.5" />
-                                Team Login
+                                Team Access
                             </button>
                         ) : (
-                            <span className="text-[9px] font-black uppercase tracking-widest text-[#FF6200] flex items-center gap-1">
+                            <span className="text-[9px] font-black uppercase tracking-widest text-primary flex items-center gap-1">
                                 <Lock className="h-2.5 w-2.5" /> Access Granted
                             </span>
                         )}
@@ -484,8 +477,8 @@ function LoginContent() {
 export default function LoginPage() {
     return (
         <Suspense fallback={
-            <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
-                <div className="h-8 w-8 rounded-full border-2 border-[#FF6200] border-t-transparent animate-spin" />
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
             </div>
         }>
             <LoginContent />

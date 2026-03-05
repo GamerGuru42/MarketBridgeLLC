@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import {
-    Users, Search, MoreVertical,
+    Users as UsersIcon, Search, MoreVertical,
     CheckCircle2, ShieldAlert,
     Mail, ShieldCheck, Briefcase
 } from 'lucide-react';
@@ -120,165 +120,199 @@ export default function AdminUsersPage() {
 
     const getRoleBadge = (role: string) => {
         switch (role) {
-            case 'admin': return <Badge className="bg-zinc-200 text-zinc-600 border-zinc-300 font-mono uppercase tracking-widest text-[10px]">Admin</Badge>;
+            case 'admin': return <Badge className="bg-primary/10 text-primary border-primary/20 font-mono uppercase tracking-widest text-[10px]">Admin</Badge>;
             case 'ceo': return <Badge className="bg-[#FF6200]/10 text-[#FF6200] border-[#FF6200]/20 font-mono uppercase tracking-widest text-[10px]">CEO</Badge>;
-            case 'dealer': return <Badge className="bg-[#FF6200]/10 text-[#FF6200] border-[#FF6200]/20 font-mono uppercase tracking-widest text-[10px]">Dealer</Badge>;
-            default: return <Badge variant="outline" className="text-zinc-500 border-zinc-200 font-mono uppercase tracking-widest text-[10px]">{role}</Badge>;
+            case 'dealer': return <Badge className="bg-primary/20 text-primary border-primary/30 font-mono uppercase tracking-widest text-[10px]">Dealer</Badge>;
+            case 'student_seller': return <Badge className="bg-muted text-muted-foreground border-border font-mono uppercase tracking-widest text-[10px]">Seller</Badge>;
+            default: return <Badge variant="outline" className="text-muted-foreground border-border font-mono uppercase tracking-widest text-[10px]">{role}</Badge>;
         }
     };
 
     return (
-        <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 p-6 md:p-12 font-sans selection:bg-[#FF6200] selection:text-black">
-            <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
+        <div className="min-h-screen bg-background text-foreground p-4 md:p-10 font-sans selection:bg-primary selection:text-primary-foreground transition-colors duration-300">
+            <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03] pointer-events-none z-0" />
             <div className="max-w-7xl mx-auto relative z-10 space-y-8">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-zinc-200 pb-6">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border pb-8">
                     <div>
                         <div className="flex items-center gap-3 mb-2">
-                            <Users className="h-5 w-5 text-[#FF6200]" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 font-heading">Network Administration</span>
+                            <UsersIcon className="h-5 w-5 text-primary" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground font-heading">Network Administration</span>
                         </div>
                         <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading">
-                            Identity <span className="text-[#FF6200]">Nexus</span>
+                            Identity <span className="text-primary">Nexus</span>
                         </h2>
                     </div>
                 </div>
 
-                <div className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm border border-zinc-200 bg-zinc-100/30 p-1 rounded-xl">
-                    <div className="flex flex-col md:flex-row gap-4 justify-between p-4">
+                <div className="bg-card border border-border rounded-[2rem] shadow-sm overflow-hidden transition-colors duration-300">
+                    <div className="flex flex-col md:flex-row gap-4 justify-between p-6 bg-muted/20 border-b border-border">
                         <div className="relative w-full md:w-96">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
                                 placeholder="Scan for identity signatures..."
-                                className="pl-10 bg-[#FAFAFA] border-zinc-200 text-zinc-900 placeholder:text-zinc-900/20 h-10 focus:border-[#FF6200]/50"
+                                className="pl-10 bg-background border-border text-foreground placeholder:text-muted-foreground/30 h-11 focus:ring-1 focus:ring-primary/30 rounded-xl"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
-                        <div className="flex items-center gap-2">
-                            {['All', 'Dealer', 'Admin'].map((role) => (
-                                <Button
-                                    key={role}
-                                    variant={filterRole === (role === 'All' ? null : role.toLowerCase()) ? 'default' : 'outline'}
-                                    size="sm"
-                                    onClick={() => setFilterRole(role === 'All' ? null : role.toLowerCase())}
-                                    className={`text-[10px] font-black uppercase tracking-widest h-10 ${filterRole === (role === 'All' ? null : role.toLowerCase())
-                                        ? 'bg-[#FF6200] text-black hover:bg-[#FF6200]/90'
-                                        : 'border-zinc-200 text-zinc-600 hover:text-zinc-900 hover:bg-white'
-                                        }`}
-                                >
-                                    {role}s
-                                </Button>
-                            ))}
+                        <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
+                            {['All', 'Dealer', 'Admin', 'Seller'].map((role) => {
+                                const roleValue = role === 'All' ? null : (role === 'Seller' ? 'student_seller' : role.toLowerCase());
+                                return (
+                                    <Button
+                                        key={role}
+                                        variant={filterRole === roleValue ? 'default' : 'outline'}
+                                        size="sm"
+                                        onClick={() => setFilterRole(roleValue)}
+                                        className={`text-[10px] font-black uppercase tracking-widest h-11 px-6 rounded-xl transition-all ${filterRole === roleValue
+                                            ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                                            : 'border-border text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                                            }`}
+                                    >
+                                        {role}s
+                                    </Button>
+                                );
+                            })}
                         </div>
                     </div>
 
-                    <div className="overflow-hidden rounded-lg border-t border-zinc-100">
+                    <div className="overflow-x-auto">
                         <Table>
-                            <TableHeader className="bg-[#FAFAFA]/50">
-                                <TableRow className="border-zinc-100 hover:bg-transparent">
-                                    <TableHead className="w-[300px] text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading">Identified Entity</TableHead>
-                                    <TableHead className="text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading">Clearance</TableHead>
-                                    <TableHead className="text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading">Coins</TableHead>
-                                    <TableHead className="text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading">Status</TableHead>
-                                    <TableHead className="text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading">Inception</TableHead>
-                                    <TableHead className="text-right text-zinc-500 uppercase text-[10px] font-black tracking-widest font-heading px-6">Controls</TableHead>
+                            <TableHeader className="bg-muted/30">
+                                <TableRow className="border-border hover:bg-transparent">
+                                    <TableHead className="w-[300px] text-muted-foreground uppercase text-[10px] font-black tracking-widest font-heading py-6 px-8">Identified Entity</TableHead>
+                                    <TableHead className="text-muted-foreground uppercase text-[10px] font-black tracking-widest font-heading py-6 px-4">Clearance</TableHead>
+                                    <TableHead className="text-muted-foreground uppercase text-[10px] font-black tracking-widest font-heading py-6 px-4">Coins</TableHead>
+                                    <TableHead className="text-muted-foreground uppercase text-[10px] font-black tracking-widest font-heading py-6 px-4">Status</TableHead>
+                                    <TableHead className="text-muted-foreground uppercase text-[10px] font-black tracking-widest font-heading py-6 px-4">Inception</TableHead>
+                                    <TableHead className="text-right text-muted-foreground uppercase text-[10px] font-black tracking-widest font-heading py-6 px-8">Controls</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {loading ? (
                                     <TableRow>
-                                        <TableCell colSpan={5} className="h-64 text-center">
-                                            <Loader2 className="h-8 w-8 animate-spin mx-auto text-[#FF6200]" />
-                                            <p className="mt-2 text-zinc-500 font-mono text-xs uppercase tracking-widest">Establishing Uplink...</p>                                        </TableCell>
+                                        <TableCell colSpan={6} className="h-64 text-center">
+                                            <div className="flex flex-col items-center gap-4">
+                                                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                                                <p className="text-muted-foreground font-black text-[10px] uppercase tracking-[0.3em] animate-pulse">Establishing Uplink...</p>
+                                            </div>
+                                        </TableCell>
                                     </TableRow>
                                 ) : filteredUsers.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={5} className="h-64 text-center">
-                                            <ShieldAlert className="h-10 w-10 mx-auto text-zinc-900/10 mb-2" />
-                                            <p className="text-zinc-500 font-mono text-xs uppercase tracking-widest italic">No entities detected in sector.</p>
+                                        <TableCell colSpan={6} className="h-64 text-center">
+                                            <div className="flex flex-col items-center gap-4">
+                                                <ShieldAlert className="h-12 w-12 text-muted-foreground/10" />
+                                                <p className="text-muted-foreground font-black text-[10px] uppercase tracking-widest italic opacity-40">No entities detected in sector.</p>
+                                            </div>
                                         </TableCell>
                                     </TableRow>
                                 ) : (
                                     filteredUsers.map((u) => (
-                                        <TableRow key={u.id} className="border-zinc-100 hover:bg-white transition-colors group">
-                                            <TableCell>
+                                        <TableRow key={u.id} className="border-border hover:bg-muted/10 transition-colors group">
+                                            <TableCell className="px-8">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="h-10 w-10 rounded-full bg-zinc-100 border border-zinc-200 flex items-center justify-center text-[#FF6200] font-bold shrink-0">
+                                                    <div className="h-12 w-12 rounded-2xl bg-muted border border-border flex items-center justify-center text-primary font-black shrink-0 shadow-sm group-hover:scale-110 transition-transform">
                                                         {u.display_name?.[0]?.toUpperCase() || '?'}
                                                     </div>
                                                     <div className="flex flex-col min-w-0">
-                                                        <span className="font-bold text-zinc-900 group-hover:text-[#FF6200] transition-colors text-sm truncate">
+                                                        <span className="font-black text-foreground group-hover:text-primary transition-colors text-base truncate uppercase tracking-tighter italic">
                                                             {u.display_name || 'Anonymous User'}
                                                         </span>
-                                                        <span className="text-xs text-zinc-500 font-mono italic truncate">{u.email}</span>
+                                                        <span className="text-[10px] text-muted-foreground font-bold truncate opacity-60">{u.email}</span>
                                                     </div>
                                                 </div>
                                             </TableCell>
-                                            <TableCell>{getRoleBadge(u.role)}</TableCell>
-                                            <TableCell>
+                                            <TableCell className="px-4">{getRoleBadge(u.role)}</TableCell>
+                                            <TableCell className="px-4">
                                                 <div className="flex items-center gap-1">
-                                                    <span className="text-[#FF6200] font-black">{u.coins_balance || 0}</span>
-                                                    <span className="text-[9px] uppercase font-black text-zinc-500">MC</span>
+                                                    <span className="text-primary font-black text-lg">{u.coins_balance || 0}</span>
+                                                    <span className="text-[9px] uppercase font-black text-muted-foreground">MC</span>
                                                 </div>
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell className="px-4">
                                                 {u.is_verified ? (
-                                                    <div className="flex items-center gap-1.5 text-zinc-900">
-                                                        <CheckCircle2 className="h-3.5 w-3.5 text-[#FF6200]" />
-                                                        <span className="text-[10px] uppercase font-black tracking-tighter font-heading">Verified</span>
+                                                    <div className="flex items-center gap-2 text-foreground">
+                                                        <div className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
+                                                        <span className="text-[10px] uppercase font-black tracking-widest text-green-500">Verified</span>
                                                     </div>
                                                 ) : (
-                                                    <div className="flex items-center gap-1.5 text-zinc-500">
-                                                        <ShieldAlert className="h-3.5 w-3.5" />
-                                                        <span className="text-[10px] uppercase font-black tracking-tighter font-heading">Unverified</span>
+                                                    <div className="flex items-center gap-2 text-muted-foreground">
+                                                        <div className="h-2 w-2 rounded-full bg-muted-foreground/30" />
+                                                        <span className="text-[10px] uppercase font-black tracking-widest opacity-40">Unverified</span>
                                                     </div>
                                                 )}
                                             </TableCell>
-                                            <TableCell>
-                                                <span className="text-xs font-mono text-zinc-500">
-                                                    {new Date(u.created_at).toLocaleDateString()}
+                                            <TableCell className="px-4">
+                                                <span className="text-[10px] font-bold text-muted-foreground font-mono">
+                                                    {new Date(u.created_at).toLocaleDateString().split('/').join(' / ')}
                                                 </span>
                                             </TableCell>
-                                            <TableCell className="text-right px-6">
-                                                <div className="flex items-center justify-end gap-2">
+                                            <TableCell className="text-right px-8">
+                                                <div className="flex items-center justify-end gap-3">
                                                     {!u.is_verified && (
                                                         <Button
                                                             onClick={() => handleAction(u.id, 'verify')}
                                                             size="sm"
-                                                            className="h-7 px-3 bg-[#FF6200] text-black hover:bg-[#FF7A29] text-[9px] font-black uppercase tracking-wider"
+                                                            className="h-9 px-4 bg-primary text-primary-foreground hover:opacity-90 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-primary/10 border-none"
                                                         >
-                                                            <ShieldCheck className="h-3 w-3 mr-1" />
+                                                            <ShieldCheck className="h-3.5 w-3.5 mr-2" />
                                                             Verify
                                                         </Button>
                                                     )}
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
-                                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-500 hover:text-zinc-900 hover:border-zinc-200">
+                                                            <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition-colors">
                                                                 <MoreVertical className="h-4 w-4" />
                                                             </Button>
                                                         </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end" className="w-56 bg-zinc-50 border-zinc-200 text-zinc-700">
-                                                            <DropdownMenuLabel className="text-[10px] font-black uppercase text-zinc-500 font-heading">Entity Control</DropdownMenuLabel>
-                                                            <DropdownMenuItem onClick={() => handleAction(u.id, 'manage_coins')} className="gap-2 cursor-pointer focus:border-zinc-200">
-                                                                MarketCoins: {u.coins_balance || 0}
+                                                        <DropdownMenuContent align="end" className="w-64 bg-card border-border shadow-2xl p-2 rounded-2xl">
+                                                            <DropdownMenuLabel className="text-[10px] font-black uppercase text-muted-foreground font-heading px-3 py-2">Entity Control</DropdownMenuLabel>
+                                                            <DropdownMenuSeparator className="bg-border my-1" />
+                                                            <DropdownMenuItem onClick={() => handleAction(u.id, 'manage_coins')} className="gap-3 cursor-pointer py-3 rounded-xl focus:bg-primary/10 focus:text-primary transition-colors">
+                                                                <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center font-black text-xs">MC</div>
+                                                                <div className="flex flex-col">
+                                                                    <span className="font-bold text-xs">Budget Adjustment</span>
+                                                                    <span className="text-[10px] opacity-40">Current: {u.coins_balance || 0} MC</span>
+                                                                </div>
                                                             </DropdownMenuItem>
-                                                            <DropdownMenuSeparator className="border-zinc-200" />
+
                                                             {u.is_verified ? (
-                                                                <DropdownMenuItem onClick={() => handleAction(u.id, 'unverify')} className="gap-2 cursor-pointer focus:border-zinc-200">
-                                                                    <ShieldAlert className="h-4 w-4" /> Revoke Verification
+                                                                <DropdownMenuItem onClick={() => handleAction(u.id, 'unverify')} className="gap-3 cursor-pointer py-3 rounded-xl focus:bg-red-500/10 focus:text-red-500 transition-colors">
+                                                                    <div className="h-8 w-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500"><ShieldAlert className="h-4 w-4" /></div>
+                                                                    <div className="flex flex-col">
+                                                                        <span className="font-bold text-xs uppercase">Revoke Access</span>
+                                                                        <span className="text-[10px] opacity-40">Demote to unverified</span>
+                                                                    </div>
                                                                 </DropdownMenuItem>
                                                             ) : (
-                                                                <DropdownMenuItem onClick={() => handleAction(u.id, 'verify')} className="gap-2 cursor-pointer focus:bg-[#FF6200]/10 focus:text-[#FF6200]">
-                                                                    <ShieldCheck className="h-4 w-4" /> Verify Identity
+                                                                <DropdownMenuItem onClick={() => handleAction(u.id, 'verify')} className="gap-3 cursor-pointer py-3 rounded-xl focus:bg-green-500/10 focus:text-green-500 transition-colors">
+                                                                    <div className="h-8 w-8 rounded-lg bg-green-500/10 flex items-center justify-center text-green-500"><ShieldCheck className="h-4 w-4" /></div>
+                                                                    <div className="flex flex-col">
+                                                                        <span className="font-bold text-xs uppercase">Elevate Clearance</span>
+                                                                        <span className="text-[10px] opacity-40">Grant verified status</span>
+                                                                    </div>
                                                                 </DropdownMenuItem>
                                                             )}
+
                                                             {u.role !== 'dealer' && u.role !== 'admin' && (
-                                                                <DropdownMenuItem onClick={() => handleAction(u.id, 'make_dealer')} className="gap-2 cursor-pointer focus:bg-[#FF6200]/10 focus:text-[#FF6200]">
-                                                                    <Briefcase className="h-4 w-4" /> Grant Dealer License                                                                </DropdownMenuItem>
+                                                                <DropdownMenuItem onClick={() => handleAction(u.id, 'make_dealer')} className="gap-3 cursor-pointer py-3 rounded-xl focus:bg-primary/10 focus:text-primary transition-colors">
+                                                                    <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary"><Briefcase className="h-4 w-4" /></div>
+                                                                    <div className="flex flex-col">
+                                                                        <span className="font-bold text-xs uppercase">Grant License</span>
+                                                                        <span className="text-[10px] opacity-40">Promote to dealer</span>
+                                                                    </div>
+                                                                </DropdownMenuItem>
                                                             )}
-                                                            <DropdownMenuSeparator className="border-zinc-200" />
-                                                            <DropdownMenuItem className="gap-2 cursor-pointer focus:border-zinc-200">
-                                                                <Mail className="h-4 w-4" /> Send Transmission                                                            </DropdownMenuItem>
+
+                                                            <DropdownMenuSeparator className="bg-border my-1" />
+                                                            <DropdownMenuItem className="gap-3 cursor-pointer py-3 rounded-xl focus:bg-muted transition-colors opacity-50">
+                                                                <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center"><Mail className="h-4 w-4" /></div>
+                                                                <div className="flex flex-col">
+                                                                    <span className="font-bold text-xs uppercase">Dispatch Ping</span>
+                                                                    <span className="text-[10px] opacity-40">Send email notification</span>
+                                                                </div>
+                                                            </DropdownMenuItem>
                                                         </DropdownMenuContent>
                                                     </DropdownMenu>
                                                 </div>
@@ -289,6 +323,10 @@ export default function AdminUsersPage() {
                             </TableBody>
                         </Table>
                     </div>
+                </div>
+
+                <div className="text-center py-10 opacity-20 hover:opacity-100 transition-opacity">
+                    <p className="text-[9px] font-black uppercase tracking-[0.5em] text-muted-foreground">End of Transmission // Secure Identity Uplink 0.9.4</p>
                 </div>
             </div>
         </div>
