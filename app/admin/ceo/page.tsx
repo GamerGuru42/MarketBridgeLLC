@@ -74,14 +74,14 @@ export default function CEOPage() {
     };
 
     if (loading || loadingData) return (
-        <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+        <div className="min-h-screen bg-[#FAFAFA] dark:bg-zinc-950 flex items-center justify-center">
             <Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" />
         </div>
     );
     if (!user || (user.role !== 'ceo' && user.role !== 'cofounder')) return null;
 
     return (
-        <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 selection:bg-[#FF6200] selection:text-white pt-28 pb-20">
+        <div className="min-h-screen bg-[#FAFAFA] dark:bg-zinc-950 text-zinc-900 dark:text-white selection:bg-[#FF6200] selection:text-white pt-28 pb-20">
             <div className="container px-6 mx-auto max-w-7xl space-y-12">
 
                 {/* Header */}
@@ -109,7 +109,7 @@ export default function CEOPage() {
                             <Link
                                 key={i}
                                 href={link.href}
-                                className="h-12 px-6 flex items-center justify-center bg-white border border-zinc-200 rounded-2xl text-zinc-900 font-black uppercase tracking-widest text-[9px] hover:bg-[#FF6200]/5 hover:border-[#FF6200]/20 transition-all shadow-sm"
+                                className="h-12 px-6 flex items-center justify-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-zinc-900 dark:text-white font-black uppercase tracking-widest text-[9px] hover:bg-[#FF6200]/5 hover:border-[#FF6200]/20 transition-all shadow-sm"
                             >
                                 <link.icon className="h-3.5 w-3.5 mr-2 text-[#FF6200]" />
                                 {link.label}
@@ -120,28 +120,28 @@ export default function CEOPage() {
 
                 {/* Strategic KPIs */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <Card className="bg-white border-zinc-200 shadow-sm rounded-3xl p-6 relative overflow-hidden">
+                    <Card className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm rounded-3xl p-6 relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-6 opacity-5"><DollarSign className="h-20 w-20 text-[#00A355]" /></div>
                         <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] mb-4">Total Liquid Volume</p>
-                        <div className="text-4xl font-black text-zinc-900 italic font-heading tracking-tighter">₦{stats?.gmv.toLocaleString() || '0'}</div>
+                        <div className="text-4xl font-black text-zinc-900 dark:text-white italic font-heading tracking-tighter">₦{stats?.gmv.toLocaleString() || '0'}</div>
                         <p className="text-xs text-[#00A355] font-bold mt-2 flex items-center"><TrendingUp className="h-3 w-3 mr-1" /> Verified Revenue</p>
                     </Card>
-                    <Card className="bg-white border-zinc-200 shadow-sm rounded-3xl p-6 relative overflow-hidden">
+                    <Card className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm rounded-3xl p-6 relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-6 opacity-5"><Store className="h-20 w-20 text-[#FF6200]" /></div>
                         <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] mb-4">Certified Dealers</p>
-                        <div className="text-4xl font-black text-zinc-900 italic font-heading tracking-tighter">{stats?.activeDealers || 0}</div>
+                        <div className="text-4xl font-black text-zinc-900 dark:text-white italic font-heading tracking-tighter">{stats?.activeDealers || 0}</div>
                         <p className="text-xs text-[#FF6200] font-bold mt-2">Verified Sellers Mapped</p>
                     </Card>
-                    <Card className="bg-white border-zinc-200 shadow-sm rounded-3xl p-6 relative overflow-hidden">
+                    <Card className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm rounded-3xl p-6 relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-6 opacity-5"><Activity className="h-20 w-20 text-blue-500" /></div>
                         <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] mb-4">Active Listings</p>
-                        <div className="text-4xl font-black text-zinc-900 italic font-heading tracking-tighter">{stats?.activeListings || 0}</div>
+                        <div className="text-4xl font-black text-zinc-900 dark:text-white italic font-heading tracking-tighter">{stats?.activeListings || 0}</div>
                         <p className="text-xs text-blue-500 font-bold mt-2">Live Inventory Count</p>
                     </Card>
-                    <Card className="bg-white border-zinc-200 shadow-sm rounded-3xl p-6 relative overflow-hidden">
+                    <Card className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm rounded-3xl p-6 relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-6 opacity-5"><ShieldCheck className="h-20 w-20 text-purple-500" /></div>
                         <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] mb-4">Platform Users</p>
-                        <div className="text-4xl font-black text-zinc-900 italic font-heading tracking-tighter">{stats?.totalUsers || 0}</div>
+                        <div className="text-4xl font-black text-zinc-900 dark:text-white italic font-heading tracking-tighter">{stats?.totalUsers || 0}</div>
                         <p className="text-xs text-purple-500 font-bold mt-2">Trust Score: {Math.round(stats?.trustScore || 100)}%</p>
                     </Card>
                 </div>
@@ -149,10 +149,10 @@ export default function CEOPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                     {/* Proposal Queue */}
-                    <Card className="lg:col-span-3 bg-white border-zinc-200 shadow-sm rounded-[2rem] overflow-hidden">
-                        <div className="p-6 bg-zinc-50 border-b border-zinc-100 flex items-center justify-between">
+                    <Card className="lg:col-span-3 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm rounded-[2rem] overflow-hidden">
+                        <div className="p-6 bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
                             <div>
-                                <h3 className="text-lg font-black uppercase tracking-tighter text-zinc-900">Strategic Proposals</h3>
+                                <h3 className="text-lg font-black uppercase tracking-tighter text-zinc-900 dark:text-white">Strategic Proposals</h3>
                                 <p className="text-xs text-zinc-500 font-medium">Live memos from operational divisions.</p>
                             </div>
                             <Badge className="bg-[#FF6200]/10 text-[#FF6200] border-none shadow-none text-xs font-black uppercase">{proposals.filter(p => p.status === 'pending').length} Actionable</Badge>
@@ -204,7 +204,7 @@ export default function CEOPage() {
                     {/* Regional & System Sidebar */}
                     <div className="space-y-8">
                         {/* Regional Penetration */}
-                        <Card className="bg-white border-zinc-200 shadow-sm rounded-3xl p-6">
+                        <Card className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm rounded-3xl p-6">
                             <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 flex items-center gap-2 mb-6">
                                 <MapPin className="h-3 w-3 text-[#FF6200]" /> Regional Saturation
                             </h3>

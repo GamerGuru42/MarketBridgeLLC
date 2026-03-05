@@ -236,7 +236,8 @@ export default function SellerOnboardPage() {
         formData.campusZone !== '' &&
         formData.phoneNumber.length >= 10;
     const isStep2Valid = formData.sellCategories.length > 0;
-    const isStep3Valid = formData.idCardUrl !== '';
+    // Step 3 (ID) is always valid — ID upload is optional, sellers get 14-day trial regardless
+    const isStep3Valid = true;
 
     if (isLoadingInitial) {
         return (
@@ -295,7 +296,7 @@ export default function SellerOnboardPage() {
         );
     }
 
-    const stepLabels = ['Campus Info', 'Your Shop', 'ID Verify', 'Profile & Submit'];
+    const stepLabels = ['Campus Info', 'Your Shop', 'ID (Optional)', 'Profile & Submit'];
 
     return (
         <div className="min-h-screen flex items-center justify-center py-20 px-4 bg-zinc-950 relative">

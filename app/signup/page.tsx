@@ -8,19 +8,18 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Logo } from '@/components/logo';
 import { normalizeIdentifier } from '@/lib/auth/utils';
 import {
-    Loader2, ArrowLeft, ArrowRight, User as UserIcon, ShieldCheck,
-    Lock, Globe, Briefcase, AlertTriangle, KeyRound
+    Loader2, ArrowLeft, ArrowRight, User as UserIcon,
+    Globe, Briefcase
 } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/contexts/ToastContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
-// Access codes — in production ideally move to env vars or backend check
-const ADMIN_ACCESS_CODES = ['marketbridge2026', '1029384756', 'MB-FOUNDER-99', 'MB-TECH-2024', 'MB-OPS-2024', 'MB-MKT-2024'];
-
-type Step = 'role' | 'pin' | 'details';
-type Role = 'student_buyer' | 'student_seller' | 'admin' | 'ceo';
+// Only buyers and sellers can self-register.
+// Admin/CEO accounts are provisioned internally by the MarketBridge team.
+type Step = 'role' | 'details';
+type Role = 'student_buyer' | 'student_seller';
 
 function SignupContent() {
     const supabase = createClient();
@@ -31,8 +30,6 @@ function SignupContent() {
 
     const [currentStep, setCurrentStep] = useState<Step>('role');
     const [role, setRole] = useState<Role>('student_buyer');
-    const [pinValue, setPinValue] = useState('');
-    const [pinError, setPinError] = useState('');
 
     const [formData, setFormData] = useState({
         email: '',
@@ -43,18 +40,12 @@ function SignupContent() {
     });
     const [isLoading, setIsLoading] = useState(false);
 
-    // If URL has ?role=student_seller (from seller-onboard redirect), skip role step 
+    // If URL has ?role=student_seller (from sell button), skip role step
     useEffect(() => {
         const roleParam = searchParams?.get('role');
         if (roleParam === 'student_seller' || roleParam === 'seller') {
             setRole('student_seller');
-            setCurrentStep('details'); // Go straight to the form
-        } else if (roleParam === 'admin') {
-            setRole('admin');
-            setCurrentStep('pin'); // Admin must pass PIN first
-        } else if (roleParam === 'ceo') {
-            setRole('ceo');
-            setCurrentStep('pin'); // CEO must pass PIN first
+            setCurrentStep('details');
         }
     }, [searchParams]);
 
@@ -64,24 +55,7 @@ function SignupContent() {
 
     const handleRoleSelect = (selectedRole: Role) => {
         setRole(selectedRole);
-        setPinValue('');
-        setPinError('');
-        if (selectedRole === 'admin' || selectedRole === 'ceo') {
-            setCurrentStep('pin');
-        } else {
-            setCurrentStep('details');
-        }
-    };
-
-    const handlePinSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (ADMIN_ACCESS_CODES.includes(pinValue)) {
-            setCurrentStep('details');
-            setPinError('');
-        } else {
-            setPinError('Access Denied: Invalid security signature.');
-            setPinValue('');
-        }
+        setCurrentStep('details');
     };
 
     const handleGoogleAuth = async () => {
@@ -179,7 +153,7 @@ function SignupContent() {
                 {/* Background glow */}
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#FF6200]/5 rounded-full blur-[120px] pointer-events-none" />
 
-                <div className="w-full max-w-5xl relative z-10">
+                <div className="w-full max-w-lg relative z-10">
                     <div className="text-center mb-16">
                         <Link href="/" className="inline-flex items-center text-white/40 hover:text-white mb-8 uppercase text-[10px] font-black tracking-widest transition-colors py-3">
                             <ArrowLeft className="mr-2 h-4 w-4" /> Return to Home
@@ -195,7 +169,7 @@ function SignupContent() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 px-4 max-w-4xl mx-auto">
+                    <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
                         {/* Buyer */}
                         <button
                             onClick={() => handleRoleSelect('student_buyer')}
@@ -214,47 +188,13 @@ function SignupContent() {
                             className="group bg-[#FF6200]/10 border-2 border-[#FF6200]/40 rounded-[2rem] p-8 text-center cursor-pointer hover:bg-[#FF6200]/15 hover:border-[#FF6200] transition-all duration-300 flex flex-col items-center relative"
                         >
                             <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FF6200] text-black text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
-                                Popular
+                                Start Selling
                             </div>
                             <div className="h-16 w-16 rounded-2xl bg-[#FF6200]/20 flex items-center justify-center mb-5">
                                 <Briefcase className="h-8 w-8 text-[#FF6200]" />
                             </div>
                             <h3 className="text-base font-black text-white uppercase tracking-tight mb-2">Seller</h3>
-                            <p className="text-white/40 text-[9px] font-bold uppercase tracking-widest">List & sell items</p>
-                        </button>
-
-                        {/* Admin — locked */}
-                        <button
-                            onClick={() => handleRoleSelect('admin')}
-                            className="group bg-zinc-900/50 border border-zinc-800 rounded-[2rem] p-8 text-center cursor-pointer hover:border-zinc-600 transition-all duration-300 flex flex-col items-center relative overflow-hidden"
-                        >
-                            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20 pointer-events-none" />
-                            <div className="absolute top-3 right-3 flex items-center gap-1 bg-zinc-800 px-2 py-0.5 rounded-full">
-                                <Lock className="h-2.5 w-2.5 text-zinc-400" />
-                                <span className="text-[7px] font-black uppercase text-zinc-400 tracking-wider">Restricted</span>
-                            </div>
-                            <div className="h-16 w-16 rounded-2xl bg-zinc-800 flex items-center justify-center mb-5">
-                                <ShieldCheck className="h-8 w-8 text-zinc-400 group-hover:text-zinc-200 transition-colors" />
-                            </div>
-                            <h3 className="text-base font-black text-zinc-400 uppercase tracking-tight mb-2">Admin</h3>
-                            <p className="text-zinc-600 text-[9px] font-bold uppercase tracking-widest">Manage operations</p>
-                        </button>
-
-                        {/* CEO — locked */}
-                        <button
-                            onClick={() => handleRoleSelect('ceo')}
-                            className="group bg-zinc-900/50 border border-zinc-800 rounded-[2rem] p-8 text-center cursor-pointer hover:border-zinc-600 transition-all duration-300 flex flex-col items-center relative overflow-hidden"
-                        >
-                            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20 pointer-events-none" />
-                            <div className="absolute top-3 right-3 flex items-center gap-1 bg-zinc-800 px-2 py-0.5 rounded-full">
-                                <Lock className="h-2.5 w-2.5 text-zinc-400" />
-                                <span className="text-[7px] font-black uppercase text-zinc-400 tracking-wider">Restricted</span>
-                            </div>
-                            <div className="h-16 w-16 rounded-2xl bg-zinc-800 flex items-center justify-center mb-5">
-                                <Lock className="h-8 w-8 text-zinc-400 group-hover:text-zinc-200 transition-colors" />
-                            </div>
-                            <h3 className="text-base font-black text-zinc-400 uppercase tracking-tight mb-2">CEO</h3>
-                            <p className="text-zinc-600 text-[9px] font-bold uppercase tracking-widest">Oversee everything</p>
+                            <p className="text-white/40 text-[9px] font-bold uppercase tracking-widest">List &amp; sell items</p>
                         </button>
                     </div>
 
@@ -271,70 +211,7 @@ function SignupContent() {
         );
     }
 
-    // ─── STEP 2: PIN Gate (Admin / CEO only) ───
-    if (currentStep === 'pin') {
-        return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-zinc-950">
-                <Card className="w-full max-w-sm bg-zinc-900 border border-zinc-800 shadow-2xl rounded-[2.5rem] overflow-hidden">
-                    <CardHeader className="p-8 pb-0 text-center">
-                        <Button
-                            variant="ghost"
-                            onClick={() => setCurrentStep('role')}
-                            className="text-white/40 hover:text-white mb-6 uppercase text-[10px] font-black tracking-widest w-full justify-start"
-                        >
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Back
-                        </Button>
-                        <div className="mx-auto h-20 w-20 rounded-3xl bg-zinc-800 border border-zinc-700 flex items-center justify-center mb-6 shadow-lg">
-                            <KeyRound className="h-10 w-10 text-[#FF6200]" />
-                        </div>
-                        <CardTitle className="text-3xl font-black uppercase tracking-tighter text-white mb-2">
-                            Restricted Access
-                        </CardTitle>
-                        <CardDescription className="text-white/40 font-bold uppercase tracking-widest text-[10px]">
-                            {role === 'ceo' ? 'CEO' : 'Admin'} authorization required
-                        </CardDescription>
-                    </CardHeader>
-
-                    <CardContent className="p-8 space-y-6">
-                        {pinError && (
-                            <div className="bg-red-950/30 border border-red-900/40 rounded-2xl p-4 flex items-center gap-3">
-                                <AlertTriangle className="h-4 w-4 text-red-500 shrink-0" />
-                                <p className="text-red-400 text-[10px] font-black uppercase tracking-wider">{pinError}</p>
-                            </div>
-                        )}
-                        <form onSubmit={handlePinSubmit} className="space-y-5">
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase font-black tracking-widest text-white/40 ml-1">
-                                    Security PIN / Access Code
-                                </label>
-                                <input
-                                    type="password"
-                                    className="w-full h-16 bg-zinc-950 border border-zinc-700 rounded-2xl text-center tracking-[0.5em] font-mono text-xl focus:outline-none focus:ring-2 focus:ring-[#FF6200]/40 text-white placeholder:text-zinc-700 transition-all"
-                                    value={pinValue}
-                                    onChange={(e) => setPinValue(e.target.value)}
-                                    placeholder="••••••••"
-                                    autoFocus
-                                    required
-                                />
-                            </div>
-                            <Button
-                                type="submit"
-                                className="w-full h-14 rounded-2xl bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest shadow-lg shadow-[#FF6200]/10 transition-all"
-                            >
-                                <Lock className="h-4 w-4 mr-2" />
-                                Authorize Access
-                            </Button>
-                        </form>
-                        <p className="text-center text-white/20 text-[9px] font-bold uppercase tracking-widest">
-                            Unauthorized access attempts are logged
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
-
-    // ─── STEP 3: Signup Form ───
+    // ─── STEP 2: Signup Form ───
     return (
         <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-zinc-950 relative">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-[#FF6200]/5 rounded-full blur-[100px] pointer-events-none" />
@@ -342,11 +219,11 @@ function SignupContent() {
                 <CardHeader className="p-0 mb-8 text-center">
                     <Button
                         variant="ghost"
-                        onClick={() => role === 'admin' || role === 'ceo' ? setCurrentStep('pin') : setCurrentStep('role')}
+                        onClick={() => setCurrentStep('role')}
                         className="text-white/40 hover:text-white mb-4 uppercase text-[10px] font-black tracking-widest"
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        {role === 'admin' || role === 'ceo' ? 'Back to PIN' : 'Change Role'}
+                        Change Role
                     </Button>
                     <div className="flex justify-center mb-6">
                         <Logo showText={false} className="scale-125" />
@@ -355,7 +232,7 @@ function SignupContent() {
                     <CardDescription className="text-white/40 font-bold uppercase tracking-widest text-[10px] mt-2">
                         Signing up as:{' '}
                         <span className="text-[#FF6200]">
-                            {role === 'student_seller' ? 'Seller' : role === 'student_buyer' ? 'Buyer' : role.toUpperCase()}
+                            {role === 'student_seller' ? 'Seller' : 'Buyer'}
                         </span>
                     </CardDescription>
                 </CardHeader>
