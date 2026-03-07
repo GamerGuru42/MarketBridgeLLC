@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, UserCheck, CreditCard, ShieldCheck, TrendingUp, DollarSign, Activity, ChevronRight, Scale, Inbox } from 'lucide-react';
+import { Loader2, UserCheck, CreditCard, ShieldCheck, TrendingUp, DollarSign, Activity, ChevronRight, Scale, Inbox, MessageSquare, Crown } from 'lucide-react';
 import { useToast } from '@/contexts/ToastContext';
 
 export default function OperationsAdminPage() {
@@ -122,9 +122,18 @@ export default function OperationsAdminPage() {
                     <ShieldCheck className="h-5 w-5 text-primary" />
                     <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground font-heading">Operations Dashboard</span>
                 </div>
-                <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic font-heading">
-                    Operations <span className="text-primary">Control</span>
-                </h1>
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic font-heading">
+                        Operations <span className="text-primary">Control</span>
+                    </h1>
+                    <Button asChild className="bg-background border border-border h-14 px-8 rounded-2xl hover:bg-muted group transition-all">
+                        <a href="/admin/executive-chat" className="flex items-center gap-3">
+                            <div className="h-4 w-4 rounded-full bg-primary animate-pulse" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-foreground">Secure Messenger</span>
+                            <MessageSquare className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" />
+                        </a>
+                    </Button>
+                </div>
                 <p className="text-muted-foreground text-xs font-black uppercase tracking-widest leading-relaxed opacity-60">
                     Verification Engine // Subscription Nodes // Financial Recon
                 </p>

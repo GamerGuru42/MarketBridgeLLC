@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 
 const PLANS = [
     {
-        id: 'starter',
+        id: 'campus_starter',
         name: 'Starter',
         price: 0,
         period: 'Free forever',
@@ -33,7 +33,7 @@ const PLANS = [
         highlight: false,
     },
     {
-        id: 'pro',
+        id: 'campus_pro',
         name: 'Pro Seller',
         price: 2500,
         period: 'per month',
@@ -88,7 +88,7 @@ export default function SellerUpgradePage() {
     const [billingAnnual, setBillingAnnual] = useState(false);
 
     const handleSelectPlan = async (planId: string) => {
-        if (planId === 'starter') return; // Already free
+        if (planId === 'campus_starter') return; // Already free
 
         if (!user) {
             router.push('/login?next=/seller/upgrade');
@@ -186,7 +186,7 @@ export default function SellerUpgradePage() {
                         const price = billingAnnual && plan.price > 0
                             ? Math.round(plan.price * 12 * 0.8)
                             : plan.price;
-                        const isCurrentPlan = user?.subscriptionPlan === plan.id || (plan.id === 'starter' && !user?.subscriptionPlan);
+                        const isCurrentPlan = user?.subscriptionPlan === plan.id || (plan.id === 'campus_starter' && !user?.subscriptionPlan);
 
                         return (
                             <div

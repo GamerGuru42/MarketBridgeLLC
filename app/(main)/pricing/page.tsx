@@ -150,7 +150,7 @@ export default function PricingPage() {
     };
 
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-[#FF6200] selection:text-black pt-28 pb-20">
+        <div className="min-h-screen bg-background text-foreground transition-all duration-300 pt-28 pb-20 selection:bg-primary selection:text-primary-foreground">
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
 
             <div className="container px-4 mx-auto relative z-10 max-w-7xl">
@@ -167,15 +167,15 @@ export default function PricingPage() {
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic leading-none">
                             Power Your <span className="text-[#FF6200]">Campus Empire</span>
                         </h1>
-                        <p className="text-white/60 text-lg md:text-xl font-medium leading-relaxed italic max-w-3xl mx-auto">
-                            Choose the plan that scales with your ambition. <span className="text-white">No hidden fees.</span> Cancel anytime.
+                        <p className="text-foreground/60 text-lg md:text-xl font-medium leading-relaxed italic max-w-3xl mx-auto">
+                            Choose the plan that scales with your ambition. <span className="text-foreground">No hidden fees.</span> Cancel anytime.
                         </p>
                     </div>
 
                     {/* Annual/Monthly Toggle & Merchant Note */}
                     <div className="flex flex-col items-center gap-6">
                         <div className="flex items-center justify-center gap-4 glass-card p-4 rounded-3xl border-white/5 inline-flex">
-                            <span className={`text-sm font-black uppercase tracking-widest transition-colors ${!isAnnual ? 'text-white' : 'text-white/30'}`}>
+                            <span className={`text-sm font-black uppercase tracking-widest transition-colors ${!isAnnual ? 'text-foreground' : 'text-foreground/30'}`}>
                                 Monthly
                             </span>
                             <Switch
@@ -183,7 +183,7 @@ export default function PricingPage() {
                                 onCheckedChange={setIsAnnual}
                                 className="data-[state=checked]:bg-[#FF6200]"
                             />
-                            <span className={`text-sm font-black uppercase tracking-widest transition-colors ${isAnnual ? 'text-white' : 'text-white/30'}`}>
+                            <span className={`text-sm font-black uppercase tracking-widest transition-colors ${isAnnual ? 'text-foreground' : 'text-foreground/30'}`}>
                                 Annual
                             </span>
                             {isAnnual && (
@@ -211,7 +211,7 @@ export default function PricingPage() {
                 {loading ? (
                     <div className="text-center py-20">
                         <Loader2 className="h-12 w-12 animate-spin text-[#FF6200] mx-auto mb-6" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-white/30">Loading Plans...</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-foreground/30">Loading Plans...</p>
                     </div>
                 ) : (
                     <div className="flex flex-wrap justify-center gap-8 mb-20">
@@ -252,7 +252,7 @@ export default function PricingPage() {
                                             {plan.name}
                                         </CardTitle>
 
-                                        <CardDescription className="text-white/40 text-sm font-medium italic">
+                                        <CardDescription className="text-foreground/40 text-sm font-medium italic">
                                             {plan.description}
                                         </CardDescription>
 
@@ -267,7 +267,7 @@ export default function PricingPage() {
                                                         <span className="text-4xl font-black text-[#FF6200]">
                                                             ₦{price.toLocaleString()}
                                                         </span>
-                                                        <span className="text-white/30 text-sm font-black uppercase">
+                                                        <span className="text-foreground/30 text-sm font-black uppercase">
                                                             /{isAnnual ? 'year' : 'month'}
                                                         </span>
                                                     </div>
@@ -286,7 +286,7 @@ export default function PricingPage() {
                                             {plan.features.map((feature, idx) => (
                                                 <li key={idx} className="flex items-start gap-3">
                                                     <Check className={`h-4 w-4 mt-0.5 flex-shrink-0 text-[#FF6200]`} />
-                                                    <span className="text-xs text-white/60 font-medium leading-relaxed">
+                                                    <span className="text-xs text-foreground/60 font-medium leading-relaxed">
                                                         {feature}
                                                     </span>
                                                 </li>
@@ -298,7 +298,7 @@ export default function PricingPage() {
                                         {isCurrentPlan ? (
                                             <Button
                                                 disabled
-                                                className="w-full h-14 rounded-2xl bg-white/5 border border-white/10 text-white/30 font-black uppercase tracking-widest cursor-not-allowed"
+                                                className="w-full h-14 rounded-2xl bg-white/5 border border-white/10 text-foreground/30 font-black uppercase tracking-widest cursor-not-allowed"
                                             >
                                                 Current Plan
                                             </Button>
@@ -323,7 +323,7 @@ export default function PricingPage() {
                 {/* Features Comparison */}
                 <div className="glass-card p-12 rounded-[3.5rem] border-white/5 mb-20">
                     <h2 className="text-3xl font-black uppercase tracking-tighter italic mb-8 text-center">
-                        Why Upgrade? <span className="text-white/40">The Numbers</span>
+                        Why Upgrade? <span className="text-foreground/40">The Numbers</span>
                     </h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -354,10 +354,10 @@ export default function PricingPage() {
                                 <div className="text-4xl font-black text-[#FF6200] uppercase tracking-tighter italic">
                                     {item.stat}
                                 </div>
-                                <div className="text-sm font-black uppercase tracking-widest text-white">
+                                <div className="text-sm font-black uppercase tracking-widest text-foreground">
                                     {item.label}
                                 </div>
-                                <p className="text-xs text-white/40 font-medium italic">
+                                <p className="text-xs text-foreground/40 font-medium italic">
                                     {item.description}
                                 </p>
                             </div>
@@ -368,7 +368,7 @@ export default function PricingPage() {
                 {/* FAQ Section */}
                 <div className="text-center space-y-8">
                     <h2 className="text-3xl font-black uppercase tracking-tighter italic">
-                        Frequently Asked <span className="text-white/40">Questions</span>
+                        Frequently Asked <span className="text-foreground/40">Questions</span>
                     </h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
@@ -391,10 +391,10 @@ export default function PricingPage() {
                             }
                         ].map((faq, idx) => (
                             <div key={idx} className="glass-card p-6 rounded-2xl border-white/5">
-                                <h3 className="text-sm font-black uppercase tracking-widest text-white mb-3">
+                                <h3 className="text-sm font-black uppercase tracking-widest text-foreground mb-3">
                                     {faq.q}
                                 </h3>
-                                <p className="text-xs text-white/40 font-medium leading-relaxed">
+                                <p className="text-xs text-foreground/40 font-medium leading-relaxed">
                                     {faq.a}
                                 </p>
                             </div>

@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
-    Loader2, ShieldCheck, XCircle, Search, UserCheck, Check, AlertTriangle, ChevronRight, Activity, Users, ShoppingBag, Zap, LayoutDashboard
+    Loader2, ShieldCheck, XCircle, Search, UserCheck, Check, AlertTriangle, ChevronRight, Activity, Users, ShoppingBag, Zap, LayoutDashboard, MessageSquare
 } from 'lucide-react';
 import { useToast } from '@/contexts/ToastContext';
 import Image from 'next/image';
@@ -65,7 +65,7 @@ export default function AdminHubPage() {
         try {
             // 1. Fetch Stats
             const { count: usersCount } = await supabase.from('users').select('*', { count: 'exact', head: true });
-            const { count: sellersCount } = await supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'seller');
+            const { count: sellersCount } = await supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'student_seller');
             const { count: listingsCount } = await supabase.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'active');
 
             // 2. Fetch Pending Applications
@@ -140,6 +140,11 @@ export default function AdminHubPage() {
                         </p>
                     </div>
                     <div className="flex gap-2">
+                        <Link href="/admin/executive-chat">
+                            <Button variant="outline" className="border-border text-foreground hover:bg-muted h-11 px-6 rounded-xl font-black uppercase text-[10px] tracking-widest">
+                                <MessageSquare className="h-4 w-4 mr-2 text-primary" /> Secure Messenger
+                            </Button>
+                        </Link>
                         <Link href="/admin/operations">
                             <Button className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 h-11 px-6 rounded-xl font-black uppercase text-[10px] tracking-widest border">
                                 <Activity className="h-4 w-4 mr-2" /> Operations Hub
@@ -263,17 +268,17 @@ export default function AdminHubPage() {
                             </div>
                         </Card>
 
-                        <Card className="bg-primary text-primary-foreground rounded-3xl p-8 relative overflow-hidden shadow-xl shadow-primary/10">
+                        <Card className="bg-primary text-primary-foreground rounded-3xl p-8 relative overflow-hidden shadow-xl shadow-primary/10 transition-all hover:scale-[1.02]">
                             <div className="absolute top-0 right-0 p-8 opacity-10">
-                                <LayoutDashboard className="h-20 w-20" />
+                                <MessageSquare className="h-20 w-20" />
                             </div>
-                            <h3 className="text-xl font-black uppercase tracking-tighter italic mb-2 relative z-10">Need Assistance?</h3>
+                            <h3 className="text-xl font-black uppercase tracking-tighter italic mb-2 relative z-10">Direct Messenger</h3>
                             <p className="text-xs font-medium opacity-80 mb-6 relative z-10 leading-relaxed">
-                                Connect with the tech team or co-founders via the Executive Chat node.
+                                Start a secure conversation with Operations, Technical, or Marketing leads instantly.
                             </p>
                             <Link href="/admin/executive-chat">
                                 <Button className="w-full bg-white text-primary hover:bg-white/90 font-black uppercase text-[10px] tracking-widest h-12 rounded-xl border-none">
-                                    Open Terminal
+                                    Open Chat
                                 </Button>
                             </Link>
                         </Card>

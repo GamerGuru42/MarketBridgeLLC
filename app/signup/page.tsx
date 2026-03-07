@@ -60,8 +60,7 @@ function SignupContent() {
     const handleGoogleAuth = async () => {
         setIsLoading(true);
         try {
-            const { error } = await signInWithGoogle(role);
-            if (error) throw error;
+            await signInWithGoogle(`${window.location.origin}/auth/callback?role=${role}`);
         } catch (error: any) {
             toast(error.message || 'Google Auth failed', 'error');
             setIsLoading(false);
