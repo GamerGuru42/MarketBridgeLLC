@@ -21,7 +21,6 @@ import { usePathname } from 'next/navigation';
 interface Step {
     title: string;
     content: string;
-    target?: string; // CSS selector if we want to point to something (optional for this simple version)
     icon: React.ReactNode;
 }
 
