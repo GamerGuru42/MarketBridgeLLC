@@ -1,24 +1,24 @@
 {
-    "name": "MarketBridge - Trusted Digital Marketplace",
-    "short_name": "MarketBridge",
-    "description": "Connect with verified dealers and find the best deals in Nigeria",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#000000",
-    "theme_color": "#FF6200",
-    "orientation": "portrait",
-    "icons": [
-        {
-            "src": "/marketbridge_favicon.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "any maskable"
-        },
-        {
-            "src": "/marketbridge_favicon.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "any maskable"
-        }
-    ]
+  "name": "MarketBridge",
+  "short_name": "MarketBridge",
+  "description": "Campus Marketplace for Abuja Universities",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#FF6200",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/marketbridge_favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/marketbridge_favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
