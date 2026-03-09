@@ -46,12 +46,12 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.png', type: 'image/png', sizes: 'any' },
+      { url: '/favicon-v2.png?v=2', type: 'image/png', sizes: 'any' },
     ],
     apple: [
-      { url: '/apple-touch-icon.png' },
+      { url: '/apple-touch-icon-v2.png?v=2' },
     ],
-    shortcut: '/favicon.ico',
+    shortcut: '/favicon-v2.ico?v=2',
   },
 
   openGraph: {
