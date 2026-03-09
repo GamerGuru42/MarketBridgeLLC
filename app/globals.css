@@ -109,16 +109,12 @@
     width: 100%;
     touch-action: pan-y;
     overscroll-behavior-y: contain;
-
-    background-image: none;
-    background-size: 50px 50px;
-    background-attachment: fixed;
   }
 }
 
-/* Only reserve scrollbar space on desktop to prevent layout shift */
+/* Reserve scrollbar space to prevent layout shift */
 @media (min-width: 768px) {
-  body {
+  html {
     scrollbar-gutter: stable;
   }
 }

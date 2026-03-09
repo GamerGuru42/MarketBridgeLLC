@@ -247,7 +247,7 @@ export default function SellerUpgradePage() {
                                     disabled={isCurrentPlan || loadingPlan === plan.id}
                                     className={cn(
                                         'w-full h-12 rounded-2xl font-black uppercase tracking-widest text-xs transition-all',
-                                        plan.id === 'starter'
+                                        plan.id === 'campus_starter'
                                             ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 cursor-default border-0'
                                             : plan.highlight
                                                 ? 'bg-[#FF6200] hover:bg-[#FF7A29] text-black border-0 hover:scale-105 shadow-[0_8px_24px_rgba(255,98,0,0.3)]'

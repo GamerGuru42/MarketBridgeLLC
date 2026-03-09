@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     X,
@@ -11,10 +11,11 @@ import {
     Compass,
     MessageCircle,
     Zap,
-    HelpCircle
+    HelpCircle,
+    MapPin,
+    Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePathname } from 'next/navigation';
 
@@ -22,156 +23,289 @@ interface Step {
     title: string;
     content: string;
     icon: React.ReactNode;
+    accent: string;
+    tag: string;
 }
 
 const TOUR_STEPS: Step[] = [
     {
-        title: "Welcome to MarketBridge",
-        content: "You've just unlocked Abuja's most trusted campus network. Let's show you how to dominate the marketplace.",
-        icon: <Zap className="h-6 w-6 text-primary" />
+        title: 'Welcome to MarketBridge',
+        content: "You're now connected to Abuja's most trusted campus marketplace. Let's walk you through everything you need to get started.",
+        icon: <Sparkles className="h-6 w-6" />,
+        accent: 'from-orange-500 to-orange-400',
+        tag: 'START',
     },
     {
-        title: "The Marketplace",
-        content: "Tap 'Market' to scan for live assets. Filter by campus node or category to find exactly what you need in seconds.",
-        icon: <ShoppingBag className="h-6 w-6 text-blue-500" />
+        title: 'The Marketplace',
+        content: "Tap 'Market' in the navigation to browse live listings. Filter by category, campus zone, or price to find exactly what you need.",
+        icon: <ShoppingBag className="h-6 w-6" />,
+        accent: 'from-blue-500 to-blue-400',
+        tag: 'BROWSE',
     },
     {
-        title: "Provision Your Hustle",
-        content: "Ready to earn? Use 'Sell' to onboard as a verified dealer. List food, gadgets, or services and start taking orders.",
-        icon: <PlusCircle className="h-6 w-6 text-primary" />
+        title: 'Start Selling',
+        content: "Want to earn on campus? Hit 'Sell' to register as a verified dealer. List food, gadgets, fashion, services — anything the campus needs.",
+        icon: <PlusCircle className="h-6 w-6" />,
+        accent: 'from-orange-500 to-orange-400',
+        tag: 'SELL',
     },
     {
-        title: "Secure Operations",
-        content: "Track your packets in 'Orders'. Our Paystack Escrow protocol ensures your funds are safe until you confirm delivery.",
-        icon: <Compass className="h-6 w-6 text-zinc-500" />
+        title: 'Track Your Orders',
+        content: "Every purchase is protected. Head to 'Orders' to track deliveries in real time. Funds are held in escrow until you confirm receipt.",
+        icon: <Compass className="h-6 w-6" />,
+        accent: 'from-zinc-500 to-zinc-400',
+        tag: 'ORDERS',
     },
     {
-        title: "Secure Signals",
-        content: "Use 'Chats' for direct, encrypted communication with buyers, sellers, or our executive staff.",
-        icon: <MessageCircle className="h-6 w-6 text-green-500" />
+        title: 'Chat Directly',
+        content: "Use 'Messages' to chat with buyers, sellers, or our support team. Secure, fast, and built for campus deals.",
+        icon: <MessageCircle className="h-6 w-6" />,
+        accent: 'from-green-500 to-green-400',
+        tag: 'MESSAGES',
     },
     {
-        title: "Need Help?",
-        content: "I'm Sage, your AI Assistant. If you're ever lost, just ask me anything—from app guides to general campus vibes.",
-        icon: <HelpCircle className="h-6 w-6 text-primary" />
-    }
+        title: 'Find Your Campus',
+        content: 'MarketBridge is node-based — every campus has its own local feed. Tap the campus pill in the header to switch your active node.',
+        icon: <MapPin className="h-6 w-6" />,
+        accent: 'from-purple-500 to-purple-400',
+        tag: 'CAMPUS',
+    },
+    {
+        title: 'Meet Sage, Your AI',
+        content: "Stuck? Tap the ✨ button anytime to ask Sage anything — from how to list a product to finding the best deals near you.",
+        icon: <HelpCircle className="h-6 w-6" />,
+        accent: 'from-orange-500 to-orange-400',
+        tag: 'AI HELP',
+    },
 ];
+
+const TOUR_STORAGE_KEY = 'mb-onboarding-complete';
 
 export function AppTour() {
     const { user } = useAuth();
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
+    const [direction, setDirection] = useState<'forward' | 'back'>('forward');
 
-    // Auto-start logic for new users on main nodes
+    // Auto-start for new users on main pages
     useEffect(() => {
         if (!user) return;
 
-        const mainNodes = ['/', '/marketplace', '/seller/dashboard', '/admin', '/admin/operations', '/admin/technical', '/admin/marketing'];
+        const mainNodes = [
+            '/',
+            '/marketplace',
+            '/seller/dashboard',
+            '/admin',
+            '/admin/operations',
+            '/admin/technical',
+            '/admin/marketing',
+        ];
         if (!pathname || !mainNodes.includes(pathname)) return;
 
-        const hasSeenTour = localStorage.getItem('mb-onboarding-complete');
+        const hasSeenTour = localStorage.getItem(TOUR_STORAGE_KEY);
         if (!hasSeenTour) {
-            const timer = setTimeout(() => setIsOpen(true), 2000);
+            const timer = setTimeout(() => setIsOpen(true), 1800);
             return () => clearTimeout(timer);
         }
     }, [user, pathname]);
 
+    // Manual trigger via custom event (e.g. from a Help button)
     useEffect(() => {
         const handleTrigger = () => {
             setCurrentStep(0);
+            setDirection('forward');
             setIsOpen(true);
         };
         window.addEventListener('mb-trigger-tour', handleTrigger);
         return () => window.removeEventListener('mb-trigger-tour', handleTrigger);
     }, []);
 
-    const handleNext = () => {
+    const handleNext = useCallback(() => {
         if (currentStep < TOUR_STEPS.length - 1) {
-            setCurrentStep(currentStep + 1);
+            setDirection('forward');
+            setCurrentStep((s) => s + 1);
         } else {
             completeTour();
         }
-    };
+    }, [currentStep]);
 
-    const handlePrev = () => {
+    const handlePrev = useCallback(() => {
         if (currentStep > 0) {
-            setCurrentStep(currentStep - 1);
+            setDirection('back');
+            setCurrentStep((s) => s - 1);
         }
-    };
+    }, [currentStep]);
 
     const completeTour = () => {
         setIsOpen(false);
-        localStorage.setItem('mb-onboarding-complete', 'true');
+        localStorage.setItem(TOUR_STORAGE_KEY, 'true');
+    };
+
+    const goToStep = (index: number) => {
+        setDirection(index > currentStep ? 'forward' : 'back');
+        setCurrentStep(index);
     };
 
     const step = TOUR_STEPS[currentStep];
+    const isLastStep = currentStep === TOUR_STEPS.length - 1;
+
+    const slideVariants = {
+        enter: (dir: string) => ({
+            x: dir === 'forward' ? 40 : -40,
+            opacity: 0,
+        }),
+        center: { x: 0, opacity: 1 },
+        exit: (dir: string) => ({
+            x: dir === 'forward' ? -40 : 40,
+            opacity: 0,
+        }),
+    };
 
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+                <>
+                    {/* Backdrop */}
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        key="tour-backdrop"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm"
+                        onClick={completeTour}
+                    />
+
+                    {/* Card */}
+                    <motion.div
+                        key="tour-card"
+                        initial={{ opacity: 0, scale: 0.92, y: 24 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="relative w-full max-w-md"
+                        exit={{ opacity: 0, scale: 0.92, y: 24 }}
+                        transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+                        className="fixed inset-0 z-[201] flex items-center justify-center p-4 pointer-events-none"
                     >
-                        <Card className="p-8 border-primary/20 shadow-2xl bg-card overflow-hidden">
-                            {/* Progress Bar */}
-                            <div className="absolute top-0 left-0 right-0 h-1 flex">
-                                {TOUR_STEPS.map((_, i) => (
-                                    <div
-                                        key={i}
-                                        className={`flex-1 transition-colors duration-500 ${i <= currentStep ? 'bg-primary' : 'bg-muted'}`}
-                                    />
-                                ))}
-                            </div>
+                        <div className="relative w-full max-w-sm pointer-events-auto">
+                            {/* Glow */}
+                            <div className={`absolute -inset-[1px] rounded-[2rem] bg-gradient-to-br ${step.accent} opacity-20 blur-xl`} />
 
-                            <button
-                                onClick={completeTour}
-                                className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
-                            >
-                                <X className="h-5 w-5" />
-                            </button>
+                            {/* Main Panel */}
+                            <div className="relative bg-card border border-border rounded-[2rem] overflow-hidden shadow-2xl">
 
-                            <div className="space-y-6 text-foreground">
-                                <div className="flex items-center gap-4">
-                                    <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-                                        {step.icon}
+                                {/* Top progress bar */}
+                                <div className="flex h-1">
+                                    {TOUR_STEPS.map((_, i) => (
+                                        <div
+                                            key={i}
+                                            className={`flex-1 transition-all duration-500 ${i < currentStep
+                                                ? 'bg-primary'
+                                                : i === currentStep
+                                                    ? 'bg-primary/60'
+                                                    : 'bg-muted'
+                                                }`}
+                                        />
+                                    ))}
+                                </div>
+
+                                {/* Header */}
+                                <div className={`bg-gradient-to-br ${step.accent} p-6 pb-8`}>
+                                    <div className="flex items-start justify-between">
+                                        <span className="text-[9px] font-black text-white/60 uppercase tracking-[0.35em]">
+                                            Step {currentStep + 1} of {TOUR_STEPS.length} · {step.tag}
+                                        </span>
+                                        <button
+                                            onClick={completeTour}
+                                            className="h-7 w-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors -mt-1 -mr-1"
+                                            aria-label="Close tour"
+                                        >
+                                            <X className="h-3.5 w-3.5 text-white" />
+                                        </button>
                                     </div>
-                                    <div className="flex-1">
-                                        <h3 className="text-xl font-black uppercase tracking-tighter italic">{step.title}</h3>
-                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Protocol Sync: {currentStep + 1}/{TOUR_STEPS.length}</p>
+                                    <div className="mt-4 h-12 w-12 rounded-2xl bg-white/15 flex items-center justify-center text-white">
+                                        {step.icon}
                                     </div>
                                 </div>
 
-                                <p className="text-sm font-medium leading-relaxed italic opacity-80">
-                                    {step.content}
-                                </p>
+                                {/* Body — animated per step */}
+                                <div className="relative overflow-hidden min-h-[120px]">
+                                    <AnimatePresence custom={direction} mode="wait">
+                                        <motion.div
+                                            key={currentStep}
+                                            custom={direction}
+                                            variants={slideVariants}
+                                            initial="enter"
+                                            animate="center"
+                                            exit="exit"
+                                            transition={{ duration: 0.22, ease: 'easeInOut' }}
+                                            className="p-6 space-y-2"
+                                        >
+                                            <h3 className="text-lg font-black uppercase tracking-tight text-foreground leading-tight">
+                                                {step.title}
+                                            </h3>
+                                            <p className="text-sm text-muted-foreground font-medium leading-relaxed">
+                                                {step.content}
+                                            </p>
+                                        </motion.div>
+                                    </AnimatePresence>
+                                </div>
 
-                                <div className="flex items-center justify-between pt-4">
+                                {/* Dot indicators */}
+                                <div className="flex justify-center gap-1.5 px-6 pb-2">
+                                    {TOUR_STEPS.map((_, i) => (
+                                        <button
+                                            key={i}
+                                            onClick={() => goToStep(i)}
+                                            aria-label={`Go to step ${i + 1}`}
+                                            className={`transition-all duration-300 rounded-full ${i === currentStep
+                                                ? 'w-5 h-2 bg-primary'
+                                                : 'w-2 h-2 bg-muted-foreground/25 hover:bg-muted-foreground/50'
+                                                }`}
+                                        />
+                                    ))}
+                                </div>
+
+                                {/* Footer */}
+                                <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-border">
                                     <Button
                                         variant="ghost"
                                         onClick={handlePrev}
                                         disabled={currentStep === 0}
-                                        className="text-muted-foreground hover:text-foreground hover:bg-transparent p-0 text-[10px] font-black uppercase tracking-widest disabled:opacity-0"
+                                        className="gap-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground hover:bg-transparent px-0 h-auto disabled:opacity-0 disabled:pointer-events-none"
                                     >
-                                        <ChevronLeft className="mr-1 h-3 w-3" /> Back
+                                        <ChevronLeft className="h-3 w-3" /> Back
                                     </Button>
 
                                     <Button
                                         onClick={handleNext}
-                                        className="h-12 px-8 bg-primary text-primary-foreground font-black uppercase tracking-widest text-xs rounded-xl shadow-xl shadow-primary/20"
+                                        className={`h-11 px-6 font-black uppercase tracking-widest text-[11px] rounded-xl border-none transition-all bg-gradient-to-r ${step.accent} text-white shadow-lg hover:opacity-90 hover:scale-105`}
                                     >
-                                        {currentStep === TOUR_STEPS.length - 1 ? "Begin Mission" : "Next Segment"}
-                                        <ChevronRight className="ml-2 h-4 w-4" />
+                                        {isLastStep ? (
+                                            <>
+                                                <Zap className="h-3.5 w-3.5 mr-1.5" />
+                                                Start Exploring
+                                            </>
+                                        ) : (
+                                            <>
+                                                Next
+                                                <ChevronRight className="h-3.5 w-3.5 ml-1" />
+                                            </>
+                                        )}
                                     </Button>
                                 </div>
+
+                                {/* Skip link */}
+                                {!isLastStep && (
+                                    <button
+                                        onClick={completeTour}
+                                        className="w-full pb-4 text-center text-[10px] font-bold text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+                                    >
+                                        Skip tour
+                                    </button>
+                                )}
                             </div>
-                        </Card>
+                        </div>
                     </motion.div>
-                </div>
+                </>
             )}
         </AnimatePresence>
     );
