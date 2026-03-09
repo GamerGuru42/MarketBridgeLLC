@@ -46,14 +46,12 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/marketbridge_favicon.png', type: 'image/png', sizes: '512x512' },
-      { url: '/marketbridge_logo.png', type: 'image/png', sizes: '192x192' },
-      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.png', type: 'image/png', sizes: 'any' },
     ],
     apple: [
-      { url: '/marketbridge_favicon.png' },
+      { url: '/apple-touch-icon.png' },
     ],
-    shortcut: '/marketbridge_favicon.png',
+    shortcut: '/favicon.ico',
   },
 
   openGraph: {
