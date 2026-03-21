@@ -98,11 +98,20 @@ function ListingsContent() {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [category, condition, location, search]);
+    }, [category, condition, location, search, user?.id, authLoading]);
 
     const fetchListings = async () => {
+        if (authLoading) return;
+
         setLoading(true);
         setError('');
+
+        if (!user) {
+            setListings([]);
+            setLoading(false);
+            return;
+        }
+
         try {
             let resultData: Listing[] = [];
 
@@ -190,21 +199,7 @@ function ListingsContent() {
         fetchListings();
     };
 
-    // Strict Beta Auth Wall: Redirect non-authenticated users smoothly back to Home
-    useEffect(() => {
-        if (!authLoading && !user) {
-            router.push('/login?redirect=/marketplace');
-        }
-    }, [user, authLoading, router]);
-
-    if (authLoading || !user) {
-        return (
-            <div className="min-h-screen bg-background flex flex-col items-center justify-center">
-                <Loader2 className="h-10 w-10 animate-spin text-[#FF6200] mb-4" />
-                <p className="text-sm font-bold text-muted-foreground animate-pulse">Authenticating secure connection...</p>
-            </div>
-        );
-    }
+    // Removed the strict auth redirect so non-authenticated users can view the index UI but NOT the actual listings data.
 
     return (
         <div className="min-h-screen bg-background text-foreground relative selection:bg-[#FF6200] selection:text-black flex flex-col pt-28 pb-20">
@@ -221,8 +216,8 @@ function ListingsContent() {
                     <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
                         Market<span className="text-[#FF6200]">Place</span>
                     </h1>
-                    <p className="text-zinc-500 font-medium italic">
-                        Scanning <span className="text-zinc-900 font-bold">{listings.length} live Notices</span> across the network.
+                    <p className="text-muted-foreground font-medium italic">
+                        Scanning <span className="text-foreground font-bold">{listings.length} live Notices</span> across the network.
                     </p>
                 </div>
 
@@ -305,8 +300,21 @@ function ListingsContent() {
                     </div>
                 )}
 
+                {/* Unauthenticated State */}
+                {!loading && !error && !user && (
+                    <div className="pt-8">
+                        <EmptyState
+                            icon={<ShieldCheck className="w-12 h-12 text-[#FF6200]" />}
+                            title="Authentication Required"
+                            description="The marketplace network requires a secure connection. Log in to view live campus listings."
+                            actionLabel="Log In to Network"
+                            onAction={() => router.push('/login?redirect=/marketplace')}
+                        />
+                    </div>
+                )}
+
                 {/* No Results State */}
-                {!loading && !error && listings.length === 0 && (
+                {!loading && !error && user && listings.length === 0 && (
                     <div className="pt-8">
                         <EmptyState
                             icon={<Search className="w-12 h-12 text-[#FF6200]" />}
