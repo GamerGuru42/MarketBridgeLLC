@@ -54,7 +54,11 @@ function SignupContent() {
 
     const handleRoleSelect = (selectedRole: Role) => {
         setRole(selectedRole);
-        setCurrentStep('details');
+        if (selectedRole === 'student_seller') {
+            router.push('/seller-onboard');
+        } else {
+            setCurrentStep('details');
+        }
     };
 
     const handleGoogleAuth = async () => {
