@@ -1,0 +1,143 @@
+
+> marketbridge@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.14
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ (pwa) Compiling for server...
+ ✓ (pwa) Compiling for server...
+ ✓ (pwa) Compiling for client (static)...
+ ○ (pwa) Service worker: C:\Users\Benny Ben\OneDrive\Documents\MarketBridgeLLC\public\sw.js
+ ○ (pwa)   URL: /sw.js
+ ○ (pwa)   Scope: /
+ ✓ Compiled successfully
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+   Generating static pages (0/95) ...
+   Generating static pages (23/95) 
+   Generating static pages (47/95) 
+   Generating static pages (71/95) 
+ ✓ Generating static pages (95/95)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    14.4 kB         217 kB
+├ ○ /_not-found                          148 B          90.1 kB
+├ ○ /about                               6.6 kB          110 kB
+├ ○ /admin                               8.98 kB         168 kB
+├ ○ /admin-access                        5.08 kB         168 kB
+├ ○ /admin/ceo                           8.74 kB         167 kB
+├ ○ /admin/ceo/growth                    4.89 kB         157 kB
+├ ○ /admin/disputes                      6.77 kB         172 kB
+├ ○ /admin/executive-chat                15.2 kB         180 kB
+├ ○ /admin/listings                      7.08 kB         187 kB
+├ ○ /admin/login                         8.66 kB         167 kB
+├ ○ /admin/marketing                     5.8 kB          152 kB
+├ ○ /admin/operations                    9.44 kB         156 kB
+├ ○ /admin/operations/escrow-templates   6.34 kB         171 kB
+├ ○ /admin/operations/verifications      6.28 kB         178 kB
+├ ○ /admin/orders                        4.94 kB         157 kB
+├ ○ /admin/payouts                       4.97 kB         157 kB
+├ ○ /admin/proposals/new                 8.89 kB         168 kB
+├ ○ /admin/revenue                       6.92 kB         159 kB
+├ ○ /admin/signup                        8.12 kB         195 kB
+├ ○ /admin/subscriptions                 7.42 kB         159 kB
+├ ○ /admin/technical                     7.35 kB         159 kB
+├ ○ /admin/users                         8.7 kB          189 kB
+├ ○ /admin/verify-sellers                4.71 kB         157 kB
+├ ƒ /api/admin/approve-seller            0 B                0 B
+├ ƒ /api/admin/settings                  0 B                0 B
+├ ƒ /api/admin/setup-storage             0 B                0 B
+├ ƒ /api/admin/sync-paystack             0 B                0 B
+├ ƒ /api/admin/verification/approve      0 B                0 B
+├ ƒ /api/chat                            0 B                0 B
+├ ƒ /api/coins/transactions              0 B                0 B
+├ ƒ /api/contacts                        0 B                0 B
+├ ƒ /api/escrow/[id]                     0 B                0 B
+├ ƒ /api/escrow/[id]/dispute             0 B                0 B
+├ ƒ /api/escrow/[id]/refund              0 B                0 B
+├ ƒ /api/escrow/[id]/release             0 B                0 B
+├ ƒ /api/feedback                        0 B                0 B
+├ ○ /api/health                          0 B                0 B
+├ ƒ /api/listings/nearby                 0 B                0 B
+├ ƒ /api/listings/promote                0 B                0 B
+├ ƒ /api/orders/create                   0 B                0 B
+├ ƒ /api/payments/flutterwave/webhook    0 B                0 B
+├ ƒ /api/payments/opay/initialize        0 B                0 B
+├ ƒ /api/payments/opay/webhook           0 B                0 B
+├ ƒ /api/payments/paystack/webhook       0 B                0 B
+├ ○ /api/paystack/banks                  0 B                0 B
+├ ƒ /api/paystack/boost                  0 B                0 B
+├ ƒ /api/paystack/initialize             0 B                0 B
+├ ƒ /api/paystack/resolve                0 B                0 B
+├ ƒ /api/paystack/subaccount             0 B                0 B
+├ ƒ /api/paystack/webhook                0 B                0 B
+├ ƒ /api/referrals/record                0 B                0 B
+├ ƒ /api/seller-application              0 B                0 B
+├ ƒ /api/subscriptions/confirm           0 B                0 B
+├ ƒ /api/subscriptions/create            0 B                0 B
+├ ƒ /api/verification/send-otp           0 B                0 B
+├ ƒ /api/verification/verify-otp         0 B                0 B
+├ ƒ /api/verify-transaction              0 B                0 B
+├ ƒ /api/waitlist                        0 B                0 B
+├ ƒ /api/waitlist/notify                 0 B                0 B
+├ ƒ /api/webhooks/paystack               0 B                0 B
+├ ○ /apple-icon.png                      0 B                0 B
+├ ƒ /auth/callback                       0 B                0 B
+├ ○ /cart                                6.15 kB         110 kB
+├ ○ /chats                               12 kB           171 kB
+├ ƒ /chats/[id]                          13.7 kB         186 kB
+├ ○ /checkout                            9.73 kB         162 kB
+├ ○ /checkout/pending                    6.22 kB         204 kB
+├ ○ /checkout/subscription               1.86 kB        91.8 kB
+├ ○ /cofounder                           3.44 kB         155 kB
+├ ○ /contact                             5.38 kB         102 kB
+├ ○ /coo                                 6.99 kB         166 kB
+├ ○ /cto                                 8.03 kB         160 kB
+├ ○ /disclaimer                          4 kB            108 kB
+├ ○ /faq                                 180 B          96.9 kB
+├ ○ /forgot-password                     6.33 kB         165 kB
+├ ○ /icon.png                            0 B                0 B
+├ ƒ /listings/[id]                       1.89 kB        91.8 kB
+├ ○ /login                               4.78 kB         168 kB
+├ ○ /marketplace                         11.1 kB         175 kB
+├ ○ /orders                              9.27 kB         186 kB
+├ ƒ /orders/[id]/dispute                 6.6 kB          194 kB
+├ ○ /pricing                             9.53 kB         171 kB
+├ ○ /privacy                             4.03 kB         108 kB
+├ ○ /purchases/verify                    4 kB            108 kB
+├ ○ /refund                              4.05 kB         108 kB
+├ ○ /reset-password                      7.1 kB          166 kB
+├ ○ /robots.txt                          0 B                0 B
+├ ○ /seller-onboard                      10.9 kB         190 kB
+├ ƒ /seller/[id]                         7.01 kB         166 kB
+├ ○ /seller/dashboard                    22.1 kB         218 kB
+├ ○ /seller/listings                     10.7 kB         188 kB
+├ ƒ /seller/listings/[id]/edit           3.35 kB         227 kB
+├ ○ /seller/listings/new                 4.2 kB          228 kB
+├ ○ /seller/upgrade                      7.91 kB         167 kB
+├ ○ /sellers                             26.9 kB         214 kB
+├ ○ /settings                            10.8 kB         195 kB
+├ ○ /settings/transactions               744 B          90.7 kB
+├ ○ /signup                              8.18 kB         167 kB
+├ ○ /sitemap.xml                         0 B                0 B
+├ ○ /subscriptions/checkout              1.8 kB         91.7 kB
+├ ○ /terms                               4.27 kB         108 kB
+├ ○ /verify-email                        7.26 kB         166 kB
+├ ○ /verify-seller                       7.1 kB          166 kB
+└ ○ /wishlist                            5.55 kB         164 kB
++ First Load JS shared by all            89.9 kB
+  ├ chunks/6997-cfa3b091f774bcfc.js      34 kB
+  ├ chunks/fd9d1056-63b17e9f649b8ccd.js  53.6 kB
+  └ other shared chunks (total)          2.32 kB
+
+
+ƒ Middleware                             25.6 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
