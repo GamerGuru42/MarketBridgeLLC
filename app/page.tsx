@@ -71,16 +71,16 @@ export default function HomePage() {
 
                         <div className="pt-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
                             <Link
-                                href="/seller-onboard"
-                                className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black uppercase tracking-wider text-sm rounded-2xl transition-all hover:scale-[1.03] shadow-[0_8px_30px_rgba(255,98,0,0.3)] group"
+                                href="/marketplace"
+                                className="w-full sm:w-auto flex items-center justify-center gap-3 px-10 py-5 bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black uppercase tracking-wider text-base rounded-2xl transition-all hover:scale-[1.03] shadow-[0_8px_30px_rgba(255,98,0,0.3)] group"
                             >
-                                START SELLING <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                Enter Campus Marketplace <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                             </Link>
                             <Link
-                                href="/marketplace"
+                                href="/seller-onboard"
                                 className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-foreground border border-zinc-200 dark:border-zinc-700 font-bold uppercase tracking-wider text-sm rounded-2xl transition-all hover:scale-[1.03]"
                             >
-                                Browse Listings
+                                <Store className="h-4 w-4" /> Start Selling
                             </Link>
                         </div>
 

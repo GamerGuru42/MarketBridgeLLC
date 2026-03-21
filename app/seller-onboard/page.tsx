@@ -11,10 +11,11 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
 const UNIVERSITIES = [
-    "University of Abuja",
-    "Baze University",
+    "Cosmopolitan University Abuja",
     "Nile University of Nigeria",
     "Veritas University",
+    "University of Abuja",
+    "Baze University",
     "Bingham University",
     "Philomath University",
     "Other (specify below)",
@@ -200,6 +201,7 @@ export default function SellerOnboardPage() {
                 serviceMode: formData.serviceMode || undefined,
                 idCardUrl: formData.idCardUrl,
                 bio: formData.bio,
+                autoApprove: true, // Beta auto-approve
             };
 
             const res = await fetch('/api/seller-application', {
@@ -210,13 +212,15 @@ export default function SellerOnboardPage() {
             const resData = await res.json();
             if (!res.ok) throw new Error(resData.error || 'Submission failed');
 
+            // Beta: auto-approve seller — update user role to dealer immediately
             await supabase.from('users').update({
-                is_verified: false,
+                is_verified: true,
                 phone_number: formData.phoneNumber,
+                role: 'dealer',
             }).eq('id', user.id);
 
             setIsSuccess(true);
-            toast('Application submitted! 🎉 Review takes 2–24 hours.', 'success');
+            toast('You\'re approved! 🎉 Welcome, Founding Seller!', 'success');
             await refreshUser();
         } catch (error: any) {
             toast(error.message || 'Submission failed. Try again!', 'error');
@@ -254,16 +258,20 @@ export default function SellerOnboardPage() {
                         <h2 className="text-4xl font-black uppercase tracking-tighter text-foreground italic">
                             You're <span className="text-primary">In!</span>
                         </h2>
+                        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-primary/20 border border-amber-500/30 rounded-full px-5 py-2">
+                            <span className="text-lg">🏆</span>
+                            <span className="text-sm font-black uppercase tracking-widest text-amber-600 dark:text-amber-400">Founding Seller</span>
+                        </div>
                         <p className="text-muted-foreground font-medium leading-relaxed max-w-sm mx-auto">
-                            Your seller application is under review. Our team verifies details within 2–24 hours. You'll get a WhatsApp notification when approved!
+                            Welcome to MarketBridge! You're officially a Founding Seller. Your shop is live — start listing products now!
                         </p>
                     </div>
                     <div className="bg-card border border-border rounded-3xl p-6 text-left space-y-4">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">What happens next</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Your next steps</p>
                         {[
-                            "Admin reviews your ID & shop details",
-                            "You get a WhatsApp approval notification",
-                            "Start listing & making money 🔥",
+                            "Go to your Seller Dashboard",
+                            "List your first product or service 🔥",
+                            "Subscribe for ₦1,000/month to unlock premium features",
                         ].map((s, i) => (
                             <div key={i} className="flex items-center gap-3">
                                 <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
@@ -279,17 +287,24 @@ export default function SellerOnboardPage() {
                             <strong className="text-primary">₦500 MarketCredit</strong> will be added to your account on your first sale. 🎁
                         </p>
                     </div>
-                    <Link href="/marketplace" className="block w-full">
-                        <Button className="w-full h-14 bg-secondary hover:bg-secondary/80 text-foreground border border-border font-black uppercase tracking-widest rounded-2xl transition-all">
-                            Browse Marketplace While You Wait
-                        </Button>
-                    </Link>
+                    <div className="flex flex-col gap-3 w-full">
+                        <Link href="/seller/dashboard" className="block w-full">
+                            <Button className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-widest rounded-2xl transition-all shadow-lg shadow-primary/20">
+                                Go to Seller Dashboard
+                            </Button>
+                        </Link>
+                        <Link href="/subscriptions" className="block w-full">
+                            <Button variant="outline" className="w-full h-14 border-primary/30 text-primary font-black uppercase tracking-widest rounded-2xl transition-all hover:bg-primary/5">
+                                Subscribe — ₦1,000/month
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
             </div>
         );
     }
 
-    const stepLabels = ['Campus Info', 'Your Shop', 'ID (Optional)', 'Profile & Submit'];
+    const stepLabels = ['Campus Info', 'Your Shop', 'Final Details'];
 
     return (
         <div className="min-h-screen flex items-center justify-center py-20 px-4 bg-background relative transition-colors duration-300">
@@ -304,21 +319,21 @@ export default function SellerOnboardPage() {
                         Start <span className="text-primary">Selling</span>
                     </h1>
                     <p className="text-muted-foreground font-medium mt-2 text-sm">
-                        No CAC required — perfect for campus side hustles ✨
+                        No CAC required — 3 quick steps and you're live ✨
                     </p>
                 </div>
 
                 <div className="flex items-center gap-3 bg-primary/10 border border-primary/20 rounded-2xl px-5 py-3 mb-8">
                     <Zap className="h-5 w-5 text-primary shrink-0" />
                     <p className="text-muted-foreground text-sm font-bold">
-                        <span className="text-primary">⚡ Complete setup today</span> — earn ₦500 MarketCredit on your first sale
+                        <span className="text-primary">⚡ Instant approval</span> — become a Founding Seller today + earn ₦500 on your first sale
                     </p>
                 </div>
 
                 <div className="flex items-center gap-1.5 mb-8">
-                    {[1, 2, 3, 4].map(s => (
+                    {[1, 2, 3].map(s => (
                         <React.Fragment key={s}>
-                            <div className={`flex items-center gap-1.5 ${s < 4 ? 'flex-1' : ''}`}>
+                            <div className={`flex items-center gap-1.5 ${s < 3 ? 'flex-1' : ''}`}>
                                 <div className={`h-8 w-8 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 transition-all ${step > s ? 'bg-primary text-primary-foreground' :
                                     step === s ? 'bg-primary/20 text-primary border-2 border-primary' :
                                         'bg-muted text-muted-foreground border border-border'
@@ -329,7 +344,7 @@ export default function SellerOnboardPage() {
                                     {stepLabels[s - 1]}
                                 </span>
                             </div>
-                            {s < 4 && <div className={`h-px flex-1 transition-colors ${step > s ? 'bg-primary' : 'bg-border'}`} />}
+                            {s < 3 && <div className={`h-px flex-1 transition-colors ${step > s ? 'bg-primary' : 'bg-border'}`} />}
                         </React.Fragment>
                     ))}
                 </div>
@@ -539,78 +554,58 @@ export default function SellerOnboardPage() {
                     {step === 3 && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
                             <div className="flex items-center gap-3 mb-4">
-                                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center"><User className="h-5 w-5 text-primary" /></div>
-                                <div>
-                                    <h2 className="text-lg font-black text-foreground">Student ID Verification</h2>
-                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Keeps campus MarketBridge safe & trusted 🎓</p>
-                                </div>
-                            </div>
-
-                            <div className="bg-primary/5 border border-primary/10 rounded-2xl p-4 flex items-start gap-3">
-                                <ShieldCheck className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                                <p className="text-muted-foreground text-xs font-medium leading-relaxed">
-                                    Upload your <strong className="text-foreground/70">School ID, NIN Slip, or any government-issued ID</strong>. Blur your photo if needed — we only check name & school. Review takes 2–24 hours.
-                                </p>
-                            </div>
-
-                            <div className="border-2 border-dashed border-input hover:border-primary transition-colors rounded-3xl p-12 flex flex-col items-center justify-center bg-muted relative cursor-pointer group">
-                                {formData.idCardUrl ? (
-                                    <div className="flex flex-col items-center gap-3">
-                                        <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
-                                            <CheckCircle className="h-8 w-8 text-primary" />
-                                        </div>
-                                        <span className="text-foreground font-black uppercase tracking-wider">ID Uploaded! ✅</span>
-                                        <span className="text-primary text-xs font-bold uppercase tracking-wider group-hover:underline">Tap to change</span>
-                                    </div>
-                                ) : isUploading ? (
-                                    <div className="flex flex-col items-center gap-3">
-                                        <Loader2 className="h-10 w-10 text-primary animate-spin" />
-                                        <span className="text-muted-foreground font-bold text-sm">Uploading... hang tight 📤</span>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <Upload className="h-12 w-12 text-muted-foreground/30 mb-4 group-hover:text-primary transition-colors" />
-                                        <span className="text-foreground font-black uppercase tracking-wide mb-1">Upload Your ID Card</span>
-                                        <span className="text-muted-foreground text-sm text-center font-medium">School ID, NIN Slip, Voter's Card · max 10MB</span>
-                                        <span className="text-muted-foreground/40 text-[10px] mt-2">Tap or drag & drop</span>
-                                    </>
-                                )}
-                                <input
-                                    type="file"
-                                    accept="image/*,application/pdf"
-                                    capture="environment"
-                                    onChange={handleFileUpload}
-                                    className="absolute inset-0 opacity-0 cursor-pointer"
-                                    title="Upload Student ID"
-                                    aria-label="Upload Student ID"
-                                />
-                            </div>
-
-                            <div className="flex gap-4">
-                                <Button onClick={handlePrev} variant="outline" className="flex-1 h-14 rounded-2xl font-bold border-input bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted">Back</Button>
-                                <Button onClick={handleNext} disabled={!isStep3Valid} className="flex-1 h-14 bg-primary hover:opacity-90 text-primary-foreground font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-primary/10 border-none">
-                                    Next <ArrowRight className="ml-2 h-4 w-4" />
-                                </Button>
-                            </div>
-                        </div>
-                    )}
-
-                    {step === 4 && (
-                        <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                            <div className="flex items-center gap-3 mb-4">
                                 <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center"><FileText className="h-5 w-5 text-primary" /></div>
                                 <div>
-                                    <h2 className="text-lg font-black text-foreground">Store Profile</h2>
-                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">One last thing — tell buyers about you!</p>
+                                    <h2 className="text-lg font-black text-foreground">Final Details</h2>
+                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Almost done — ID + bio & you're live!</p>
                                 </div>
                             </div>
 
+                            {/* Student ID Upload (Optional) */}
+                            <div>
+                                <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1 flex items-center gap-1.5">
+                                    <ShieldCheck className="h-3.5 w-3.5 text-primary" /> Student ID <span className="text-muted-foreground/50">(Optional — speeds up verification)</span>
+                                </label>
+                                <div className="border-2 border-dashed border-input hover:border-primary transition-colors rounded-2xl p-8 flex flex-col items-center justify-center bg-muted relative cursor-pointer group mt-2">
+                                    {formData.idCardUrl ? (
+                                        <div className="flex items-center gap-3">
+                                            <CheckCircle className="h-6 w-6 text-primary" />
+                                            <span className="text-foreground font-black uppercase tracking-wider text-sm">ID Uploaded! ✅</span>
+                                            <span className="text-primary text-xs font-bold uppercase tracking-wider group-hover:underline">Change</span>
+                                        </div>
+                                    ) : isUploading ? (
+                                        <div className="flex items-center gap-3">
+                                            <Loader2 className="h-6 w-6 text-primary animate-spin" />
+                                            <span className="text-muted-foreground font-bold text-sm">Uploading... 📤</span>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-4">
+                                            <Upload className="h-8 w-8 text-muted-foreground/30 group-hover:text-primary transition-colors" />
+                                            <div>
+                                                <span className="text-foreground font-bold text-sm block">Drag & drop or tap to upload</span>
+                                                <span className="text-muted-foreground text-xs">School ID, NIN Slip · max 2MB · JPG/PNG/PDF</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <input
+                                        type="file"
+                                        accept="image/*,application/pdf"
+                                        capture="environment"
+                                        onChange={handleFileUpload}
+                                        className="absolute inset-0 opacity-0 cursor-pointer"
+                                        title="Upload Student ID"
+                                        aria-label="Upload Student ID"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Bio */}
                             <div>
                                 <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">
                                     Your Bio <span className="text-muted-foreground/50">(Optional — but recommended)</span>
                                 </label>
                                 <textarea
-                                    rows={4}
+                                    rows={3}
                                     value={formData.bio}
                                     onChange={e => setFormData(prev => ({ ...prev, bio: e.target.value.slice(0, 200) }))}
                                     placeholder={`e.g. 2nd year UniAbuja student. Fresh UK thrift drops every Friday 🔥 DM to order!`}
@@ -620,6 +615,7 @@ export default function SellerOnboardPage() {
                                 <p className="text-[10px] text-muted-foreground/30 mt-1 ml-1 text-right">{formData.bio.length}/200</p>
                             </div>
 
+                            {/* Application Summary */}
                             <div className="bg-muted/30 border border-border rounded-3xl p-5 space-y-3">
                                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">Application Summary</p>
                                 {[
@@ -636,9 +632,11 @@ export default function SellerOnboardPage() {
                                 ))}
                             </div>
 
-                            <div className="bg-primary/5 border border-primary/10 rounded-2xl p-4">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-primary/70 mb-1">No CAC · No stress · Review in 2–24 hrs</p>
-                                <p className="text-muted-foreground text-xs font-medium">You'll receive a WhatsApp message when your account is approved and ready to sell!</p>
+                            <div className="bg-gradient-to-r from-amber-500/10 to-primary/10 border border-amber-500/20 rounded-2xl p-4 flex items-center gap-3">
+                                <span className="text-xl">🏆</span>
+                                <p className="text-muted-foreground text-xs font-bold">
+                                    <span className="text-amber-600 dark:text-amber-400 font-black">Instant Founding Seller</span> — you'll be approved immediately and can start selling right away!
+                                </p>
                             </div>
 
                             <div className="flex gap-4">
@@ -647,7 +645,7 @@ export default function SellerOnboardPage() {
                                     {isSubmitting ? (
                                         <><Loader2 className="animate-spin h-5 w-5" /> Submitting...</>
                                     ) : (
-                                        <><Store className="h-5 w-5" /> Submit Application</>
+                                        <><Store className="h-5 w-5" /> Start Selling Now</>
                                     )}
                                 </Button>
                             </div>
