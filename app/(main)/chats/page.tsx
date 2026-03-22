@@ -177,7 +177,7 @@ export default function ChatsPage() {
                                 Connections will appear here once you initiate contact with a Dashboard provider (Seller).
                             </p>
                             <Button asChild className="font-bold uppercase tracking-widest text-xs h-12 px-10 bg-[#FF6200] text-black hover:bg-[#FF6200]/90">
-                                <Link href="/listings">Initialize Marketplace</Link>
+                                <Link href="/marketplace">Initialize Marketplace</Link>
                             </Button>
                         </div>
                     ) : (
