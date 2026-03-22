@@ -302,7 +302,7 @@ function ListingsContent() {
 
                 {/* Unauthenticated State */}
                 {!loading && !error && !user && (
-                    <div className="pt-8">
+                    <div className="pt-8 flex flex-col items-center gap-6">
                         <EmptyState
                             icon={<ShieldCheck className="w-12 h-12 text-[#FF6200]" />}
                             title="Authentication Required"
@@ -310,6 +310,11 @@ function ListingsContent() {
                             actionLabel="Log In to Network"
                             onAction={() => router.push('/login?redirect=/marketplace')}
                         />
+                        <Link href="/">
+                            <Button variant="ghost" className="text-zinc-500 hover:text-white hover:bg-zinc-800/50 uppercase text-[10px] font-black tracking-widest rounded-xl h-10 px-6 transition-all">
+                                ← Return to Homepage
+                            </Button>
+                        </Link>
                     </div>
                 )}
 
