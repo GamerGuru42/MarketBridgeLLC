@@ -71,12 +71,16 @@ export default function CheckoutPage() {
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || e.target.files.length === 0) return;
+        if (!user) {
+            toast('User not authenticated. Please log in.', 'error');
+            return;
+        }
 
         setUploading(true);
         const file = e.target.files[0];
         const fileExt = file.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `${user?.id}/${fileName}`;
+        const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+        const filePath = `${fileName}`;
 
         try {
             const { error: uploadError } = await supabase.storage

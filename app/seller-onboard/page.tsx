@@ -165,8 +165,14 @@ export default function SellerOnboardPage() {
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || e.target.files.length === 0) return;
+        if (!user) {
+            toast('User not authenticated', 'error');
+            return;
+        }
+        
         const file = e.target.files[0];
-
+        
+        // Validation
         if (file.size > 5 * 1024 * 1024) {
             toast('File too large. Max 5MB.', 'error');
             return;
@@ -179,12 +185,12 @@ export default function SellerOnboardPage() {
             const fileName = `id_${Date.now()}.${file.type === 'application/pdf' ? 'pdf' : 'webp'}`;
             
             const { error: uploadError } = await supabase.storage
-                .from('seller_docs')
-                .upload(`id_cards/${fileName}`, uploadFile, { upsert: true, contentType: file.type === 'application/pdf' ? 'application/pdf' : 'image/webp' });
+                .from('kyc-documents')
+                .upload(`${user.id}/${fileName}`, uploadFile, { upsert: true, contentType: file.type === 'application/pdf' ? 'application/pdf' : 'image/webp' });
 
             if (uploadError) throw uploadError;
 
-            const { data: { publicUrl } } = supabase.storage.from('seller_docs').getPublicUrl(`id_cards/${fileName}`);
+            const { data: { publicUrl } } = supabase.storage.from('kyc-documents').getPublicUrl(`${user.id}/${fileName}`);
             setFormData(prev => ({ ...prev, idCardUrl: publicUrl }));
             toast('ID uploaded successfully ✅', 'success');
         } catch (error: any) {
