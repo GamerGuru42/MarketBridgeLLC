@@ -1,7 +1,8 @@
-﻿'use client';
+'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -53,6 +54,7 @@ interface Conversation {
 
 export default function ChatPage({ params }: { params: Promise<{ id: string }> }) {
     const { user, loading: authLoading } = useAuth();
+    const { toast } = useToast();
     const router = useRouter();
     const [chat, setChat] = useState<Conversation | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
@@ -423,7 +425,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
             fetchActiveEscrow(); // Refresh steps
         } catch (error) {
             console.error('Error creating escrow:', error);
-            console.warn('UI_ALERT:', );
+            toast('Failed to create escrow agreement. Please try again.', 'error');
         }
     };
 
@@ -432,7 +434,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
         const file = e.target.files?.[0];
         if (file) {
             if (file.size > 5 * 1024 * 1024) {
-                console.warn('UI_ALERT:', );
+                toast('Image too large. Maximum size is 5MB.', 'error');
                 return;
             }
             setSelectedImage(file);

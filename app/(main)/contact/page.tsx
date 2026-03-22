@@ -49,7 +49,7 @@ export default function ContactPage() {
         } catch (error: unknown) {
             console.error('Error sending message:', error);
             const message = error instanceof Error ? error.message : 'Something went wrong. Please try again.';
-            console.warn('UI_ALERT:', );
+            setSuccessMessage(`Error: ${message}`);
         } finally {
             setIsSubmitting(false);
         }

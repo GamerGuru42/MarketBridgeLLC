@@ -1,7 +1,9 @@
 "use client"
 import React, { useState } from 'react'
+import { useToast } from '@/contexts/ToastContext'
 
 export default function SubscriptionCheckout() {
+  const { toast } = useToast()
   const [loading, setLoading] = useState(false)
 
   async function startSubscription() {
@@ -32,11 +34,11 @@ export default function SubscriptionCheckout() {
         }
       }
 
-      console.warn('UI_ALERT:', )
+      toast('Payment gateway could not be initialized. Please try again.', 'error')
       console.error(data)
     } catch (e) {
       console.error(e)
-      console.warn('UI_ALERT:', )
+      toast('Subscription failed. Please check your connection and retry.', 'error')
     } finally {
       setLoading(false)
     }

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import { supabase } from '@/lib/supabase';
 import { startConversation } from '@/lib/chat';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -50,6 +51,7 @@ interface Order {
 export default function OrdersPage() {
     const router = useRouter();
     const { user, loading: authLoading } = useAuth();
+    const { toast } = useToast();
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [confirmingOrder, setConfirmingOrder] = useState<string | null>(null);
@@ -152,7 +154,7 @@ export default function OrdersPage() {
             fetchOrders();
         } catch (err) {
             console.error('Failed to confirm delivery:', err);
-            console.warn('UI_ALERT:', );
+            toast('Failed to confirm delivery. Please try again.', 'error');
         } finally {
             setConfirmingOrder(null);
         }

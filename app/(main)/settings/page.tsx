@@ -126,7 +126,7 @@ export default function SettingsPage() {
         } catch (err: unknown) {
             console.error('Update settings error:', err);
             const message = err instanceof Error ? err.message : 'Failed to update settings';
-            console.warn('UI_ALERT:', );
+            setSuccessMessage(`Error: ${message}`);
         } finally {
             setUpdating(false);
         }
@@ -153,7 +153,7 @@ export default function SettingsPage() {
             setTimeout(() => setSuccessMessage(''), 3000);
         } catch (err: any) {
             console.error('Update bank error:', err);
-            console.warn('UI_ALERT:', );
+            setSuccessMessage('Error: Failed to update bank details');
         } finally {
             setUpdating(false);
         }

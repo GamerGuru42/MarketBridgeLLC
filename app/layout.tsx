@@ -33,12 +33,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: siteUrl,
   },
-  verification: {
-    google: "YOUR-GSC-CODE",
-    other: {
-      "msvalidate.01": "YOUR-BING-CODE"
-    }
-  },
+  // verification: Add Google Search Console and Bing Webmaster codes when available
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
