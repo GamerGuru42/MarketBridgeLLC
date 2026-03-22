@@ -224,27 +224,27 @@ export default function CEOPage() {
                         </Card>
 
                         {/* Intelligence Relay */}
-                        <Card className="bg-black text-white border-none shadow-2xl shadow-primary/10 rounded-[2.5rem] overflow-hidden flex flex-col h-[500px]">
-                            <div className="p-6 bg-zinc-950/50 flex items-center justify-between border-b border-white/5">
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50 flex items-center gap-3">
+                        <Card className="bg-card dark:bg-black text-foreground dark:text-white border-border dark:border-none shadow-2xl shadow-primary/10 rounded-[2.5rem] overflow-hidden flex flex-col h-[500px]">
+                            <div className="p-6 bg-muted/50 dark:bg-zinc-950/50 flex items-center justify-between border-b border-border dark:border-white/5">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground dark:text-white/50 flex items-center gap-3">
                                     <div className="h-2 w-2 rounded-full bg-primary animate-pulse" /> Live Intel Relay
                                 </h3>
-                                <MessageSquare className="h-4 w-4 text-white/20" />
+                                <MessageSquare className="h-4 w-4 text-muted-foreground/50 dark:text-white/20" />
                             </div>
                             <div className="p-6 flex-1 overflow-y-auto space-y-6 scrollbar-hide">
                                 {messages.length === 0 ? (
-                                    <div className="flex flex-col items-center justify-center h-full opacity-20">
+                                    <div className="flex flex-col items-center justify-center h-full text-muted-foreground opacity-50 dark:opacity-20">
                                         <Activity className="h-10 w-10 mb-4" />
                                         <p className="italic text-[10px] uppercase font-black tracking-widest text-center">Zero Signal Detected</p>
                                     </div>
                                 ) : (
                                     messages.map((msg: any) => (
-                                        <div key={msg.id} className="bg-white/5 p-5 rounded-2xl border border-white/10 hover:bg-white/10 transition-colors group">
+                                        <div key={msg.id} className="bg-muted/30 dark:bg-white/5 p-5 rounded-2xl border border-border/50 dark:border-white/10 hover:bg-muted/60 dark:hover:bg-white/10 transition-colors group">
                                             <div className="flex justify-between items-center mb-2">
                                                 <p className="font-black text-primary group-hover:scale-105 transition-transform text-[10px] uppercase tracking-widest">{msg.sender?.display_name || 'CO-PILOT'}</p>
-                                                <span className="text-[8px] font-bold text-white/30">{new Date(msg.created_at).toLocaleTimeString()}</span>
+                                                <span className="text-[8px] font-bold text-muted-foreground dark:text-white/30">{new Date(msg.created_at).toLocaleTimeString()}</span>
                                             </div>
-                                            <p className="text-white/70 italic text-xs leading-relaxed">"{msg.content}"</p>
+                                            <p className="text-foreground/80 dark:text-white/70 italic text-xs leading-relaxed">"{msg.content}"</p>
                                         </div>
                                     ))
                                 )}
