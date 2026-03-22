@@ -120,11 +120,11 @@ export default function RevenueManagementPage() {
                 p_reason: reason
             });
             if (error) throw error;
-            console.warn('UI_ALERT:', );
+            alert('Refund processed successfully.');
             fetchRevenue();
         } catch (err) {
             console.error("Refund failed:", err);
-            console.warn('UI_ALERT:', );
+            alert('Refund failed. Please try again.');
         } finally {
             setProcessingRefund(null);
         }

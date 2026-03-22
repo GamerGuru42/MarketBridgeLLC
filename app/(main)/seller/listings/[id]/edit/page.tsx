@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
@@ -75,7 +75,7 @@ export default function EditListingPage() {
             if (error) throw error;
 
             if (!data) {
-                console.warn('UI_ALERT:', );
+                alert('Listing not found or you do not have access.');
                 router.push('/seller/listings');
                 return;
             }
@@ -92,7 +92,7 @@ export default function EditListingPage() {
             setVideoUrls(data.videos && data.videos.length > 0 ? data.videos : []);
         } catch (err: unknown) {
             console.error('Failed to fetch listing:', err);
-            console.warn('UI_ALERT:', );
+            alert('Failed to fetch listing. Returning to your inventory.');
             router.push('/seller/listings');
         } finally {
             setLoading(false);
@@ -108,7 +108,7 @@ export default function EditListingPage() {
             const validImages = imageUrls.filter(url => url.trim() !== '');
 
             if (validImages.length === 0) {
-                console.warn('UI_ALERT:', );
+                alert('Please add at least one image before saving.');
                 setSaving(false);
                 return;
             }
@@ -132,7 +132,7 @@ export default function EditListingPage() {
         } catch (err: unknown) {
             console.error('Failed to update listing:', err);
             const message = err instanceof Error ? err.message : 'System synchronization failed';
-            console.warn('UI_ALERT:', );
+            alert(`Failed to update listing: ${message}`);
         } finally {
             setSaving(false);
         }

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -267,7 +267,7 @@ export default function ListingDetailContent() {
         } catch (err: unknown) {
             console.error('Error starting chat:', err);
             const message = err instanceof Error ? err.message : 'Failed to start chat';
-            console.warn('UI_ALERT:', );
+            setError(message);
         } finally {
             setActionLoading(false);
         }
@@ -297,7 +297,7 @@ export default function ListingDetailContent() {
 
         const price = parseFloat(offerPrice);
         if (isNaN(price) || price <= 0) {
-            console.warn('UI_ALERT:', );
+            setError('Please enter a valid price.');
             return;
         }
 
@@ -335,7 +335,7 @@ export default function ListingDetailContent() {
             // Revert on error
             setActiveOffer(previousOffer);
             setIsOfferOpen(true);
-            console.warn('UI_ALERT:', );
+            setError('Failed to submit offer. Please try again.');
         } finally {
             setIsSubmittingOffer(false);
         }
@@ -343,7 +343,7 @@ export default function ListingDetailContent() {
 
     const handleCallDealer = () => {
         if (!listing?.dealer?.phone_number) {
-            console.warn('UI_ALERT:', );
+            setError('This seller has not added a phone number yet.');
             return;
         }
         window.location.href = `tel:${listing.dealer.phone_number}`;
@@ -360,7 +360,7 @@ export default function ListingDetailContent() {
             image: listing.images[0] || '',
             dealerId: listing.dealer.id,
         });
-        console.warn('UI_ALERT:', );
+        // Item added to cart via CartContext
     };
 
     const handlePlaceOrder = async () => {
@@ -395,7 +395,7 @@ export default function ListingDetailContent() {
 
         } catch (err: any) {
             console.error('Checkout Error:', err);
-            console.warn('UI_ALERT:', );
+            setError('Checkout failed. Please try again.');
             setActionLoading(false);
         }
     };

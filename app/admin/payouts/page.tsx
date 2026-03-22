@@ -82,9 +82,9 @@ export default function AdminPayoutsPage() {
 
             // Refresh list
             setOrders(prev => prev.filter(o => o.id !== orderId));
-            console.warn('UI_ALERT:', );
+            alert('Payout marked as paid successfully.');
         } catch (err: any) {
-            console.warn('UI_ALERT:', );
+            alert('Failed to mark payout. Please try again.');
         } finally {
             setProcessingId(null);
         }

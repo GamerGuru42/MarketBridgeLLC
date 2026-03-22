@@ -158,7 +158,7 @@ function AdminSignupContent() {
 
                 if (signInError) {
                     console.error("Auto-login failed:", signInError);
-                    console.warn('UI_ALERT:', );
+                    setError('Account created but auto-login failed. Please log in manually.');
                     router.push('/login');
                     return;
                 }

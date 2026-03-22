@@ -136,7 +136,7 @@ export default function DisputesPage() {
             setResolutionNotes('');
         } catch (error: unknown) {
             console.error('Error updating dispute:', error);
-            console.warn('UI_ALERT:', );
+            alert('Failed to update dispute. Please try again.');
         } finally {
             setActionLoading(false);
         }

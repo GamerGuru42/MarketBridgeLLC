@@ -94,10 +94,10 @@ export default function VerificationsPage() {
             setVerifyingListing(null);
             setReportUrl('');
             setNotes('');
-            console.warn('UI_ALERT:', );
+            alert('Listing verified and activated successfully.');
         } catch (err) {
             console.error('Error verifying listing:', err);
-            console.warn('UI_ALERT:', );
+            alert('Failed to verify listing. Please try again.');
         } finally {
             setProcessingId(null);
         }
@@ -120,10 +120,10 @@ export default function VerificationsPage() {
 
             if (error) throw error;
             setListings(listings.filter(l => l.id !== id));
-            console.warn('UI_ALERT:', );
+            alert('Listing rejected successfully.');
         } catch (err) {
             console.error('Error rejecting listing:', err);
-            console.warn('UI_ALERT:', );
+            alert('Failed to reject listing. Please try again.');
         } finally {
             setProcessingId(null);
         }

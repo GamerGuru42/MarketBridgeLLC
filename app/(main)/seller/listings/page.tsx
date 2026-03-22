@@ -150,7 +150,7 @@ export default function SellerListingsPage() {
             fetchListings();
         } catch (err) {
             console.error('Failed to delete listing:', err);
-            console.warn('UI_ALERT:', );
+            alert('Failed to delete listing. Please try again.');
         } finally {
             setDeletingId(null);
         }
@@ -169,7 +169,7 @@ export default function SellerListingsPage() {
             fetchListings();
         } catch (err) {
             console.error('Failed to update status:', err);
-            console.warn('UI_ALERT:', );
+            alert('Failed to update listing status. Please try again.');
         }
     };
 

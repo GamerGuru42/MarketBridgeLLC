@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -92,7 +92,7 @@ export function ReviewsSection({ listingId, dealerId }: ReviewsSectionProps) {
             fetchReviews();
         } catch (error) {
             console.error('Error submitting review:', error);
-            console.warn('UI_ALERT:', );
+            console.error('Failed to submit review. Please try again.');
         } finally {
             setSubmitting(false);
         }

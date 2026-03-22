@@ -117,7 +117,7 @@ export default function EscrowTemplatesPage() {
 
     const handleSave = async () => {
         if (!category || !name || steps.some(s => !s.trim()) || !tosText) {
-            console.warn('UI_ALERT:', );
+            alert('Please fill in all fields before saving.');
             return;
         }
 
@@ -151,7 +151,7 @@ export default function EscrowTemplatesPage() {
             fetchTemplates();
         } catch (error) {
             console.error('Error saving template:', error);
-            console.warn('UI_ALERT:', );
+            alert('Failed to save template. Please try again.');
         }
     };
 
