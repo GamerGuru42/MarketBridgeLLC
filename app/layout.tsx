@@ -10,6 +10,7 @@ import { LocationChecker } from "@/components/location-checker";
 import BetaLabel from "@/components/BetaLabel";
 import { LocationProvider } from "@/contexts/LocationContext";
 import { ToastProvider } from "@/contexts/ToastContext";
+import { OnboardingTour } from "@/components/OnboardingTour";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -115,6 +116,7 @@ export default function RootLayout({
                   <NetworkStatus />
                 </ToastProvider>
                 <GlobalWidgets />
+                <OnboardingTour />
               </CartProvider>
             </LocationProvider>
           </AuthProvider>
