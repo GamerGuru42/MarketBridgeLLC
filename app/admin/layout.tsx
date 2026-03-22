@@ -73,7 +73,6 @@ export default function AdminLayout({
             return [
                 { label: 'Mission Control', href: '/admin/ceo', icon: LayoutDashboard },
                 { label: 'Marketing Growth', href: '/admin/marketing', icon: BarChart3 },
-                { label: 'Strategic Proposal', href: '/admin/ceo', icon: Zap }, // Points to CEO dashboard or specific proposal page
                 { label: 'Executive Chat', href: '/admin/executive-chat', icon: MessageSquare },
                 { label: 'Listings Manager', href: '/admin/listings', icon: ShoppingBag },
                 { label: 'Users Manager', href: '/admin/users', icon: Users },

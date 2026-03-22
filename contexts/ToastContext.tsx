@@ -56,12 +56,12 @@ function ToastContainer() {
                     className={`
                         pointer-events-auto min-w-[300px] max-w-sm p-4 rounded-xl shadow-2xl border backdrop-blur-xl animate-in slide-in-from-bottom-5 fade-in duration-300
                         flex items-start gap-3
-                        ${toast.type === 'success' ? 'bg-zinc-950/90 border-[#FF6200]/50 text-white' : ''}
-                        ${toast.type === 'error' ? 'bg-red-950/90 border-red-500/50 text-white' : ''}
-                        ${toast.type === 'info' ? 'bg-zinc-900/90 border-white/20 text-white' : ''}
+                        ${toast.type === 'success' ? 'bg-white dark:bg-zinc-950/90 border-[#FF6200]/30 dark:border-[#FF6200]/50 text-zinc-900 dark:text-white' : ''}
+                        ${toast.type === 'error' ? 'bg-red-50 dark:bg-red-950/90 border-red-200 dark:border-red-500/50 text-red-900 dark:text-white' : ''}
+                        ${toast.type === 'info' ? 'bg-white dark:bg-zinc-900/90 border-zinc-200 dark:border-white/20 text-zinc-900 dark:text-white' : ''}
                     `}
                 >
-                    <div className={`mt-0.5 ${toast.type === 'success' ? 'text-[#FF6200]' : toast.type === 'error' ? 'text-red-500' : 'text-zinc-400'}`}>
+                    <div className={`mt-0.5 ${toast.type === 'success' ? 'text-[#FF6200]' : toast.type === 'error' ? 'text-red-600 dark:text-red-500' : 'text-zinc-500 dark:text-zinc-400'}`}>
                         {toast.type === 'success' && <CheckCircle className="h-5 w-5" />}
                         {toast.type === 'error' && <AlertCircle className="h-5 w-5" />}
                         {toast.type === 'info' && <Info className="h-5 w-5" />}
@@ -70,11 +70,11 @@ function ToastContainer() {
                         <h4 className="text-sm font-bold uppercase tracking-wide">
                             {toast.type === 'success' ? 'System Success' : toast.type === 'error' ? 'System Error' : 'Notification'}
                         </h4>
-                        <p className="text-xs text-zinc-300 mt-1 leading-relaxed">
+                        <p className={`text-xs mt-1 leading-relaxed ${toast.type === 'error' ? 'text-red-700 dark:text-red-200' : 'text-zinc-500 dark:text-zinc-400'}`}>
                             {toast.message}
                         </p>
                     </div>
-                    <button onClick={() => context.removeToast(toast.id)} className="text-zinc-500 hover:text-white transition-colors">
+                    <button onClick={() => context.removeToast(toast.id)} className="text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-white transition-colors">
                         <X className="h-4 w-4" />
                     </button>
                 </div>
