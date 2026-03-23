@@ -15,14 +15,27 @@ import remarkGfm from 'remark-gfm';
 
 export function AiAssistant() {
     const [isOpen, setIsOpen] = useState(false);
+    const [retryCount, setRetryCount] = useState(0);
 
-    const { messages, input, handleInputChange, handleSubmit, isLoading, append, error } = useChat({
+    const { messages, input, handleInputChange, handleSubmit, isLoading, append, error, reload } = useChat({
         api: '/api/chat',
+        maxSteps: 5,
         initialMessages: [{
             id: '1',
             role: 'assistant',
-            content: "Hello! I'm **Sage**, your MarketBridge AI assistant. I'm trained to help you:\n- **Find products** safely across Abuja campuses\n- **Explain** our Paystack escrow system\n- **Guide** you to become a verified dealer\n\nHow can I assist your hustle today?",
+            content: "Hey there! 👋 I'm **Sage**, your personal MarketBridge assistant.\n\nI can help you with pretty much anything:\n- 🔍 **Find products** across Abuja campuses\n- 💰 **Explain** how escrow & payments work\n- 📦 **Track** your orders\n- 🛠️ **Fix issues** or connect you with our team\n\nJust type whatever's on your mind — I speak human! 😄",
         }],
+        onError: (err) => {
+            console.error('Sage chat error:', err);
+            // Auto-retry once
+            if (retryCount < 2) {
+                setRetryCount(prev => prev + 1);
+                setTimeout(() => reload(), 1500);
+            }
+        },
+        onFinish: () => {
+            setRetryCount(0);
+        },
     });
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -283,16 +296,23 @@ export function AiAssistant() {
                                     </div>
                                 </div>
                             )}
-                            {error && (
+                            {error && retryCount >= 2 && (
                                 <div className="flex gap-3 max-w-[85%] mt-2">
                                     <Avatar className="h-8 w-8 mt-1">
-                                        <AvatarFallback className="bg-destructive text-destructive-foreground">
+                                        <AvatarFallback className="bg-amber-500/20 text-amber-600">
                                             <AlertCircle className="h-4 w-4" />
                                         </AvatarFallback>
                                     </Avatar>
-                                    <div className="bg-destructive/10 text-destructive border border-destructive/20 p-3 rounded-2xl rounded-tl-none text-sm whitespace-pre-wrap">
-                                        {/* The error from the API typically contains the text inside error.message */}
-                                        {error.message || "Error connecting to Sage neural network. Please try again."}
+                                    <div className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 p-3 rounded-2xl rounded-tl-none text-sm space-y-2">
+                                        <p>Oops! I ran into a hiccup. This can happen during high traffic. 😅</p>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => { setRetryCount(0); reload(); }}
+                                            className="text-xs font-bold uppercase tracking-wider border-amber-500/30 hover:bg-amber-500/10"
+                                        >
+                                            ↻ Try Again
+                                        </Button>
                                     </div>
                                 </div>
                             )}
