@@ -49,30 +49,6 @@ CREATE POLICY "Buyers can insert transactions" ON public.transactions
 CREATE POLICY "Participants can update transactions" ON public.transactions
     FOR UPDATE USING (auth.uid() = buyer_id OR auth.uid() = seller_id);
 
--- 2. Disputes Center
-CREATE TABLE IF NOT EXISTS public.disputes (
-    id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-    transaction_id uuid REFERENCES public.transactions(id) ON DELETE CASCADE,
-    raised_by uuid REFERENCES public.users(id) ON DELETE CASCADE,
-    against_user uuid REFERENCES public.users(id) ON DELETE CASCADE,
-    reason text NOT NULL,
-    evidence_urls text[],
-    status text DEFAULT 'open', -- 'open', 'resolved', 'closed'
-    resolution_notes text,
-    created_at timestamptz DEFAULT now(),
-    updated_at timestamptz DEFAULT now()
-);
-
-ALTER TABLE public.disputes ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Users can view relevant disputes" ON public.disputes
-    FOR SELECT USING (auth.uid() = raised_by OR auth.uid() = against_user);
-
-CREATE POLICY "Admins can view all disputes" ON public.disputes
-    FOR SELECT USING (EXISTS (SELECT 1 FROM public.users WHERE public.users.id = auth.uid() AND role IN ('admin', 'ceo', 'operations_admin', 'technical_admin')));
-
-CREATE POLICY "Users can insert disputes" ON public.disputes
-    FOR INSERT WITH CHECK (auth.uid() = raised_by);
 
 -- 3. Reviews (Reputation System)
 CREATE TABLE IF NOT EXISTS public.reviews (
