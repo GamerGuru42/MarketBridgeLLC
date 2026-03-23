@@ -33,6 +33,14 @@ function VerifyEmailContent() {
         }
     }, [countdown]);
 
+    // Auto-redirect if already verified (prevents Google users from getting stuck here)
+    useEffect(() => {
+        if (user?.email_verified) {
+            toast('Email already verified!', 'success');
+            router.replace('/marketplace');
+        }
+    }, [user, router, toast]);
+
     const handleVerify = async (e: React.FormEvent) => {
         e.preventDefault();
         if (otp.length !== 6) {
@@ -115,7 +123,7 @@ function VerifyEmailContent() {
                     </div>
                 </div>
                 <div className="text-center space-y-2">
-                    <h2 className="text-3xl font-black uppercase italic tracking-tighter">Enter <span className="text-[#FF6200]">Access Code</span></h2>
+                    <h2 className="text-3xl font-black uppercase italic tracking-tighter">Enter <span className="text-[#FF6200]">Verification Code</span></h2>
                     <p className="text-white/40 text-[10px] font-black uppercase tracking-widest">Verification code sent to {email}</p>
                 </div>
             </div>
@@ -127,8 +135,8 @@ function VerifyEmailContent() {
                         maxLength={6}
                         value={otp}
                         onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                        placeholder="000 000"
-                        className="w-full bg-black border-2 border-white/10 rounded-[1.5rem] h-20 text-center text-4xl font-black tracking-[0.5em] text-[#FF6200] placeholder:text-white/5 focus:border-[#FF6200] focus:ring-4 focus:ring-[#FF6200]/10 outline-none transition-all"
+                        placeholder="Enter 6-digit code"
+                        className="w-full bg-black border-2 border-white/10 rounded-[1.5rem] h-20 text-center text-2xl font-black tracking-[0.2em] text-[#FF6200] placeholder:text-white/5 focus:border-[#FF6200] focus:ring-4 focus:ring-[#FF6200]/10 outline-none transition-all"
                         required
                     />
                     <div className="flex justify-between items-center px-2">

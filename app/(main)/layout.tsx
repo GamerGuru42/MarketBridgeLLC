@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Zap } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function MainLayout({
     children,
@@ -19,18 +19,22 @@ export default function MainLayout({
 }) {
     const pathname = usePathname();
     const router = useRouter();
-    const { user, loading } = useAuth();
+    const { user, sessionUser, loading } = useAuth();
     
     const isDashboard = pathname?.startsWith('/dealer') || pathname?.startsWith('/settings');
     const isHome = pathname === '/';
 
     useEffect(() => {
         if (!loading && user) {
-            if (['student_buyer', 'student_seller'].includes(user.role) && !user.email_verified) {
+            // Social login users (Google/Facebook) are considered pre-verified or will be updated by the callback upsert.
+            // Only redirect manual email signups to the verify-email page.
+            const isSocialLogin = sessionUser?.app_metadata?.provider !== 'email';
+            
+            if (['student_buyer', 'student_seller'].includes(user.role) && !user.email_verified && !isSocialLogin) {
                 router.push('/verify-email');
             }
         }
-    }, [user, loading, router]);
+    }, [user, loading, router, sessionUser]);
 
     return (
         <div className="flex flex-col min-h-screen">
