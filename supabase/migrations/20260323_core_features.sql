@@ -77,9 +77,9 @@ CREATE POLICY "Users can insert disputes" ON public.disputes
 -- 3. Reviews (Reputation System)
 CREATE TABLE IF NOT EXISTS public.reviews (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-    transaction_id uuid REFERENCES public.transactions(id) ON DELETE CASCADE,
+    escrow_agreement_id uuid REFERENCES public.escrow_agreements(id) ON DELETE CASCADE,
     reviewer_id uuid REFERENCES public.users(id) ON DELETE CASCADE,
-    reviewee_id uuid REFERENCES public.users(id) ON DELETE CASCADE,
+    subject_id uuid REFERENCES public.users(id) ON DELETE CASCADE,
     rating integer CHECK (rating >= 1 AND rating <= 5),
     comment text,
     created_at timestamptz DEFAULT now()

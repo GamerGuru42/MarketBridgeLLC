@@ -214,14 +214,17 @@ export const Header = () => {
                             </div>
                         )}
 
-                        {/* Mobile Hamburger */}
-                        <button
-                            className="md:hidden h-9 w-9 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
-                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            aria-label="Toggle menu"
-                        >
-                            {mobileMenuOpen ? <X className="h-4 w-4 text-zinc-900 dark:text-white" /> : <Menu className="h-4 w-4 text-zinc-900 dark:text-white" />}
-                        </button>
+                        {/* Mobile Controls */}
+                        <div className="flex md:hidden items-center gap-2">
+                            <ThemeToggle />
+                            <button
+                                className="h-9 w-9 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
+                                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                                aria-label="Toggle menu"
+                            >
+                                {mobileMenuOpen ? <X className="h-4 w-4 text-zinc-900 dark:text-white" /> : <Menu className="h-4 w-4 text-zinc-900 dark:text-white" />}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </header>
