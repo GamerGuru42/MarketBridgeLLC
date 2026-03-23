@@ -47,6 +47,7 @@ interface Listing {
         store_type?: string;
         phone_number?: string;
         subscription_plan?: string;
+        university?: string;
     };
     created_at: string;
     make?: string;
@@ -128,7 +129,7 @@ export default function ListingDetailContent() {
             const { data } = await supabase
                 .from('reviews')
                 .select('rating')
-                .eq('seller_id', listing.dealer.id);
+                .eq('subject_id', listing.dealer.id);
             if (data && data.length > 0) {
                 const avg = data.reduce((s, r) => s + r.rating, 0) / data.length;
                 setSellerRating({ avg: Math.round(avg * 10) / 10, count: data.length });
@@ -212,7 +213,8 @@ export default function ListingDetailContent() {
                             photo_url,
                             store_type,
                             phone_number,
-                            subscription_plan
+                            subscription_plan,
+                            university
                         )
                     `)
                 .eq('id', listingId)
@@ -234,7 +236,7 @@ export default function ListingDetailContent() {
                 if (simpleListing) {
                     const { data: dealerData } = await supabase
                         .from('users')
-                        .select('id, display_name, is_verified, photo_url, store_type, phone_number, subscription_plan')
+                        .select('id, display_name, is_verified, photo_url, store_type, phone_number, subscription_plan, university')
                         .eq('id', simpleListing.dealer_id)
                         .single();
 
@@ -707,7 +709,7 @@ export default function ListingDetailContent() {
                                         <h4 className="text-xl font-black uppercase tracking-tighter italic">{listing.dealer.display_name}</h4>
                                         {listing.dealer.is_verified && <ShieldCheck className="h-4 w-4 text-[#FF6200]" />}
                                     </div>
-                                    <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mb-4">Verified Institutional Node</p>
+                                    <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mb-4">{listing.dealer.university || 'Verified Institutional Node'}</p>
                                     <div className="flex items-center gap-4">
                                         <div className="flex items-center gap-1.5">
                                             <Star className="h-3 w-3 fill-[#FF6200] text-[#FF6200]" />

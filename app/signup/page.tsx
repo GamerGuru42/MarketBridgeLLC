@@ -18,8 +18,15 @@ import { cn } from '@/lib/utils';
 
 // Only buyers and sellers can self-register.
 // Admin/CEO accounts are provisioned internally by the MarketBridge team.
-type Step = 'role' | 'details';
+type Step = 'role' | 'details' | 'otp';
 type Role = 'student_buyer' | 'student_seller';
+
+const UNIVERSITIES = [
+    "Baze University",
+    "Nile University of Nigeria",
+    "Veritas University",
+    "Other Abuja Private University"
+];
 
 function SignupContent() {
     const supabase = createClient();
@@ -37,6 +44,10 @@ function SignupContent() {
         passwordConfirm: '',
         firstName: '',
         lastName: '',
+        university: '',
+        universityOther: '',
+        matricNumber: '',
+        otp: '',
     });
     const [isLoading, setIsLoading] = useState(false);
 
@@ -132,12 +143,50 @@ function SignupContent() {
                     await refreshUser();
                     router.push(role === 'student_seller' ? '/seller-onboard' : '/marketplace');
                 } else {
-                    toast('Succesful Registration! Please check your email to verify your account.', 'success');
-                    router.push('/login');
+                    toast('Verification code sent! Please check your email.', 'success');
+                    setCurrentStep('otp');
                 }
             }
         } catch (error: any) {
             toast(error.message || 'Signup failed', 'error');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleVerifyOTP = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (formData.otp.length !== 6) {
+            toast('Please enter a valid 6-digit code', 'error');
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const { data, error } = await supabase.auth.verifyOtp({
+                email: normalizeIdentifier(formData.email),
+                token: formData.otp,
+                type: 'signup'
+            });
+
+            if (error) throw error;
+
+            if (data.user) {
+                const finalUni = formData.university === 'Other Abuja Private University' ? formData.universityOther : formData.university;
+                
+                await supabase.from('users').upsert({
+                    id: data.user.id,
+                    email_verified: true,
+                    university: finalUni,
+                    matric_number: formData.matricNumber
+                }, { onConflict: 'id' });
+
+                await refreshUser();
+                toast('Account fully verified!', 'success');
+                router.push(role === 'student_seller' ? '/seller-onboard' : '/marketplace');
+            }
+        } catch (error: any) {
+            toast(error.message || 'Invalid verification code.', 'error');
         } finally {
             setIsLoading(false);
         }
@@ -302,6 +351,48 @@ function SignupContent() {
                                 required
                                 placeholder="name@email.com"
                                 title="Email Address"
+                                className="w-full h-14 px-5 bg-muted border border-input rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-medium"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-2">University</label>
+                            <select
+                                name="university"
+                                value={formData.university}
+                                onChange={handleChange}
+                                required
+                                className="w-full h-14 px-5 bg-muted border border-input rounded-2xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-medium appearance-none"
+                            >
+                                <option value="" disabled>Select your campus</option>
+                                {UNIVERSITIES.map(u => <option key={u} value={u}>{u}</option>)}
+                            </select>
+                        </div>
+
+                        {formData.university === 'Other Abuja Private University' && (
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-2">Specify University</label>
+                                <input
+                                    name="universityOther"
+                                    type="text"
+                                    value={formData.universityOther}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="University Name"
+                                    className="w-full h-14 px-5 bg-muted border border-input rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-medium"
+                                />
+                            </div>
+                        )}
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-2">Matriculation Number</label>
+                            <input
+                                name="matricNumber"
+                                type="text"
+                                value={formData.matricNumber}
+                                onChange={handleChange}
+                                required
+                                placeholder="E.g. BU/19/000"
                                 className="w-full h-14 px-5 bg-muted border border-input rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-medium"
                             />
                         </div>

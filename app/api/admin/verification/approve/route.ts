@@ -20,14 +20,19 @@ export async function POST(req: Request) {
       .update({ status: 'approved', admin_id: adminId || null, admin_note: note || null, updated_at: new Date().toISOString() })
       .eq('id', requestId)
 
-    // Update user: set is_verified=true (what AuthContext reads), is_verified_seller=true, and role=student_seller
+    const { data: userRow } = await supabase.from('users').select('coins_balance').eq('id', reqRow.user_id).single()
+    const currentMC = userRow?.coins_balance || 0;
+
+    // Update user: set is_verified=true (what AuthContext reads), is_verified_seller=true, email_verified=true, and role=student_seller
     await supabase
       .from('users')
       .update({
         is_verified_seller: true,
         is_verified: true,       // AuthContext maps this to user.isVerified
         isVerified: true,        // Also set camelCase column if it exists in DB
+        email_verified: true,    // Bypass OTP
         role: 'student_seller',  // Ensure they have seller role to access dashboard
+        coins_balance: currentMC + 10, // Reward 10 Market Coins for verification
       })
       .eq('id', reqRow.user_id)
 

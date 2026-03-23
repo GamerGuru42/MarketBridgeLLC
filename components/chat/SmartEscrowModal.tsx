@@ -24,6 +24,7 @@ interface SmartEscrowModalProps {
         type: 'default' | 'custom';
         steps: string[];
         tosText: string;
+        autoReleaseHours: number;
     }) => void;
     amount: string;
     setAmount: (val: string) => void;
@@ -39,8 +40,9 @@ export function SmartEscrowModal({
     const [step, setStep] = useState(1);
     const [accepted, setAccepted] = useState(false);
     const [customSteps, setCustomSteps] = useState('');
+    const [autoRelease, setAutoRelease] = useState('48');
 
-    const tosText = `By initiating this transaction, you agree that funds will be held securely by MarketBridge until all conditions are met. Buyer must confirm receipt before funds are released to the seller.`;
+    const tosText = `By initiating this transaction, you agree that funds will be held securely by MarketBridge until all conditions are met. Buyer must confirm receipt before funds are released to the seller or the auto-release timeframe expires.`;
 
     const handleConfirm = () => {
         const numericAmount = parseFloat(amount.replace(/[^0-9.]/g, ''));
@@ -48,13 +50,22 @@ export function SmartEscrowModal({
 
         const steps = customSteps.trim()
             ? customSteps.split('\n').filter(s => s.trim())
-            : ['Payment Secured', 'Seller Ships Item', 'Buyer Receives Item', 'Funds Released'];
+            : [
+                'Pending (Awaiting Payment)',
+                'Payment Captured',
+                'Awaiting Delivery',
+                'Delivery Initiated',
+                'Received',
+                'Inspecting',
+                'Completed'
+              ];
 
         onConfirm({
             amount: numericAmount,
             type: customSteps ? 'custom' : 'default',
             steps,
-            tosText
+            tosText,
+            autoReleaseHours: parseInt(autoRelease)
         });
 
         onClose();
@@ -97,14 +108,28 @@ export function SmartEscrowModal({
                     ) : (
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <Label className="text-xs uppercase font-bold tracking-widest text-zinc-500">Transaction Milestones</Label>
+                                <Label className="text-xs uppercase font-bold tracking-widest text-[#FF6200]">Terms & Conditions Builder</Label>
+                                <p className="text-[10px] text-zinc-400">Specify the transaction milestones and limits to form a binding agreement.</p>
+                                <Label className="text-xs uppercase font-bold tracking-widest text-zinc-500 mt-4 block">Transaction Milestones</Label>
                                 <Textarea
                                     placeholder="Use default steps or define custom milestones (one per line)..."
                                     value={customSteps}
                                     onChange={(e) => setCustomSteps(e.target.value)}
-                                    className="bg-black border-white/10 text-white min-h-[100px] text-xs font-mono"
+                                    className="bg-black border-white/10 text-white min-h-[80px] text-xs font-mono"
                                 />
-                                <p className="text-[10px] text-zinc-500">Default: Payment Secured → Seller Ships → Buyer confirms → Funds Released</p>
+                                <p className="text-[10px] text-zinc-500">Default: 7-Stage Flow (Payment → Shipped → Received → Inspecting → Completed)</p>
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-xs uppercase font-bold tracking-widest text-zinc-500">Auto-Release Timeframe</Label>
+                                <select 
+                                    className="w-full bg-black border border-white/10 text-white h-10 px-3 py-2 rounded-md font-mono text-xs focus:ring-[#FF6200] focus:border-[#FF6200]"
+                                    value={autoRelease}
+                                    onChange={(e) => setAutoRelease(e.target.value)}
+                                >
+                                    <option value="24">24 Hours (Fast Release)</option>
+                                    <option value="48">48 Hours (Standard)</option>
+                                    <option value="72">72 Hours (Extended Inspection)</option>
+                                </select>
                             </div>
                             <div className="flex items-start gap-2 pt-2 border-t border-white/10">
                                 <Checkbox

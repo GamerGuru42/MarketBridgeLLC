@@ -8,7 +8,9 @@ import { LocationConsentModal } from '@/components/LocationConsentModal';
 import { FeedbackModal } from '@/components/FeedbackModal';
 import { Badge } from '@/components/ui/badge';
 import { Zap } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { useEffect } from 'react';
 
 export default function MainLayout({
     children,
@@ -16,8 +18,19 @@ export default function MainLayout({
     children: React.ReactNode;
 }) {
     const pathname = usePathname();
+    const router = useRouter();
+    const { user, loading } = useAuth();
+    
     const isDashboard = pathname?.startsWith('/dealer') || pathname?.startsWith('/settings');
     const isHome = pathname === '/';
+
+    useEffect(() => {
+        if (!loading && user) {
+            if (['student_buyer', 'student_seller'].includes(user.role) && !user.email_verified) {
+                router.push('/verify-email');
+            }
+        }
+    }, [user, loading, router]);
 
     return (
         <div className="flex flex-col min-h-screen">

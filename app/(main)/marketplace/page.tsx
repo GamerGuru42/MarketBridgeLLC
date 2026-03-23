@@ -18,6 +18,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { intelligentSearch, trackSearch } from '@/lib/ai-search';
 import { SponsoredBadge } from '@/components/listings/SponsoredBadge';
 
+const UNIVERSITIES = [
+    "Baze University",
+    "Nile University of Nigeria",
+    "Veritas University",
+    "Other Abuja Private University"
+];
 
 interface Listing {
     id: string;
@@ -57,21 +63,18 @@ function ListingsContent() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [search, setSearch] = useState(searchParams?.get('q') || searchParams?.get('search') || '');
-    const [location, setLocation] = useState(initialLocation);
+    const [campus, setCampus] = useState(initialLocation);
     const [category, setCategory] = useState(searchParams?.get('category') || 'All Categories');
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
     const [condition, setCondition] = useState('all');
 
     useEffect(() => {
-        // Sync with active Campus if no explicit location parameter is provided
-        if (!initialLocation) {
-            const savedCampus = localStorage.getItem('mb-preferred-Campus');
-            if (savedCampus && savedCampus !== 'global') {
-                setLocation(savedCampus);
-            }
+        // Feed defaults to user's university
+        if (!initialLocation && user?.university && !campus) {
+            setCampus(user.university);
         }
-    }, [initialLocation]);
+    }, [user, initialLocation, campus]);
 
     useEffect(() => {
         fetchListings();
@@ -98,7 +101,7 @@ function ListingsContent() {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [category, condition, location, search, user?.id, authLoading]);
+    }, [category, condition, campus, search, user?.id, authLoading]);
 
     const fetchListings = async () => {
         if (authLoading) return;
@@ -123,7 +126,7 @@ function ListingsContent() {
                 const results = await intelligentSearch({
                     query: search,
                     category: category !== 'All Categories' ? category : undefined,
-                    location: location || undefined,
+                    location: campus || undefined,
                     minPrice: minPrice ? parseInt(minPrice) : undefined,
                     maxPrice: maxPrice ? parseInt(maxPrice) : undefined,
                     limit: 50
@@ -142,7 +145,7 @@ function ListingsContent() {
                 const buildQuery = (baseQuery: any) => {
                     let q = baseQuery.eq('status', 'active');
                     if (category && category !== 'All Categories') q = q.eq('category', category);
-                    if (location) q = q.ilike('location', `%${location}%`);
+                    if (campus && campus !== 'Global') q = q.eq('dealer.university', campus);
                     if (minPrice) q = q.gte('price', parseInt(minPrice));
                     if (maxPrice) q = q.lte('price', parseInt(maxPrice));
                     if (condition !== 'all') q = q.eq('condition', condition);
@@ -151,11 +154,12 @@ function ListingsContent() {
 
                 const selectFields = `
                     *,
-                    dealer:users!listings_dealer_id_fkey(
+                    dealer:users!inner(
                         id,
                         display_name,
                         is_verified,
-                        store_type
+                        store_type,
+                        university
                     )
                 `;
 
@@ -251,14 +255,16 @@ function ListingsContent() {
 
                     <div className="md:col-span-2">
                         <select
-                            title="Filter by Location"
-                            aria-label="Filter by Location"
-                            value={location}
-                            onChange={(e) => setLocation(e.target.value)}
+                            title="Filter by Campus"
+                            aria-label="Filter by Campus"
+                            value={campus}
+                            onChange={(e) => setCampus(e.target.value)}
                             className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 px-6 h-16 text-zinc-900 dark:text-white focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
                         >
                             <option value="" className="bg-[#FAFAFA] dark:bg-zinc-900 text-zinc-900 dark:text-white">All Terminals</option>
-                            <option value="Abuja" className="bg-[#FAFAFA] dark:bg-zinc-900 text-zinc-900 dark:text-white">Abuja (Main Node)</option>
+                            {UNIVERSITIES.map(u => (
+                                <option key={u} value={u} className="bg-[#FAFAFA] dark:bg-zinc-900 text-zinc-900 dark:text-white">{u}</option>
+                            ))}
                             <option value="Global" className="bg-[#FAFAFA] dark:bg-zinc-900 text-zinc-900 dark:text-white">Global Access</option>
                         </select>
                     </div>
@@ -329,7 +335,7 @@ function ListingsContent() {
                             onAction={() => {
                                 setSearch('');
                                 setCategory('All Categories');
-                                setLocation('');
+                                setCampus('');
                                 fetchListings();
                             }}
                         />

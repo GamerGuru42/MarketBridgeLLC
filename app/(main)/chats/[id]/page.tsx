@@ -379,6 +379,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
         type: 'default' | 'custom';
         steps: string[];
         tosText: string;
+        autoReleaseHours: number;
     }) => {
         if (!user || !chat || !chat.other_user || !chatId) return;
 
@@ -418,7 +419,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
             await supabase.from('messages').insert({
                 conversation_id: chatId,
                 sender_id: user.id,
-                content: `🔒 Smart Escrow initiated for ₦${data.amount.toLocaleString()}. Please review and accept conditions.`,
+                content: `🔒 Smart Escrow initiated for ₦${data.amount.toLocaleString()}.\n⏱️ Auto-Release Timeframe: ${data.autoReleaseHours} Hours.\nPlease review and accept conditions.`,
             });
 
             setActiveAgreement(agreement);

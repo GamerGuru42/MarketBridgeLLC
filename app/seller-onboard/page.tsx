@@ -11,14 +11,10 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
 const UNIVERSITIES = [
-    "Cosmopolitan University Abuja",
+    "Baze University",
     "Nile University of Nigeria",
     "Veritas University",
-    "University of Abuja",
-    "Bingham University",
-    "Baze University",
-    "Philomath University",
-    "Other"
+    "Other Abuja Private University"
 ];
 
 const CATEGORIES = [
@@ -204,7 +200,7 @@ export default function SellerOnboardPage() {
         if (!user) return;
         setIsSubmitting(true);
         try {
-            const university = formData.university === 'Other' ? formData.universityOther : formData.university;
+            const university = formData.university === 'Other Abuja Private University' ? formData.universityOther : formData.university;
             
             const payload = {
                 userId: user.id,
@@ -234,6 +230,7 @@ export default function SellerOnboardPage() {
                 is_verified: true,
                 phone_number: formData.phoneNumber,
                 role: 'dealer',
+                coins_balance: Number((user as any)?.coins_balance || 0) + 10,
             }).eq('id', user.id);
 
             setIsSuccess(true);
@@ -354,7 +351,7 @@ export default function SellerOnboardPage() {
 
                             <div className="space-y-1.5"><label className="text-[10px] uppercase font-black text-muted-foreground ml-2 tracking-widest">University</label><select value={formData.university} onChange={e => setFormData(p => ({...p, university: e.target.value}))} className="w-full h-12 px-4 bg-muted border border-input rounded-xl outline-none font-medium text-sm appearance-none"><option value="" disabled>Select your campus</option>{UNIVERSITIES.map(u => <option key={u} value={u}>{u}</option>)}</select></div>
                             
-                            {formData.university === 'Other' && <div className="space-y-1.5"><label className="text-[10px] uppercase font-black text-muted-foreground ml-2 tracking-widest">Specify University</label><input value={formData.universityOther} onChange={e => setFormData(p => ({...p, universityOther: e.target.value}))} className="w-full h-12 px-4 bg-muted border border-input rounded-xl font-medium text-sm" placeholder="University name" /></div>}
+                            {formData.university === 'Other Abuja Private University' && <div className="space-y-1.5"><label className="text-[10px] uppercase font-black text-muted-foreground ml-2 tracking-widest">Specify University</label><input value={formData.universityOther} onChange={e => setFormData(p => ({...p, universityOther: e.target.value}))} className="w-full h-12 px-4 bg-muted border border-input rounded-xl font-medium text-sm" placeholder="University name" /></div>}
 
                             <div className="space-y-1.5"><label className="text-[10px] uppercase font-black text-muted-foreground ml-2 tracking-widest">Shop/Brand Name</label><div className="relative"><Store className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/><input value={formData.shopName} onChange={e => setFormData(p => ({...p, shopName: e.target.value}))} className="w-full h-12 pl-12 pr-4 bg-muted border border-input rounded-xl focus:ring-1 focus:ring-primary/40 font-medium text-sm" placeholder="E.g. Jay's Thrifts & Gadgets" /></div></div>
 

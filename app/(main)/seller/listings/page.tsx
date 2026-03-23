@@ -201,6 +201,37 @@ export default function SellerListingsPage() {
         }
     };
 
+    const handleBoostWithCoins = async () => {
+        if (!user || !user.id || !boostListing) return;
+        setBoostLoading(true);
+        setBoostError('');
+        try {
+            const { data: userData } = await supabase.from('users').select('coins_balance').eq('id', user.id).single();
+            const currentCoins = userData?.coins_balance || 0;
+            if (currentCoins < 50) {
+                throw new Error("Insufficient MarketCoins. You need 50 MC.");
+            }
+
+            // Deduct 50 MC and grant premium
+            await supabase.from('users').update({ coins_balance: currentCoins - 50 }).eq('id', user.id);
+            const expires = new Date();
+            expires.setDate(expires.getDate() + 14);
+            await supabase.from('listings').update({
+                is_sponsored: true,
+                sponsored_tier: 'premium',
+                sponsored_until: expires.toISOString()
+            }).eq('id', boostListing.id);
+
+            alert("Premium Boost applied successfully for 50 MC!");
+            setBoostListing(null);
+            fetchListings();
+        } catch (err: any) {
+            setBoostError(err.message || 'Failed to boost with coins');
+        } finally {
+            setBoostLoading(false);
+        }
+    };
+
     const BOOST_TIERS = [
         {
             id: 'basic' as const,
@@ -225,10 +256,10 @@ export default function SellerListingsPage() {
         {
             id: 'premium' as const,
             label: 'Premium Spotlight',
-            price: '₦3,000',
+            price: '50 MC',
             duration: '14 days',
             icon: <Crown className="h-5 w-5 text-yellow-300" />,
-            perks: ['Pinned for 14 days', 'PREMIUM badge + homepage exposure', '+50 MarketCoins reward'],
+            perks: ['Pinned for 14 days', 'PREMIUM badge + homepage exposure', 'Cost: 50 MarketCoins'],
             color: 'border-yellow-500/30 hover:border-yellow-400/60',
             badge: 'BEST VALUE',
         },
@@ -437,7 +468,7 @@ export default function SellerListingsPage() {
                             {BOOST_TIERS.map((tier) => (
                                 <button
                                     key={tier.id}
-                                    onClick={() => handleBoostTier(tier.id)}
+                                    onClick={() => tier.id === 'premium' ? handleBoostWithCoins() : handleBoostTier(tier.id)}
                                     disabled={boostLoading}
                                     className={`w-full text-left p-5 rounded-2xl border bg-[#FAFAFA]/30 transition-all hover:bg-[#FAFAFA]/60 relative ${tier.color} disabled:opacity-50 disabled:cursor-not-allowed`}
                                 >

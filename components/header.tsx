@@ -7,7 +7,7 @@ import { Logo } from '@/components/logo';
 import { useAuth } from '@/contexts/AuthContext';
 import {
     Menu, User, LogOut, LayoutDashboard, Crown, Zap,
-    ShoppingBag, Store, ChevronDown, X, MessageCircle
+    ShoppingBag, Store, ChevronDown, X, MessageCircle, AlertCircle
 } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import {
@@ -163,6 +163,13 @@ export const Header = () => {
                                             </DropdownMenuItem>
 
                                             <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5">
+                                                <Link href="/disputes" className="flex items-center gap-3 px-3 py-2.5">
+                                                    <AlertCircle className="h-4 w-4 text-red-500" />
+                                                    <span className="text-sm font-bold">My Disputes</span>
+                                                </Link>
+                                            </DropdownMenuItem>
+
+                                            <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5">
                                                 <Link href="/settings" className="flex items-center gap-3 px-3 py-2.5">
                                                     <User className="h-4 w-4 text-zinc-500" />
                                                     <span className="text-sm font-bold">My Account</span>
@@ -232,6 +239,9 @@ export const Header = () => {
                             </div>
                             <Link href="/chats" onClick={() => setMobileMenuOpen(false)} className="text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white font-bold p-2 flex items-center gap-2">
                                 <MessageCircle className="h-4 w-4" /> Messages
+                            </Link>
+                            <Link href="/disputes" onClick={() => setMobileMenuOpen(false)} className="text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white font-bold p-2 flex items-center gap-2">
+                                <AlertCircle className="h-4 w-4 text-red-500" /> Disputes
                             </Link>
                             {['dealer', 'student_seller', 'seller'].includes(user.role) && (
                                 <Link href="/seller/upgrade" onClick={() => setMobileMenuOpen(false)} className="text-[#FF6200] font-bold p-2 flex items-center gap-2">

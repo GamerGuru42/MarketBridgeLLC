@@ -33,9 +33,9 @@ export async function POST(
 
         if (updateError) throw updateError;
 
-        // 3. MarketCoins Logic (Buyer: 1 per ₦100, Seller: 1 per ₦200)
-        const buyerCoinsEarned = Math.floor(amount / 100);
-        const sellerCoinsEarned = Math.floor(amount / 200);
+        // 3. MarketCoins Logic (+5 MC per successful sale for the seller)
+        const buyerCoinsEarned = 0; // Feature toggled off based on current specs
+        const sellerCoinsEarned = 5;
 
         // A simple function to add coins to a user's existing balance
         const addCoinsToUser = async (userId: string, earned: number) => {
