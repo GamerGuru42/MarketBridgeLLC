@@ -179,7 +179,7 @@ function SignupContent() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                    <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mb-6">
                         <button
                             onClick={() => handleRoleSelect('student_buyer')}
                             className="group bg-card border border-border rounded-[2rem] p-6 text-center cursor-pointer hover:bg-secondary hover:border-primary/30 transition-all duration-300 flex flex-col items-center shadow-sm"
@@ -201,6 +201,30 @@ function SignupContent() {
                             <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">I want to Sell</h3>
                             <p className="text-muted-foreground text-[8px] font-bold uppercase tracking-widest mt-1">Strict Verification</p>
                         </button>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                        <Link
+                            href="/admin-access?target=admin"
+                            className="group bg-card border border-border rounded-[2rem] p-6 text-center cursor-pointer hover:bg-secondary hover:border-primary/30 transition-all duration-300 flex flex-col items-center shadow-sm"
+                        >
+                            <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
+                                <Globe className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
+                            </div>
+                            <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Admin</h3>
+                            <p className="text-muted-foreground text-[8px] font-bold uppercase tracking-widest mt-1">System</p>
+                        </Link>
+
+                        <Link
+                            href="/admin-access?target=ceo"
+                            className="group bg-primary/5 border border-primary/20 rounded-[2rem] p-6 text-center cursor-pointer hover:bg-primary/10 hover:border-primary/50 transition-all duration-300 flex flex-col items-center shadow-sm"
+                        >
+                            <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                                <Logo showText={false} className="scale-75" />
+                            </div>
+                            <h3 className="text-sm font-black text-primary uppercase tracking-tight mb-1">CEO</h3>
+                            <p className="text-muted-foreground text-[8px] font-bold uppercase tracking-widest mt-1">Growth</p>
+                        </Link>
                     </div>
 
                     <div className="text-center mt-12">
