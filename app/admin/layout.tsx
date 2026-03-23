@@ -74,12 +74,8 @@ export default function AdminLayout({
         if (role === 'ceo' || role === 'cofounder') {
             return [
                 { label: 'Mission Control', href: '/admin/ceo', icon: LayoutDashboard },
-                { label: 'Marketing Growth', href: '/admin/marketing', icon: BarChart3 },
                 { label: 'Executive Chat', href: '/admin/executive-chat', icon: MessageSquare },
                 { label: 'Live Chat Monitoring', href: '/admin/live-chat', icon: ShieldAlert },
-                { label: 'Customer Support', href: '/admin/operations/support', icon: Headphones },
-                { label: 'Listings Manager', href: '/admin/listings', icon: ShoppingBag },
-                { label: 'Users Manager', href: '/admin/users', icon: Users },
             ];
         }
 
