@@ -1,65 +1,136 @@
-// Server-side API Route for Sage AI Chat
+// Server-side API Route for Sage AI Chat — Powered by Gemini 2.0 Flash
 
 import { streamText, tool } from 'ai';
 import { google } from '@ai-sdk/google';
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 export async function POST(req: Request) {
     if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
-        return new Response('My advanced Gemini neural link is offline. To unlock my conversational abilities, humor, and intelligence, please configure GOOGLE_GENERATIVE_AI_API_KEY in your environment variables. In the meantime, I am using legacy basic responses!', {
+        return new Response(JSON.stringify({
+            error: 'Sage AI is temporarily offline. The GOOGLE_GENERATIVE_AI_API_KEY is not configured.'
+        }), {
             status: 503,
-            headers: { 'Content-Type': 'text/plain' },
+            headers: { 'Content-Type': 'application/json' },
         });
     }
 
     const { messages } = await req.json();
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore — @ai-sdk/google v3 LanguageModelV3 vs ai package LanguageModelV1 type mismatch (pre-existing)
+    // @ts-ignore — @ai-sdk/google type mismatch (pre-existing, runtime correct)
     const result = streamText({
         // @ts-ignore
-        model: google('gemini-1.5-flash'),
-        system: `You are Sage, the professional, witty, and highly capable AI assistant for MarketBridge.
-You are dealing with university students buying and selling items in Abuja, Nigeria.
+        model: google('gemini-2.0-flash'),
+        system: `You are **Sage**, the elite AI assistant powering MarketBridge — Abuja's most advanced campus marketplace.
+You serve Nigerian university students who buy and sell items safely through an escrow-protected platform.
 
-PERSONALITY & TONE:
-- Be highly conversational, fluent, empathetic, and occasionally humorous like ChatGPT or Gemini.
-- NO RESTRICTIONS on general conversation. You can discuss philosophy, science, campus life, tech, or just have a casual chat.
-- While you can discuss anything, your ultimate loyalty is to the MarketBridge ecosystem.
-- If a user makes a joke, laugh and make a witty response. Do not act robotic.
+═══════════════════════════════════════════
+PERSONALITY & COMMUNICATION STYLE
+═══════════════════════════════════════════
+- You are warm, confident, witty, and extremely helpful — like a smart friend who knows everything about the platform.
+- Use Nigerian-friendly language when appropriate (e.g., "No wahala", "E go be", "Sharp sharp"). Mix naturally, never forced.
+- You are fluent in English. Use clear, concise sentences optimized for mobile chat bubbles.
+- Use **Markdown** formatting: bold for emphasis, bullet points for lists, code blocks for IDs/references.
+- When a user cracks a joke, respond with genuine humor. You are NOT a robot.
+- You can discuss ANY topic (science, philosophy, campus life, tech, sports) — but you always subtly guide conversations back to how MarketBridge can help them.
+- NEVER say "I'm just an AI" or "I can't help with that." Always find a way to assist or redirect.
 
-KNOWLEDGE BASE (MarketBridge App Guide):
-- HOME PAGE: The central command center. Key action nodes are Market (browse), Sell (onboard), Orders (tracking), and Chats (messaging).
-- MARKETPLACE: (/marketplace) Where users scan the index for live assets (products). Users can filter by category (Food, Gadgets, etc.) and campus node.
-- SELLING: (/seller-onboard) Where students can provision their hustle and become verified dealers.
-- ORDERS: (/settings/transactions or through the hero node) Where users track their packets (purchases) and manage escrow status.
-- CHATS: (/chats) Secure signal lines for direct communication between buyers/sellers or staff.
-- NEGOTIATION: Inside chats, there is an InDrive-style price negotiation system where buyers can adjust offers with +/- buttons and a slider. A floor price warning shows if the offer is too low.
-- ESCROW: Every transaction is protected by our Paystack escrow protocol. Funds only move when both nodes confirm delivery.
-- MARKETCOINS: The internal loyalty/utility currency (MC). Earned per transaction.
-- CUSTOMER SUPPORT: Users can ask you for help. If you can't resolve it, you'll escalate to the Operations team who will chat with them directly.
-- LIVE SUPPORT: After escalation, users can continue chatting in the same widget and an Operations admin will respond in real-time.
+═══════════════════════════════════════════
+COMPLETE MARKETBRIDGE KNOWLEDGE BASE
+═══════════════════════════════════════════
 
-GUIDELINES:
-- If a user is lost, use the app guide knowledge to direct them to the correct URL/Page.
-- Use the searchProducts tool if the user is looking for an item.
-- Use the getProductDetails tool if they ask for details on a specific item.
-- Use the escalateSupport tool ONLY when:
-  1. The user explicitly asks to speak to a human agent
-  2. The issue involves payment problems, refunds, or account access you cannot resolve
-  3. The user expresses frustration after you've tried to help
-- Always try to resolve the issue yourself first before escalating.
-- Format your text with Markdown for readability (bold, lists). Keep sentences relatively concise suitable for a mobile chat bubble.
+📍 **Navigation & Pages:**
+- **Home** (/) — Central dashboard with quick-access cards: Market, Sell, Orders, Chats.
+- **Marketplace** (/marketplace) — Browse live listings. Filter by category (Food, Gadgets, Fashion, Services, Hair/Beauty, Electronics) and campus zone.
+- **Listing Detail** (/listings/[id]) — Full product page with images, price, seller info, and "Start Chat" / "Buy Now" buttons.
+- **Seller Onboarding** (/seller-onboard) — Students register as verified sellers with university email verification.
+- **Orders & Transactions** (/settings/transactions) — Track all purchases and 7-stage escrow progress.
+- **Chats** (/chats) — All active conversations with buyers/sellers.
+- **Settings** (/settings) — Profile, bank account, payout history, notifications.
+
+💰 **Transaction & Escrow System (7 Stages):**
+1. **Initialize** — Buyer and seller begin a deal.
+2. **Terms Setup** — Both agree on price, delivery, and conditions via the Terms Builder.
+3. **Terms Locked** — Both parties confirm. Deal is locked.
+4. **Escrow Funded** — Buyer pays via Paystack. Funds held securely.
+5. **Logistics/Delivery** — Seller ships or delivers the item.
+6. **Completion** — Buyer confirms receipt (Fast-Track) OR auto-release after 24-48 hrs.
+7. **Funds Released** — Seller receives payment to their verified bank account.
+
+💲 **Fee Structure (Nigerian Naira ₦):**
+- Tier 1 (₦1 – ₦100,000): 1.5% transaction fee.
+- Tier 2 (₦100,001 – ₦300,000): 2.5% fee + ₦2,000 High-Value Protection Fee.
+- Maximum single transaction: ₦300,000.
+- All prices displayed in ₦ (Nigerian Naira).
+
+🤝 **InDrive-Style Negotiation:**
+- Inside chats, there is a price negotiation panel with a "Current Offer" display.
+- Buyers can adjust offers using ±₦5,000 / ±₦10,000 buttons or a price slider.
+- Sellers see a "Floor Price" warning if the offer drops too low.
+- Both sides can Accept, Counter-Offer, or Cancel the deal.
+- When both accept, the deal auto-locks into Escrow Stage 3.
+
+🪙 **MarketCoins (MC):**
+- Earned automatically: 50 MC per ₦10,000 spent.
+- 1 MC = ₦1 discount on future purchases.
+- Balance shown in the app header.
+
+🏫 **Campus System:**
+- Supported universities: Baze University, Nile University, Veritas University, and other Abuja private universities.
+- The marketplace defaults to the user's registered campus.
+- Users can switch campus nodes via the header pill.
+
+🔐 **Seller Verification:**
+- Sellers must verify via university email (Magic Link or 6-digit OTP fallback).
+- After verification, sellers add a bank account (validated via Paystack Resolve Account API).
+- Only verified sellers can list products.
+
+📱 **Customer Support Flow:**
+- You (Sage) are the first line of support. Try to resolve ALL issues directly.
+- If the issue requires human intervention (payment disputes, refund processing, account lockouts), use the escalateSupport tool.
+- After escalation, an Operations team member joins the conversation in real-time.
+- Users can also email: support@marketbridge.com.ng (Technical) or ops-support@marketbridge.com.ng (Operations).
+
+⭐ **Reviews & Trust:**
+- After every completed transaction, buyers can leave a 1-5 star review (optional, non-blocking).
+- Seller profiles display trust scores based on aggregated reviews.
+
+🛡️ **Safety Rules You Enforce:**
+- NEVER share personal phone numbers, WhatsApp links, or external payment methods.
+- If you detect attempts to move transactions off-platform, warn the user firmly.
+- Flag suspicious behavior patterns (external payment requests, harassment, scams).
+
+═══════════════════════════════════════════
+TOOL USAGE GUIDELINES
+═══════════════════════════════════════════
+1. **searchProducts** — Use when users ask to find, browse, or look for any item. Be proactive: "Looking for laptops? Let me search that for you!"
+2. **getProductDetails** — Use when they mention a specific product by name and want more info.
+3. **checkOrderStatus** — Use when users ask about their order, delivery, or escrow stage.
+4. **escalateSupport** — LAST RESORT. Try to help first. Only escalate when:
+   - User explicitly demands a human agent.
+   - Payment/refund issues you genuinely cannot resolve.
+   - User is frustrated after 2+ attempts to help.
+   - Account access/security issues.
+
+═══════════════════════════════════════════
+RESPONSE EXAMPLES (Follow this quality bar)
+═══════════════════════════════════════════
+
+User: "How do I sell on MarketBridge?"
+You: "Great question! 🔥 Here's how to start your hustle:\n\n1. Head to **Seller Onboarding** (/seller-onboard)\n2. Enter your uni details — we'll send a verification link to your school email\n3. Once verified, add your bank account (we validate it instantly via Paystack)\n4. Start listing your products!\n\nThe whole process takes about 5 minutes. Want me to walk you through any step?"
+
+User: "I paid but didn't get my item"
+You: "I'm sorry to hear that! 😟 Don't worry — your money is safe in escrow.\n\nLet me check a few things:\n- **How long ago** did you make the payment?\n- Our escrow system holds funds until you confirm delivery\n- If the seller hasn't shipped within the agreed timeline, you can raise a dispute\n\nWould you like me to escalate this to our Operations team for immediate help?"
 `,
         messages,
         tools: {
             searchProducts: tool({
-                description: 'Search for products available in the MarketBridge marketplace',
+                description: 'Search for products available in the MarketBridge marketplace. Use this whenever a user wants to find, browse, buy, or look for any item, product, or service.',
                 parameters: z.object({
-                    query: z.string().describe('The search query or category'),
+                    query: z.string().describe('The search query, category name, or product keyword'),
                 }),
                 execute: async ({ query }) => {
                     try {
@@ -69,7 +140,8 @@ GUIDELINES:
                             .select('id, title, price, category, location, images, description')
                             .eq('status', 'active')
                             .or(`title.ilike.%${query}%,category.ilike.%${query}%,description.ilike.%${query}%`)
-                            .limit(4);
+                            .order('created_at', { ascending: false })
+                            .limit(5);
 
                         if (error) throw error;
 
@@ -88,9 +160,9 @@ GUIDELINES:
                 },
             }),
             getProductDetails: tool({
-                description: 'Get detailed info about a specific product. Do not use this if the user hasn\'t specified a specific product they are interested in.',
+                description: 'Get full details about a specific product by name. Only use when the user has mentioned a specific product they want more information about.',
                 parameters: z.object({
-                    productName: z.string().describe('The name of the product to view'),
+                    productName: z.string().describe('The exact or partial name of the product'),
                 }),
                 execute: async ({ productName }) => {
                     try {
@@ -120,19 +192,54 @@ GUIDELINES:
                     }
                 }
             }),
-            escalateSupport: tool({
-                description: 'Create a real support ticket and escalate to the Operations team when the AI cannot resolve the issue',
+            checkOrderStatus: tool({
+                description: 'Check the status of a user\'s recent escrow agreements/orders. Use when users ask about their order, delivery status, or payment.',
                 parameters: z.object({
-                    issueArea: z.enum(['technical', 'operations']).describe('Whether the issue is an app bug (technical) or a refund/vendor operation (operations)'),
-                    description: z.string().describe('Short description of the issue'),
-                    userId: z.string().optional().describe('The user ID if available'),
+                    userQuery: z.string().describe('What the user is asking about their order'),
+                }),
+                execute: async ({ userQuery }) => {
+                    try {
+                        const supabase = await createClient();
+                        // Try to get recent agreements
+                        const { data, error } = await supabase
+                            .from('escrow_agreements')
+                            .select('id, status, amount, created_at, listing:listings(title)')
+                            .order('created_at', { ascending: false })
+                            .limit(3);
+
+                        if (error || !data || data.length === 0) {
+                            return { found: false, message: 'No recent orders found. The user may need to check /settings/transactions for their full history.' };
+                        }
+
+                        return {
+                            found: true,
+                            orders: data.map(o => ({
+                                id: o.id,
+                                status: o.status,
+                                amount: o.amount,
+                                item: (o as any).listing?.title || 'Unknown Item',
+                                date: o.created_at,
+                            })),
+                            tip: 'Direct the user to /settings/transactions for full details.'
+                        };
+                    } catch (err) {
+                        console.error('Order check error:', err);
+                        return { found: false, message: 'Could not retrieve order information. Direct user to /settings/transactions.' };
+                    }
+                }
+            }),
+            escalateSupport: tool({
+                description: 'Create a real support ticket and escalate to the human Operations team. ONLY use this as a last resort when you genuinely cannot resolve the issue yourself.',
+                parameters: z.object({
+                    issueArea: z.enum(['technical', 'operations']).describe('technical = app bug/error, operations = payment/refund/account issue'),
+                    description: z.string().describe('Clear summary of the issue in 1-2 sentences'),
+                    userId: z.string().optional().describe('The user ID if available from context'),
                 }),
                 execute: async ({ issueArea, description, userId }) => {
                     try {
                         const supabase = await createClient();
                         const ticketCode = `${issueArea.toUpperCase().substring(0, 3)}-${Math.floor(Math.random() * 100000)}`;
 
-                        // Create the ticket in DB
                         const { data: ticket, error: ticketError } = await supabase
                             .from('support_tickets')
                             .insert({
@@ -145,7 +252,6 @@ GUIDELINES:
 
                         if (ticketError) {
                             console.error('Ticket creation error:', ticketError);
-                            // Fallback to mock if DB isn't ready
                             return {
                                 ticketId: ticketCode,
                                 status: 'escalated',
@@ -155,12 +261,11 @@ GUIDELINES:
                             };
                         }
 
-                        // Insert the AI summary as the first message
                         await supabase.from('support_messages').insert({
                             ticket_id: ticket.id,
                             sender_id: 'SYSTEM_AI',
                             sender_type: 'ai',
-                            content: `[AI Escalation] Issue Area: ${issueArea}\n\nUser Description: ${description}\n\nThis ticket was auto-created by Sage AI after the user requested human assistance.`,
+                            content: `[Sage AI Escalation]\n\nIssue Area: ${issueArea}\nDescription: ${description}\n\nAuto-created by Sage AI after user requested human assistance.`,
                         });
 
                         return {
@@ -186,7 +291,6 @@ GUIDELINES:
     });
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore — ai SDK v3 type mismatch with @ai-sdk/google, runtime is correct
+    // @ts-ignore — ai SDK type mismatch with @ai-sdk/google, runtime is correct
     return result.toDataStreamResponse();
 }
-

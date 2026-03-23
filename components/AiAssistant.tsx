@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { MessageCircle, X, Send, Bot, User, ShoppingBag, Search, AlertCircle, Loader2 } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, ShoppingBag, Search, AlertCircle, Loader2, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useChat } from 'ai/react';
@@ -135,7 +135,7 @@ export function AiAssistant() {
                                 Ticket ID: {ticket.ticketId}
                             </p>
                             <p className="text-xs text-muted-foreground mt-1">
-                                Status: <strong>ESCALATED</strong> - An agent will contact you shortly.
+                                Status: <strong>ESCALATED</strong> — An agent will contact you shortly.
                             </p>
                             <Badge variant="secondary" className="text-xs mt-2">
                                 {ticket.department === 'technical' ? '🔴 Technical Team' : '🟢 Operations Team'}
@@ -148,6 +148,34 @@ export function AiAssistant() {
                             </a>
                         </div>
                     </div>
+                </div>
+            );
+        }
+
+        if (toolName === 'checkOrderStatus') {
+            if (!result || !result.found) {
+                return (
+                    <div key={toolCallId} className="p-3 bg-muted/30 border border-primary/10 rounded-lg mb-2 text-xs">
+                        <Package className="h-3 w-3 inline mr-1" /> No recent orders found. Check <a href="/settings/transactions" className="text-primary hover:underline font-semibold">/settings/transactions</a>.
+                    </div>
+                );
+            }
+            return (
+                <div key={toolCallId} className="space-y-2 mb-3 mt-2">
+                    {result.orders.map((order: any) => (
+                        <div key={order.id} className="p-3 bg-card border border-border rounded-lg text-left">
+                            <div className="flex items-center justify-between">
+                                <p className="font-medium text-sm">{order.item}</p>
+                                <Badge variant="secondary" className="text-[10px] font-bold uppercase">{order.status}</Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1">₦{Number(order.amount).toLocaleString()} • {new Date(order.date).toLocaleDateString()}</p>
+                        </div>
+                    ))}
+                    <Link href="/settings/transactions" className="block pt-1">
+                        <Button variant="outline" size="sm" className="w-full font-bold uppercase tracking-widest text-[10px]">
+                            <Package className="h-3 w-3 mr-2" /> View All Orders
+                        </Button>
+                    </Link>
                 </div>
             );
         }
@@ -187,7 +215,7 @@ export function AiAssistant() {
                                 Sage
                                 <Badge variant="secondary" className="text-xs">AI Assistant</Badge>
                             </CardTitle>
-                            <p className="text-xs text-muted-foreground">Powered by Gemini 1.5</p>
+                            <p className="text-xs text-muted-foreground">Powered by Gemini 2.0 Flash</p>
                         </div>
                     </CardHeader>
 
@@ -274,7 +302,7 @@ export function AiAssistant() {
 
                     <div className="px-4 py-2 border-t border-white/5 bg-zinc-950/50">
                         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide overscroll-contain overscroll-x-contain">
-                            {['Find Textbooks', 'Cheap Laptops', 'Wigs for Sale', 'How to Pay'].map((chip) => (
+                            {['Find Textbooks', 'Cheap Laptops', 'Track My Order', 'Need Help'].map((chip) => (
                                 <button
                                     key={chip}
                                     type="button"
