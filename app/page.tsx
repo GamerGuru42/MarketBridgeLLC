@@ -66,7 +66,7 @@ export default function HomePage() {
                             <span className="text-[#FF6200]">Marketplace.</span>
                         </h1>
                         <p className="text-lg md:text-xl text-zinc-600 font-medium max-w-lg leading-relaxed">
-                            Buy and sell fast within your uni. Order fresh food, textbooks, and services from verified students. Zero middlemen. Zero delays.
+                            Buy from any campus safely. Order fresh food, textbooks, and services from verified student sellers. Zero middlemen. Zero delays.
                         </p>
 
                         <div className="pt-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -86,7 +86,7 @@ export default function HomePage() {
 
                         <div className="flex items-center gap-4 pt-6 opacity-70">
                             <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-zinc-500">
-                                <CheckCircle2 className="w-4 h-4 text-[#FF6200]" /> Verified Users
+                                <CheckCircle2 className="w-4 h-4 text-[#FF6200]" /> Verified Sellers
                             </span>
                             <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-zinc-500">
                                 <CheckCircle2 className="w-4 h-4 text-[#FF6200]" /> Secure Payments
@@ -174,7 +174,7 @@ export default function HomePage() {
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             {[
-                                { title: "Students Only", icon: MapPin, color: "text-foreground", bg: "bg-zinc-100 dark:bg-zinc-900", desc: "Every user passes strict ID verification. Ensure you're trading with real, safe peers." },
+                                { title: "Verified Student Sellers", icon: MapPin, color: "text-foreground", bg: "bg-zinc-100 dark:bg-zinc-900", desc: "Every seller passes strict ID verification. Ensure you're trading with real, safe peers." },
                                 { title: "Fast Delivery", icon: Zap, color: "text-[#FF6200]", bg: "bg-[#FF6200]/10", desc: "Sellers are in your hostels or faculty. From ordering to eating in minutes, not hours." },
                                 { title: "Grow Your Hustle", icon: Store, color: "text-foreground", bg: "bg-zinc-100 dark:bg-zinc-900", desc: "Easily set up a storefront, list products (food, gadgets, fashion), and start taking orders today." }
                             ].map((feat, i) => (
