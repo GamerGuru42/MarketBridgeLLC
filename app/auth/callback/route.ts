@@ -39,17 +39,29 @@ export async function GET(request: Request) {
 
             let finalNext = next === '/' ? '/marketplace' : next;
 
-            // Fetch existing role if any
-            const { data: existingUser } = await supabase.from('users').select('role').eq('id', data.user.id).single();
-            const finalRole = role || existingUser?.role || 'buyer';
+            // Fetch existing profile if any
+            const { data: existingUser } = await supabase.from('users').select('role, display_name, first_name, last_name').eq('id', data.user.id).maybeSingle();
+            
+            // Core Logic: Prevent new Google signups on the login page
+            // If they are logging in (no role param passed) but don't exist in our DB
+            if (!existingUser && !role) {
+                console.warn('Auth Callback: User not found and no role provided! Redirecting to signup...');
+                // Sign them out so they have to sign up properly
+                await supabase.auth.signOut();
+                return NextResponse.redirect(new URL('/signup?error=Account+not+found.+Please+sign+up+to+continue.', origin));
+            }
+
+            const finalRole = role || existingUser?.role || 'student_buyer';
 
             console.log('Auth Callback: Upserting profile with role:', finalRole);
             await supabase.from('users').upsert({
                 id: data.user.id,
                 email: data.user.email,
-                display_name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0],
+                display_name: existingUser?.display_name || data.user.user_metadata?.full_name || data.user.email?.split('@')[0],
+                first_name: existingUser?.first_name || data.user.user_metadata?.first_name || '',
+                last_name: existingUser?.last_name || data.user.user_metadata?.last_name || '',
                 role: finalRole,
-                email_verified: true // Social login implies verification
+                email_verified: true, // Social login implies verification
             }, { onConflict: 'id' });
 
             return NextResponse.redirect(new URL(finalNext, origin))
