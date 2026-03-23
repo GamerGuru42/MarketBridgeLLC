@@ -1,4 +1,4 @@
-// Server-side API Route for Sage AI Chat — Powered by Gemini 2.0 Flash
+// Server-side API Route for Sage AI Chat — Powered by Gemini 2.5 Pro
 
 import { streamText, tool } from 'ai';
 import { google } from '@ai-sdk/google';
@@ -19,11 +19,16 @@ export async function POST(req: Request) {
 
     const { messages } = await req.json();
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore — @ai-sdk/google type mismatch (pre-existing, runtime correct)
-    const result = streamText({
-        // @ts-ignore
-        model: google('gemini-2.0-flash'),
+    // Try primary model (Gemini 2.5 Pro), fallback to 2.0 Flash if it fails
+    const primaryModel = 'gemini-2.5-pro-preview-05-06';
+    const fallbackModel = 'gemini-2.0-flash';
+
+    async function runChat(modelId: string) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore — @ai-sdk/google type mismatch (pre-existing, runtime correct)
+        return streamText({
+            // @ts-ignore
+            model: google(modelId),
         system: `You are **Sage**, the elite AI assistant powering MarketBridge — Abuja's most advanced campus marketplace.
 You serve Nigerian university students who buy and sell items safely through an escrow-protected platform.
 
@@ -289,8 +294,27 @@ You: "I'm sorry to hear that! 😟 Don't worry — your money is safe in escrow.
             })
         },
     });
+    }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore — ai SDK type mismatch with @ai-sdk/google, runtime is correct
-    return result.toDataStreamResponse();
+    try {
+        const result = await runChat(primaryModel);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        return result.toDataStreamResponse();
+    } catch (primaryError) {
+        console.error(`Primary model (${primaryModel}) failed, falling back:`, primaryError);
+        try {
+            const fallbackResult = await runChat(fallbackModel);
+            // @ts-ignore
+            return fallbackResult.toDataStreamResponse();
+        } catch (fallbackError) {
+            console.error('Fallback model also failed:', fallbackError);
+            return new Response(JSON.stringify({
+                error: 'Sage is experiencing heavy traffic right now. Please try again in a moment.'
+            }), {
+                status: 500,
+                headers: { 'Content-Type': 'application/json' },
+            });
+        }
+    }
 }

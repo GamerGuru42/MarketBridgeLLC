@@ -215,7 +215,7 @@ export function AiAssistant() {
                                 Sage
                                 <Badge variant="secondary" className="text-xs">AI Assistant</Badge>
                             </CardTitle>
-                            <p className="text-xs text-muted-foreground">Powered by Gemini 2.0 Flash</p>
+                            <p className="text-xs text-muted-foreground">Powered by Gemini 2.5 Pro</p>
                         </div>
                     </CardHeader>
 
