@@ -37,19 +37,22 @@ export async function GET(request: Request) {
         if (!error && data?.user) {
             console.log('Auth Callback: Exchange successful for:', data.user.email);
 
-            // If a role was passed, ensure the profile reflects it
-            if (role) {
-                console.log('Auth Callback: Upserting profile with role:', role);
-                await supabase.from('users').upsert({
-                    id: data.user.id,
-                    email: data.user.email,
-                    display_name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0],
-                    role: role,
-                    email_verified: true // Social login implies verification
-                }, { onConflict: 'id' });
-            }
+            let finalNext = next === '/' ? '/marketplace' : next;
 
-            return NextResponse.redirect(new URL(next, origin))
+            // Fetch existing role if any
+            const { data: existingUser } = await supabase.from('users').select('role').eq('id', data.user.id).single();
+            const finalRole = role || existingUser?.role || 'buyer';
+
+            console.log('Auth Callback: Upserting profile with role:', finalRole);
+            await supabase.from('users').upsert({
+                id: data.user.id,
+                email: data.user.email,
+                display_name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0],
+                role: finalRole,
+                email_verified: true // Social login implies verification
+            }, { onConflict: 'id' });
+
+            return NextResponse.redirect(new URL(finalNext, origin))
         } else {
             console.error('Auth Callback: Exchange failed:', error?.message);
         }

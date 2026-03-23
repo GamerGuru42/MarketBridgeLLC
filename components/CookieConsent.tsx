@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { X, Cookie, Shield, Settings } from 'lucide-react';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 import {
     Dialog,
     DialogContent,
@@ -22,6 +23,7 @@ interface CookiePreferences {
 }
 
 export function CookieConsent() {
+    const { user } = useAuth();
     const [showBanner, setShowBanner] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
     const [preferences, setPreferences] = useState<CookiePreferences>({
@@ -75,7 +77,7 @@ export function CookieConsent() {
         savePreferences(preferences);
     };
 
-    if (!showBanner) return null;
+    if (user || !showBanner) return null;
 
     return (
         <>
