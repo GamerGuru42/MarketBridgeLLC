@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { X, Sparkles, MapPin, ShieldCheck, Send, ShoppingBag, LayoutDashboard, Activity, Terminal, Shield } from 'lucide-react';
+import { X, Sparkles, MapPin, ShieldCheck, Send, ShoppingBag, LayoutDashboard, Activity, Terminal, Shield, Handshake, Headphones } from 'lucide-react';
 
 // Define the steps
 type TourStep = {
@@ -16,20 +16,24 @@ type TourStep = {
 const BUYER_STEPS: TourStep[] = [
     { title: "WELCOME TO MARKETBRIDGE", description: "You're now connected to Abuja's most trusted campus marketplace. Let's walk you through everything you need to get started.", icon: Sparkles },
     { title: "FIND ANYTHING", description: "Search for textbooks, gadgets, and food delivery tailored specifically for your campus zone.", icon: MapPin },
+    { title: "NEGOTIATE & DEAL", description: "Use the InDrive-style offer slider to negotiate prices directly in chat. Counter-offer until both sides are happy.", icon: Handshake },
     { title: "SECURE ESCROW", description: "All payments are held in escrow. The seller doesn't get paid until you confirm you've received what you ordered.", icon: ShieldCheck },
-    { title: "CHAT DIRECTLY", description: "Message verified sellers instantly, negotiate prices, and coordinate seamless campus deliveries.", icon: Send }
+    { title: "CHAT DIRECTLY", description: "Message verified sellers instantly, negotiate prices, and coordinate seamless campus deliveries.", icon: Send },
+    { title: "NEED HELP?", description: "Ask Sage AI anything, or escalate to our live operations team for payment, refund, or account issues.", icon: Headphones },
 ];
 
 const SELLER_STEPS: TourStep[] = [
     { title: "WELCOME TO YOUR DASHBOARD", description: "This is your command center. From here you can manage all your products, track orders, and monitor your campus sales.", icon: LayoutDashboard },
     { title: "ADD LISTINGS", description: "Upload crisp images of your items, set fair prices, and watch the buyers flow in.", icon: ShoppingBag },
-    { title: "SECURE PAYOUTS", description: "Withdraw your earnings straight to your bank account after successful deliveries. Simple and secure.", icon: ShieldCheck }
+    { title: "HANDLE NEGOTIATIONS", description: "Buyers can send counter-offers through the InDrive-style slider. Accept, reject, or counter to lock the perfect deal.", icon: Handshake },
+    { title: "SECURE PAYOUTS", description: "Withdraw your earnings straight to your bank account after successful deliveries. Simple and secure.", icon: ShieldCheck },
 ];
 
 const ADMIN_STEPS: TourStep[] = [
     { title: "MISSION CONTROL", description: "Welcome to Executive Command. You have full oversight of the MarketBridge matrix.", icon: Shield },
-    { title: "LIVE INTEL RELAY", description: "Monitor real-time system events, user registrations, and potential anomalies through the secure terminal.", icon: Terminal },
-    { title: "OPERATIONS & MODERATION", description: "Manage regional saturation, resolve disputes, and maintain the integrity of the ecosystem.", icon: Activity }
+    { title: "LIVE INTEL RELAY", description: "Monitor real-time system events, user registrations, AI chat flags, and potential anomalies.", icon: Terminal },
+    { title: "CUSTOMER SUPPORT", description: "View escalated tickets from Sage AI and chat with users live to resolve issues in real-time.", icon: Headphones },
+    { title: "OPERATIONS & MODERATION", description: "Manage regional saturation, resolve disputes, and maintain the integrity of the ecosystem.", icon: Activity },
 ];
 
 export function OnboardingTour() {

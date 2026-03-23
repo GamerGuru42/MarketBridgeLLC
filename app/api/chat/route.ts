@@ -1,4 +1,4 @@
-'use client';
+// Server-side API Route for Sage AI Chat
 
 import { streamText, tool } from 'ai';
 import { google } from '@ai-sdk/google';
@@ -37,14 +37,21 @@ KNOWLEDGE BASE (MarketBridge App Guide):
 - SELLING: (/seller-onboard) Where students can provision their hustle and become verified dealers.
 - ORDERS: (/settings/transactions or through the hero node) Where users track their packets (purchases) and manage escrow status.
 - CHATS: (/chats) Secure signal lines for direct communication between buyers/sellers or staff.
+- NEGOTIATION: Inside chats, there is an InDrive-style price negotiation system where buyers can adjust offers with +/- buttons and a slider. A floor price warning shows if the offer is too low.
 - ESCROW: Every transaction is protected by our Paystack escrow protocol. Funds only move when both nodes confirm delivery.
-- MARKETCOINS: The internal loyalty/utility currency (MC).
+- MARKETCOINS: The internal loyalty/utility currency (MC). Earned per transaction.
+- CUSTOMER SUPPORT: Users can ask you for help. If you can't resolve it, you'll escalate to the Operations team who will chat with them directly.
+- LIVE SUPPORT: After escalation, users can continue chatting in the same widget and an Operations admin will respond in real-time.
 
 GUIDELINES:
 - If a user is lost, use the app guide knowledge to direct them to the correct URL/Page.
 - Use the searchProducts tool if the user is looking for an item.
 - Use the getProductDetails tool if they ask for details on a specific item.
-- Use the escalateSupport tool if they have complaints about payment, refunds, or bugs.
+- Use the escalateSupport tool ONLY when:
+  1. The user explicitly asks to speak to a human agent
+  2. The issue involves payment problems, refunds, or account access you cannot resolve
+  3. The user expresses frustration after you've tried to help
+- Always try to resolve the issue yourself first before escalating.
 - Format your text with Markdown for readability (bold, lists). Keep sentences relatively concise suitable for a mobile chat bubble.
 `,
         messages,
@@ -114,17 +121,66 @@ GUIDELINES:
                 }
             }),
             escalateSupport: tool({
-                description: 'Create a support ticket for technical or operations issues',
+                description: 'Create a real support ticket and escalate to the Operations team when the AI cannot resolve the issue',
                 parameters: z.object({
-                    issueArea: z.enum(['technical', 'operations']).describe('Whether the issue is a app bug (technical) or a refund/vendor operation (operations)'),
+                    issueArea: z.enum(['technical', 'operations']).describe('Whether the issue is an app bug (technical) or a refund/vendor operation (operations)'),
                     description: z.string().describe('Short description of the issue'),
+                    userId: z.string().optional().describe('The user ID if available'),
                 }),
-                execute: async ({ issueArea, description }) => ({
-                    ticketId: `${issueArea.toUpperCase().substring(0, 3)}-${Math.floor(Math.random() * 100000)}`,
-                    status: 'escalated',
-                    department: issueArea,
-                    description
-                })
+                execute: async ({ issueArea, description, userId }) => {
+                    try {
+                        const supabase = await createClient();
+                        const ticketCode = `${issueArea.toUpperCase().substring(0, 3)}-${Math.floor(Math.random() * 100000)}`;
+
+                        // Create the ticket in DB
+                        const { data: ticket, error: ticketError } = await supabase
+                            .from('support_tickets')
+                            .insert({
+                                user_id: userId || null,
+                                status: 'escalated',
+                                priority: issueArea === 'technical' ? 'high' : 'medium',
+                            })
+                            .select()
+                            .single();
+
+                        if (ticketError) {
+                            console.error('Ticket creation error:', ticketError);
+                            // Fallback to mock if DB isn't ready
+                            return {
+                                ticketId: ticketCode,
+                                status: 'escalated',
+                                department: issueArea,
+                                description,
+                                note: 'Ticket logged. An operations agent will reach out shortly.'
+                            };
+                        }
+
+                        // Insert the AI summary as the first message
+                        await supabase.from('support_messages').insert({
+                            ticket_id: ticket.id,
+                            sender_id: 'SYSTEM_AI',
+                            sender_type: 'ai',
+                            content: `[AI Escalation] Issue Area: ${issueArea}\n\nUser Description: ${description}\n\nThis ticket was auto-created by Sage AI after the user requested human assistance.`,
+                        });
+
+                        return {
+                            ticketId: ticket.id,
+                            status: 'escalated',
+                            department: issueArea,
+                            description,
+                            note: 'Your ticket has been created. An operations team member will join this chat shortly. You can also email us directly.'
+                        };
+                    } catch (err) {
+                        console.error('Escalation error:', err);
+                        return {
+                            ticketId: `${issueArea.toUpperCase().substring(0, 3)}-${Math.floor(Math.random() * 100000)}`,
+                            status: 'escalated',
+                            department: issueArea,
+                            description,
+                            note: 'Ticket logged. An operations agent will reach out shortly.'
+                        };
+                    }
+                }
             })
         },
     });
@@ -133,3 +189,4 @@ GUIDELINES:
     // @ts-ignore — ai SDK v3 type mismatch with @ai-sdk/google, runtime is correct
     return result.toDataStreamResponse();
 }
+

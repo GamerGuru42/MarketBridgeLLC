@@ -14,6 +14,8 @@ import {
     HelpCircle,
     MapPin,
     Sparkles,
+    Handshake,
+    Headphones,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -50,6 +52,13 @@ const TOUR_STEPS: Step[] = [
         tag: 'SELL',
     },
     {
+        title: 'Negotiate Prices',
+        content: "Found something you like? Use the InDrive-style negotiation slider in chats to make offers, counter-offer, and lock deals at a price that works for both sides.",
+        icon: <Handshake className="h-6 w-6" />,
+        accent: 'from-emerald-500 to-emerald-400',
+        tag: 'NEGOTIATE',
+    },
+    {
         title: 'Track Your Orders',
         content: "Every purchase is protected. Head to 'Orders' to track deliveries in real time. Funds are held in escrow until you confirm receipt.",
         icon: <Compass className="h-6 w-6" />,
@@ -72,10 +81,17 @@ const TOUR_STEPS: Step[] = [
     },
     {
         title: 'Meet Sage, Your AI',
-        content: "Stuck? Tap the ✨ button anytime to ask Sage anything — from how to list a product to finding the best deals near you.",
+        content: "Stuck? Tap the chat bubble anytime to ask Sage anything — find deals, get pricing insights, or escalate issues directly to our support team.",
         icon: <HelpCircle className="h-6 w-6" />,
         accent: 'from-orange-500 to-orange-400',
         tag: 'AI HELP',
+    },
+    {
+        title: 'Live Customer Support',
+        content: "Need help with a payment, refund, or account issue? Sage can auto-escalate your issue, and a real operations agent will chat with you live.",
+        icon: <Headphones className="h-6 w-6" />,
+        accent: 'from-red-500 to-red-400',
+        tag: 'SUPPORT',
     },
 ];
 

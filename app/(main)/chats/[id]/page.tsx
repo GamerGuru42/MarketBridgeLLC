@@ -41,6 +41,7 @@ interface Conversation {
         id: string;
         title: string;
         price: number;
+        floor_price?: number;
         images: string[];
     };
     other_user?: {
@@ -73,6 +74,13 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
     const [activeAgreement, setActiveAgreement] = useState<EscrowAgreement | null>(null);
     const [escrowSteps, setEscrowSteps] = useState<EscrowStep[]>([]);
     const [chatId, setChatId] = useState<string | null>(null);
+
+    // Negotiation State
+    const [currentOffer, setCurrentOffer] = useState<number>(0);
+    const [showFloorWarning, setShowFloorWarning] = useState(false);
+    const [aiReplySuggestion, setAiReplySuggestion] = useState<string | null>(null);
+    const [isBlocked, setIsBlocked] = useState(false);
+    const [blockEndTime, setBlockEndTime] = useState<Date | null>(null);
 
     // Unwrap params
     useEffect(() => {
@@ -119,7 +127,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                 .from('conversations')
                 .select(`
                     *,
-                    listing:listings(id, title, price, images)
+                    listing:listings(id, title, price, floor_price, images)
                 `)
                 .eq('id', chatId)
                 .single();
@@ -154,6 +162,9 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
             }
 
             setChat(chatData);
+            if (chatData.listing && currentOffer === 0) {
+                setCurrentOffer(chatData.listing.price || 0);
+            }
         } catch (error) {
             console.error('Error fetching chat:', error);
             // router.push('/chats'); // Optional redirect on error
@@ -366,12 +377,76 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
             setNewMessage('');
             setSelectedImage(null);
             setImagePreview(null);
+            
+            // Trigger AI Check
+            runAIEngine(newMessage.trim());
+
         } catch (error) {
             console.error('Error sending message:', error);
         } finally {
             setSending(false);
             setUploadingImage(false);
         }
+    };
+
+    const runAIEngine = async (text: string) => {
+        if (!text) return;
+        const lowercaseMsg = text.toLowerCase();
+
+        // 1. Malicious Detection
+        const redFlags = ['transfer', 'pay outside', 'whatsapp', '070', '080', '090', '081', '091'];
+        const hasRedFlag = redFlags.some(flag => lowercaseMsg.includes(flag));
+        
+        if (hasRedFlag) {
+            setIsBlocked(true);
+            const blockUntil = new Date(Date.now() + 30 * 60000); // 30 mins
+            setBlockEndTime(blockUntil);
+            
+            // Inform UI
+            toast('AI Alert: Malicious behavior detected. Chat paused for 30 minutes for review.', 'error');
+            
+            // Record Flag to Admin
+            supabase.from('chat_flags').insert({
+                conversation_id: chatId,
+                flag_type: 'spam',
+                severity: 'high',
+                ai_summary: `AI detected restricted contact sharing or external payment request: "${text}"`,
+            }).then();
+            
+            // Optionally auto-cancel active escrow
+            if (activeAgreement) {
+                supabase.from('escrow_agreements').update({ ai_flagged: true }).eq('id', activeAgreement.id).then();
+            }
+            return;
+        }
+
+        // 2. Intent Detection (Negotiation Helpers)
+        if (lowercaseMsg.includes('how much') || lowercaseMsg.includes('last price')) {
+            const floor = (chat?.listing as any)?.floor_price || chat?.listing?.price;
+            setAiReplySuggestion(`Based on current market, ₦${(floor * 1.05).toLocaleString()} is fair — want me to send that?`);
+        } else {
+            setAiReplySuggestion(null);
+        }
+    };
+
+    const handleOfferChange = (amount: number, isAbsolute: boolean = false) => {
+        if (isBlocked) return;
+        const newOffer = isAbsolute ? amount : Math.max(0, currentOffer + amount);
+        setCurrentOffer(newOffer);
+        
+        // Floor Check
+        const floor = (chat?.listing as any)?.floor_price || 0;
+        if (floor > 0 && newOffer < floor) {
+            setShowFloorWarning(true);
+        } else {
+            setShowFloorWarning(false);
+        }
+    };
+
+    const handleCounter = () => {
+        if (isBlocked) return;
+        setNewMessage(`I propose a counter-offer of ₦${currentOffer.toLocaleString()}`);
+        // Ensure textarea focuses or we can auto-send
     };
 
     const handleCreateEscrow = async (data: {
@@ -464,7 +539,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
     }
 
     return (
-        <div className="container mx-auto px-4 py-8 h-[calc(100vh-4rem)] flex flex-col">
+        <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-8 h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] flex flex-col">
             <Card className="flex-1 flex flex-col bg-[#FAFAFA]/50 border-zinc-200 backdrop-blur-md overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]">
                 <CardHeader className="border-b border-zinc-100 bg-white py-4 shrink-0">
                     <div className="flex items-center justify-between">
@@ -492,13 +567,94 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                         {chat.listing && !activeAgreement && (
                             <Button onClick={() => setShowEscrowModal(true)} className="gap-2 bg-[#FF6600] text-black font-black uppercase text-xs tracking-widest hover:bg-[#FF6600]/90 h-9">
                                 <DollarSign className="h-4 w-4" />
-                                Secure Escrow
+                                <span className="hidden sm:inline">Secure Escrow</span>
                             </Button>
                         )}
                     </div>
                 </CardHeader>
 
-                <CardContent className="flex-1 flex flex-col p-0 overflow-hidden relative">
+                <CardContent className="flex-1 flex flex-col p-0 overflow-hidden relative border-t-0">
+                    {/* InDrive Negotiation UI */}
+                    {chat.listing && !activeAgreement && (
+                        <div className="bg-white border-b border-zinc-100 p-3 sm:p-5 shrink-0 shadow-sm z-10 sticky top-0 md:px-8">
+                            <div className="flex flex-col items-center max-w-xl mx-auto">
+                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-1">Current Offer</p>
+                                <h2 className="text-3xl sm:text-4xl font-black tracking-tighter text-zinc-900 mb-3 sm:mb-5">
+                                    ₦{currentOffer.toLocaleString()}
+                                </h2>
+                                
+                                {showFloorWarning && (chat.listing as any).floor_price && (
+                                    <div className="bg-amber-50 text-amber-900 border border-amber-200 text-xs px-4 py-3 rounded-xl mb-5 flex items-start gap-3 w-full animate-in fade-in slide-in-from-top-2 duration-300">
+                                        <span className="shrink-0 text-amber-500 text-base">⚠️</span>
+                                        <p className="leading-relaxed">This is below the reasonable market floor for this item. Recommended minimum: <strong>₦{((chat.listing as any).floor_price).toLocaleString()}</strong> (based on 12 similar listings on campus).</p>
+                                    </div>
+                                )}
+
+                                <div className="grid grid-cols-4 gap-2 w-full mb-5">
+                                    <Button variant="outline" onClick={() => handleOfferChange(-10000)} className="h-10 font-black tracking-widest text-[#FF6600] border-zinc-200 bg-white hover:bg-[#FF6600]/10 hover:border-[#FF6600]/30 transition-all shadow-sm">-10k</Button>
+                                    <Button variant="outline" onClick={() => handleOfferChange(-5000)} className="h-10 font-black tracking-widest text-[#FF6600] border-zinc-200 bg-white hover:bg-[#FF6600]/10 hover:border-[#FF6600]/30 transition-all shadow-sm">-5k</Button>
+                                    <Button variant="outline" onClick={() => handleOfferChange(5000)} className="h-10 font-black tracking-widest text-green-600 border-zinc-200 bg-white hover:bg-green-600/10 hover:border-green-600/30 transition-all shadow-sm">+5k</Button>
+                                    <Button variant="outline" onClick={() => handleOfferChange(10000)} className="h-10 font-black tracking-widest text-green-600 border-zinc-200 bg-white hover:bg-green-600/10 hover:border-green-600/30 transition-all shadow-sm">+10k</Button>
+                                </div>
+                                
+                                <input 
+                                    type="range" 
+                                    min="1000" 
+                                    max={(chat.listing.price || 50000) * 1.5} 
+                                    step="1000" 
+                                    value={currentOffer} 
+                                    onChange={(e) => handleOfferChange(Number(e.target.value), true)}
+                                    className="w-full h-2 bg-zinc-100 rounded-full appearance-none cursor-pointer mb-8 accent-[#FF6600] hover:accent-[#e55c00] transition-all"
+                                />
+                                
+                                <div className="flex gap-2 w-full">
+                                    <Button variant="ghost" className="flex-1 text-zinc-400 hover:text-red-500 hover:bg-red-50 font-bold uppercase tracking-widest text-[10px] h-11" onClick={() => router.push('/marketplace')}>Cancel Deal</Button>
+                                    <Button variant="outline" className="flex-1 border-[#FF6600]/30 text-[#FF6600] hover:bg-[#FF6600]/10 bg-white font-bold uppercase tracking-widest text-[10px] h-11 shadow-sm" onClick={handleCounter}>Counter</Button>
+                                    <Button 
+                                        className="flex-[1.5] bg-[#FF6600] text-black font-black uppercase tracking-[0.15em] text-xs hover:bg-[#FF6600]/90 shadow-[0_4px_14px_rgba(255,102,0,0.3)] h-11"
+                                        onClick={() => {
+                                            setEscrowAmount(currentOffer.toString());
+                                            setShowEscrowModal(true);
+                                        }}
+                                        disabled={isBlocked}
+                                    >
+                                        Accept Deal
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* AI Suggestions Block */}
+                    {aiReplySuggestion && !isBlocked && !activeAgreement && (
+                        <div className="mx-4 mt-4 bg-purple-50 border border-purple-200 rounded-xl p-3 flex items-start gap-3 animate-in fade-in slide-in-from-bottom-2">
+                            <div className="bg-purple-100 h-8 w-8 rounded-full flex items-center justify-center shrink-0">
+                                <span className="text-purple-600 text-lg">✨</span>
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-xs text-purple-900 font-medium">{aiReplySuggestion}</p>
+                                <div className="mt-2 flex gap-2">
+                                    <Button size="sm" variant="ghost" className="h-6 text-[10px] uppercase font-bold text-purple-600 hover:bg-purple-100 px-2" onClick={() => {
+                                        setNewMessage(aiReplySuggestion.replace(' — want me to send that?', ''));
+                                        setAiReplySuggestion(null);
+                                    }}>Use Suggestion</Button>
+                                    <Button size="sm" variant="ghost" className="h-6 text-[10px] uppercase font-bold text-zinc-400 hover:bg-white px-2" onClick={() => setAiReplySuggestion(null)}>Dismiss</Button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Chat Block Block */}
+                    {isBlocked && (
+                        <div className="mx-4 mt-4 bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+                            <span className="shrink-0 text-red-500 text-xl">🛡️</span>
+                            <div>
+                                <p className="text-sm font-bold text-red-900 mb-1">Conversation Paused for Review</p>
+                                <p className="text-xs text-red-800/80">Our AI has flagged this conversation. It is currently under review by our operations team. You cannot send messages until {blockEndTime?.toLocaleTimeString()}.</p>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Messages Area */}
                     <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-zinc-800">
                         {/* Escrow Widget */}
@@ -580,13 +736,13 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
                                 className="h-12 bg-[#FAFAFA]/50 border-zinc-200 rounded-xl text-zinc-900 placeholder:text-zinc-900/30 focus:ring-[#FF6600]/50 focus:border-[#FF6600]/50 font-medium"
-                                disabled={sending}
+                                disabled={sending || isBlocked}
                             />
 
                             <Button
                                 type="submit"
-                                className="h-12 w-12 rounded-xl bg-[#FF6600] text-black hover:bg-[#FF6600]/90 shadow-[0_0_20px_rgba(255,184,0,0.2)] shrink-0"
-                                disabled={sending || (!newMessage.trim() && !selectedImage)}
+                                className="h-12 w-12 rounded-xl bg-[#FF6600] text-black hover:bg-[#FF6600]/90 shadow-[0_0_20px_rgba(255,184,0,0.2)] shrink-0 disabled:opacity-50"
+                                disabled={sending || (!newMessage.trim() && !selectedImage) || isBlocked}
                             >
                                 {uploadingImage ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                             </Button>

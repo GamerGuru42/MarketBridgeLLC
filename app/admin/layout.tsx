@@ -14,7 +14,8 @@ import {
     Server,
     Activity,
     Zap,
-    TrendingUp
+    TrendingUp,
+    Headphones
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
@@ -54,6 +55,7 @@ export default function AdminLayout({
         if (role === 'operations_admin') {
             return [
                 { label: 'Operations Hub', href: '/admin/operations', icon: Activity },
+                { label: 'Customer Support', href: '/admin/operations/support', icon: Headphones },
                 { label: 'Dispute Center', href: '/admin/disputes', icon: ShieldAlert },
                 { label: 'Users Manager', href: '/admin/users', icon: Users },
                 { label: 'Listings Manager', href: '/admin/listings', icon: ShoppingBag },
@@ -74,6 +76,8 @@ export default function AdminLayout({
                 { label: 'Mission Control', href: '/admin/ceo', icon: LayoutDashboard },
                 { label: 'Marketing Growth', href: '/admin/marketing', icon: BarChart3 },
                 { label: 'Executive Chat', href: '/admin/executive-chat', icon: MessageSquare },
+                { label: 'Live Chat Monitoring', href: '/admin/live-chat', icon: ShieldAlert },
+                { label: 'Customer Support', href: '/admin/operations/support', icon: Headphones },
                 { label: 'Listings Manager', href: '/admin/listings', icon: ShoppingBag },
                 { label: 'Users Manager', href: '/admin/users', icon: Users },
             ];
@@ -84,6 +88,8 @@ export default function AdminLayout({
             { label: 'Mission Control', href: '/admin', icon: LayoutDashboard },
             { label: 'Technical Campus', href: '/admin/technical', icon: Server },
             { label: 'Operations Hub', href: '/admin/operations', icon: Activity },
+            { label: 'Customer Support', href: '/admin/operations/support', icon: Headphones },
+            { label: 'Live Chat Monitoring', href: '/admin/live-chat', icon: ShieldAlert },
             { label: 'Marketing Growth', href: '/admin/marketing', icon: BarChart3 },
             { label: 'Users Manager', href: '/admin/users', icon: Users },
             { label: 'Listings Manager', href: '/admin/listings', icon: ShoppingBag },
