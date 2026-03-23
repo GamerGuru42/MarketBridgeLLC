@@ -42,11 +42,13 @@ export async function GET(request: Request) {
             // Fetch existing profile if any
             const { data: existingUser } = await supabase.from('users').select('role, display_name, first_name, last_name').eq('id', data.user.id).maybeSingle();
             
-            // Core Logic: Prevent new Google signups on the login page
-            // If they are logging in (no role param passed) but don't exist in our DB
-            if (!existingUser && !role) {
-                console.warn('Auth Callback: User not found and no role provided! Redirecting to signup...');
-                // Sign them out so they have to sign up properly
+            // Check if this is a social login (Google/Facebook)
+            const isSocialLogin = data.user.app_metadata.provider !== 'email';
+
+            // Core Logic: If user not found and no role provided (e.g. login page via Social)
+            // Just auto-create them as a student_buyer to ensure seamless entry.
+            if (!existingUser && !role && !isSocialLogin) {
+                console.warn('Auth Callback: Manual signup attempt detected via callback. Redirecting to signup...');
                 await supabase.auth.signOut();
                 return NextResponse.redirect(new URL('/signup?error=Account+not+found.+Please+sign+up+to+continue.', origin));
             }
