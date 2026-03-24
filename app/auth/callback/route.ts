@@ -37,7 +37,7 @@ export async function GET(request: Request) {
         if (!error && data?.user) {
             console.log('Auth Callback: Exchange successful for:', data.user.email);
 
-            let finalNext = next === '/' ? '/marketplace' : next;
+            let finalNext = next;
 
             // Fetch existing profile if any
             const { data: existingUser } = await supabase.from('users').select('role, display_name, first_name, last_name').eq('id', data.user.id).maybeSingle();
