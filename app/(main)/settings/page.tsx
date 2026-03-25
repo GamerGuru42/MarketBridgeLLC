@@ -3,20 +3,25 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
 const supabase = createClient();
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, CheckCircle, User, Building, Shield, Bell, MapPin, Phone, MessageCircle, Tag, Banknote, Landmark, ArrowLeft } from 'lucide-react';
+import { Loader2, CheckCircle, User, Building, Shield, Bell, MapPin, Phone, MessageCircle, Tag, Banknote, Landmark, ArrowLeft, AlertTriangle } from 'lucide-react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NIGERIAN_STATES } from '@/lib/constants';
 
 export default function SettingsPage() {
     const { user, loading: authLoading, refreshUser } = useAuth();
+    const router = useRouter();
     const [updating, setUpdating] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [deleteConfirmText, setDeleteConfirmText] = useState('');
+    const [isDeleting, setIsDeleting] = useState(false);
     const [formData, setFormData] = useState({
         displayName: '',
         location: '',
@@ -493,10 +498,61 @@ export default function SettingsPage() {
                                     <CardTitle className="text-xl font-black uppercase tracking-tight text-white">Danger Zone</CardTitle>
                                     <CardDescription className="text-white/20 uppercase text-[9px] font-bold tracking-widest">Permanent actions</CardDescription>
                                 </CardHeader>
-                                <CardContent className="p-8">
-                                    <Button variant="outline" className="border-white/20 text-white/40 hover:bg-[#FF6200] hover:text-black font-bold uppercase tracking-widest rounded-xl transition-all h-12">
-                                        Delete Account
-                                    </Button>
+                                <CardContent className="p-8 space-y-4">
+                                    {!showDeleteConfirm ? (
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => setShowDeleteConfirm(true)}
+                                            className="border-white/20 text-white/40 hover:bg-red-600 hover:text-white hover:border-red-600 font-bold uppercase tracking-widest rounded-xl transition-all h-12"
+                                        >
+                                            <AlertTriangle className="mr-2 h-4 w-4" />
+                                            Delete Account
+                                        </Button>
+                                    ) : (
+                                        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
+                                            <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-5 space-y-2">
+                                                <p className="text-red-400 text-sm font-bold">This action is permanent and cannot be undone.</p>
+                                                <p className="text-white/40 text-xs">All your listings, orders, chats, and profile data will be permanently erased.</p>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] uppercase font-black text-white/30 tracking-widest ml-1">Type DELETE to confirm</label>
+                                                <input
+                                                    type="text"
+                                                    value={deleteConfirmText}
+                                                    onChange={(e) => setDeleteConfirmText(e.target.value)}
+                                                    placeholder="DELETE"
+                                                    className="w-full h-14 px-6 bg-black border border-red-500/30 rounded-2xl text-white font-bold uppercase tracking-widest placeholder:text-white/10 focus:outline-none focus:ring-1 focus:ring-red-500/50"
+                                                />
+                                            </div>
+                                            <div className="flex gap-3">
+                                                <Button
+                                                    variant="ghost"
+                                                    onClick={() => { setShowDeleteConfirm(false); setDeleteConfirmText(''); }}
+                                                    className="flex-1 h-12 border border-white/10 text-white/40 hover:text-white font-bold uppercase tracking-widest rounded-xl"
+                                                >
+                                                    Cancel
+                                                </Button>
+                                                <Button
+                                                    disabled={deleteConfirmText !== 'DELETE' || isDeleting}
+                                                    onClick={async () => {
+                                                        setIsDeleting(true);
+                                                        try {
+                                                            const res = await fetch('/api/account/delete', { method: 'DELETE' });
+                                                            const data = await res.json();
+                                                            if (!res.ok) throw new Error(data.error);
+                                                            router.push('/?deleted=true');
+                                                        } catch (err: any) {
+                                                            setSuccessMessage(`Error: ${err.message || 'Deletion failed'}`);
+                                                            setIsDeleting(false);
+                                                        }
+                                                    }}
+                                                    className="flex-1 h-12 bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-widest rounded-xl border-none disabled:opacity-30"
+                                                >
+                                                    {isDeleting ? <Loader2 className="animate-spin h-5 w-5" /> : 'Permanently Delete'}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </CardContent>
                             </Card>
                         </div>

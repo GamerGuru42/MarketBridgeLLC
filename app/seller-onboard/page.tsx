@@ -9,11 +9,60 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
-const UNIVERSITIES = [
+const PRIVATE_UNIVERSITIES = [
     "Baze University",
     "Nile University of Nigeria",
     "Veritas University",
-    "Other Abuja Private University"
+    "African University of Science and Technology",
+    "Admiralty University of Nigeria",
+    "American University of Nigeria",
+    "Babcock University",
+    "Bells University of Technology",
+    "Benson Idahosa University",
+    "Bingham University",
+    "Bowen University",
+    "Caleb University",
+    "Caritas University",
+    "CETEP City University",
+    "Chrisland University",
+    "Covenant University",
+    "Crawford University",
+    "Crescent University",
+    "Elizade University",
+    "Evangel University",
+    "Fountain University",
+    "Gregory University",
+    "Hallmark University",
+    "Igbinedion University",
+    "Joseph Ayo Babalola University",
+    "Kings University",
+    "Kwararafa University",
+    "Landmark University",
+    "Lead City University",
+    "Madonna University",
+    "McPherson University",
+    "Mountain Top University",
+    "Nigerian Turkish Nile University",
+    "Novena University",
+    "Obong University",
+    "Oduduwa University",
+    "Pan-Atlantic University",
+    "Paul University",
+    "Redeemer's University",
+    "Renaissance University",
+    "Rhema University",
+    "Ritman University",
+    "Salem University",
+    "Samuel Adegboyega University",
+    "Skyline University Nigeria",
+    "Southwestern University",
+    "Summit University",
+    "Tansian University",
+    "University of Mkar",
+    "Wellspring University",
+    "Wesley University",
+    "Western Delta University",
+    "Other Private University"
 ];
 
 export default function SellerOnboardPage() {
@@ -25,12 +74,11 @@ export default function SellerOnboardPage() {
 
     const [step, setStep] = useState(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [countdown, setCountdown] = useState(1800); // 30 mins
+    const [countdown, setCountdown] = useState(1800);
     const [showOTP, setShowOTP] = useState(false);
 
     const [formData, setFormData] = useState({
         fullName: '',
-        matricNumber: '',
         email: '',
         university: '',
         universityOther: '',
@@ -40,13 +88,11 @@ export default function SellerOnboardPage() {
 
     useEffect(() => {
         if (!loading && user) {
-            // Already authenticated, redirect to next step
             router.push('/seller-setup/bank');
         }
     }, [user, loading, router]);
 
     useEffect(() => {
-        // Handle Magic Link return
         const hash = window.location.hash;
         if (hash.includes('access_token')) {
             toast('Magic link detected! Verifying...', 'success');
@@ -71,8 +117,8 @@ export default function SellerOnboardPage() {
     };
 
     const handleSendMagicLink = async () => {
-        const uni = formData.university === 'Other Abuja Private University' ? formData.universityOther : formData.university;
-        if (!formData.fullName || !uni || !formData.email || !formData.phoneNumber || !formData.matricNumber) {
+        const uni = formData.university === 'Other Private University' ? formData.universityOther : formData.university;
+        if (!formData.fullName || !uni || !formData.email || !formData.phoneNumber) {
             toast('Please fill out all required fields.', 'error');
             return;
         }
@@ -87,7 +133,6 @@ export default function SellerOnboardPage() {
                         full_name: formData.fullName,
                         university: uni,
                         phone_number: formData.phoneNumber,
-                        matric_number: formData.matricNumber,
                         role: 'student_seller'
                     }
                 }
@@ -121,7 +166,6 @@ export default function SellerOnboardPage() {
             if (error) throw error;
             toast('Instantly Verified!', 'success');
             await refreshUser();
-            // User effect will catch this and route them to /seller-setup/bank
         } catch (error: any) {
             toast(error.message || 'Verification failed.', 'error');
         } finally {
@@ -141,24 +185,53 @@ export default function SellerOnboardPage() {
                     <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic">
                         Become a <span className="text-primary">Seller</span>
                     </h1>
-                    <p className="text-muted-foreground font-medium mt-2 text-sm">Strict ID Verification required.</p>
+                    <p className="text-muted-foreground font-medium mt-2 text-sm">Verify your identity to start selling on campus.</p>
                 </div>
 
                 <div className="bg-card border border-border rounded-[2.5rem] p-8 backdrop-blur-sm shadow-xl relative overflow-hidden">
                     {step === 1 && (
                         <div className="space-y-5 animate-in fade-in slide-in-from-right-4">
-                            <div className="space-y-1.5"><label className="text-[10px] uppercase font-black text-muted-foreground ml-2 tracking-widest">Full Name</label><div className="relative"><User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/><input value={formData.fullName} onChange={e => setFormData(p => ({...p, fullName: e.target.value}))} className="w-full h-14 pl-12 pr-4 bg-muted border border-input rounded-2xl focus:ring-1 focus:ring-primary/40 font-medium text-sm" placeholder="John Doe" /></div></div>
-                            <div className="space-y-1.5"><label className="text-[10px] uppercase font-black text-muted-foreground ml-2 tracking-widest">Matriculation Number</label><div className="relative"><School className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/><input value={formData.matricNumber} onChange={e => setFormData(p => ({...p, matricNumber: e.target.value}))} className="w-full h-14 pl-12 pr-4 bg-muted border border-input rounded-2xl focus:ring-1 focus:ring-primary/40 font-medium text-sm" placeholder="BU/19/000" /></div></div>
-                            <div className="space-y-1.5"><label className="text-[10px] uppercase font-black text-muted-foreground ml-2 tracking-widest">Institutional Email (School)</label><div className="relative"><Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/><input type="email" value={formData.email} onChange={e => setFormData(p => ({...p, email: e.target.value}))} className="w-full h-14 pl-12 pr-4 bg-muted border border-input rounded-2xl focus:ring-1 focus:ring-primary/40 font-medium text-sm" placeholder="student@university.edu.ng" /></div></div>
+                            {/* Full Name */}
                             <div className="space-y-1.5">
-                                <label className="text-[10px] uppercase font-black text-muted-foreground ml-2 tracking-widest">University</label>
+                                <label className="text-[10px] uppercase font-black text-muted-foreground ml-2 tracking-widest">Full Name</label>
+                                <div className="relative">
+                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/>
+                                    <input value={formData.fullName} onChange={e => setFormData(p => ({...p, fullName: e.target.value}))} className="w-full h-14 pl-12 pr-4 bg-muted border border-input rounded-2xl focus:ring-1 focus:ring-primary/40 font-medium text-sm" placeholder="John Doe" />
+                                </div>
+                            </div>
+
+                            {/* School Email */}
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] uppercase font-black text-muted-foreground ml-2 tracking-widest">School Email</label>
+                                <div className="relative">
+                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/>
+                                    <input type="email" value={formData.email} onChange={e => setFormData(p => ({...p, email: e.target.value}))} className="w-full h-14 pl-12 pr-4 bg-muted border border-input rounded-2xl focus:ring-1 focus:ring-primary/40 font-medium text-sm" placeholder="student@university.edu.ng" />
+                                </div>
+                            </div>
+
+                            {/* Phone Number */}
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] uppercase font-black text-muted-foreground ml-2 tracking-widest">Phone Number</label>
+                                <div className="relative">
+                                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/>
+                                    <input value={formData.phoneNumber} onChange={e => setFormData(p => ({...p, phoneNumber: e.target.value}))} className="w-full h-14 pl-12 pr-4 bg-muted border border-input rounded-2xl focus:ring-1 focus:ring-primary/40 font-medium text-sm" placeholder="080..." />
+                                </div>
+                            </div>
+
+                            {/* Private University Dropdown */}
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] uppercase font-black text-muted-foreground ml-2 tracking-widest">Private University</label>
                                 <select value={formData.university} onChange={e => setFormData(p => ({...p, university: e.target.value}))} className="w-full h-14 px-4 bg-muted border border-input rounded-2xl outline-none font-medium text-sm appearance-none">
-                                    <option value="" disabled>Select exact campus</option>
-                                    {UNIVERSITIES.map(u => <option key={u} value={u}>{u}</option>)}
+                                    <option value="" disabled>Select your university</option>
+                                    {PRIVATE_UNIVERSITIES.map(u => <option key={u} value={u}>{u}</option>)}
                                 </select>
                             </div>
-                            {formData.university === 'Other Abuja Private University' && <div className="space-y-1.5"><label className="text-[10px] uppercase font-black text-muted-foreground ml-2 tracking-widest">Specify University</label><input value={formData.universityOther} onChange={e => setFormData(p => ({...p, universityOther: e.target.value}))} className="w-full h-14 px-4 bg-muted border border-input rounded-2xl font-medium text-sm" placeholder="University name" /></div>}
-                            <div className="space-y-1.5"><label className="text-[10px] uppercase font-black text-muted-foreground ml-2 tracking-widest">Phone Number</label><div className="relative"><Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/><input value={formData.phoneNumber} onChange={e => setFormData(p => ({...p, phoneNumber: e.target.value}))} className="w-full h-14 pl-12 pr-4 bg-muted border border-input rounded-2xl focus:ring-1 focus:ring-primary/40 font-medium text-sm" placeholder="080..." /></div></div>
+                            {formData.university === 'Other Private University' && (
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] uppercase font-black text-muted-foreground ml-2 tracking-widest">Specify University</label>
+                                    <input value={formData.universityOther} onChange={e => setFormData(p => ({...p, universityOther: e.target.value}))} className="w-full h-14 px-4 bg-muted border border-input rounded-2xl font-medium text-sm" placeholder="University name" />
+                                </div>
+                            )}
 
                             <Button onClick={handleSendMagicLink} disabled={isSubmitting} className="w-full h-14 mt-4 bg-primary text-primary-foreground font-black uppercase tracking-widest rounded-2xl hover:bg-primary/90 border-none shadow-xl shadow-primary/20">
                                 {isSubmitting ? <Loader2 className="animate-spin h-5 w-5" /> : <div className="flex items-center">Submit / Proceed <ArrowRight className="ml-2 h-4 w-4" /></div>}
