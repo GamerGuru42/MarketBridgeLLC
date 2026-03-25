@@ -13,56 +13,14 @@ const PRIVATE_UNIVERSITIES = [
     "Baze University",
     "Nile University of Nigeria",
     "Veritas University",
-    "African University of Science and Technology",
-    "Admiralty University of Nigeria",
-    "American University of Nigeria",
-    "Babcock University",
-    "Bells University of Technology",
-    "Benson Idahosa University",
+    "African University of Science and Technology (AUST)",
     "Bingham University",
-    "Bowen University",
-    "Caleb University",
-    "Caritas University",
-    "CETEP City University",
-    "Chrisland University",
-    "Covenant University",
-    "Crawford University",
-    "Crescent University",
-    "Elizade University",
-    "Evangel University",
-    "Fountain University",
-    "Gregory University",
-    "Hallmark University",
-    "Igbinedion University",
-    "Joseph Ayo Babalola University",
-    "Kings University",
-    "Kwararafa University",
-    "Landmark University",
-    "Lead City University",
-    "Madonna University",
-    "McPherson University",
-    "Mountain Top University",
-    "Nigerian Turkish Nile University",
-    "Novena University",
-    "Obong University",
-    "Oduduwa University",
-    "Pan-Atlantic University",
-    "Paul University",
-    "Redeemer's University",
-    "Renaissance University",
-    "Rhema University",
-    "Ritman University",
-    "Salem University",
-    "Samuel Adegboyega University",
+    "Canadian University of Nigeria (CUN)",
+    "Philomath University",
     "Skyline University Nigeria",
-    "Southwestern University",
-    "Summit University",
-    "Tansian University",
-    "University of Mkar",
-    "Wellspring University",
-    "Wesley University",
-    "Western Delta University",
-    "Other Private University"
+    "Havilla University",
+    "Capital City University",
+    "Other Abuja Private University"
 ];
 
 export default function SellerOnboardPage() {
@@ -117,7 +75,7 @@ export default function SellerOnboardPage() {
     };
 
     const handleSendMagicLink = async () => {
-        const uni = formData.university === 'Other Private University' ? formData.universityOther : formData.university;
+        const uni = formData.university === 'Other Abuja Private University' ? formData.universityOther : formData.university;
         if (!formData.fullName || !uni || !formData.email || !formData.phoneNumber) {
             toast('Please fill out all required fields.', 'error');
             return;
