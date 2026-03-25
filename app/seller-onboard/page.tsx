@@ -10,16 +10,20 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
 const PRIVATE_UNIVERSITIES = [
-    "Baze University",
-    "Nile University of Nigeria",
-    "Veritas University",
     "African University of Science and Technology (AUST)",
-    "Bingham University",
-    "Canadian University of Nigeria (CUN)",
+    "Al-Muhibbah Open University",
+    "Amaj University",
+    "Baze University",
+    "British Canadian University",
+    "Cosmopolitan University",
+    "Eranova University",
+    "European University of Nigeria (EUN)",
+    "Leadership University",
+    "Miva Open University",
+    "Nile University of Nigeria",
     "Philomath University",
-    "Skyline University Nigeria",
-    "Havilla University",
-    "Capital City University",
+    "Prime University",
+    "Veritas University",
     "Other Abuja Private University"
 ];
 
