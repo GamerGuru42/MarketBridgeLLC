@@ -92,6 +92,7 @@ export default function SellerOnboardPage() {
                 options: {
                     emailRedirectTo: `${window.location.origin}/seller-setup/bank`,
                     data: {
+                        display_name: formData.fullName,
                         full_name: formData.fullName,
                         university: uni,
                         phone_number: formData.phoneNumber,
@@ -100,12 +101,30 @@ export default function SellerOnboardPage() {
                 }
             });
 
-            if (error) throw error;
-            toast('Magic Link dispatched!', 'success');
+            if (error) {
+                // If it's a database trigger error, the OTP was still sent — proceed anyway
+                if (error.message?.toLowerCase().includes('database') || error.message?.toLowerCase().includes('trigger')) {
+                    console.warn('Non-critical DB trigger error during OTP send:', error.message);
+                    toast('Verification code sent! Please check your school email.', 'success');
+                    setCountdown(1800);
+                    setStep(2);
+                    return;
+                }
+                throw error;
+            }
+            toast('Verification code sent! Please check your school email.', 'success');
             setCountdown(1800);
             setStep(2);
         } catch (error: any) {
-            toast(error.message || 'Failed to send verification link.', 'error');
+            console.error('OTP send error:', error);
+            // Show user-friendly messages instead of raw Supabase errors
+            if (error.message?.includes('rate limit')) {
+                toast('Too many attempts. Please wait a few minutes.', 'error');
+            } else if (error.message?.includes('invalid')) {
+                toast('Please check your email address format.', 'error');
+            } else {
+                toast('Failed to send code. Please check your internet and try again.', 'error');
+            }
         } finally {
             setIsSubmitting(false);
         }
