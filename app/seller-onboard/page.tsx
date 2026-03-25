@@ -211,7 +211,8 @@ export default function SellerOnboardPage() {
                                 We sent a <strong className="text-foreground">6-digit verification code</strong> to<br/>
                                 <strong className="text-primary">{formData.email}</strong><br/><br/>
                                 Check your school email inbox and enter the code below.<br/>
-                                <span className="text-primary font-black uppercase tracking-widest text-[10px]">Code expires in {formatTime(countdown)}</span>
+                                <span className="text-primary font-black uppercase tracking-widest text-[10px]">Code expires in {formatTime(countdown)}</span><br/><br/>
+                                <span className="text-muted-foreground/60 text-xs italic">💡 You can also click the magic link in the email to verify instantly.</span>
                             </div>
 
                             <div className="pt-2">
