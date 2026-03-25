@@ -203,32 +203,31 @@ export default function SellerOnboardPage() {
 
                     {step === 2 && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 text-center py-4">
-                            <div className="mx-auto h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center mb-2 shadow-[0_0_40px_rgba(255,98,0,0.15)]"><Mail className="h-10 w-10 text-primary animate-pulse" /></div>
+                            <div className="mx-auto h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center mb-2 shadow-[0_0_40px_rgba(255,98,0,0.15)]"><KeyRound className="h-10 w-10 text-primary animate-pulse" /></div>
                             
-                            <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground italic">Check your inbox</h2>
+                            <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground italic">Verify Your Email</h2>
                             
                             <div className="bg-muted border border-border p-4 rounded-2xl text-sm font-medium text-muted-foreground leading-relaxed">
-                                Magic link sent to <strong className="text-foreground">{formData.email}</strong>!<br/><br/>
-                                Click the link in the email to instantly verify and login.<br/>
-                                <span className="text-primary font-black uppercase tracking-widest text-[10px]">This link expires in {formatTime(countdown)}</span>
+                                We sent a <strong className="text-foreground">6-digit verification code</strong> to<br/>
+                                <strong className="text-primary">{formData.email}</strong><br/><br/>
+                                Check your school email inbox and enter the code below.<br/>
+                                <span className="text-primary font-black uppercase tracking-widest text-[10px]">Code expires in {formatTime(countdown)}</span>
                             </div>
 
-                            {!showOTP ? (
-                                <Button variant="ghost" onClick={() => setShowOTP(true)} className="w-full h-14 mt-4 border border-border text-foreground font-bold uppercase tracking-widest rounded-2xl hover:bg-secondary">
-                                    Didn't receive the link or it expired? Request 6-digit OTP instead
+                            <div className="pt-2">
+                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mb-4">Enter 6-Digit Code</p>
+                                <input autoFocus type="text" maxLength={6} value={formData.otp} onChange={e => setFormData(p => ({...p, otp: e.target.value.replace(/\D/g, '')}))} placeholder="••••••" className="w-full max-w-[240px] mx-auto h-16 bg-muted border border-input rounded-2xl text-center text-3xl tracking-[0.5em] font-black focus:outline-none focus:ring-2 focus:ring-primary/40 text-foreground block placeholder:text-muted-foreground/30 mb-6" />
+                                
+                                <Button onClick={handleVerifyWithOTP} disabled={isSubmitting || formData.otp.length < 6} className="w-full h-14 bg-primary text-primary-foreground font-black uppercase tracking-widest rounded-2xl hover:bg-primary/90 border-none shadow-xl shadow-primary/20 disabled:opacity-40">
+                                    {isSubmitting ? <Loader2 className="animate-spin h-5 w-5" /> : <div className="flex items-center justify-center"><CheckCircle className="mr-2 h-4 w-4" /> Verify & Continue</div>}
                                 </Button>
-                            ) : (
-                                <div className="animate-in fade-in slide-in-from-bottom-2 pt-4">
-                                    <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mb-4">Enter the 6-digit OTP code sent alongside the link</p>
-                                    <input autoFocus type="text" maxLength={6} value={formData.otp} onChange={e => setFormData(p => ({...p, otp: e.target.value.replace(/\D/g, '')}))} placeholder="••••••" className="w-full max-w-[200px] mx-auto h-16 bg-muted border border-input rounded-2xl text-center text-3xl tracking-[0.5em] font-black focus:outline-none focus:ring-2 focus:ring-primary/40 text-foreground block placeholder:text-muted-foreground/30 mb-6" />
-                                    
-                                    <Button onClick={handleVerifyWithOTP} disabled={isSubmitting || formData.otp.length < 6} className="w-full h-14 bg-foreground text-background font-black uppercase tracking-widest rounded-2xl hover:opacity-90 border-none shadow-xl disabled:opacity-50">
-                                        {isSubmitting ? <Loader2 className="animate-spin h-5 w-5" /> : 'Instant Verification'}
-                                    </Button>
-                                </div>
-                            )}
+                            </div>
+
+                            <Button variant="ghost" onClick={handleSendMagicLink} disabled={isSubmitting} className="w-full h-12 border border-border text-muted-foreground font-bold uppercase text-[10px] tracking-widest rounded-2xl hover:bg-secondary">
+                                {isSubmitting ? <Loader2 className="animate-spin h-4 w-4" /> : "Didn't get it? Resend Code"}
+                            </Button>
                             
-                            <Button variant="ghost" onClick={() => setStep(1)} className="uppercase text-[10px] font-black tracking-widest text-muted-foreground hover:text-foreground mt-4"><ArrowLeft className="mr-2 h-3.5 w-3.5" /> Start Over</Button>
+                            <Button variant="ghost" onClick={() => setStep(1)} className="uppercase text-[10px] font-black tracking-widest text-muted-foreground hover:text-foreground mt-2"><ArrowLeft className="mr-2 h-3.5 w-3.5" /> Start Over</Button>
                         </div>
                     )}
                 </div>
