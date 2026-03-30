@@ -41,18 +41,41 @@ export default function LiveChatMonitoring() {
     const fetchFlags = async () => {
         try {
             setLoading(true);
-            const { data, error } = await supabase
+            const { data: rawData, error } = await supabase
                 .from('chat_flags')
-                .select(`
-                    *,
-                    conversation:conversations(id, participant1_id, participant2_id),
-                    resolved_admin:users!resolved_by(display_name)
-                `)
+                .select('*')
                 .order('created_at', { ascending: false })
                 .limit(50);
 
             if (error) throw error;
-            setFlags(data || []);
+            
+            const flags = rawData || [];
+            if (flags.length === 0) {
+                setFlags([]);
+                return;
+            }
+
+            // Fetch conversations manually
+            const conversationIds = Array.from(new Set(flags.map(f => f.conversation_id).filter(Boolean)));
+            const { data: convData } = await supabase
+                .from('conversations')
+                .select('id, participant1_id, participant2_id')
+                .in('id', conversationIds);
+
+            // Fetch users manually
+            const userIds = Array.from(new Set(flags.map(f => f.resolved_by).filter(Boolean)));
+            const { data: userData } = await supabase
+                .from('users')
+                .select('id, display_name')
+                .in('id', userIds);
+
+            const mappedFlags = flags.map(f => ({
+                ...f,
+                conversation: convData?.find(c => c.id === f.conversation_id),
+                resolved_admin: userData?.find(u => u.id === f.resolved_by)
+            }));
+
+            setFlags(mappedFlags);
         } catch (error) {
             console.error('Error fetching flags:', error);
             toast('Failed to load AI flags', 'error');

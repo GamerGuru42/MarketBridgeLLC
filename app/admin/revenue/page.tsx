@@ -10,6 +10,7 @@ import {
     TrendingUp, DollarSign, ShoppingCart,
     Calendar, RotateCcw, Loader2
 } from 'lucide-react';
+import { useToast } from '@/contexts/ToastContext';
 
 const supabase = createClient();
 
@@ -41,6 +42,7 @@ interface RevenueStats {
 
 export default function RevenueManagementPage() {
     const { user } = useAuth();
+    const { toast } = useToast();
     const [records, setRecords] = useState<RevenueRecord[]>([]);
     const [stats, setStats] = useState<RevenueStats>({
         totalRevenue: 0,
@@ -120,11 +122,11 @@ export default function RevenueManagementPage() {
                 p_reason: reason
             });
             if (error) throw error;
-            alert('Refund processed successfully.');
+            toast('Refund processed successfully.', 'success');
             fetchRevenue();
         } catch (err) {
             console.error("Refund failed:", err);
-            alert('Refund failed. Please try again.');
+            toast('Refund failed. Please check your internet.', 'error');
         } finally {
             setProcessingRefund(null);
         }

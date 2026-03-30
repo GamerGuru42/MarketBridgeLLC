@@ -10,6 +10,7 @@ import { Package, Plus, Edit, Trash2, Eye, Loader2, Zap, X, Clock, TrendingUp, F
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useToast } from '@/contexts/ToastContext';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -42,6 +43,7 @@ interface Listing {
 
 export default function SellerListingsPage() {
     const { user, sessionUser, loading: authLoading } = useAuth();
+    const { toast } = useToast();
     const router = useRouter();
     const [listings, setListings] = useState<Listing[]>([]);
     const [loading, setLoading] = useState(true);
@@ -150,7 +152,7 @@ export default function SellerListingsPage() {
             fetchListings();
         } catch (err) {
             console.error('Failed to delete listing:', err);
-            alert('Failed to delete listing. Please try again.');
+            toast('Failed to delete listing. Please check your network.', 'error');
         } finally {
             setDeletingId(null);
         }
@@ -169,7 +171,7 @@ export default function SellerListingsPage() {
             fetchListings();
         } catch (err) {
             console.error('Failed to update status:', err);
-            alert('Failed to update listing status. Please try again.');
+            toast('Failed to update listing status.', 'error');
         }
     };
 
@@ -222,7 +224,7 @@ export default function SellerListingsPage() {
                 sponsored_until: expires.toISOString()
             }).eq('id', boostListing.id);
 
-            alert("Premium Boost applied successfully for 50 MC!");
+            toast("Premium Boost applied successfully for 50 MC!", "success");
             setBoostListing(null);
             fetchListings();
         } catch (err: any) {

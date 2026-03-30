@@ -250,20 +250,24 @@ export default function ExecutiveChatPage() {
         }
 
         try {
-            // Safe insert (minimal columns to avoid schema mismatch)
+            // Safe upsert (minimal columns to avoid schema mismatch race conditions)
             const { data, error } = await supabase
                 .from('admin_channels')
-                .insert({
-                    id: dmId,
-                    name: `Secure line: ${otherUser.display_name}`,
-                    type: 'private'
-                })
+                .upsert(
+                    {
+                        id: dmId,
+                        name: `Secure line: ${otherUser.display_name}`,
+                        type: 'private'
+                    },
+                    { onConflict: 'id' }
+                )
                 .select()
                 .single();
 
             if (error) throw error;
 
-            setChannels(prev => [...prev, data]);
+            // Remove if already exists in state visually and prepend updated
+            setChannels(prev => [...prev.filter(c => c.id !== data.id), data]);
             setActiveChannel(data);
             setIsNewDMOpen(false);
             toast(`Private relay with ${otherUser.display_name} activated.`, 'success');

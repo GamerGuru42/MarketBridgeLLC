@@ -4,7 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
+import {
+    Loader2, CheckCircle, AlertTriangle,
+    Clock, CheckCircle2, AlertCircle,
+    ArrowUpRight, Search, Download
+} from 'lucide-react';
+import { useToast } from '@/contexts/ToastContext';
+import { useAuth } from '@/contexts/AuthContext'; // Assuming AuthContext exists
 import { Badge } from '@/components/ui/badge';
 
 const supabase = createClient();
@@ -29,7 +35,9 @@ interface PayoutOrder {
     }[];
 }
 
-export default function AdminPayoutsPage() {
+export default function PayoutManagementPage() {
+    const { user } = useAuth();
+    const { toast } = useToast();
     const [orders, setOrders] = useState<PayoutOrder[]>([]);
     const [loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
@@ -80,11 +88,10 @@ export default function AdminPayoutsPage() {
 
             if (error) throw error;
 
-            // Refresh list
-            setOrders(prev => prev.filter(o => o.id !== orderId));
-            alert('Payout marked as paid successfully.');
+            toast('Payout marked as paid successfully.', 'success');
+            fetchPayouts(); // Refresh list
         } catch (err: any) {
-            alert('Failed to mark payout. Please try again.');
+            toast('Failed to mark payout. Please try again.', 'error');
         } finally {
             setProcessingId(null);
         }

@@ -27,6 +27,14 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
 
+        // Prevent temporary sellers from executing escrow actions
+        if (userId === agreement.seller_id) {
+            const { data: sellerData } = await supabase.from('users').select('is_temporary_seller, email_verified').eq('id', userId).single();
+            if (sellerData && sellerData.is_temporary_seller && !sellerData.email_verified) {
+                return NextResponse.json({ error: 'You cannot complete escrow transactions while under temporary 48-hour access. Please verify your seller account first.' }, { status: 403 });
+            }
+        }
+
         // Complete the step
         const { error: stepError } = await supabase
             .from('escrow_steps')

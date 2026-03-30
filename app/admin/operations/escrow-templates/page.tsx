@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/dialog';
 import { Plus, Trash, Edit, Save, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/contexts/ToastContext';
 
 interface EscrowTemplate {
     id: string;
@@ -38,6 +39,7 @@ interface EscrowTemplate {
 
 export default function EscrowTemplatesPage() {
     const { user, loading: authLoading } = useAuth();
+    const { toast } = useToast();
     const router = useRouter();
     const [templates, setTemplates] = useState<EscrowTemplate[]>([]);
     const [loading, setLoading] = useState(true);
@@ -77,6 +79,7 @@ export default function EscrowTemplatesPage() {
             setTemplates(data || []);
         } catch (error) {
             console.error('Error fetching templates:', error);
+            toast('Failed to fetch templates.', 'error');
         } finally {
             setLoading(false);
         }
@@ -117,7 +120,7 @@ export default function EscrowTemplatesPage() {
 
     const handleSave = async () => {
         if (!category || !name || steps.some(s => !s.trim()) || !tosText) {
-            alert('Please fill in all fields before saving.');
+            toast('Please fill in all fields before saving.', 'error');
             return;
         }
 
@@ -149,10 +152,12 @@ export default function EscrowTemplatesPage() {
             setIsDialogOpen(false);
             resetForm();
             fetchTemplates();
+            toast('Template saved successfully.', 'success');
         } catch (error) {
             console.error('Error saving template:', error);
-            alert('Failed to save template. Please try again.');
+            toast('Failed to save template. Please try again.', 'error');
         }
+
     };
 
     const handleDelete = async (id: string) => {

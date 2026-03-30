@@ -2,12 +2,13 @@
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, ShieldCheck, XCircle, ExternalLink, Car, User, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useToast } from '@/contexts/ToastContext';
 
 import {
     Dialog,
@@ -42,6 +43,7 @@ export default function VerificationsPage() {
     const [listings, setListings] = useState<Listing[]>([]);
     const [loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
+    const { toast } = useToast();
 
     // Verification Modal State
     const [verifyingListing, setVerifyingListing] = useState<Listing | null>(null);
@@ -68,6 +70,7 @@ export default function VerificationsPage() {
             setListings(data || []);
         } catch (err) {
             console.error('Error fetching pending listings:', err);
+            toast('Failed to fetch pending listings.', 'error');
         } finally {
             setLoading(false);
         }
@@ -94,10 +97,10 @@ export default function VerificationsPage() {
             setVerifyingListing(null);
             setReportUrl('');
             setNotes('');
-            alert('Listing verified and activated successfully.');
+            toast('Listing verified and activated successfully.', 'success');
         } catch (err) {
             console.error('Error verifying listing:', err);
-            alert('Failed to verify listing. Please try again.');
+            toast('Failed to verify listing. Please try again.', 'error');
         } finally {
             setProcessingId(null);
         }
@@ -120,10 +123,10 @@ export default function VerificationsPage() {
 
             if (error) throw error;
             setListings(listings.filter(l => l.id !== id));
-            alert('Listing rejected successfully.');
+            toast('Listing rejected successfully.', 'success');
         } catch (err) {
             console.error('Error rejecting listing:', err);
-            alert('Failed to reject listing. Please try again.');
+            toast('Failed to reject listing. Please try again.', 'error');
         } finally {
             setProcessingId(null);
         }

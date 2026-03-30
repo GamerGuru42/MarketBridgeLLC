@@ -20,6 +20,7 @@ import { AlertTriangle, CheckCircle, XCircle, Clock, Eye, MessageCircle, Gavel, 
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { useToast } from '@/contexts/ToastContext';
 
 interface Dispute {
     id: string;
@@ -61,6 +62,7 @@ export default function DisputesPage() {
     const [selectedDispute, setSelectedDispute] = useState<Dispute | null>(null);
     const [resolutionNotes, setResolutionNotes] = useState('');
     const [actionLoading, setActionLoading] = useState(false);
+    const { toast } = useToast();
     const supabase = createClient();
 
     useEffect(() => {
@@ -136,7 +138,7 @@ export default function DisputesPage() {
             setResolutionNotes('');
         } catch (error: unknown) {
             console.error('Error updating dispute:', error);
-            alert('Failed to update dispute. Please try again.');
+            toast('Failed to update dispute. Please try again.', 'error');
         } finally {
             setActionLoading(false);
         }

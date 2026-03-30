@@ -281,39 +281,39 @@ function AuthenticatedHome({ user }: { user: any }) {
         <div className="flex flex-col min-h-screen bg-background text-foreground transition-all duration-300 selection:bg-primary selection:text-white">
             <Header />
 
-            <main className="flex-1 w-full pt-28 px-4 md:px-12 lg:px-24 space-y-20 pb-20 max-w-7xl mx-auto animate-in fade-in duration-700">
+            <main className="flex-1 w-full pt-20 md:pt-28 px-4 md:px-12 lg:px-24 space-y-10 md:space-y-20 pb-20 max-w-7xl mx-auto animate-in fade-in duration-700">
 
                 {/* ─── Simplified Hero / Context HUD ─── */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pt-4">
-                    <div className="space-y-4">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-8 pt-2 md:pt-4">
+                    <div className="space-y-2 md:space-y-4">
                         <div className="flex items-center gap-2">
                             <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground opacity-60">Identity Link Active</span>
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter leading-none">
+                        <h1 className="text-3xl sm:text-5xl md:text-7xl font-black uppercase italic tracking-tighter leading-none">
                             Welcome, <br />
                             <span className="text-primary">{firstName}</span>.
                         </h1>
-                        <p className="text-muted-foreground font-medium text-lg leading-relaxed max-w-sm italic">
+                        <p className="text-muted-foreground font-medium text-sm md:text-lg leading-relaxed max-w-sm italic">
                             Your secure campus command is active.
                         </p>
                     </div>
 
-                    <div className="flex flex-col items-end gap-2 text-right">
-                        <div className="flex items-center gap-4 px-8 py-5 bg-card border border-border rounded-[2.5rem] shadow-sm hover:border-primary/20 transition-colors">
+                    <div className="flex flex-col items-start md:items-end gap-2 md:text-right">
+                        <div className="flex items-center gap-4 px-5 md:px-8 py-4 md:py-5 bg-card border border-border rounded-2xl md:rounded-[2.5rem] shadow-sm hover:border-primary/20 transition-colors w-full md:w-auto">
                             <div className="space-y-1">
                                 <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest leading-none">Nexus Balance</p>
-                                <p className="text-3xl font-black italic tracking-tighter text-foreground">₦{user?.coins_balance?.toLocaleString() || '0'}</p>
+                                <p className="text-2xl md:text-3xl font-black italic tracking-tighter text-foreground">₦{user?.coins_balance?.toLocaleString() || '0'}</p>
                             </div>
-                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-                                <Wallet className="h-6 w-6 text-primary" />
+                            <div className="h-10 w-10 md:h-12 md:w-12 rounded-2xl bg-primary/10 flex items-center justify-center ml-auto">
+                                <Wallet className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* ─── Streamlined Action Nodes ─── */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-2">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 px-0 md:px-2">
                     {[
                         { label: 'Market', icon: ShoppingBag, color: 'text-blue-500', href: '/marketplace' },
                         { label: 'Sell', icon: PlusCircle, color: 'text-primary', href: '/seller-onboard' },
@@ -321,19 +321,19 @@ function AuthenticatedHome({ user }: { user: any }) {
                         { label: 'Chats', icon: MessageCircle, color: 'text-green-500', href: '/messages' },
                     ].map((btn, i) => (
                         <Link key={i} href={btn.href} className="flex-1">
-                            <Button variant="outline" className="w-full h-16 rounded-2xl border-border bg-card/60 hover:bg-card hover:border-primary/30 hover:scale-[1.02] transition-all flex items-center gap-3 px-6 shadow-md group">
-                                <btn.icon className={`h-5 w-5 ${btn.color} group-hover:scale-110 transition-transform`} />
-                                <span className="font-black uppercase tracking-widest text-[11px] italic text-foreground">{btn.label}</span>
+                            <Button variant="outline" className="w-full h-12 md:h-16 rounded-xl md:rounded-2xl border-border bg-card/60 hover:bg-card hover:border-primary/30 hover:scale-[1.02] transition-all flex items-center gap-2 md:gap-3 px-3 md:px-6 shadow-md group">
+                                <btn.icon className={`h-4 w-4 md:h-5 md:w-5 ${btn.color} group-hover:scale-110 transition-transform`} />
+                                <span className="font-black uppercase tracking-wider md:tracking-widest text-[9px] md:text-[11px] italic text-foreground">{btn.label}</span>
                             </Button>
                         </Link>
                     ))}
                 </div>
 
                 {/* ─── Decongested Content Grid ─── */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-16">
 
                     {/* Live Ops (Real Data Recommendations) */}
-                    <div className="lg:col-span-8 space-y-12">
+                    <div className="lg:col-span-8 space-y-6 md:space-y-12">
                         <div className="flex items-center justify-between border-b border-border/50 pb-6">
                             <div className="flex items-center gap-3">
                                 <Zap className="h-5 w-5 text-primary" />
@@ -344,7 +344,7 @@ function AuthenticatedHome({ user }: { user: any }) {
                             </Link>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-8">
                             {loading ? (
                                 Array(4).fill(0).map((_, i) => (
                                     <div key={i} className="h-64 bg-muted animate-pulse rounded-[2.5rem]" />
@@ -352,7 +352,7 @@ function AuthenticatedHome({ user }: { user: any }) {
                             ) : listings.length > 0 ? (
                                 listings.map((item) => (
                                     <Link key={item.id} href={`/listings/${item.id}`}>
-                                        <div className="bg-card border border-border rounded-[2.5rem] overflow-hidden group hover:border-primary/40 transition-all duration-500 shadow-sm hover:shadow-xl flex flex-col h-full bg-gradient-to-br from-card to-muted/5">
+                                        <div className="bg-card border border-border rounded-2xl md:rounded-[2.5rem] overflow-hidden group hover:border-primary/40 transition-all duration-500 shadow-sm hover:shadow-xl flex flex-col h-full bg-gradient-to-br from-card to-muted/5">
                                             <div className="aspect-[16/10] bg-muted relative overflow-hidden border-b border-border">
                                                 {item.images?.[0] ? (
                                                     <Image src={item.images[0]} alt={item.title} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
@@ -361,16 +361,16 @@ function AuthenticatedHome({ user }: { user: any }) {
                                                 )}
                                                 <Badge className="absolute top-6 left-6 bg-black/60 backdrop-blur-lg text-[8px] font-black uppercase border-white/10 px-3 py-1.5">{item.category}</Badge>
                                             </div>
-                                            <div className="p-8 space-y-4">
+                                            <div className="p-4 md:p-8 space-y-3 md:space-y-4">
                                                 <div className="space-y-1">
                                                     <div className="flex items-center gap-2">
                                                         <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-40 italic">{item.dealer?.display_name || 'Verified Seller'}</p>
                                                         {item.dealer?.is_verified && <ShieldCheck className="h-3 w-3 text-primary" />}
                                                     </div>
-                                                    <h4 className="text-xl font-black italic tracking-tighter uppercase leading-tight group-hover:text-primary transition-colors line-clamp-1">{item.title}</h4>
+                                                    <h4 className="text-base md:text-xl font-black italic tracking-tighter uppercase leading-tight group-hover:text-primary transition-colors line-clamp-1">{item.title}</h4>
                                                 </div>
                                                 <div className="flex items-center justify-between pt-4">
-                                                    <p className="text-2xl font-black italic tracking-tighter text-foreground leading-none">₦{item.price.toLocaleString()}</p>
+                                                    <p className="text-xl md:text-2xl font-black italic tracking-tighter text-foreground leading-none">₦{item.price.toLocaleString()}</p>
                                                     <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
                                                         <ArrowRight className="h-5 w-5" />
                                                     </div>
@@ -389,23 +389,23 @@ function AuthenticatedHome({ user }: { user: any }) {
                     </div>
 
                     {/* Compact Identity Sync */}
-                    <div className="lg:col-span-4 space-y-12">
+                    <div className="lg:col-span-4 space-y-6 md:space-y-12">
                         <div className="flex items-center gap-3 border-b border-border/50 pb-6">
                             <ShieldCheck className="h-5 w-5 text-primary" />
                             <h2 className="text-xl font-black uppercase tracking-widest italic leading-none">Sync</h2>
                         </div>
 
-                        <Card className="bg-muted/40 border border-border rounded-[3rem] p-10 flex flex-col items-center text-center space-y-8 shadow-sm">
+                        <Card className="bg-muted/40 border border-border rounded-2xl md:rounded-[3rem] p-6 md:p-10 flex flex-col items-center text-center space-y-5 md:space-y-8 shadow-sm">
                             <div className="relative group/avatar">
-                                <Avatar className="h-32 w-32 border-4 border-card shadow-2xl transition-transform group-hover/avatar:scale-105 duration-500">
+                                <Avatar className="h-20 w-20 md:h-32 md:w-32 border-4 border-card shadow-2xl transition-transform group-hover/avatar:scale-105 duration-500">
                                     <AvatarImage src={user?.photoUrl} />
-                                    <AvatarFallback className="text-4xl font-black bg-zinc-900 text-primary">{firstName[0]}</AvatarFallback>
+                                    <AvatarFallback className="text-2xl md:text-4xl font-black bg-zinc-900 text-primary">{firstName[0]}</AvatarFallback>
                                 </Avatar>
                                 <div className="absolute bottom-2 right-2 h-6 w-6 bg-green-500 border-4 border-card rounded-full shadow-lg" />
                             </div>
 
                             <div className="space-y-2">
-                                <h3 className="text-2xl font-black uppercase italic tracking-tighter text-foreground leading-none">{user?.displayName}</h3>
+                                <h3 className="text-lg md:text-2xl font-black uppercase italic tracking-tighter text-foreground leading-none">{user?.displayName}</h3>
                                 <Badge variant="secondary" className="bg-primary/20 text-primary border-none text-[9px] font-black uppercase tracking-[0.2em] rounded-md px-3 py-1">{user?.role?.replace('_', ' ')}</Badge>
                             </div>
 

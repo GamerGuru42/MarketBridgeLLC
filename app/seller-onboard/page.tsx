@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Store, Loader2, ArrowLeft, ArrowRight, KeyRound, Mail, User, School, Phone, CheckCircle } from 'lucide-react';
+import { Loader2, ArrowLeft, ArrowRight, Mail, User, Phone } from 'lucide-react';
 import { useToast } from '@/contexts/ToastContext';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
@@ -37,15 +37,14 @@ export default function SellerOnboardPage() {
     const [step, setStep] = useState(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [countdown, setCountdown] = useState(1800);
-    const [showOTP, setShowOTP] = useState(false);
+
 
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
         university: '',
         universityOther: '',
-        phoneNumber: '',
-        otp: ''
+        phoneNumber: ''
     });
 
     useEffect(() => {
@@ -87,13 +86,14 @@ export default function SellerOnboardPage() {
 
         setIsSubmitting(true);
         try {
+            console.log('Initiating seller onboarding Auth for:', formData.email);
             const { error } = await supabase.auth.signInWithOtp({
                 email: formData.email,
                 options: {
                     emailRedirectTo: `${window.location.origin}/seller-setup/bank`,
                     data: {
                         display_name: formData.fullName,
-                        full_name: formData.fullName,
+                        full_name: formData.fullName, // Keep both for safety
                         university: uni,
                         phone_number: formData.phoneNumber,
                         role: 'student_seller'
@@ -102,57 +102,37 @@ export default function SellerOnboardPage() {
             });
 
             if (error) {
-                // If it's a database trigger error, the OTP was still sent — proceed anyway
+                console.error('Auth Error Details:', error);
+                
+                // Expose the raw database error so we can definitively debug missing columns or constraints
                 if (error.message?.toLowerCase().includes('database') || error.message?.toLowerCase().includes('trigger')) {
-                    console.warn('Non-critical DB trigger error during OTP send:', error.message);
-                    toast('Verification code sent! Please check your school email.', 'success');
-                    setCountdown(1800);
-                    setStep(2);
-                    return;
+                    console.error('CRITICAL DB TRIGGER FAILURE:', error.message);
+                    toast(`Database Error: ${error.message}`, 'error');
+                    throw error;
                 }
                 throw error;
             }
-            toast('Verification code sent! Please check your school email.', 'success');
+            toast('Magic link sent! Check your school email inbox.', 'success');
             setCountdown(1800);
             setStep(2);
         } catch (error: any) {
-            console.error('OTP send error:', error);
+            console.error('OTP send failure:', error);
             // Show user-friendly messages instead of raw Supabase errors
             if (error.message?.includes('rate limit')) {
                 toast('Too many attempts. Please wait a few minutes.', 'error');
             } else if (error.message?.includes('invalid')) {
                 toast('Please check your email address format.', 'error');
+            } else if (error.message?.includes('Database error')) {
+                toast('Database sync error. Our team is investigating. Please try again shortly.', 'error');
             } else {
-                toast('Failed to send code. Please check your internet and try again.', 'error');
+                toast('Failed to send code. Please check your connection and try again.', 'error');
             }
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    const handleVerifyWithOTP = async () => {
-        if (formData.otp.length !== 6) {
-            toast('Enter a 6-digit code', 'error');
-            return;
-        }
 
-        setIsSubmitting(true);
-        try {
-            const { error } = await supabase.auth.verifyOtp({
-                email: formData.email,
-                token: formData.otp,
-                type: 'email'
-            });
-
-            if (error) throw error;
-            toast('Instantly Verified!', 'success');
-            await refreshUser();
-        } catch (error: any) {
-            toast(error.message || 'Verification failed.', 'error');
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
 
     return (
         <div className="min-h-screen flex items-center justify-center py-20 px-4 bg-background relative selection:bg-primary selection:text-black">
@@ -215,39 +195,32 @@ export default function SellerOnboardPage() {
                             )}
 
                             <Button onClick={handleSendMagicLink} disabled={isSubmitting} className="w-full h-14 mt-4 bg-primary text-primary-foreground font-black uppercase tracking-widest rounded-2xl hover:bg-primary/90 border-none shadow-xl shadow-primary/20">
-                                {isSubmitting ? <Loader2 className="animate-spin h-5 w-5" /> : <div className="flex items-center">Submit / Proceed <ArrowRight className="ml-2 h-4 w-4" /></div>}
+                                {isSubmitting ? <Loader2 className="animate-spin h-5 w-5" /> : <div className="flex items-center">Send Magic Link <ArrowRight className="ml-2 h-4 w-4" /></div>}
                             </Button>
                         </div>
                     )}
 
                     {step === 2 && (
-                        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 text-center py-4">
-                            <div className="mx-auto h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center mb-2 shadow-[0_0_40px_rgba(255,98,0,0.15)]"><KeyRound className="h-10 w-10 text-primary animate-pulse" /></div>
+                        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 text-center py-8">
+                            <div className="mx-auto h-24 w-24 bg-primary/10 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(255,98,0,0.15)]">
+                                <Mail className="h-10 w-10 text-primary animate-bounce shadow-primary" />
+                            </div>
                             
-                            <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground italic">Verify Your Email</h2>
+                            <h2 className="text-3xl font-black uppercase tracking-tighter text-foreground italic">Check Your Inbox</h2>
                             
-                            <div className="bg-muted border border-border p-4 rounded-2xl text-sm font-medium text-muted-foreground leading-relaxed">
-                                We sent a <strong className="text-foreground">6-digit verification code</strong> to<br/>
-                                <strong className="text-primary">{formData.email}</strong><br/><br/>
-                                Check your school email inbox and enter the code below.<br/>
-                                <span className="text-primary font-black uppercase tracking-widest text-[10px]">Code expires in {formatTime(countdown)}</span><br/><br/>
-                                <span className="text-muted-foreground/60 text-xs italic">💡 You can also click the magic link in the email to verify instantly.</span>
+                            <div className="bg-muted border border-border p-6 rounded-2xl text-sm font-medium text-muted-foreground leading-relaxed shadow-inner">
+                                We just sent a secure magic link to<br/>
+                                <strong className="text-foreground text-lg py-2 block">{formData.email}</strong>
+                                Click the link in that email to instantly verify your account and proceed to setup.
+                                <br/><br/>
+                                <span className="text-primary font-black uppercase tracking-widest text-[10px]">Link expires in {formatTime(countdown)}</span>
                             </div>
 
-                            <div className="pt-2">
-                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mb-4">Enter 6-Digit Code</p>
-                                <input autoFocus type="text" maxLength={6} value={formData.otp} onChange={e => setFormData(p => ({...p, otp: e.target.value.replace(/\D/g, '')}))} placeholder="••••••" className="w-full max-w-[240px] mx-auto h-16 bg-muted border border-input rounded-2xl text-center text-3xl tracking-[0.5em] font-black focus:outline-none focus:ring-2 focus:ring-primary/40 text-foreground block placeholder:text-muted-foreground/30 mb-6" />
-                                
-                                <Button onClick={handleVerifyWithOTP} disabled={isSubmitting || formData.otp.length < 6} className="w-full h-14 bg-primary text-primary-foreground font-black uppercase tracking-widest rounded-2xl hover:bg-primary/90 border-none shadow-xl shadow-primary/20 disabled:opacity-40">
-                                    {isSubmitting ? <Loader2 className="animate-spin h-5 w-5" /> : <div className="flex items-center justify-center"><CheckCircle className="mr-2 h-4 w-4" /> Verify & Continue</div>}
-                                </Button>
-                            </div>
-
-                            <Button variant="ghost" onClick={handleSendMagicLink} disabled={isSubmitting} className="w-full h-12 border border-border text-muted-foreground font-bold uppercase text-[10px] tracking-widest rounded-2xl hover:bg-secondary">
-                                {isSubmitting ? <Loader2 className="animate-spin h-4 w-4" /> : "Didn't get it? Resend Code"}
+                            <Button variant="ghost" onClick={handleSendMagicLink} disabled={isSubmitting} className="w-full h-14 border border-border text-foreground font-bold uppercase text-[11px] tracking-widest rounded-2xl hover:bg-secondary mt-6 transition-colors shadow-sm">
+                                {isSubmitting ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : "Didn't receive it? Resend Link"}
                             </Button>
                             
-                            <Button variant="ghost" onClick={() => setStep(1)} className="uppercase text-[10px] font-black tracking-widest text-muted-foreground hover:text-foreground mt-2"><ArrowLeft className="mr-2 h-3.5 w-3.5" /> Start Over</Button>
+                            <Button variant="link" onClick={() => setStep(1)} className="uppercase text-[10px] font-black tracking-widest text-muted-foreground hover:text-foreground mt-4"><ArrowLeft className="mr-2 h-3.5 w-3.5" /> Use a different email</Button>
                         </div>
                     )}
                 </div>

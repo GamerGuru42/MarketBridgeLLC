@@ -47,11 +47,13 @@ function SignupContent() {
     useEffect(() => {
         const roleParam = searchParams?.get('role');
         if (roleParam === 'student_seller' || roleParam === 'seller') {
-            router.push('/seller-onboard');
+            setRole('student_seller');
+            setCurrentStep('details');
         } else if (roleParam === 'student_buyer' || roleParam === 'buyer') {
+            setRole('student_buyer');
             setCurrentStep('details');
         }
-    }, [searchParams, router]);
+    }, [searchParams]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -59,11 +61,7 @@ function SignupContent() {
 
     const handleRoleSelect = (selectedRole: Role) => {
         setRole(selectedRole);
-        if (selectedRole === 'student_seller') {
-            router.push('/seller-onboard');
-        } else {
-            setCurrentStep('details');
-        }
+        setCurrentStep('details');
     };
 
     const handleGoogleAuth = async () => {
@@ -78,6 +76,18 @@ function SignupContent() {
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (role === 'student_seller') {
+            if (!formData.university) {
+                toast('University is required for sellers', 'error');
+                return;
+            }
+            if (!formData.phoneNumber) {
+                toast('Phone number is required for sellers', 'error');
+                return;
+            }
+        }
+
         if (formData.password !== formData.passwordConfirm) {
             toast('Passwords do not match', 'error');
             return;
@@ -91,7 +101,6 @@ function SignupContent() {
         setIsLoading(true);
 
         try {
-            // Check if user already exists
             const { data: existingUser } = await supabase
                 .from('users')
                 .select('id')
@@ -119,9 +128,9 @@ function SignupContent() {
                         phone_number: formData.phoneNumber,
                         university: uni,
                         matric_number: formData.matricNumber,
-                        role: 'student_buyer',
+                        role: role,
                     },
-                    emailRedirectTo: `${window.location.origin}/auth/callback`,
+                    emailRedirectTo: role === 'student_seller' ? `${window.location.origin}/seller-setup/bank` : `${window.location.origin}/auth/callback`,
                 },
             });
 
@@ -137,18 +146,24 @@ function SignupContent() {
                     phone_number: formData.phoneNumber,
                     university: uni,
                     matric_number: formData.matricNumber,
-                    role: 'student_buyer',
+                    role: role,
+                    email_verified: false,
                 });
 
                 if (profileError) throw profileError;
 
-                if (data.session) {
-                    toast('Account created! Welcome to MarketBridge.', 'success');
-                    await refreshUser();
-                    router.push('/marketplace');
+                if (role === 'student_seller') {
+                    toast('Account created! Please verify your email.', 'success');
+                    router.push(`/verify-email?email=${encodeURIComponent(normalizedEmail)}`);
                 } else {
-                    toast('Account registered! Redirecting to login...', 'success');
-                    router.push('/login');
+                    if (data.session) {
+                        toast('Account created! Welcome to MarketBridge.', 'success');
+                        await refreshUser();
+                        router.push('/marketplace');
+                    } else {
+                        toast('Account registered! Redirecting to login...', 'success');
+                        router.push('/login');
+                    }
                 }
             }
         } catch (error: any) {
@@ -262,7 +277,7 @@ function SignupContent() {
                     </div>
                     <CardTitle className="text-3xl font-black uppercase tracking-tighter text-foreground">Create Your Account</CardTitle>
                     <CardDescription className="text-muted-foreground font-bold uppercase tracking-widest text-[10px] mt-2">
-                        Signing up as: <span className="text-primary">Buyer</span>
+                        Signing up as: <span className="text-primary">{role === 'student_seller' ? 'Seller' : 'Buyer'}</span>
                     </CardDescription>
                 </CardHeader>
 
@@ -283,7 +298,9 @@ function SignupContent() {
                         </div>
 
                         <div className="space-y-1.5">
-                            <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-2">Email Address</label>
+                            <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-2">
+                                {role === 'student_seller' ? 'Personal Email' : 'Email Address'}
+                            </label>
                             <input
                                 name="email"
                                 type="email"
@@ -296,12 +313,15 @@ function SignupContent() {
                         </div>
 
                         <div className="space-y-1.5">
-                            <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-2">Phone Number <span className="opacity-50 ml-1">(Optional)</span></label>
+                            <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-2">
+                                Phone Number {role === 'student_buyer' && <span className="opacity-50 ml-1">(Optional)</span>}
+                            </label>
                             <input
                                 name="phoneNumber"
                                 type="text"
                                 value={formData.phoneNumber}
                                 onChange={handleChange}
+                                required={role === 'student_seller'}
                                 placeholder="080..."
                                 className="w-full h-12 px-5 bg-muted border border-input rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-medium text-sm"
                             />
@@ -335,7 +355,9 @@ function SignupContent() {
                         </div>
 
                         <div className="pt-2 border-t border-border mt-6">
-                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mb-3 text-center">Student details (Optional)</p>
+                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mb-3 text-center">
+                                Student details {role === 'student_buyer' && '(Optional)'}
+                            </p>
                             
                             <div className="space-y-3">
                                 <div className="space-y-1.5">
@@ -344,6 +366,7 @@ function SignupContent() {
                                         name="university"
                                         value={formData.university}
                                         onChange={handleChange}
+                                        required={role === 'student_seller'}
                                         className="w-full h-12 px-5 bg-muted border border-input rounded-2xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-medium appearance-none text-sm"
                                     >
                                         <option value="">Select your campus</option>
@@ -359,23 +382,26 @@ function SignupContent() {
                                             type="text"
                                             value={formData.universityOther}
                                             onChange={handleChange}
+                                            required={role === 'student_seller'}
                                             placeholder="University Name"
                                             className="w-full h-12 px-5 bg-muted border border-input rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-medium text-sm"
                                         />
                                     </div>
                                 )}
 
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-2">Matriculation Number</label>
-                                    <input
-                                        name="matricNumber"
-                                        type="text"
-                                        value={formData.matricNumber}
-                                        onChange={handleChange}
-                                        placeholder="E.g. BU/19/000"
-                                        className="w-full h-12 px-5 bg-muted border border-input rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-medium text-sm"
-                                    />
-                                </div>
+                                {role === 'student_seller' && (
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-2">Matriculation Number <span className="opacity-50 ml-1">(Optional)</span></label>
+                                        <input
+                                            name="matricNumber"
+                                            type="text"
+                                            value={formData.matricNumber}
+                                            onChange={handleChange}
+                                            placeholder="E.g. BU/19/000"
+                                            className="w-full h-12 px-5 bg-muted border border-input rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-medium text-sm"
+                                        />
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -386,7 +412,7 @@ function SignupContent() {
                         >
                             {isLoading ? <Loader2 className="animate-spin h-5 w-5" /> : (
                                 <>
-                                    Create Buyer Account
+                                    {role === 'student_seller' ? 'Register & Verify' : 'Create Buyer Account'}
                                     <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </>
                             )}
@@ -398,14 +424,20 @@ function SignupContent() {
                         <span className="relative bg-card px-4 text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground">Or</span>
                     </div>
 
-                    <Button
-                        variant="outline"
-                        onClick={handleGoogleAuth}
-                        className="w-full h-14 bg-transparent border-input text-foreground font-bold rounded-2xl hover:bg-secondary transition-all"
-                    >
-                        <Globe className="mr-3 h-5 w-5 text-primary" />
-                        Sign up with Google (Buyer only)
-                    </Button>
+                    {role === 'student_buyer' ? (
+                        <Button
+                            variant="outline"
+                            onClick={handleGoogleAuth}
+                            className="w-full h-14 bg-transparent border-input text-foreground font-bold rounded-2xl hover:bg-secondary transition-all"
+                        >
+                            <Globe className="mr-3 h-5 w-5 text-primary" />
+                            Sign up with Google
+                        </Button>
+                    ) : (
+                        <p className="text-center text-muted-foreground text-xs font-bold px-4">
+                            Sellers must register with their personal email.
+                        </p>
+                    )}
 
                     <p className="text-center text-muted-foreground/50 text-xs font-medium mt-6">
                         By signing up, you agree to our{' '}

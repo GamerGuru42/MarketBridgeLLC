@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,6 +33,7 @@ export default function EditListingPage() {
     const router = useRouter();
     const params = useParams();
     const { user, loading: authLoading } = useAuth();
+    const { toast } = useToast();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [listing, setListing] = useState<Listing | null>(null);
@@ -75,7 +77,7 @@ export default function EditListingPage() {
             if (error) throw error;
 
             if (!data) {
-                alert('Listing not found or you do not have access.');
+                toast('Listing not found or access denied.', 'error');
                 router.push('/seller/listings');
                 return;
             }
@@ -92,7 +94,7 @@ export default function EditListingPage() {
             setVideoUrls(data.videos && data.videos.length > 0 ? data.videos : []);
         } catch (err: unknown) {
             console.error('Failed to fetch listing:', err);
-            alert('Failed to fetch listing. Returning to your inventory.');
+            toast('Asset synchronization failed. Returning to base.', 'error');
             router.push('/seller/listings');
         } finally {
             setLoading(false);
@@ -108,7 +110,7 @@ export default function EditListingPage() {
             const validImages = imageUrls.filter(url => url.trim() !== '');
 
             if (validImages.length === 0) {
-                alert('Please add at least one image before saving.');
+                toast('Please add at least one image before saving.', 'error');
                 setSaving(false);
                 return;
             }
@@ -132,7 +134,7 @@ export default function EditListingPage() {
         } catch (err: unknown) {
             console.error('Failed to update listing:', err);
             const message = err instanceof Error ? err.message : 'System synchronization failed';
-            alert(`Failed to update listing: ${message}`);
+            toast(`Failed to update listing: ${message}`, 'error');
         } finally {
             setSaving(false);
         }
@@ -248,7 +250,7 @@ export default function EditListingPage() {
                                     <SelectContent className="bg-zinc-900 border-white/10 text-white font-heading text-[10px] uppercase font-black tracking-widest">
                                         {CATEGORIES.map((cat) => (
                                             <SelectItem key={cat.id} value={cat.name} disabled={cat.locked} className="focus:bg-[#FF6200] focus:text-black py-3">
-                                                {cat.name} {cat.locked ? '(COMING SOON)' : ''}
+                                                {cat.name}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>

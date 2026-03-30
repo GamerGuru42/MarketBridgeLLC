@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Loader2, Check, X, FileText } from 'lucide-react';
+import { useToast } from '@/contexts/ToastContext';
 
 interface Order {
     id: string;
@@ -20,6 +21,7 @@ interface Order {
 
 export default function AdminOrdersPage() {
     const supabase = createClient();
+    const { toast } = useToast();
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -47,11 +49,11 @@ export default function AdminOrdersPage() {
         try {
             const { error } = await supabase.from('orders').update({ status: newStatus }).eq('id', orderId);
             if (error) throw error;
-            alert('Order status updated successfully.');
+            toast('Order status updated successfully.', 'success');
             fetchOrders();
         } catch (err) {
             console.error('Error updating order:', err);
-            alert('Failed to update order. Please try again.');
+            toast('Failed to update order. Please try again.', 'error');
         } finally {
             setActionLoading(null);
         }
