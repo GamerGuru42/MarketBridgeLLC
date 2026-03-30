@@ -19,6 +19,7 @@ const UNIVERSITIES = [
     "Baze University",
     "Nile University of Nigeria",
     "Veritas University",
+    "Cosmopolitan University",
     "Other Abuja Private University"
 ];
 
@@ -67,7 +68,8 @@ function SignupContent() {
     const handleGoogleAuth = async () => {
         setIsLoading(true);
         try {
-            await signInWithGoogle(`${window.location.origin}/auth/callback?role=student_buyer`);
+            const nextParam = role === 'student_seller' ? '/seller-setup/bank' : '/marketplace';
+            await signInWithGoogle(`${window.location.origin}/auth/callback?role=${role}&next=${nextParam}`);
         } catch (error: any) {
             toast(error.message || 'Google Auth failed', 'error');
             setIsLoading(false);
@@ -123,14 +125,11 @@ function SignupContent() {
                 options: {
                     data: {
                         full_name: formData.fullName,
-                        first_name: firstName,
-                        last_name: lastName || '',
                         phone_number: formData.phoneNumber,
                         university: uni,
-                        matric_number: formData.matricNumber,
                         role: role,
                     },
-                    emailRedirectTo: role === 'student_seller' ? `${window.location.origin}/seller-setup/bank` : `${window.location.origin}/auth/callback`,
+                    emailRedirectTo: role === 'student_seller' ? `${window.location.origin}/auth/callback?next=/seller-setup/bank` : `${window.location.origin}/auth/callback`,
                 },
             });
 
@@ -141,11 +140,8 @@ function SignupContent() {
                     id: data.user.id,
                     email: normalizedEmail,
                     display_name: formData.fullName.trim(),
-                    first_name: firstName,
-                    last_name: lastName || '',
                     phone_number: formData.phoneNumber,
                     university: uni,
-                    matric_number: formData.matricNumber,
                     role: role,
                     email_verified: false,
                 });
@@ -388,20 +384,6 @@ function SignupContent() {
                                         />
                                     </div>
                                 )}
-
-                                {role === 'student_seller' && (
-                                    <div className="space-y-1.5">
-                                        <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-2">Matriculation Number <span className="opacity-50 ml-1">(Optional)</span></label>
-                                        <input
-                                            name="matricNumber"
-                                            type="text"
-                                            value={formData.matricNumber}
-                                            onChange={handleChange}
-                                            placeholder="E.g. BU/19/000"
-                                            className="w-full h-12 px-5 bg-muted border border-input rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-medium text-sm"
-                                        />
-                                    </div>
-                                )}
                             </div>
                         </div>
 
@@ -424,20 +406,15 @@ function SignupContent() {
                         <span className="relative bg-card px-4 text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground">Or</span>
                     </div>
 
-                    {role === 'student_buyer' ? (
-                        <Button
-                            variant="outline"
-                            onClick={handleGoogleAuth}
-                            className="w-full h-14 bg-transparent border-input text-foreground font-bold rounded-2xl hover:bg-secondary transition-all"
-                        >
-                            <Globe className="mr-3 h-5 w-5 text-primary" />
-                            Sign up with Google
-                        </Button>
-                    ) : (
-                        <p className="text-center text-muted-foreground text-xs font-bold px-4">
-                            Sellers must register with their personal email.
-                        </p>
-                    )}
+                    <Button
+                        variant="outline"
+                        type="button"
+                        onClick={handleGoogleAuth}
+                        className="w-full h-14 bg-transparent border-input text-foreground font-bold rounded-2xl hover:bg-secondary transition-all"
+                    >
+                        <Globe className="mr-3 h-5 w-5 text-primary" />
+                        Sign up with Google
+                    </Button>
 
                     <p className="text-center text-muted-foreground/50 text-xs font-medium mt-6">
                         By signing up, you agree to our{' '}
