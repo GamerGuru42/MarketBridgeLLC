@@ -50,9 +50,9 @@ export default function NewListingPage() {
         // Auto-Verification for Google signups or fully verified custom emails
         const isGoogleAuth = sessionUser.app_metadata?.provider === 'google';
         if (user.role === 'student_seller' && !user.isVerified && !isGoogleAuth) {
-            // Show message and redirect to verification flow
+            // Show message and redirect to dashboard
             toast('Listing creation is restricted. You must be Ops-Approved or sign in with Google.', 'error');
-            router.push('/verify-email');
+            router.push('/seller/dashboard');
             return;
         }
 

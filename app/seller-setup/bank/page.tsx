@@ -85,8 +85,7 @@ export default function BankSetupPage() {
                 bank_name: selectedBank?.name || '',
                 bank_code: selectedBankCode,
                 account_number: accountNumber,
-                account_name: accountName,
-                is_verified_seller: true, // Mark them fully active as seller
+                account_name: accountName
             }).eq('id', user.id);
 
             if (error) throw error;
