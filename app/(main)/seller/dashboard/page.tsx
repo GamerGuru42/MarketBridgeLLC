@@ -809,9 +809,9 @@ export default function SellerDashboardPage() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white relative flex flex-col selection:bg-[#FF6200] selection:text-black font-sans">
+        <div className="min-h-screen bg-[#FAFAFA] dark:bg-black text-zinc-900 dark:text-white relative flex flex-col selection:bg-[#FF6200] selection:text-black font-sans transition-colors duration-300">
             {/* Background Grid */}
-            <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03] pointer-events-none z-0" />
+            <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 dark:opacity-[0.03] pointer-events-none z-0 transition-opacity duration-300" />
 
             {/* ─── PLAN PROMPT MODAL (first-time, trial sellers) ─── */}
             {showPlanPrompt && (
@@ -910,32 +910,32 @@ export default function SellerDashboardPage() {
 
             <div className="container mx-auto py-6 px-6 relative z-10 space-y-12 pb-24">
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-12">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-zinc-200 dark:border-white/5 pb-12 transition-colors duration-300">
                     <div className="space-y-4">
                         <Button 
                             variant="ghost" 
                             onClick={() => router.push('/')}
-                            className="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-[#FF6200] hover:bg-transparent -ml-4 mb-4"
+                            className="text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-white/40 hover:text-[#FF6200] hover:bg-transparent -ml-4 mb-4 transition-colors"
                         >
                             <ArrowLeft className="h-3 w-3 mr-2" /> Return to Market
                         </Button>
                         <div className="flex items-center gap-3">
                             <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 font-heading leading-tight">Live Operation Panel</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 dark:text-white/40 font-heading leading-tight transition-colors">Live Operation Panel</span>
                         </div>
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
                             Seller <span className="text-[#FF6200]">Hub</span>
                         </h1>
-                        <p className="text-white/40 font-medium max-w-xl italic">
-                            Command center for <span className="text-white font-bold">{user?.displayName}</span>.
-                            Managing <span className="text-white font-bold">{stats.totalOrders} assets</span> in current cycle.
+                        <p className="text-zinc-500 dark:text-white/40 font-medium max-w-xl italic transition-colors">
+                            Command center for <span className="text-zinc-900 dark:text-white font-bold">{user?.displayName}</span>.
+                            Managing <span className="text-zinc-900 dark:text-white font-bold">{stats.totalOrders} assets</span> in current cycle.
                         </p>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-4">
-                        <div className="h-16 px-8 rounded-2xl bg-white/[0.02] border border-white/5 flex flex-col justify-center shrink-0">
-                            <span className="text-[10px] font-black text-white/30 uppercase tracking-widest border-b border-white/5 mb-1 pb-1 font-heading">Network Status</span>
-                            <span className="text-sm font-black text-white italic uppercase tracking-tighter flex items-center gap-2 font-heading">
+                        <div className="h-16 px-8 rounded-2xl bg-white dark:bg-white/[0.02] border border-zinc-200 dark:border-white/5 shadow-sm dark:shadow-none flex flex-col justify-center shrink-0 transition-all duration-300">
+                            <span className="text-[10px] font-black text-zinc-400 dark:text-white/30 uppercase tracking-widest border-b border-zinc-100 dark:border-white/5 mb-1 pb-1 font-heading transition-colors">Network Status</span>
+                            <span className="text-sm font-black text-zinc-900 dark:text-white italic uppercase tracking-tighter flex items-center gap-2 font-heading transition-colors">
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200] animate-pulse" /> Connected
                             </span>
                         </div>
@@ -956,18 +956,18 @@ export default function SellerDashboardPage() {
                         { label: "Revenue Cycle", val: `₦${stats.totalRevenue.toLocaleString()}`, icon: DollarSign, trend: revenueTrend },
                         { label: "Active Orders", val: stats.totalOrders, icon: ShoppingBag, trend: "Stable" },
                         { label: "Pending Verification", val: stats.pendingOrders, icon: Clock, color: "text-[#FF6200]" },
-                        { label: "Success Rate", val: `${Math.round((stats.completedOrders / (stats.totalOrders || 1)) * 100)}%`, icon: TrendingUp, color: "text-white" }
+                        { label: "Success Rate", val: `${Math.round((stats.completedOrders / (stats.totalOrders || 1)) * 100)}%`, icon: TrendingUp, color: "text-zinc-900 dark:text-white" }
                     ].map((stat, i) => (
-                        <div key={i} className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 group relative overflow-hidden transition-all duration-500 hover:border-[#FF6200]/30 hover:bg-white/[0.04]">
+                        <div key={i} className="bg-white dark:bg-white/[0.02] border border-zinc-200 dark:border-white/5 shadow-sm dark:shadow-none rounded-3xl p-8 group relative overflow-hidden transition-all duration-500 hover:border-[#FF6200]/30 hover:-translate-y-1 dark:hover:bg-white/[0.04]">
                             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 group-hover:text-[#FF6200] transition-colors">
                                 <stat.icon className="h-12 w-12" />
                             </div>
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic font-heading leading-tight">{stat.label}</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 dark:text-white/40 italic font-heading leading-tight transition-colors">{stat.label}</span>
                                     {stat.trend && <span className="text-[9px] font-black text-[#FF6200] bg-[#FF6200]/10 border border-[#FF6200]/20 px-2 py-0.5 rounded uppercase font-heading">{stat.trend}</span>}
                                 </div>
-                                <div className={cn("text-3xl font-black uppercase tracking-tighter font-heading", stat.color || "text-white")}>
+                                <div className={cn("text-3xl font-black uppercase tracking-tighter font-heading transition-colors", stat.color || "text-zinc-900 dark:text-white")}>
                                     {stat.val}
                                 </div>
                             </div>
@@ -985,16 +985,16 @@ export default function SellerDashboardPage() {
                     ].map((action, i) => (
                         <Link key={i} href={action.href} className="group h-full">
                             <div className={cn(
-                                "p-8 rounded-[2rem] transition-all duration-500 h-full flex flex-col justify-between border",
+                                "p-8 rounded-[2rem] transition-all duration-500 h-full flex flex-col justify-between border hover:-translate-y-1",
                                 action.primary
                                     ? "bg-[#FF6200] border-[#FF6200] text-black shadow-[0_8px_30px_rgba(255,98,0,0.3)] hover:scale-105"
                                     : action.highlight
-                                        ? "bg-transparent border-white/20 text-white hover:border-[#FF6200]/50 hover:bg-white/5"
-                                        : "bg-white/[0.02] border-white/5 text-white hover:border-[#FF6200]/30 hover:bg-white/[0.04]"
+                                        ? "bg-zinc-900 dark:bg-transparent border-zinc-800 dark:border-white/20 text-white hover:border-[#FF6200]/50 hover:bg-zinc-800 dark:hover:bg-white/5 shadow-xl dark:shadow-none"
+                                        : "bg-white dark:bg-white/[0.02] border-zinc-200 dark:border-white/5 text-zinc-900 dark:text-white shadow-sm dark:shadow-none hover:border-[#FF6200]/30 dark:hover:bg-white/[0.04]"
                             )}>
                                 <div className={cn(
                                     "h-12 w-12 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 mb-6",
-                                    action.primary ? "bg-white/10" : action.highlight ? "bg-[#FF6200]/10 text-[#FF6200]" : "bg-zinc-100"
+                                    action.primary ? "bg-white/20" : action.highlight ? "bg-[#FF6200]/20 text-[#FF6200]" : "bg-zinc-100 dark:bg-zinc-800/50"
                                 )}>
                                     <action.icon className="h-6 w-6" />
                                 </div>
@@ -1013,11 +1013,11 @@ export default function SellerDashboardPage() {
                 </div>
 
                 {/* Execution Management Container */}
-                <div className="bg-white/[0.02] border border-white/5 shadow-sm rounded-[3rem] p-10 overflow-hidden">
+                <div className="bg-white dark:bg-white/[0.02] border border-zinc-200 dark:border-white/5 shadow-sm dark:shadow-none rounded-[3rem] p-10 overflow-hidden transition-colors duration-300">
                     <Tabs defaultValue="orders" className="space-y-10">
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-white/5 pb-8">
-                            <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/5">
-                                <TabsList className="bg-transparent gap-2 h-auto p-0 border-none shadow-none">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-zinc-200 dark:border-white/5 pb-8 transition-colors duration-300">
+                            <div className="flex bg-zinc-50 dark:bg-white/5 p-1.5 rounded-2xl border border-zinc-200 dark:border-white/5 transition-colors duration-300">
+                                <TabsList className="bg-transparent gap-2 h-auto p-0 border-none shadow-none text-zinc-500 dark:text-zinc-400">
                                     <TabsTrigger value="orders" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading">Orders Queue</TabsTrigger>
                                     <TabsTrigger value="offers" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading relative">
                                         Offers Dashboard
@@ -1031,7 +1031,7 @@ export default function SellerDashboardPage() {
                                     <TabsTrigger value="settings" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading">Payout Settings</TabsTrigger>
                                 </TabsList>
                             </div>
-                            <div className="flex items-center gap-4 text-white/40 text-[10px] font-black uppercase tracking-widest font-heading italic">
+                            <div className="flex items-center gap-4 text-zinc-400 dark:text-white/40 text-[10px] font-black uppercase tracking-widest font-heading italic transition-colors">
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200] animate-pulse" /> Auto-sync enabled
                             </div>
                         </div>
@@ -1049,9 +1049,9 @@ export default function SellerDashboardPage() {
                                 <div className="grid grid-cols-1 gap-6">
                                     <TabsContent value="all" className="space-y-6 m-0 border-none">
                                         {orders.length === 0 ? (
-                                            <div className="text-center py-24 bg-white/[0.01] border border-white/5 shadow-sm border-dashed">
-                                                <Package className="h-16 w-16 text-white/10 mx-auto mb-6" />
-                                                <p className="text-white/40 font-black uppercase tracking-widest text-xs font-heading italic">Zero orders detected in current sector</p>
+                                                <div className="text-center py-24 bg-zinc-50 dark:bg-white/[0.01] border border-zinc-200 dark:border-white/5 shadow-sm dark:shadow-none border-dashed transition-colors duration-300">
+                                                    <Package className="h-16 w-16 text-zinc-300 dark:text-white/10 mx-auto mb-6 transition-colors" />
+                                                    <p className="text-zinc-500 dark:text-white/40 font-black uppercase tracking-widest text-xs font-heading italic transition-colors">Zero orders detected in current sector</p>
                                             </div>
                                         ) : (
                                             orders.map((order: Order) => (
@@ -1062,9 +1062,9 @@ export default function SellerDashboardPage() {
                                     {['pending', 'confirmed', 'completed'].map(status => (
                                         <TabsContent key={status} value={status} className="space-y-6 m-0 border-none">
                                             {orders.filter((o: Order) => o.status === status).length === 0 ? (
-                                                <div className="text-center py-24 bg-white/[0.01] border border-white/5 shadow-sm border-dashed">
-                                                    <Package className="h-16 w-16 text-white/10 mx-auto mb-6" />
-                                                    <p className="text-white/40 font-black uppercase tracking-widest text-xs font-heading italic">No {status} orders found</p>
+                                                <div className="text-center py-24 bg-zinc-50 dark:bg-white/[0.01] border border-zinc-200 dark:border-white/5 shadow-sm dark:shadow-none border-dashed transition-colors duration-300">
+                                                    <Package className="h-16 w-16 text-zinc-300 dark:text-white/10 mx-auto mb-6 transition-colors" />
+                                                    <p className="text-zinc-500 dark:text-white/40 font-black uppercase tracking-widest text-xs font-heading italic transition-colors">No status orders found</p>
                                                 </div>
                                             ) : (
                                                 orders.filter((o: Order) => o.status === status).map((order: Order) => (
@@ -1080,45 +1080,45 @@ export default function SellerDashboardPage() {
                         <TabsContent value="offers" className="space-y-10 focus-visible:outline-none focus:outline-none">
                             <div className="grid grid-cols-1 gap-6">
                                 {offers.length === 0 ? (
-                                    <div className="text-center py-24 bg-white/[0.01] border border-white/5 shadow-sm border-dashed">
-                                        <Zap className="h-16 w-16 text-white/10 mx-auto mb-6" />
-                                        <p className="text-white/40 font-black uppercase tracking-widest text-xs font-heading italic">Zero negotiation Notices detected</p>
+                                    <div className="text-center py-24 bg-zinc-50 dark:bg-white/[0.01] border border-zinc-200 dark:border-white/5 shadow-sm dark:shadow-none border-dashed transition-colors duration-300">
+                                        <Zap className="h-16 w-16 text-zinc-300 dark:text-white/10 mx-auto mb-6 transition-colors" />
+                                        <p className="text-zinc-500 dark:text-white/40 font-black uppercase tracking-widest text-xs font-heading italic transition-colors">Zero negotiation Notices detected</p>
                                     </div>
                                 ) : (
                                     offers.map((offer) => (
-                                        <div key={offer.id} className="bg-white border border-zinc-200 shadow-sm p-6 flex flex-col md:flex-row gap-8 group/card transition-all duration-500 hover:border-[#FF6200]/20 italic">
+                                        <div key={offer.id} className="bg-white dark:bg-white/[0.02] border border-zinc-200 dark:border-white/5 shadow-sm dark:shadow-none p-6 flex flex-col md:flex-row gap-8 group/card transition-all duration-500 hover:border-[#FF6200]/20 dark:hover:border-[#FF6200]/30 italic">
                                             <div className="flex-1 space-y-4">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-3">
-                                                        <span className="text-[10px] font-black text-zinc-900/30 uppercase tracking-widest font-heading">System: #{offer.id.slice(-8).toUpperCase()}</span>
+                                                        <span className="text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest font-heading transition-colors">System: #{offer.id.slice(-8).toUpperCase()}</span>
                                                         <Badge className={cn(
-                                                            "px-3 py-1 font-black uppercase text-[9px] tracking-widest border font-heading italic",
+                                                            "px-3 py-1 font-black uppercase text-[9px] tracking-widest border font-heading italic transition-colors",
                                                             offer.status === 'pending' ? 'bg-[#FF6200]/10 text-[#FF6200] border-[#FF6200]/20' :
-                                                                offer.status === 'accepted' ? 'bg-white text-zinc-900 border-zinc-200' :
-                                                                    'bg-zinc-100 text-zinc-600 border-zinc-700'
+                                                                offer.status === 'accepted' ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white border-zinc-200 dark:border-zinc-700' :
+                                                                    'bg-zinc-100 dark:bg-zinc-900/50 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800'
                                                         )}>
                                                             {offer.status}
                                                         </Badge>
                                                     </div>
-                                                    <span className="text-[10px] text-zinc-900/30 font-black uppercase font-heading">{new Date(offer.created_at).toLocaleDateString()}</span>
+                                                    <span className="text-[10px] text-zinc-500 dark:text-zinc-600 font-black uppercase font-heading transition-colors">{new Date(offer.created_at).toLocaleDateString()}</span>
                                                 </div>
                                                 <div>
-                                                    <h3 className="text-xl font-black uppercase tracking-tighter font-heading text-zinc-900">{offer.listing?.title}</h3>
+                                                    <h3 className="text-xl font-black uppercase tracking-tighter font-heading text-zinc-900 dark:text-white transition-colors">{offer.listing?.title}</h3>
                                                     <div className="flex items-center gap-4 mt-1">
-                                                        <span className="text-[10px] text-zinc-500 font-black tracking-widest uppercase">Original: ₦{offer.listing?.price?.toLocaleString()}</span>
-                                                        <ArrowRight className="h-3 w-3 text-zinc-900/20" />
+                                                        <span className="text-[10px] text-zinc-500 dark:text-zinc-400 font-black tracking-widest uppercase transition-colors">Original: ₦{offer.listing?.price?.toLocaleString()}</span>
+                                                        <ArrowRight className="h-3 w-3 text-zinc-400 dark:text-zinc-600 transition-colors" />
                                                         <span className="text-lg font-black text-[#FF6200]">Offered: ₦{offer.offered_price.toLocaleString()}</span>
                                                     </div>
                                                 </div>
-                                                <div className="p-4 bg-white/[0.02] border border-zinc-100 rounded-xl">
-                                                    <p className="text-[10px] text-zinc-900/30 font-black uppercase tracking-widest mb-1">Transmission Message</p>
-                                                    <p className="text-xs text-zinc-600 font-medium leading-relaxed">{offer.message || 'No additional data transmitted.'}</p>
+                                                <div className="p-4 bg-zinc-50 dark:bg-white/[0.02] border border-zinc-100 dark:border-white/5 rounded-xl transition-colors">
+                                                    <p className="text-[10px] text-zinc-500 dark:text-zinc-600 font-black uppercase tracking-widest mb-1 transition-colors">Transmission Message</p>
+                                                    <p className="text-xs text-zinc-700 dark:text-zinc-400 font-medium leading-relaxed transition-colors">{offer.message || 'No additional data transmitted.'}</p>
                                                 </div>
                                                 <div className="flex items-center gap-3">
-                                                    <div className="h-8 w-8 rounded-full bg-white border border-zinc-100 flex items-center justify-center overflow-hidden">
-                                                        {offer.buyer?.photo_url ? <Image src={offer.buyer.photo_url} alt="B" fill className="object-cover" /> : <User className="h-4 w-4 text-zinc-900/20" />}
+                                                    <div className="h-8 w-8 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center overflow-hidden transition-colors">
+                                                        {offer.buyer?.photo_url ? <Image src={offer.buyer.photo_url} alt="B" fill className="object-cover" /> : <User className="h-4 w-4 text-zinc-400 dark:text-zinc-500" />}
                                                     </div>
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-900/70">Buyer: {offer.buyer?.display_name}</span>
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400 transition-colors">Buyer: {offer.buyer?.display_name}</span>
                                                 </div>
                                             </div>
                                             <div className="flex md:flex-col justify-end gap-3 shrink-0">
@@ -1127,7 +1127,7 @@ export default function SellerDashboardPage() {
                                                         <Button
                                                             onClick={() => handleOfferAction(offer, 'accept')}
                                                             disabled={processingOffer === offer.id}
-                                                            className="flex-1 md:w-32 h-12 bg-[#FF6200] text-black font-black uppercase tracking-widest text-[10px] hover:bg-[#FF7A29]"
+                                                            className="flex-1 md:w-32 h-12 bg-[#FF6200] text-black font-black uppercase tracking-widest text-[10px] hover:bg-[#FF7A29] transition-all shadow-sm"
                                                         >
                                                             {processingOffer === offer.id ? <Loader2 className="h-4 w-4 animate-spin" /> : "Accept"}
                                                         </Button>
@@ -1135,7 +1135,7 @@ export default function SellerDashboardPage() {
                                                             onClick={() => handleOfferAction(offer, 'reject')}
                                                             disabled={processingOffer === offer.id}
                                                             variant="outline"
-                                                            className="flex-1 md:w-32 h-12 border-zinc-200 text-zinc-600 hover:text-zinc-900 hover:bg-white font-black uppercase tracking-widest text-[10px]"
+                                                            className="flex-1 md:w-32 h-12 border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/5 font-black uppercase tracking-widest text-[10px] transition-colors shadow-sm dark:shadow-none"
                                                         >
                                                             Reject
                                                         </Button>
@@ -1147,7 +1147,7 @@ export default function SellerDashboardPage() {
                                                         router.push(`/chats/${conversationId}`);
                                                     }}
                                                     variant="ghost"
-                                                    className="flex-1 md:w-32 h-12 text-zinc-500 hover:text-zinc-900 font-black uppercase tracking-widest text-[10px] gap-2"
+                                                    className="flex-1 md:w-32 h-12 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white font-black uppercase tracking-widest text-[10px] gap-2 transition-colors"
                                                 >
                                                     <MessageCircle className="h-4 w-4" /> Message
                                                 </Button>
