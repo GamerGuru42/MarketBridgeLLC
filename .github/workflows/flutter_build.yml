@@ -1,0 +1,57 @@
+name: "MarketBridge Flutter APK Build"
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'marketbridge_mobile/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Scaffold Missing Native Directories
+        working-directory: marketbridge_mobile
+        run: |
+          if [ ! -d "android" ]; then
+            echo "Generating Android native folder for build..."
+            # Move lib temporarily so flutter create doesn't overwrite our custom logic
+            mv lib lib_backup
+            mv pubspec.yaml pubspec_backup.yaml
+            
+            flutter create --project-name marketbridge_mobile --org com.marketbridge .
+            
+            # Restore our custom code securely
+            rm -rf lib
+            mv lib_backup lib
+            mv pubspec_backup.yaml pubspec.yaml
+          fi
+
+      - name: Ensure Dependencies
+        working-directory: marketbridge_mobile
+        run: flutter pub get
+
+      - name: Build Android APK
+        working-directory: marketbridge_mobile
+        run: flutter build apk --release
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: marketbridge-release-apk
+          path: marketbridge_mobile/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 7
