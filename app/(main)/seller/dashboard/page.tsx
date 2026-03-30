@@ -29,6 +29,7 @@ import {
     Zap,
     AlertCircle,
     RotateCcw,
+    ArrowLeft,
     ArrowRight,
     ChevronRight,
     Loader2,
@@ -808,9 +809,9 @@ export default function SellerDashboardPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#FAFAFA] dark:bg-zinc-950 text-zinc-900 dark:text-white relative flex flex-col selection:bg-[#FF6200] selection:text-black">
+        <div className="min-h-screen bg-black text-white relative flex flex-col selection:bg-[#FF6200] selection:text-black font-sans">
             {/* Background Grid */}
-            <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
+            <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03] pointer-events-none z-0" />
 
             {/* ─── PLAN PROMPT MODAL (first-time, trial sellers) ─── */}
             {showPlanPrompt && (
@@ -909,46 +910,40 @@ export default function SellerDashboardPage() {
 
             <div className="container mx-auto py-6 px-6 relative z-10 space-y-12 pb-24">
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-zinc-100 pb-12">
-                    {/* ... Header Section content ... */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-12">
                     <div className="space-y-4">
+                        <Button 
+                            variant="ghost" 
+                            onClick={() => router.push('/')}
+                            className="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-[#FF6200] hover:bg-transparent -ml-4 mb-4"
+                        >
+                            <ArrowLeft className="h-3 w-3 mr-2" /> Return to Market
+                        </Button>
                         <div className="flex items-center gap-3">
                             <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading leading-tight">Live Operation Panel</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 font-heading leading-tight">Live Operation Panel</span>
                         </div>
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
                             Seller <span className="text-[#FF6200]">Hub</span>
                         </h1>
-                        <p className="text-zinc-500 font-medium max-w-xl italic">
-                            Command center for <span className="text-zinc-900 font-bold">{user?.displayName}</span>.
-                            Managing <span className="text-zinc-900 font-bold">{stats.totalOrders} assets</span> in current cycle.
+                        <p className="text-white/40 font-medium max-w-xl italic">
+                            Command center for <span className="text-white font-bold">{user?.displayName}</span>.
+                            Managing <span className="text-white font-bold">{stats.totalOrders} assets</span> in current cycle.
                         </p>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        <div className="h-16 px-8 rounded-2xl bg-white border border-zinc-200 flex flex-col justify-center">
-                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest border-b border-zinc-100 mb-1 pb-1 font-heading">Network Status</span>
-                            <span className="text-sm font-black text-zinc-900 italic uppercase tracking-tighter flex items-center gap-2 font-heading">
-                                <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200]" /> Connected
+                    <div className="flex flex-wrap items-center gap-4">
+                        <div className="h-16 px-8 rounded-2xl bg-white/[0.02] border border-white/5 flex flex-col justify-center shrink-0">
+                            <span className="text-[10px] font-black text-white/30 uppercase tracking-widest border-b border-white/5 mb-1 pb-1 font-heading">Network Status</span>
+                            <span className="text-sm font-black text-white italic uppercase tracking-tighter flex items-center gap-2 font-heading">
+                                <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200] animate-pulse" /> Connected
                             </span>
                         </div>
-                        <div className="hidden md:flex gap-3">
-                            <a
-                                href={`mailto:support@marketbridge.com.ng?subject=Tech%20Support%20%E2%80%93%20${user?.displayName || 'Merchant'}`}
-                                className="h-16 px-6 flex items-center justify-center bg-[#FF6200]/10 hover:bg-[#FF6200]/20 border border-[#FF6200]/20 rounded-2xl text-[#FF6200] font-black uppercase tracking-widest text-[10px] transition-all font-heading"
-                            >
-                                Report Bug / Tech Issue
-                            </a>
-                            <a
-                                href={`mailto:ops-support@marketbridge.com.ng?subject=Seller%20Support%20%E2%80%93%20${user?.displayName || 'Merchant'}`}
-                                className="h-16 px-6 flex items-center justify-center bg-white hover:bg-zinc-50 border border-zinc-200 rounded-2xl text-zinc-900 font-black uppercase tracking-widest text-[10px] transition-all font-heading"
-                            >
-                                Refund / Payment / Seller Help
-                            </a>
+                        <div className="flex gap-3 w-full md:w-auto">
+                            <Button onClick={fetchOrders} className="h-16 px-8 flex-1 md:flex-none bg-[#FF6200] text-black hover:bg-[#FF7A29] rounded-2xl font-black uppercase tracking-widest transition-all shadow-[0_4px_15px_rgba(255,98,0,0.2)] hover:shadow-[0_8px_30px_rgba(255,98,0,0.3)]">
+                                <RefreshCw className="h-4 w-4 mr-2" /> Sync Data
+                            </Button>
                         </div>
-                        <Button onClick={fetchOrders} className="h-16 px-8 bg-[#FF6200] text-black hover:bg-[#FF7A29] rounded-2xl font-black uppercase tracking-widest transition-all font-heading">
-                            Sync Data
-                        </Button>
                     </div>
                 </div>
 
@@ -961,18 +956,18 @@ export default function SellerDashboardPage() {
                         { label: "Revenue Cycle", val: `₦${stats.totalRevenue.toLocaleString()}`, icon: DollarSign, trend: revenueTrend },
                         { label: "Active Orders", val: stats.totalOrders, icon: ShoppingBag, trend: "Stable" },
                         { label: "Pending Verification", val: stats.pendingOrders, icon: Clock, color: "text-[#FF6200]" },
-                        { label: "Success Rate", val: `${Math.round((stats.completedOrders / (stats.totalOrders || 1)) * 100)}%`, icon: TrendingUp, color: "text-zinc-900" }
+                        { label: "Success Rate", val: `${Math.round((stats.completedOrders / (stats.totalOrders || 1)) * 100)}%`, icon: TrendingUp, color: "text-white" }
                     ].map((stat, i) => (
-                        <div key={i} className="bg-white border border-zinc-200 shadow-sm p-8 group relative overflow-hidden transition-all duration-500 hover:translate-y-[-5px]">
-                            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <div key={i} className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 group relative overflow-hidden transition-all duration-500 hover:border-[#FF6200]/30 hover:bg-white/[0.04]">
+                            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 group-hover:text-[#FF6200] transition-colors">
                                 <stat.icon className="h-12 w-12" />
                             </div>
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading leading-tight">{stat.label}</span>
-                                    {stat.trend && <span className="text-[9px] font-black text-[#FF6200] bg-[#FF6200]/5 px-2 py-0.5 rounded uppercase font-heading">{stat.trend}</span>}
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic font-heading leading-tight">{stat.label}</span>
+                                    {stat.trend && <span className="text-[9px] font-black text-[#FF6200] bg-[#FF6200]/10 border border-[#FF6200]/20 px-2 py-0.5 rounded uppercase font-heading">{stat.trend}</span>}
                                 </div>
-                                <div className={cn("text-3xl font-black uppercase tracking-tighter font-heading", stat.color || "text-zinc-900")}>
+                                <div className={cn("text-3xl font-black uppercase tracking-tighter font-heading", stat.color || "text-white")}>
                                     {stat.val}
                                 </div>
                             </div>
@@ -992,10 +987,10 @@ export default function SellerDashboardPage() {
                             <div className={cn(
                                 "p-8 rounded-[2rem] transition-all duration-500 h-full flex flex-col justify-between border",
                                 action.primary
-                                    ? "bg-[#FF6200] border-[#FF6200] text-black"
+                                    ? "bg-[#FF6200] border-[#FF6200] text-black shadow-[0_8px_30px_rgba(255,98,0,0.3)] hover:scale-105"
                                     : action.highlight
-                                        ? "bg-zinc-900 border-zinc-800 text-white hover:border-[#FF6200]/50"
-                                        : "bg-white border-zinc-200 text-zinc-900 hover:border-[#FF6200]/30"
+                                        ? "bg-transparent border-white/20 text-white hover:border-[#FF6200]/50 hover:bg-white/5"
+                                        : "bg-white/[0.02] border-white/5 text-white hover:border-[#FF6200]/30 hover:bg-white/[0.04]"
                             )}>
                                 <div className={cn(
                                     "h-12 w-12 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 mb-6",
@@ -1018,10 +1013,10 @@ export default function SellerDashboardPage() {
                 </div>
 
                 {/* Execution Management Container */}
-                <div className="bg-white border border-zinc-200 shadow-sm rounded-[3rem] p-10 overflow-hidden">
+                <div className="bg-white/[0.02] border border-white/5 shadow-sm rounded-[3rem] p-10 overflow-hidden">
                     <Tabs defaultValue="orders" className="space-y-10">
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-zinc-100 pb-8">
-                            <div className="flex bg-[#FAFAFA]/40 p-1.5 rounded-2xl border border-zinc-200">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-white/5 pb-8">
+                            <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/5">
                                 <TabsList className="bg-transparent gap-2 h-auto p-0 border-none shadow-none">
                                     <TabsTrigger value="orders" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading">Orders Queue</TabsTrigger>
                                     <TabsTrigger value="offers" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading relative">
@@ -1036,7 +1031,7 @@ export default function SellerDashboardPage() {
                                     <TabsTrigger value="settings" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading">Payout Settings</TabsTrigger>
                                 </TabsList>
                             </div>
-                            <div className="flex items-center gap-4 text-zinc-500 text-[10px] font-black uppercase tracking-widest font-heading italic">
+                            <div className="flex items-center gap-4 text-white/40 text-[10px] font-black uppercase tracking-widest font-heading italic">
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200] animate-pulse" /> Auto-sync enabled
                             </div>
                         </div>
@@ -1054,9 +1049,9 @@ export default function SellerDashboardPage() {
                                 <div className="grid grid-cols-1 gap-6">
                                     <TabsContent value="all" className="space-y-6 m-0 border-none">
                                         {orders.length === 0 ? (
-                                            <div className="text-center py-24 bg-white border border-zinc-200 shadow-sm border-dashed">
-                                                <Package className="h-16 w-16 text-zinc-900/20 mx-auto mb-6" />
-                                                <p className="text-zinc-500 font-black uppercase tracking-widest text-xs font-heading italic">Zero orders detected in current sector</p>
+                                            <div className="text-center py-24 bg-white/[0.01] border border-white/5 shadow-sm border-dashed">
+                                                <Package className="h-16 w-16 text-white/10 mx-auto mb-6" />
+                                                <p className="text-white/40 font-black uppercase tracking-widest text-xs font-heading italic">Zero orders detected in current sector</p>
                                             </div>
                                         ) : (
                                             orders.map((order: Order) => (
@@ -1067,9 +1062,9 @@ export default function SellerDashboardPage() {
                                     {['pending', 'confirmed', 'completed'].map(status => (
                                         <TabsContent key={status} value={status} className="space-y-6 m-0 border-none">
                                             {orders.filter((o: Order) => o.status === status).length === 0 ? (
-                                                <div className="text-center py-24 bg-white border border-zinc-200 shadow-sm border-dashed">
-                                                    <Package className="h-16 w-16 text-zinc-900/20 mx-auto mb-6" />
-                                                    <p className="text-zinc-500 font-black uppercase tracking-widest text-xs font-heading italic">No {status} orders found</p>
+                                                <div className="text-center py-24 bg-white/[0.01] border border-white/5 shadow-sm border-dashed">
+                                                    <Package className="h-16 w-16 text-white/10 mx-auto mb-6" />
+                                                    <p className="text-white/40 font-black uppercase tracking-widest text-xs font-heading italic">No {status} orders found</p>
                                                 </div>
                                             ) : (
                                                 orders.filter((o: Order) => o.status === status).map((order: Order) => (
@@ -1085,9 +1080,9 @@ export default function SellerDashboardPage() {
                         <TabsContent value="offers" className="space-y-10 focus-visible:outline-none focus:outline-none">
                             <div className="grid grid-cols-1 gap-6">
                                 {offers.length === 0 ? (
-                                    <div className="text-center py-24 bg-white border border-zinc-200 shadow-sm border-dashed">
-                                        <Zap className="h-16 w-16 text-zinc-900/20 mx-auto mb-6" />
-                                        <p className="text-zinc-500 font-black uppercase tracking-widest text-xs font-heading italic">Zero negotiation Notices detected</p>
+                                    <div className="text-center py-24 bg-white/[0.01] border border-white/5 shadow-sm border-dashed">
+                                        <Zap className="h-16 w-16 text-white/10 mx-auto mb-6" />
+                                        <p className="text-white/40 font-black uppercase tracking-widest text-xs font-heading italic">Zero negotiation Notices detected</p>
                                     </div>
                                 ) : (
                                     offers.map((offer) => (

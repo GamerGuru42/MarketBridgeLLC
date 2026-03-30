@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Loader2, ShieldCheck, CheckCircle2, Clock, User, AlertTriangle } from 'lucide-react';
+import { Loader2, ShieldCheck, CheckCircle2, Clock, User, AlertTriangle, UserX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/contexts/ToastContext';
@@ -22,9 +22,8 @@ export default function AdminVerifySellers() {
     setLoading(true);
     const { data, error } = await supabase
       .from('users')
-      .select('id, email, display_name, phone_number, university, matric_number, is_temporary_seller, temporary_seller_expires_at, created_at')
-      .eq('role', 'student_seller')
-      .eq('email_verified', false)
+      .select('id, email, display_name, phone_number, is_verified, email_verified, is_temporary_seller, temporary_seller_expires_at, created_at')
+      .in('role', ['student_seller', 'seller'])
       .order('created_at', { ascending: false })
       .limit(100);
       
@@ -58,6 +57,30 @@ export default function AdminVerifySellers() {
     }
   }
 
+  async function handleRevoke(sellerId: string) {
+    if (!confirm("Are you sure you want to revoke this seller's privileges? This will instantly block them from uploading listings.")) return;
+    
+    setProcessingId(sellerId);
+    try {
+      const res = await fetch('/api/admin/revoke-seller', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sellerId }),
+      });
+      if (res.ok) {
+        toast('Seller privileges revoked. They are now completely blocked.', 'success');
+        await fetchRequests();
+      } else {
+          toast('Failed to revoke privileges', 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      toast('Failed to execute God Mode revoke', 'error');
+    } finally {
+      setProcessingId(null);
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -80,10 +103,10 @@ export default function AdminVerifySellers() {
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Operations Admin</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic">
-            Pending <span className="text-[#FF6200]">Verifications</span>
+            Network <span className="text-[#FF6200]">Merchants</span>
           </h1>
           <p className="text-white/40 font-medium italic max-w-xl">
-            Review queued sellers who require manual verification bypassing Magic Links / OTP logic.
+            Total control overview. Review pending sellers, instantly approve manual uploads, or forcefully revoke fast-tracked Google users.
           </p>
         </div>
 
@@ -92,70 +115,94 @@ export default function AdminVerifySellers() {
             <div className="py-24 text-center border-2 border-dashed border-white/5 bg-white/[0.02] rounded-[3rem]">
               <CheckCircle2 className="h-16 w-16 text-[#FF6200]/30 mx-auto mb-6" />
               <p className="text-white/30 font-black uppercase tracking-widest text-xs italic">
-                No Pending Verifications Detected
+                No Sellers Detected on Platform
               </p>
             </div>
           ) : (
-            rows.map((r: any) => (
+            rows.map((r: any) => {
+              const fullyVerified = r.is_verified || r.email_verified;
+
+              return (
               <div
                 key={r.id}
-                className="bg-white/[0.03] border border-white/5 rounded-3xl p-6 flex flex-col xl:flex-row items-start xl:items-center gap-6 hover:border-[#FF6200]/20 transition-all duration-300 relative overflow-hidden"
+                className="group relative overflow-hidden rounded-[2.5rem] bg-white/[0.02] border border-white/5 hover:border-[#FF6200]/30 transition-all p-6 md:p-8"
               >
-                {r.is_temporary_seller && (
-                    <div className="absolute top-0 right-0 py-1 px-4 bg-yellow-500/10 border-b border-l border-yellow-500/20 text-yellow-500 text-[9px] font-black tracking-widest uppercase rounded-bl-xl flex items-center gap-2">
-                        <AlertTriangle className="w-3 h-3" />
-                        48hr System Override Active
+                {/* Visual Accent */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#FF6200]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform" />
+
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+                  <div className="space-y-6 flex-1">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <div className="h-12 w-12 rounded-full bg-[#FF6200]/10 flex items-center justify-center border border-[#FF6200]/20 text-[#FF6200] shrink-0">
+                        <User className="h-5 w-5" />
+                      </div>
+                      <div className="overflow-hidden">
+                        <h3 className="text-xl font-black uppercase tracking-tighter italic text-white flex flex-wrap items-center gap-3">
+                          <span className="truncate max-w-[200px] md:max-w-xs">{r.display_name || 'Anonymous Applicant'}</span>
+                          {fullyVerified ? (
+                            <Badge className="bg-green-500/10 text-green-500 border-green-500/20 text-[9px] uppercase tracking-widest font-black shrink-0">Active/Verified</Badge>
+                          ) : (
+                            <Badge className="bg-white/10 text-white border-white/20 text-[9px] uppercase tracking-widest font-black shrink-0">Pending Approval</Badge>
+                          )}
+                        </h3>
+                        <p className="text-sm font-medium text-white/50 truncate max-w-[250px]">{r.email}</p>
+                      </div>
                     </div>
-                )}
-                <div className="h-12 w-12 rounded-2xl bg-[#FF6200]/10 flex items-center justify-center shrink-0 mt-4 xl:mt-0">
-                  <User className="h-6 w-6 text-[#FF6200]" />
-                </div>
 
-                <div className="flex-1 space-y-3 w-full">
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <span className="font-black text-white uppercase tracking-tighter text-xl italic">{r.display_name}</span>
-                    <Badge className="bg-white/5 text-white/60 text-[8px] font-black uppercase tracking-widest border-none">
-                      {r.email}
-                    </Badge>
+                    <div className="flex flex-wrap items-center gap-6 p-4 rounded-3xl bg-black/50 border border-white/5">
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Contact No.</span>
+                        <p className="text-sm font-bold text-white/80">{r.phone_number || 'N/A'}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Signup Date</span>
+                        <p className="text-sm font-bold text-white/80 flex items-center gap-2">
+                          <Clock className="h-3 w-3 text-[#FF6200]" />
+                          {new Date(r.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      {r.is_temporary_seller && (
+                         <div className="space-y-1 pl-4 border-l border-orange-500/30">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-[#FF6200]">Temporary Access</span>
+                            <p className="text-sm font-bold text-[#FF6200] flex items-center gap-2">
+                                <AlertTriangle className="h-3 w-3" />
+                                Expires {new Date(r.temporary_seller_expires_at).toLocaleDateString()}
+                            </p>
+                         </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-white/50 font-medium italic">
-                    <span className="flex items-center gap-1.5 opacity-80 pb-1">
-                       UNI: {r.university || 'N/A'}
-                    </span>
-                    <span className="flex items-center gap-1.5 opacity-80 pb-1">
-                       MATRIC: {r.matric_number || 'N/A'}
-                    </span>
-                    <span className="flex items-center gap-1.5 opacity-80 pb-1">
-                       PHONE: {r.phone_number || 'N/A'}
-                    </span>
-                    {r.is_temporary_seller && r.temporary_seller_expires_at && (
-                        <span className="flex items-center gap-1.5 text-yellow-500/80 font-bold pb-1">
-                          <Clock className="w-3 h-3" />
-                          EXPIRES: {new Date(r.temporary_seller_expires_at).toLocaleString()}
-                        </span>
+
+                  <div className="flex flex-col gap-3 shrink-0 w-full md:w-[220px]">
+                    {!fullyVerified && (
+                        <Button
+                          onClick={() => handleApprove(r.id)}
+                          disabled={processingId === r.id}
+                          className="h-14 rounded-2xl bg-[#FF6200] text-black hover:bg-[#FF7A29] font-black uppercase tracking-widest text-[10px] italic transition-all group-hover:shadow-[0_0_20px_rgba(255,98,0,0.3)] w-full"
+                        >
+                          {processingId === r.id ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Approve & Verify'}
+                        </Button>
+                    )}
+                    
+                    {fullyVerified && (
+                        <Button
+                          onClick={() => handleRevoke(r.id)}
+                          disabled={processingId === r.id}
+                          className="h-14 rounded-2xl bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20 font-black uppercase tracking-widest text-[10px] italic transition-all w-full flex items-center justify-center gap-2"
+                        >
+                          {processingId === r.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <><UserX className="h-4 w-4" /> Revoke Access</>}
+                        </Button>
                     )}
                   </div>
-                </div>
-
-                <div className="flex items-center gap-3 shrink-0 w-full xl:w-auto mt-4 xl:mt-0">
-                  <Button
-                    onClick={() => handleApprove(r.id)}
-                    disabled={processingId === r.id}
-                    className="w-full xl:w-auto h-12 px-8 bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-lg shadow-[#FF6200]/10 transition-all"
-                  >
-                    {processingId === r.id ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <>
-                        <CheckCircle2 className="h-4 w-4 mr-2" />
-                        Manually Verify
-                      </>
-                    )}
-                  </Button>
                 </div>
               </div>
-            ))
+            );
+            })
           )}
+        </div>
+
+        <div className="text-center py-6 text-white/20 text-[9px] font-black uppercase tracking-[0.4em]">
+          End of List // Marketbridge Ops System
         </div>
       </div>
     </div>

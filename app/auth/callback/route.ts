@@ -62,6 +62,7 @@ export async function GET(request: Request) {
                 display_name: existingUser?.display_name || data.user.user_metadata?.full_name || data.user.email?.split('@')[0],
                 role: finalRole,
                 email_verified: true, // Social login implies verification
+                ...(isSocialLogin && { is_verified: true }) // Fast-track full verification for Google Sign-In
             }, { onConflict: 'id' });
 
             return NextResponse.redirect(new URL(finalNext, origin))

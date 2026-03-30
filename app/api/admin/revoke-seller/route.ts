@@ -29,23 +29,23 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'sellerId is required' }, { status: 400 });
         }
 
-        // Perform the verification.
+        // Strip privileges
         const { error } = await supabaseAdmin
             .from('users')
             .update({
-                email_verified: true,
-                is_verified: true,
+                email_verified: false,
+                is_verified: false,
                 is_temporary_seller: false,
                 temporary_seller_expires_at: null
             })
             .eq('id', sellerId);
 
         if (error) {
-            console.error('Manual verification DB error:', error);
-            return NextResponse.json({ error: 'System error during verification.' }, { status: 500 });
+            console.error('Revoke DB error:', error);
+            return NextResponse.json({ error: 'System error during revocation.' }, { status: 500 });
         }
 
-        return NextResponse.json({ success: true, message: 'Seller manually verified successfully.' });
+        return NextResponse.json({ success: true, message: 'Seller privileges successfully revoked.' });
     } catch (err: any) {
         console.error('Admin API error:', err);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

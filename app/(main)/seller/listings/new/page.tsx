@@ -47,14 +47,16 @@ export default function NewListingPage() {
             return;
         }
 
-        if (user.role === 'student_seller' && !user.isVerified) {
+        // Auto-Verification for Google signups or fully verified custom emails
+        const isGoogleAuth = sessionUser.app_metadata?.provider === 'google';
+        if (user.role === 'student_seller' && !user.isVerified && !isGoogleAuth) {
             // Show message and redirect to verification flow
-            toast('Listing creation is restricted to verified student sellers. Please complete verification.', 'error');
-            router.push('/verify-seller');
+            toast('Listing creation is restricted. You must be Ops-Approved or sign in with Google.', 'error');
+            router.push('/verify-email');
             return;
         }
 
-        const allowedRoles = ['dealer', 'student_seller', 'ceo', 'admin', 'technical_admin'];
+        const allowedRoles = ['dealer', 'student_seller', 'ceo', 'admin', 'technical_admin', 'operations_admin'];
         if (!allowedRoles.includes(user.role)) {
             console.warn("Access Denied: Role mismatch for listing deployment", user.role);
             router.push('/');

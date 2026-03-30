@@ -198,7 +198,10 @@ export const Header = () => {
                                             <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/50" />
 
                                             <DropdownMenuItem
-                                                onClick={handleSignOut}
+                                                onSelect={(e) => {
+                                                    e.preventDefault();
+                                                    handleSignOut();
+                                                }}
                                                 className="rounded-xl cursor-pointer focus:bg-red-50 dark:focus:bg-red-950/30 text-red-600 dark:text-red-400 my-0.5 hover:text-red-700 dark:hover:text-red-300"
                                             >
                                                 <div className="flex items-center gap-3 px-3 py-2.5 w-full">
