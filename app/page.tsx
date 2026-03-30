@@ -45,6 +45,18 @@ export default function HomePage() {
     }
 
     if (user) {
+        if (['student_seller', 'seller', 'dealer'].includes(user.role)) {
+            // Sellers have their own distinct Premium Command Center
+            typeof window !== 'undefined' && window.location.assign('/seller/dashboard');
+            return (
+                <div className="flex h-screen items-center justify-center bg-background">
+                    <div className="flex flex-col items-center gap-4">
+                        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground animate-pulse">Routing to Seller Command Center...</p>
+                    </div>
+                </div>
+            )
+        }
         return <AuthenticatedHome user={user} />;
     }
 
