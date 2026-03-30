@@ -25,12 +25,16 @@ export default function NewListingPage() {
     const [loading, setLoading] = useState(false);
     const [imageUrls, setImageUrls] = useState<string[]>(['']);
     const [videoUrls, setVideoUrls] = useState<string[]>([]);
+    const [assetType, setAssetType] = useState<'product' | 'service'>('product');
     const [formData, setFormData] = useState({
         title: '',
         description: '',
         price: '',
         category: '',
         location: '',
+        condition: 'new',
+        serviceFormat: 'fixed',
+        deliveryTimeframe: '1-3 days',
     });
 
     useEffect(() => {
@@ -90,12 +94,26 @@ export default function NewListingPage() {
                 return;
             }
 
+            let finalDescription = formData.description;
+            if (assetType === 'service') {
+                finalDescription = `[ASSET: SERVICE]
+Format: ${formData.serviceFormat.toUpperCase()}
+Est. Delivery: ${formData.deliveryTimeframe}
+
+${formData.description}`;
+            } else {
+                finalDescription = `[ASSET: PRODUCT]
+Condition: ${formData.condition.toUpperCase()}
+
+${formData.description}`;
+            }
+
             const { data, error } = await supabase
                 .from('listings')
                 .insert({
                     dealer_id: user.id,
                     title: formData.title,
-                    description: formData.description,
+                    description: finalDescription,
                     price: parseFloat(formData.price),
                     category: formData.category,
                     location: formData.location || null,
@@ -153,6 +171,24 @@ export default function NewListingPage() {
 
                 <div className="bg-white border border-zinc-200 shadow-sm rounded-[3.5rem] p-12 border-none">
                     <form onSubmit={handleSubmit} className="space-y-12">
+                        {/* Asset Type Toggle */}
+                        <div className="flex flex-col md:flex-row p-2 bg-[#FAFAFA]/80 border border-zinc-100 rounded-[2rem] gap-2 max-w-md mx-auto mb-8">
+                            <button
+                                type="button"
+                                onClick={() => setAssetType('product')}
+                                className={`flex-1 flex py-4 items-center justify-center gap-2 rounded-[1.5rem] font-black uppercase tracking-widest text-[10px] transition-all duration-300 ${assetType === 'product' ? 'bg-[#FF6200] text-black shadow-xl shadow-[#FF6200]/20' : 'bg-transparent text-zinc-500 hover:text-zinc-900 hover:bg-white'}`}
+                            >
+                                <Box className="h-4 w-4" /> Physical Product
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setAssetType('service')}
+                                className={`flex-1 flex py-4 items-center justify-center gap-2 rounded-[1.5rem] font-black uppercase tracking-widest text-[10px] transition-all duration-300 ${assetType === 'service' ? 'bg-zinc-900 text-white shadow-xl shadow-black/10' : 'bg-transparent text-zinc-500 hover:text-zinc-900 hover:bg-white'}`}
+                            >
+                                <Zap className="h-4 w-4" /> Service Option
+                            </button>
+                        </div>
+
                         {/* Core Details Section */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                             <div className="space-y-8 md:col-span-2">
@@ -179,7 +215,7 @@ export default function NewListingPage() {
                                         id="description"
                                         value={formData.description}
                                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                        placeholder="Outline asset conditions, specifications, and history..."
+                                        placeholder={assetType === 'product' ? "Outline asset conditions, specifications, and history..." : "Describe the exact scope of your service, methodologies, and what the buyer receives..."}
                                         rows={6}
                                         className="p-8 rounded-[2rem] bg-[#FAFAFA]/40 border-zinc-100 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] transition-all text-xs font-medium leading-relaxed italic border-dashed"
                                         required
@@ -224,6 +260,49 @@ export default function NewListingPage() {
                                     </Select>
                                 </div>
                             </div>
+
+                            {/* Dynamic Asset Type Fields */}
+                            {assetType === 'product' ? (
+                                <div className="space-y-3">
+                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading">Product Condition *</Label>
+                                    <Select value={formData.condition} onValueChange={(val) => setFormData({ ...formData, condition: val })}>
+                                        <SelectTrigger className="h-16 rounded-2xl bg-[#FAFAFA]/40 border-zinc-100 focus:ring-1 focus:ring-[#FF6200] font-heading text-[10px] font-black uppercase tracking-widest">
+                                            <SelectValue placeholder="Select condition" />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-zinc-50">
+                                            <SelectItem value="new" className="py-3 text-[10px] font-black uppercase tracking-widest">Brand New</SelectItem>
+                                            <SelectItem value="like-new" className="py-3 text-[10px] font-black uppercase tracking-widest">Like New (Open Box)</SelectItem>
+                                            <SelectItem value="used-excellent" className="py-3 text-[10px] font-black uppercase tracking-widest">Used (Excellent)</SelectItem>
+                                            <SelectItem value="used-good" className="py-3 text-[10px] font-black uppercase tracking-widest">Used (Good)</SelectItem>
+                                            <SelectItem value="fair" className="py-3 text-[10px] font-black uppercase tracking-widest">Fair/Refurbished</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-3">
+                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading">Pricing Model *</Label>
+                                        <Select value={formData.serviceFormat} onValueChange={(val) => setFormData({ ...formData, serviceFormat: val })}>
+                                            <SelectTrigger className="h-16 rounded-2xl bg-[#FAFAFA]/40 border-zinc-100 focus:ring-1 focus:ring-[#FF6200] font-heading text-[10px] font-black uppercase tracking-widest">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-zinc-50">
+                                                <SelectItem value="fixed" className="py-3 text-[10px] font-black uppercase tracking-widest">Fixed Project</SelectItem>
+                                                <SelectItem value="hourly" className="py-3 text-[10px] font-black uppercase tracking-widest">Hourly Rate</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading">Est. Delivery *</Label>
+                                        <Input
+                                            value={formData.deliveryTimeframe}
+                                            onChange={(e) => setFormData({ ...formData, deliveryTimeframe: e.target.value })}
+                                            placeholder="e.g. 1-3 days"
+                                            className="h-16 px-6 rounded-2xl bg-[#FAFAFA]/40 border-zinc-100 focus:border-[#FF6200] font-bold text-xs uppercase tracking-widest"
+                                        />
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="space-y-3 md:col-span-2">
                                 <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading">Geographic Campus (Location)</Label>

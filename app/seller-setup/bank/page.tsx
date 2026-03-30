@@ -102,8 +102,10 @@ export default function BankSetupPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center py-20 px-4 bg-background relative selection:bg-primary selection:text-black transition-colors duration-300">
+        <div className="min-h-screen flex items-center justify-center py-20 px-4 bg-background relative selection:bg-primary selection:text-black transition-colors duration-300 overflow-hidden">
+            {/* Ambient Backgrounds */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute bottom-0 right-[-10%] w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
             
             <div className="w-full max-w-lg relative z-10">
                 <div className="text-center mb-8">

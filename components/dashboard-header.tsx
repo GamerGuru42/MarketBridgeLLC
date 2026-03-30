@@ -34,7 +34,7 @@ export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
                             <span className="sr-only">Toggle Menu</span>
                         </Button>
                     </SheetTrigger>
-                    <SheetContent side="left" className="p-0 w-72 bg-[#FAFAFA] border-r border-zinc-200">
+                    <SheetContent side="left" className="p-0 w-72 bg-background border-r border-border">
                         <Sidebar items={sidebarItems} title={title} className="border-0 shadow-none" />
                     </SheetContent>
                 </Sheet>
