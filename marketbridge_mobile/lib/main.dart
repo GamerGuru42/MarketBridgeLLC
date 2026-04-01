@@ -5,6 +5,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/theme.dart';
 import 'features/auth/screens/role_selection_screen.dart';
+import 'features/auth/screens/buyer_signup_screen.dart';
+import 'features/auth/screens/seller_signup_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,7 +32,14 @@ final GoRouter _router = GoRouter(
       path: '/',
       builder: (context, state) => const RoleSelectionScreen(),
     ),
-    // Additional paths like /signup/buyer and /signup/seller will go here
+    GoRoute(
+      path: '/signup/buyer',
+      builder: (context, state) => const BuyerSignupScreen(),
+    ),
+    GoRoute(
+      path: '/signup/seller',
+      builder: (context, state) => const SellerSignupScreen(),
+    ),
   ],
 );
 
