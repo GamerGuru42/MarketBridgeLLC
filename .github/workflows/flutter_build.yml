@@ -39,6 +39,9 @@ jobs:
             rm -rf lib
             mv lib_backup lib
             mv pubspec_backup.yaml pubspec.yaml
+            
+            # Wipe generated tests to prevent MyApp analyzer crashes
+            rm -rf test
           fi
 
       - name: Ensure Dependencies
