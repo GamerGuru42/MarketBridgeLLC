@@ -125,30 +125,29 @@ export default function SellerOnboardPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center py-20 px-4 bg-black text-white relative selection:bg-[#FF6200] selection:text-black overflow-hidden">
-            {/* Background Grid & Ambient Glow */}
-            <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[#FF6200]/10 rounded-full blur-[150px] pointer-events-none z-0" />
+        <div className="min-h-screen flex items-center justify-center py-20 px-4 bg-background text-foreground relative selection:bg-primary selection:text-black overflow-hidden transition-colors duration-300">
+            {/* Background Ambient Glow */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-primary/10 rounded-full blur-[150px] pointer-events-none z-0" />
             
             <div className="w-full max-w-2xl relative z-10">
                 <div className="text-center mb-12 space-y-4">
                     <div className="flex items-center justify-center gap-3">
-                        <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse shadow-[0_0_15px_rgba(255,98,0,0.8)]" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white/50 font-heading">Secure Onboarding Portal</span>
+                        <span className="h-2 w-2 rounded-full bg-primary animate-pulse shadow-[0_0_15px_rgba(255,98,0,0.8)]" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-muted-foreground font-heading">Secure Onboarding Portal</span>
                     </div>
-                    <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
-                        Enter The <span className="text-[#FF6200]">Network</span>
+                    <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading text-foreground">
+                        Enter The <span className="text-primary">Network</span>
                     </h1>
-                    <p className="text-white/40 font-bold uppercase tracking-widest text-[10px] mt-2 italic shadow-sm">
+                    <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px] mt-2 italic shadow-sm">
                         Establishing merchant identity credentials
                     </p>
                 </div>
 
-                <div className="glass-card bg-zinc-950/80 backdrop-blur-2xl border border-white/5 rounded-[3rem] p-8 md:p-12 shadow-2xl relative">
+                <div className="glass-card bg-card border border-border rounded-[3rem] p-8 md:p-12 shadow-2xl relative">
                     
                     {/* Decorative Elements */}
-                    <div className="absolute top-0 right-0 p-8 opacity-5">
-                        <Briefcase className="h-40 w-40 text-white" />
+                    <div className="absolute top-0 right-0 p-8 opacity-[0.03]">
+                        <Briefcase className="h-40 w-40 text-foreground" />
                     </div>
 
                     {step === 1 && (
@@ -157,15 +156,15 @@ export default function SellerOnboardPage() {
                             <div className="grid grid-cols-1 gap-6">
                                 {/* Full Name */}
                                 <div className="space-y-2">
-                                    <label className="text-[10px] uppercase font-black text-white/40 tracking-[0.2em] font-heading">Full Identity</label>
+                                    <label className="text-[10px] uppercase font-black text-muted-foreground tracking-[0.2em] font-heading ml-2">Full Identity</label>
                                     <div className="relative group/input">
-                                        <div className="absolute left-6 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/5 flex items-center justify-center group-focus-within/input:bg-[#FF6200]/20 transition-colors">
-                                            <User className="h-4 w-4 text-white/40 group-focus-within/input:text-[#FF6200] transition-colors" />
+                                        <div className="absolute left-6 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background flex items-center justify-center group-focus-within/input:bg-primary/20 transition-colors">
+                                            <User className="h-4 w-4 text-muted-foreground group-focus-within/input:text-primary transition-colors" />
                                         </div>
                                         <input 
                                             value={formData.fullName} 
                                             onChange={e => setFormData(p => ({...p, fullName: e.target.value}))} 
-                                            className="w-full h-16 pl-16 pr-6 bg-white/5 border border-white/5 rounded-2xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#FF6200]/50 focus:bg-[#FF6200]/5 transition-all font-bold tracking-wider text-sm" 
+                                            className="w-full h-16 pl-16 pr-6 bg-secondary border border-border rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm" 
                                             placeholder="Enter registered name..." 
                                         />
                                     </div>
@@ -173,16 +172,16 @@ export default function SellerOnboardPage() {
 
                                 {/* School Email */}
                                 <div className="space-y-2">
-                                    <label className="text-[10px] uppercase font-black text-white/40 tracking-[0.2em] font-heading">Institutional Endpoint (Email)</label>
+                                    <label className="text-[10px] uppercase font-black text-muted-foreground tracking-[0.2em] font-heading ml-2">Institutional Endpoint (Email)</label>
                                     <div className="relative group/input">
-                                        <div className="absolute left-6 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/5 flex items-center justify-center group-focus-within/input:bg-[#FF6200]/20 transition-colors">
-                                            <Mail className="h-4 w-4 text-white/40 group-focus-within/input:text-[#FF6200] transition-colors" />
+                                        <div className="absolute left-6 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background flex items-center justify-center group-focus-within/input:bg-primary/20 transition-colors">
+                                            <Mail className="h-4 w-4 text-muted-foreground group-focus-within/input:text-primary transition-colors" />
                                         </div>
                                         <input 
                                             type="email" 
                                             value={formData.email} 
                                             onChange={e => setFormData(p => ({...p, email: e.target.value}))} 
-                                            className="w-full h-16 pl-16 pr-6 bg-white/5 border border-white/5 rounded-2xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#FF6200]/50 focus:bg-[#FF6200]/5 transition-all font-bold tracking-wider text-sm" 
+                                            className="w-full h-16 pl-16 pr-6 bg-secondary border border-border rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm" 
                                             placeholder="student@university.edu.ng" 
                                         />
                                     </div>
@@ -190,15 +189,15 @@ export default function SellerOnboardPage() {
 
                                 {/* Phone Number */}
                                 <div className="space-y-2">
-                                    <label className="text-[10px] uppercase font-black text-white/40 tracking-[0.2em] font-heading">Secure Comms Line (WhatsApp)</label>
+                                    <label className="text-[10px] uppercase font-black text-muted-foreground tracking-[0.2em] font-heading ml-2">Secure Comms Line (WhatsApp)</label>
                                     <div className="relative group/input">
-                                        <div className="absolute left-6 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/5 flex items-center justify-center group-focus-within/input:bg-[#FF6200]/20 transition-colors">
-                                            <Phone className="h-4 w-4 text-white/40 group-focus-within/input:text-[#FF6200] transition-colors" />
+                                        <div className="absolute left-6 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background flex items-center justify-center group-focus-within/input:bg-primary/20 transition-colors">
+                                            <Phone className="h-4 w-4 text-muted-foreground group-focus-within/input:text-primary transition-colors" />
                                         </div>
                                         <input 
                                             value={formData.phoneNumber} 
                                             onChange={e => setFormData(p => ({...p, phoneNumber: e.target.value}))} 
-                                            className="w-full h-16 pl-16 pr-6 bg-white/5 border border-white/5 rounded-2xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#FF6200]/50 focus:bg-[#FF6200]/5 transition-all font-bold tracking-wider text-sm" 
+                                            className="w-full h-16 pl-16 pr-6 bg-secondary border border-border rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm" 
                                             placeholder="e.g. 0801234..." 
                                         />
                                     </div>
@@ -206,51 +205,50 @@ export default function SellerOnboardPage() {
 
                                 {/* Private University Dropdown */}
                                 <div className="space-y-2">
-                                    <label className="text-[10px] uppercase font-black text-white/40 tracking-[0.2em] font-heading">Base of Operations (Campus)</label>
+                                    <label className="text-[10px] uppercase font-black text-muted-foreground tracking-[0.2em] font-heading ml-2">Base of Operations (Campus)</label>
                                     <div className="relative group/input">
                                         <select 
                                             value={formData.university} 
                                             onChange={e => setFormData(p => ({...p, university: e.target.value}))} 
                                             className={cn(
-                                                "w-full h-16 pl-6 pr-12 bg-white/5 border border-white/5 rounded-2xl text-white focus:outline-none focus:border-[#FF6200]/50 focus:bg-[#FF6200]/5 transition-all font-bold text-sm tracking-wider appearance-none cursor-pointer",
-                                                !formData.university && "text-white/20"
+                                                "w-full h-16 pl-6 pr-12 bg-secondary border border-border rounded-2xl focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold text-sm tracking-wider appearance-none cursor-pointer",
+                                                !formData.university ? "text-muted-foreground" : "text-foreground"
                                             )}
                                         >
-                                            <option value="" disabled className="text-black">Select active campus...</option>
-                                            {PRIVATE_UNIVERSITIES.map(u => <option key={u} value={u} className="text-black font-bold">{u}</option>)}
+                                            <option value="" disabled>Select active campus...</option>
+                                            {PRIVATE_UNIVERSITIES.map(u => <option key={u} value={u}>{u}</option>)}
                                         </select>
-                                        <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40 pointer-events-none group-hover/input:text-white transition-colors" />
+                                        <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none transition-colors" />
                                     </div>
                                 </div>
 
                                 {formData.university === 'Other Abuja Private University' && (
                                     <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                                        <label className="text-[10px] uppercase font-black text-[#FF6200] tracking-[0.2em] font-heading">Specify Classified Node</label>
+                                        <label className="text-[10px] uppercase font-black text-primary tracking-[0.2em] font-heading ml-2">Specify Classified Node</label>
                                         <input 
                                             value={formData.universityOther} 
                                             onChange={e => setFormData(p => ({...p, universityOther: e.target.value}))} 
-                                            className="w-full h-16 px-6 bg-[#FF6200]/5 border border-[#FF6200]/20 rounded-2xl text-[#FF6200] placeholder:text-[#FF6200]/30 focus:outline-none focus:border-[#FF6200]/70 focus:bg-[#FF6200]/10 transition-all font-bold tracking-wider text-sm" 
+                                            className="w-full h-16 px-6 bg-primary/5 border border-primary/20 rounded-2xl text-primary placeholder:text-primary/30 focus:outline-none focus:border-primary/70 focus:bg-primary/10 transition-all font-bold tracking-wider text-sm" 
                                             placeholder="Enter campus designation..." 
                                         />
                                     </div>
                                 )}
                             </div>
 
-                            <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center gap-6">
-                                <Link href="/signup" className="group hidden sm:flex text-white/40 hover:text-white uppercase text-[10px] items-center font-black tracking-[0.3em] transition-colors shrink-0">
+                            <div className="pt-6 border-t border-border flex flex-col sm:flex-row items-center gap-6">
+                                <Link href="/signup" className="group hidden sm:flex text-muted-foreground hover:text-foreground uppercase text-[10px] items-center font-black tracking-[0.3em] transition-colors shrink-0">
                                     <ArrowLeft className="mr-3 h-4 w-4 group-hover:-translate-x-1 transition-transform" /> Abort
                                 </Link>
                                 
                                 <Button 
                                     onClick={handleSendMagicLink} 
                                     disabled={isSubmitting} 
-                                    className="w-full h-20 bg-[#FF6200] text-black hover:bg-[#FF7A29] font-black uppercase tracking-[0.2em] text-sm rounded-2xl border-none shadow-[0_15px_45px_rgba(255,98,0,0.3)] hover:shadow-[0_20px_50px_rgba(255,98,0,0.4)] transition-all group relative overflow-hidden"
+                                    className="w-full h-20 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-[0.2em] text-sm rounded-2xl border-none shadow-[0_15px_45px_rgba(255,98,0,0.3)] hover:shadow-[0_20px_50px_rgba(255,98,0,0.4)] transition-all flex items-center justify-center"
                                 >
-                                    <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-[0%] transition-transform duration-500 rounded-2xl" />
                                     {isSubmitting ? <Loader2 className="animate-spin h-6 w-6 relative z-10" /> : (
-                                        <div className="flex items-center relative z-10">
-                                            Initiate Handshake <ArrowRight className="ml-4 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                                        </div>
+                                        <>
+                                            Initiate Handshake <ArrowRight className="ml-4 h-5 w-5" />
+                                        </>
                                     )}
                                 </Button>
                             </div>
@@ -261,26 +259,26 @@ export default function SellerOnboardPage() {
                         <div className="space-y-8 animate-in fade-in slide-in-from-right-8 text-center py-10 relative z-10">
                             
                             <div className="mx-auto h-32 w-32 relative flex items-center justify-center">
-                                <div className="absolute inset-0 bg-[#FF6200]/20 rounded-full animate-ping [animation-duration:3s]" />
-                                <div className="relative z-10 h-24 w-24 bg-gradient-to-br from-[#FF6200] to-[#FF4500] rounded-3xl flex items-center justify-center shadow-[0_0_50px_rgba(255,98,0,0.6)]">
-                                    <Mail className="h-10 w-10 text-black" />
+                                <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping [animation-duration:3s]" />
+                                <div className="relative z-10 h-24 w-24 bg-gradient-to-br from-primary to-[#FF4500] rounded-3xl flex items-center justify-center shadow-[0_0_50px_rgba(255,98,0,0.6)]">
+                                    <Mail className="h-10 w-10 text-white" />
                                 </div>
                             </div>
                             
                             <div className="space-y-3">
-                                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-white italic font-heading">Transmission <span className="text-[#FF6200]">Sent</span></h2>
-                                <p className="text-[10px] uppercase font-black text-white/50 tracking-[0.3em]">Access protocols deployed</p>
+                                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading">Transmission <span className="text-primary">Sent</span></h2>
+                                <p className="text-[10px] uppercase font-black text-muted-foreground tracking-[0.3em]">Access protocols deployed</p>
                             </div>
                             
-                            <div className="bg-black border border-white/10 p-8 rounded-[2rem] text-sm font-medium text-white/60 leading-relaxed max-w-sm mx-auto space-y-4">
+                            <div className="bg-background border border-border p-8 rounded-[2rem] text-sm font-medium text-muted-foreground leading-relaxed max-w-sm mx-auto space-y-4">
                                 <p>We transmitted a 256-bit cryptographic access link to:</p>
-                                <div className="bg-white/5 py-4 px-6 rounded-2xl border border-white/5 text-white/90 text-lg font-black tracking-wider break-all shadow-inner">
+                                <div className="bg-secondary py-4 px-6 rounded-2xl border border-border text-foreground text-lg font-black tracking-wider break-all shadow-inner">
                                     {formData.email}
                                 </div>
                                 <p className="italic">Click the embedded authorization terminal in that email to proceed instantly.</p>
                                 
-                                <div className="pt-6 border-t border-white/10">
-                                    <span className="text-[#FF6200] font-black uppercase tracking-[0.2em] text-[10px] animate-pulse">Signature validity: {formatTime(countdown)}</span>
+                                <div className="pt-6 border-t border-border">
+                                    <span className="text-primary font-black uppercase tracking-[0.2em] text-[10px] animate-pulse">Signature validity: {formatTime(countdown)}</span>
                                 </div>
                             </div>
 
@@ -289,7 +287,7 @@ export default function SellerOnboardPage() {
                                     variant="outline" 
                                     onClick={handleSendMagicLink} 
                                     disabled={isSubmitting} 
-                                    className="w-full h-16 border border-white/10 bg-transparent text-white/60 hover:text-white font-black uppercase text-[10px] tracking-widest rounded-2xl hover:bg-white/5 transition-all shadow-sm"
+                                    className="w-full h-16 border-border bg-transparent text-muted-foreground hover:text-foreground font-black uppercase text-[10px] tracking-widest rounded-2xl hover:bg-secondary transition-all shadow-sm"
                                 >
                                     {isSubmitting ? <Loader2 className="animate-spin h-5 w-5" /> : "Packet Dropped? Resend"}
                                 </Button>
@@ -297,7 +295,7 @@ export default function SellerOnboardPage() {
                                 <Button 
                                     variant="link" 
                                     onClick={() => setStep(1)} 
-                                    className="w-full uppercase text-[10px] font-black tracking-widest text-white/30 hover:text-white transition-colors"
+                                    className="w-full uppercase text-[10px] font-black tracking-widest text-muted-foreground hover:text-foreground transition-colors"
                                 >
                                     <ArrowLeft className="mr-3 h-3.5 w-3.5" /> Modify Contact Vector
                                 </Button>

@@ -5,14 +5,14 @@ import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { normalizeIdentifier } from '@/lib/auth/utils';
-import { Loader2, ArrowLeft, ArrowRight, User as UserIcon, Globe, Briefcase, Mail } from 'lucide-react';
+import { Loader2, ArrowLeft, ArrowRight, User as UserIcon, Globe, Briefcase, Mail, ShieldAlert, KeyRound } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/contexts/ToastContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
 type Step = 'role' | 'details';
-type Role = 'student_buyer' | 'student_seller';
+type Role = 'student_buyer' | 'student_seller' | 'admin' | 'ceo';
 
 function SignupContent() {
     const supabase = createClient();
@@ -49,9 +49,12 @@ function SignupContent() {
 
     const handleRoleSelect = (selectedRole: Role) => {
         setRole(selectedRole);
-        // If they select seller, route them immediately to the hyper-premium seller onboard!
         if (selectedRole === 'student_seller') {
             router.push('/seller-onboard');
+        } else if (selectedRole === 'admin') {
+            router.push('/admin-access?target=admin');
+        } else if (selectedRole === 'ceo') {
+            router.push('/admin-access?target=ceo');
         } else {
             setCurrentStep('details');
         }
@@ -138,62 +141,73 @@ function SignupContent() {
 
     if (currentStep === 'role') {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-black text-white relative overflow-hidden transition-colors duration-300 selection:bg-[#FF6200] selection:text-black">
-                <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#FF6200]/10 rounded-full blur-[150px] pointer-events-none z-0" />
+            <div className="min-h-screen flex items-center justify-center p-4 bg-background text-foreground relative overflow-hidden transition-colors duration-300">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[150px] pointer-events-none z-0" />
 
-                <div className="w-full max-w-lg relative z-10 glass-card bg-zinc-950/80 backdrop-blur-2xl border border-white/5 rounded-[3rem] p-10 md:p-14 shadow-2xl">
+                <div className="w-full max-w-2xl relative z-10 bg-card border border-border rounded-[3rem] p-10 md:p-14 shadow-2xl">
                     <div className="text-center mb-12 space-y-4">
-                        <Link href="/" className="inline-flex items-center text-white/40 hover:text-white uppercase text-[10px] font-black tracking-widest transition-colors">
+                        <Link href="/" className="inline-flex items-center text-muted-foreground hover:text-foreground uppercase text-[10px] font-black tracking-widest transition-colors mb-4">
                             <ArrowLeft className="mr-2 h-4 w-4" /> Abort To Main
                         </Link>
-                        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-white italic font-heading">
-                            Network <span className="text-[#FF6200]">Access</span>
+                        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading">
+                            Network <span className="text-primary">Access</span>
                         </h1>
-                        <p className="text-white/40 font-bold uppercase tracking-[0.2em] text-[10px] italic shadow-sm">
+                        <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] italic">
                             Select clearance authorization level
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-2">
                         <button
                             onClick={() => handleRoleSelect('student_buyer')}
-                            className="group bg-white/5 border border-white/5 rounded-[2rem] p-8 text-center cursor-pointer hover:bg-[#FF6200]/5 hover:border-[#FF6200]/30 transition-all duration-500 flex flex-col items-center shadow-sm"
+                            className="group bg-secondary border border-border rounded-3xl p-6 text-center cursor-pointer hover:border-primary/50 transition-all duration-300 flex flex-col items-center shadow-sm"
                         >
-                            <div className="h-16 w-16 rounded-2xl bg-white/5 flex items-center justify-center mb-6 group-hover:bg-[#FF6200]/20 transition-colors">
-                                <UserIcon className="h-8 w-8 text-white/40 group-hover:text-[#FF6200] transition-colors" />
+                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                                <UserIcon className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
                             </div>
-                            <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2">Student Buyer</h3>
-                            <p className="text-white/40 text-[9px] font-black uppercase tracking-widest leading-relaxed">Standard Access. Browse & Purchase.</p>
+                            <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Buyer</h3>
+                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest">Shop</p>
                         </button>
 
                         <button
                             onClick={() => handleRoleSelect('student_seller')}
-                            className="group bg-white/5 border border-white/5 rounded-[2rem] p-8 text-center cursor-pointer hover:bg-[#FF6200]/5 hover:border-[#FF6200]/30 transition-all duration-500 flex flex-col items-center shadow-sm relative overflow-hidden"
+                            className="group bg-secondary border border-border rounded-3xl p-6 text-center cursor-pointer hover:border-primary/50 transition-all duration-300 flex flex-col items-center shadow-sm relative overflow-hidden"
                         >
-                            <div className="absolute top-4 right-4 h-2 w-2 rounded-full bg-[#FF6200] animate-pulse shadow-[0_0_10px_rgba(255,98,0,0.8)]" />
-                            <div className="h-16 w-16 rounded-2xl bg-white/5 flex items-center justify-center mb-6 group-hover:bg-[#FF6200]/20 transition-colors">
-                                <Briefcase className="h-8 w-8 text-white/40 group-hover:text-[#FF6200] transition-colors" />
+                            <div className="absolute top-3 right-3 h-1.5 w-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(255,98,0,0.8)]" />
+                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                                <Briefcase className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
                             </div>
-                            <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2">Seller Hub</h3>
-                            <p className="text-[#FF6200]/70 group-hover:text-[#FF6200] text-[9px] font-black uppercase tracking-widest leading-relaxed">Strict Verification. Merchant Protocol.</p>
+                            <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Seller</h3>
+                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest">Merchant</p>
+                        </button>
+                        
+                        <button
+                            onClick={() => handleRoleSelect('admin')}
+                            className="group bg-secondary border border-border rounded-3xl p-6 text-center cursor-pointer hover:border-primary/50 transition-all duration-300 flex flex-col items-center shadow-sm"
+                        >
+                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                                <ShieldAlert className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
+                            </div>
+                            <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Admin</h3>
+                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest">Ops</p>
+                        </button>
+
+                        <button
+                            onClick={() => handleRoleSelect('ceo')}
+                            className="group bg-primary/5 border border-primary/20 rounded-3xl p-6 text-center cursor-pointer hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 flex flex-col items-center shadow-sm"
+                        >
+                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                                <KeyRound className="h-6 w-6 text-primary" />
+                            </div>
+                            <h3 className="text-sm font-black text-primary uppercase tracking-tight mb-1">CEO</h3>
+                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest">Growth</p>
                         </button>
                     </div>
 
-                    <div className="flex items-center justify-center gap-6 mb-8">
-                        <Link href="/admin-access?target=admin" className="text-white/20 hover:text-white uppercase text-[8px] font-black tracking-widest transition-colors flex flex-col items-center gap-1 group">
-                             System Admin
-                        </Link>
-                        <span className="text-white/10 text-[8px]">|</span>
-                        <Link href="/admin-access?target=ceo" className="text-white/20 hover:text-[#FF6200] uppercase text-[8px] font-black tracking-widest transition-colors flex flex-col items-center gap-1 group">
-                             Executive
-                        </Link>
-                    </div>
-
-                    <div className="text-center pt-6 border-t border-white/5">
-                        <p className="text-white/40 font-bold text-xs">
+                    <div className="text-center pt-8 mt-8 border-t border-border">
+                        <p className="text-muted-foreground font-bold text-xs uppercase tracking-widest">
                             System credentials active?{' '}
-                            <Link href="/login" className="text-[#FF6200] font-black uppercase tracking-widest ml-2 hover:text-[#FF7A29]">
+                            <Link href="/login" className="text-primary font-black ml-2 hover:opacity-80">
                                 Execute Login
                             </Link>
                         </p>
@@ -204,35 +218,34 @@ function SignupContent() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-black text-white relative transition-colors duration-300 selection:bg-[#FF6200] selection:text-black">
-            <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#FF6200]/10 rounded-full blur-[150px] pointer-events-none z-0" />
+        <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-background text-foreground relative transition-colors duration-300">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[150px] pointer-events-none z-0" />
 
-            <div className="w-full max-w-lg glass-card bg-zinc-950/80 backdrop-blur-2xl border border-white/5 shadow-2xl rounded-[3rem] p-10 md:p-14 relative z-10">
+            <div className="w-full max-w-lg bg-card border border-border shadow-2xl rounded-[3rem] p-10 md:p-14 relative z-10">
                 <div className="text-center mb-12 space-y-4">
                     <div className="flex justify-between items-center mb-6">
                         <Button
                             variant="ghost"
                             onClick={() => setCurrentStep('role')}
-                            className="text-white/40 hover:text-white uppercase text-[10px] font-black tracking-widest px-0"
+                            className="text-muted-foreground hover:text-foreground uppercase text-[10px] font-black tracking-widest px-0"
                         >
                             <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
                         </Button>
                     </div>
                     
-                    <h2 className="text-4xl font-black uppercase tracking-tighter text-white italic font-heading leading-none">
-                        Establish <span className="text-[#FF6200]">Identity</span>
+                    <h2 className="text-4xl font-black uppercase tracking-tighter text-foreground italic font-heading leading-none">
+                        Establish <span className="text-primary">Identity</span>
                     </h2>
-                    <p className="text-white/40 font-bold uppercase tracking-widest text-[10px] italic">
+                    <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px] italic">
                         Standard clearance protocol
                     </p>
                 </div>
 
                 <form onSubmit={handleSignup} className="space-y-6">
                     <div className="space-y-2">
-                        <label className="text-[10px] uppercase font-black tracking-[0.2em] text-white/40 font-heading">Legal Designation</label>
+                        <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading">Legal Designation</label>
                         <div className="relative">
-                            <div className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-white/40">
+                            <div className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-muted-foreground">
                                 <UserIcon className="h-4 w-4" />
                             </div>
                             <input
@@ -243,15 +256,15 @@ function SignupContent() {
                                 onChange={handleChange}
                                 required
                                 placeholder="Enter public designation..."
-                                className="w-full h-16 pl-14 pr-6 bg-white/5 border border-white/5 rounded-2xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#FF6200]/50 focus:bg-[#FF6200]/5 transition-all font-bold tracking-wider text-sm"
+                                className="w-full h-16 pl-14 pr-6 bg-secondary border border-border rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm"
                             />
                         </div>
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[10px] uppercase font-black tracking-[0.2em] text-white/40 font-heading">Secure Endpoint (Email)</label>
+                        <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading">Secure Endpoint (Email)</label>
                         <div className="relative">
-                            <div className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-white/40">
+                            <div className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-muted-foreground">
                                 <Mail className="h-4 w-4" />
                             </div>
                             <input
@@ -261,14 +274,14 @@ function SignupContent() {
                                 onChange={handleChange}
                                 required
                                 placeholder="email@address.com"
-                                className="w-full h-16 pl-14 pr-6 bg-white/5 border border-white/5 rounded-2xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#FF6200]/50 focus:bg-[#FF6200]/5 transition-all font-bold tracking-wider text-sm"
+                                className="w-full h-16 pl-14 pr-6 bg-secondary border border-border rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm"
                             />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2 p-1">
-                            <label className="text-[10px] uppercase font-black tracking-[0.2em] text-white/40 font-heading">Cryptographic Key</label>
+                        <div className="space-y-2">
+                            <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-2">Secure Key</label>
                             <input
                                 name="password"
                                 type="password"
@@ -276,11 +289,11 @@ function SignupContent() {
                                 onChange={handleChange}
                                 required
                                 placeholder="Min 8 chars"
-                                className="w-full h-16 px-6 bg-white/5 border border-white/5 rounded-2xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#FF6200]/50 focus:bg-[#FF6200]/5 transition-all font-bold tracking-wider text-sm"
+                                className="w-full h-16 px-6 bg-secondary border border-border rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm"
                             />
                         </div>
-                        <div className="space-y-2 p-1">
-                            <label className="text-[10px] uppercase font-black tracking-[0.2em] text-white/40 font-heading">Verify Key</label>
+                        <div className="space-y-2">
+                            <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-2">Verify Key</label>
                             <input
                                 name="passwordConfirm"
                                 type="password"
@@ -288,7 +301,7 @@ function SignupContent() {
                                 onChange={handleChange}
                                 required
                                 placeholder="••••••••"
-                                className="w-full h-16 px-6 bg-white/5 border border-white/5 rounded-2xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#FF6200]/50 focus:bg-[#FF6200]/5 transition-all font-bold tracking-wider text-sm"
+                                className="w-full h-16 px-6 bg-secondary border border-border rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm"
                             />
                         </div>
                     </div>
@@ -297,29 +310,28 @@ function SignupContent() {
                         <Button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full h-16 bg-[#FF6200] text-black hover:bg-[#FF7A29] font-black uppercase tracking-[0.2em] text-sm rounded-2xl border-none shadow-[0_10px_30px_rgba(255,98,0,0.3)] transition-all group relative overflow-hidden"
+                            className="w-full h-16 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-[0.2em] text-sm rounded-2xl border-none shadow-[0_10px_30px_rgba(255,98,0,0.3)] transition-all flex items-center"
                         >
-                            <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-[0%] transition-transform duration-500 rounded-2xl" />
                             {isLoading ? <Loader2 className="animate-spin h-6 w-6 relative z-10" /> : (
-                                <div className="flex items-center relative z-10">
-                                    Establish Account <ArrowRight className="ml-4 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                                </div>
+                                <>
+                                    Establish Account <ArrowRight className="ml-4 h-5 w-5" />
+                                </>
                             )}
                         </Button>
                     </div>
                 </form>
 
                 <div className="relative py-8 flex items-center justify-center">
-                    <div className="absolute inset-x-0 h-px bg-white/10" />
-                    <span className="relative bg-[#09090b] px-4 text-[9px] font-black uppercase tracking-[0.3em] text-white/40">Or Bypass</span>
+                    <div className="absolute inset-x-0 h-px bg-border" />
+                    <span className="relative bg-card px-4 text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground">Or Bypass</span>
                 </div>
 
                 <Button
                     type="button"
                     onClick={handleGoogleAuth}
-                    className="w-full h-16 bg-white text-black hover:bg-white/90 font-black uppercase tracking-widest rounded-2xl flex items-center justify-center gap-3 transition-all"
+                    className="w-full h-16 bg-foreground text-background hover:opacity-90 font-black uppercase tracking-widest rounded-2xl flex items-center justify-center gap-3 transition-all"
                 >
-                    <Globe className="h-5 w-5 text-black" />
+                    <Globe className="h-5 w-5" />
                     Google Fast Auth
                 </Button>
 
@@ -331,8 +343,8 @@ function SignupContent() {
 export default function SignupPage() {
     return (
         <Suspense fallback={
-            <div className="min-h-screen bg-black flex items-center justify-center">
-                <Loader2 className="animate-spin h-8 w-8 text-[#FF6200]" />
+            <div className="min-h-screen flex items-center justify-center bg-background">
+                <Loader2 className="animate-spin h-8 w-8 text-primary" />
             </div>
         }>
             <SignupContent />
