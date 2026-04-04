@@ -143,10 +143,18 @@ export const Header = () => {
                                                 <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5">
                                                     <Link href="/seller/dashboard" className="flex items-center gap-3 px-3 py-2.5">
                                                         <Store className="h-4 w-4 text-[#FF6200]" />
-                                                        <span className="text-sm font-bold">Seller Dashboard</span>
+                                                        <span className="text-sm font-bold">Merchant Center</span>
                                                     </Link>
                                                 </DropdownMenuItem>
                                             )}
+
+                                            {/* Buyer Command Center (For everyone who buys, but specifically useful for non-sellers) */}
+                                            <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5">
+                                                <Link href="/buyer/dashboard" className="flex items-center gap-3 px-3 py-2.5">
+                                                    <LayoutDashboard className="h-4 w-4 text-[#FF6200]" />
+                                                    <span className="text-sm font-bold">Buyer Center</span>
+                                                </Link>
+                                            </DropdownMenuItem>
 
                                             <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5">
                                                 <Link href="/marketplace" className="flex items-center gap-3 px-3 py-2.5">

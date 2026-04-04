@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { createClient } from '@/lib/supabase/client';
 import {
     ShoppingBag, Smartphone, Car, Sofa, Shirt, Wrench, ArrowRight,
-    Search, Loader2, MapPin, Star, TrendingUp
+    Search, Loader2, MapPin, Star, TrendingUp, Zap, Box, Filter
 } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import Link from 'next/link';
@@ -27,6 +27,7 @@ export default function PublicMarketplaceClient() {
     const [listings, setListings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [assetFilter, setAssetFilter] = useState<'all' | 'product' | 'service'>('all');
 
     useEffect(() => {
         fetchListings();
@@ -36,7 +37,7 @@ export default function PublicMarketplaceClient() {
         try {
             const { data } = await supabase
                 .from('listings')
-                .select('id, title, price, images, location, created_at, users!listings_seller_id_fkey(display_name)')
+                .select('id, title, price, images, location, created_at, description, users!listings_seller_id_fkey(display_name)')
                 .eq('status', 'active')
                 .order('created_at', { ascending: false })
                 .limit(12);
@@ -61,8 +62,11 @@ export default function PublicMarketplaceClient() {
                 <Logo />
                 <div className="flex items-center gap-6">
                     {user ? (
-                        <Link href="/seller/dashboard" className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] hover:text-white transition-all">
-                            My Dashboard
+                        <Link 
+                            href={['dealer', 'student_seller', 'seller'].includes(user.role) ? "/seller/dashboard" : "/buyer/dashboard"} 
+                            className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] hover:text-white transition-all bg-[#FF6200]/10 px-4 py-2 rounded-full border border-[#FF6200]/20"
+                        >
+                            {['dealer', 'student_seller', 'seller'].includes(user.role) ? "Merchant Center" : "Buyer Center"}
                         </Link>
                     ) : (
                         <>
@@ -134,11 +138,32 @@ export default function PublicMarketplaceClient() {
             </section>
 
             <section className="px-6 py-6 pb-12 max-w-6xl mx-auto w-full">
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                     <h2 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Recent Listings</h2>
-                    <Link href="/public/listings" className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] hover:text-white transition-all flex items-center gap-1">
-                        View All <ArrowRight className="h-3 w-3" />
-                    </Link>
+                    
+                    <div className="flex flex-wrap items-center gap-2">
+                        <button 
+                            onClick={() => setAssetFilter('all')} 
+                            className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${assetFilter === 'all' ? 'bg-white text-black' : 'bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10'}`}
+                        >
+                            All Assets
+                        </button>
+                        <button 
+                            onClick={() => setAssetFilter('product')} 
+                            className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${assetFilter === 'product' ? 'bg-[#FF6200] text-black shadow-[0_0_15px_rgba(255,98,0,0.3)]' : 'bg-white/5 text-zinc-400 hover:text-white hover:bg-[#FF6200]/10'}`}
+                        >
+                            <Box className="h-3 w-3" /> Physical Goods
+                        </button>
+                        <button 
+                            onClick={() => setAssetFilter('service')} 
+                            className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${assetFilter === 'service' ? 'bg-zinc-800 border border-zinc-700 text-white shadow-xl' : 'bg-white/5 text-zinc-400 hover:text-white hover:bg-zinc-800'}`}
+                        >
+                            <Zap className="h-3 w-3 text-yellow-500" /> Campus Services
+                        </button>
+                        <Link href="/public/listings" className="ml-auto text-[10px] font-black uppercase tracking-widest text-[#FF6200] hover:text-white transition-all flex items-center gap-1 pl-4 border-l border-white/10">
+                            View All <ArrowRight className="h-3 w-3" />
+                        </Link>
+                    </div>
                 </div>
 
                 {loading ? (
@@ -153,47 +178,78 @@ export default function PublicMarketplaceClient() {
                             </div>
                         ))}
                     </div>
-                ) : listings.length === 0 ? (
-                    <div className="text-center py-24 border border-dashed border-white/10 rounded-[2rem]">
-                        <ShoppingBag className="h-12 w-12 text-zinc-700 mx-auto mb-4" />
-                        <p className="text-zinc-500 font-black uppercase tracking-widest text-xs">No listings yet – be the first to sell!</p>
-                        <Link href="/onboarding?role=student_seller" className="inline-flex mt-6 h-12 px-8 bg-[#FF6200] text-black font-black uppercase tracking-widest text-[10px] rounded-xl items-center hover:bg-[#FF7A29] transition-all">
-                            Start Selling
-                        </Link>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        {listings.map((listing) => (
-                            <Link key={listing.id} href={`/listings/${listing.id}`} className="group">
-                                <div className="rounded-[1.5rem] bg-white/[0.02] border border-white/5 group-hover:border-[#FF6200]/30 overflow-hidden transition-all duration-300 group-hover:shadow-[0_0_30px_rgba(255,98,0,0.1)]">
-                                    <div className="relative h-48 bg-zinc-900 overflow-hidden">
-                                        {listing.images?.[0] ? (
-                                            <img
-                                                src={listing.images[0]}
-                                                alt={listing.title}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center">
-                                                <ShoppingBag className="h-10 w-10 text-zinc-700" />
+                ) : (() => {
+                    const filteredListings = listings.filter(l => {
+                        if (assetFilter === 'all') return true;
+                        const isService = l.description?.includes('[ASSET: SERVICE]');
+                        if (assetFilter === 'service') return isService;
+                        return !isService; // is product
+                    });
+
+                    if (filteredListings.length === 0) {
+                        return (
+                            <div className="text-center py-24 border border-dashed border-white/10 rounded-[2rem]">
+                                <Filter className="h-12 w-12 text-zinc-700 mx-auto mb-4" />
+                                <p className="text-zinc-500 font-black uppercase tracking-widest text-xs">No {assetFilter} listings found right now.</p>
+                                <button onClick={() => setAssetFilter('all')} className="inline-flex mt-6 px-6 py-2 border border-white/10 text-white font-black uppercase tracking-widest text-[10px] rounded-xl items-center hover:bg-white/5 transition-all">
+                                    Clear Filters
+                                </button>
+                            </div>
+                        );
+                    }
+
+                    return (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                            {filteredListings.map((listing) => {
+                                const isService = listing.description?.includes('[ASSET: SERVICE]');
+                                
+                                return (
+                                <Link key={listing.id} href={`/listings/${listing.id}`} className="group">
+                                    <div className="rounded-[1.5rem] bg-white/[0.02] border border-white/5 group-hover:border-[#FF6200]/30 overflow-hidden transition-all duration-300 group-hover:shadow-[0_0_30px_rgba(255,98,0,0.1)] h-full flex flex-col">
+                                        <div className="relative h-48 bg-zinc-900 overflow-hidden shrink-0">
+                                            {isService && (
+                                                <div className="absolute top-3 left-3 z-10 px-3 py-1.5 bg-zinc-900/90 backdrop-blur-md border border-zinc-700 rounded-full flex items-center gap-1.5 shadow-xl">
+                                                    <Zap className="h-3 w-3 text-yellow-500 fill-yellow-500/20" />
+                                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white">Service</span>
+                                                </div>
+                                            )}
+                                            {!isService && (
+                                                <div className="absolute top-3 left-3 z-10 px-3 py-1.5 bg-[#FF6200]/90 backdrop-blur-md border border-[#FF6200] rounded-full flex items-center gap-1.5 shadow-xl">
+                                                    <Box className="h-3 w-3 text-black" />
+                                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-black">Product</span>
+                                                </div>
+                                            )}
+                                            {listing.images?.[0] ? (
+                                                <img
+                                                    src={listing.images[0]}
+                                                    alt={listing.title}
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center">
+                                                    {isService ? <Wrench className="h-10 w-10 text-zinc-700" /> : <ShoppingBag className="h-10 w-10 text-zinc-700" />}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="p-4 flex flex-col flex-grow">
+                                            <p className="text-xs font-black uppercase tracking-tighter text-white line-clamp-2 mb-2">{listing.title}</p>
+                                            <div className="mt-auto space-y-2">
+                                                <p className="text-lg font-black text-[#FF6200]">₦{Number(listing.price).toLocaleString()}</p>
+                                                {listing.location && (
+                                                    <div className="flex items-center gap-1 text-zinc-500">
+                                                        <MapPin className="h-3 w-3" />
+                                                        <span className="text-[10px] uppercase font-bold tracking-wide">{listing.location}</span>
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
-                                    <div className="p-4 space-y-2">
-                                        <p className="text-xs font-black uppercase tracking-tighter text-white line-clamp-2">{listing.title}</p>
-                                        <p className="text-lg font-black text-[#FF6200]">₦{Number(listing.price).toLocaleString()}</p>
-                                        {listing.location && (
-                                            <div className="flex items-center gap-1 text-zinc-500">
-                                                <MapPin className="h-3 w-3" />
-                                                <span className="text-[10px] uppercase font-bold tracking-wide">{listing.location}</span>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                )}
+                                </Link>
+                                );
+                            })}
+                        </div>
+                    );
+                })()}
             </section>
 
             <section className="px-6 py-16 max-w-6xl mx-auto w-full">
