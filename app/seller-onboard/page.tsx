@@ -143,7 +143,7 @@ export default function SellerOnboardPage() {
                     </p>
                 </div>
 
-                <div className="glass-card bg-card border border-border rounded-[3rem] p-8 md:p-12 shadow-2xl relative">
+                <div className="glass-card bg-card border border-border rounded-3xl md:rounded-[3rem] p-6 md:p-12 shadow-2xl relative">
                     
                     {/* Decorative Elements */}
                     <div className="absolute top-0 right-0 p-8 opacity-[0.03]">

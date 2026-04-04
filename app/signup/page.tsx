@@ -143,8 +143,7 @@ function SignupContent() {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-background text-foreground relative overflow-hidden transition-colors duration-300">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[150px] pointer-events-none z-0" />
-
-                <div className="w-full max-w-2xl relative z-10 bg-card border border-border rounded-[3rem] p-10 md:p-14 shadow-2xl">
+                <div className="w-full max-w-2xl relative z-10 bg-card border border-border rounded-3xl md:rounded-[3rem] p-6 md:p-10 lg:p-14 shadow-2xl">
                     <div className="text-center mb-12 space-y-4">
                         <Link href="/" className="inline-flex items-center text-muted-foreground hover:text-foreground uppercase text-[10px] font-black tracking-widest transition-colors mb-4">
                             <ArrowLeft className="mr-2 h-4 w-4" /> Abort To Main
@@ -220,8 +219,7 @@ function SignupContent() {
     return (
         <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-background text-foreground relative transition-colors duration-300">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[150px] pointer-events-none z-0" />
-
-            <div className="w-full max-w-lg bg-card border border-border shadow-2xl rounded-[3rem] p-10 md:p-14 relative z-10">
+            <div className="w-full max-w-lg bg-card border border-border shadow-2xl rounded-3xl md:rounded-[3rem] p-6 md:p-10 lg:p-14 relative z-10">
                 <div className="text-center mb-12 space-y-4">
                     <div className="flex justify-between items-center mb-6">
                         <Button
