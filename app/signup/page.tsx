@@ -155,7 +155,7 @@ function SignupContent() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
                         <button
                             onClick={() => handleRoleSelect('student_buyer')}
                             className="group bg-white/5 border border-white/5 rounded-[2rem] p-8 text-center cursor-pointer hover:bg-[#FF6200]/5 hover:border-[#FF6200]/30 transition-all duration-500 flex flex-col items-center shadow-sm"
@@ -178,6 +178,16 @@ function SignupContent() {
                             <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2">Seller Hub</h3>
                             <p className="text-[#FF6200]/70 group-hover:text-[#FF6200] text-[9px] font-black uppercase tracking-widest leading-relaxed">Strict Verification. Merchant Protocol.</p>
                         </button>
+                    </div>
+
+                    <div className="flex items-center justify-center gap-6 mb-8">
+                        <Link href="/admin-access?target=admin" className="text-white/20 hover:text-white uppercase text-[8px] font-black tracking-widest transition-colors flex flex-col items-center gap-1 group">
+                             System Admin
+                        </Link>
+                        <span className="text-white/10 text-[8px]">|</span>
+                        <Link href="/admin-access?target=ceo" className="text-white/20 hover:text-[#FF6200] uppercase text-[8px] font-black tracking-widest transition-colors flex flex-col items-center gap-1 group">
+                             Executive
+                        </Link>
                     </div>
 
                     <div className="text-center pt-6 border-t border-white/5">
