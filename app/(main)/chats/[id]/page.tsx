@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Send, ArrowLeft, DollarSign, Package, Image as ImageIcon, Loader2, X } from 'lucide-react';
+import { Send, ArrowLeft, DollarSign, Package, Image as ImageIcon, Loader2, X, Check, CheckCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { SmartEscrowModal } from '@/components/chat/SmartEscrowModal';
@@ -67,6 +67,12 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Realtime State
+    const [isTyping, setIsTyping] = useState(false);
+    const [isOnline, setIsOnline] = useState(false);
+    const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const chatChannelRef = useRef<any>(null);
 
     // Smart Escrow State
     const [showEscrowModal, setShowEscrowModal] = useState(false);
@@ -236,11 +242,32 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
     };
 
     const subscribeToMessages = () => {
-        if (!chatId) return () => { };
+        if (!chatId || !user) return () => { };
 
-        const subscription = supabase
-            .channel(`chat:${chatId}`)
-            .on(
+        if (!chatChannelRef.current) {
+            chatChannelRef.current = supabase.channel(`chat:${chatId}`, {
+                config: {
+                    presence: { key: user.id },
+                    broadcast: { self: false, ack: false }
+                }
+            });
+
+            // Presence
+            chatChannelRef.current.on('presence', { event: 'sync' }, () => {
+                const state = chatChannelRef.current.presenceState();
+                const otherUsersOnline = Object.keys(state).some(key => key !== user.id);
+                setIsOnline(otherUsersOnline);
+            });
+
+            // Broadcast (Typing)
+            chatChannelRef.current.on('broadcast', { event: 'typing' }, (payload: any) => {
+                if (payload.payload.user_id !== user.id) {
+                    setIsTyping(payload.payload.isTyping);
+                }
+            });
+
+            // Postgres Changes
+            chatChannelRef.current.on(
                 'postgres_changes',
                 {
                     event: 'INSERT',
@@ -248,8 +275,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                     table: 'messages',
                     filter: `conversation_id=eq.${chatId}`,
                 },
-                async (payload) => {
-                    // Fetch sender details for the new message
+                async (payload: any) => {
                     const { data: senderData } = await supabase
                         .from('users')
                         .select('display_name, photo_url, avatar_url')
@@ -258,7 +284,6 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
 
                     const newMsg: Message = {
                         ...payload.new,
-                        // Fix types
                         sender: senderData ? {
                             display_name: senderData.display_name,
                             photo_url: senderData.avatar_url || senderData.photo_url
@@ -267,15 +292,36 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
 
                     setMessages((prev) => [...prev, newMsg]);
 
-                    if (payload.new.sender_id !== user?.id) {
+                    if (payload.new.sender_id !== user.id) {
                         markMessagesAsRead();
                     }
                 }
             )
-            .subscribe();
+            .on(
+                'postgres_changes',
+                {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'messages',
+                    filter: `conversation_id=eq.${chatId}`,
+                },
+                (payload: any) => {
+                    setMessages(prev => prev.map(m => m.id === payload.new.id ? { ...m, is_read: payload.new.is_read } : m));
+                }
+            );
+
+            chatChannelRef.current.subscribe(async (status: string) => {
+                if (status === 'SUBSCRIBED') {
+                    await chatChannelRef.current.track({ is_online: true });
+                }
+            });
+        }
 
         return () => {
-            supabase.removeChannel(subscription);
+            if (chatChannelRef.current) {
+                supabase.removeChannel(chatChannelRef.current);
+                chatChannelRef.current = null;
+            }
         };
     };
 
@@ -386,6 +432,26 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
         } finally {
             setSending(false);
             setUploadingImage(false);
+        }
+    };
+
+    const handleTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNewMessage(e.target.value);
+        if (chatChannelRef.current && user) {
+            chatChannelRef.current.send({
+                type: 'broadcast',
+                event: 'typing',
+                payload: { user_id: user.id, isTyping: e.target.value.length > 0 }
+            });
+            
+            if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+            typingTimeoutRef.current = setTimeout(() => {
+                chatChannelRef.current.send({
+                    type: 'broadcast',
+                    event: 'typing',
+                    payload: { user_id: user.id, isTyping: false }
+                });
+            }, 3000);
         }
     };
 
@@ -556,8 +622,9 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                                 </AvatarFallback>
                             </Avatar>
                             <div>
-                                <CardTitle className="text-base text-zinc-900 font-bold tracking-wide">
+                                <CardTitle className="text-base text-zinc-900 font-bold tracking-wide flex items-center gap-2">
                                     {chat.other_user?.display_name}
+                                    {isOnline && <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]" title="Online now" />}
                                 </CardTitle>
                                 <Badge variant="secondary" className="mt-1 bg-white text-zinc-600 border border-zinc-100 text-[10px] uppercase tracking-wider">
                                     {['dealer', 'student_seller'].includes(chat.other_user?.role || '') ? 'Verified Merchant' : 'User'}
@@ -694,14 +761,30 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                                                     <p>{message.content}</p>
                                                 )}
                                             </div>
-                                            <p className="text-[10px] text-zinc-900/30 px-1 font-mono">
-                                                {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                            </p>
+                                            <div className={`flex items-center gap-1 mt-1 ${isOwn ? 'justify-end' : 'justify-start'}`}>
+                                                <p className="text-[10px] text-zinc-900/30 font-mono">
+                                                    {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </p>
+                                                {isOwn && (
+                                                    message.is_read ? 
+                                                        <CheckCheck className="h-3 w-3 text-[#FF6600]" /> : 
+                                                        <Check className="h-3 w-3 text-zinc-400" />
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             );
                         })}
+                        {isTyping && (
+                            <div className="flex justify-start">
+                                <div className="bg-zinc-100 dark:bg-zinc-800 rounded-full px-4 py-2 flex items-center gap-1 mt-2">
+                                    <div className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                                    <div className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                                    <div className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce"></div>
+                                </div>
+                            </div>
+                        )}
                         <div ref={messagesEndRef} />
                     </div>
 
@@ -734,7 +817,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                             <Input
                                 placeholder="Transmit secure message..."
                                 value={newMessage}
-                                onChange={(e) => setNewMessage(e.target.value)}
+                                onChange={handleTyping}
                                 className="h-12 bg-[#FAFAFA]/50 border-zinc-200 rounded-xl text-zinc-900 placeholder:text-zinc-900/30 focus:ring-[#FF6600]/50 focus:border-[#FF6600]/50 font-medium"
                                 disabled={sending || isBlocked}
                             />
