@@ -214,7 +214,7 @@ function LoginContent() {
             )}
 
             {/* Main Login Frame */}
-            <div className="w-full max-w-lg bg-card border border-border shadow-2xl rounded-3xl md:rounded-[3rem] p-6 md:p-10 lg:p-14 relative z-10">
+            <div className="w-full max-w-lg glass-card bg-card/80 border border-border shadow-2xl rounded-3xl md:rounded-[3rem] p-6 md:p-10 lg:p-14 relative z-10">
                 <div className="text-center mb-12 space-y-4">
                     <div className="flex items-center justify-between mb-8">
                         <Link href="/" className="text-muted-foreground hover:text-foreground text-[10px] font-black uppercase tracking-[0.2em] transition-colors flex items-center gap-2">
