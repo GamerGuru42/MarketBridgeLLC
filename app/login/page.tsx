@@ -160,9 +160,10 @@ function LoginContent() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-background text-foreground relative overflow-hidden transition-colors duration-300">
+        <div className="min-h-screen grid place-items-center p-4 bg-background text-foreground relative overflow-hidden transition-colors duration-300">
             
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[150px] pointer-events-none z-0" />
+            {/* Background Glow */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[150px] pointer-events-none z-0" />
 
             {/* Admin PIN Terminal */}
             {showAdminPin && (
@@ -203,7 +204,7 @@ function LoginContent() {
                                 </Button>
                                 <Button
                                     type="submit"
-                                    className="flex-[2] h-16 bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-widest rounded-2xl border-none shadow-[0_10px_30px_rgba(255,98,0,0.3)] transition-all"
+                                    className="flex-[2] h-16 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest rounded-2xl border-none shadow-[0_10px_30px_rgba(255,98,0,0.3)] transition-all"
                                 >
                                     <Lock className="h-4 w-4 mr-2" /> Decrypt
                                 </Button>
@@ -214,11 +215,11 @@ function LoginContent() {
             )}
 
             {/* Main Login Frame */}
-            <div className="w-full max-w-lg glass-card bg-card/80 border border-border shadow-2xl rounded-3xl md:rounded-[3rem] p-6 md:p-10 lg:p-14 relative z-10">
+            <div className="w-full max-w-lg glass-card bg-card/80 border border-border shadow-2xl rounded-3xl md:rounded-[3rem] p-6 md:p-10 lg:p-14 relative z-10 m-auto mt-20 mb-20">
                 <div className="text-center mb-12 space-y-4">
                     <div className="flex items-center justify-between mb-8">
-                        <Link href="/" className="text-muted-foreground hover:text-foreground text-[10px] font-black uppercase tracking-[0.2em] transition-colors flex items-center gap-2">
-                            <ArrowLeft className="h-4 w-4" /> Go Back
+                        <Link href="/" className="inline-flex items-center text-muted-foreground hover:text-foreground uppercase text-[10px] font-black tracking-widest transition-colors">
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
                         </Link>
                         {!adminVerified ? (
                             <button
@@ -235,7 +236,7 @@ function LoginContent() {
                         )}
                     </div>
                     
-                    <h1 className="text-5xl border-transparent font-black uppercase tracking-tighter text-foreground italic font-heading leading-none">
+                    <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading">
                         Resume <span className="text-primary">Access</span>
                     </h1>
                     <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] italic">
@@ -254,7 +255,9 @@ function LoginContent() {
                     <div className="space-y-2">
                         <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-2">Secure Endpoint (Email)</label>
                         <div className="relative">
-                            <UserIcon className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                            <div className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-muted-foreground">
+                                <UserIcon className="h-4 w-4" />
+                            </div>
                             <input
                                 name="email"
                                 type="email"
@@ -269,13 +272,15 @@ function LoginContent() {
 
                     <div className="space-y-2">
                         <div className="flex justify-between items-center px-1">
-                            <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-2">Cryptographic Key</label>
-                            <Link href="/forgot-password" className="text-[9px] font-black uppercase tracking-widest text-primary hover:underline transition-all pr-2">
+                            <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-1">Cryptographic Key</label>
+                            <Link href="/forgot-password" className="text-[9px] font-black uppercase tracking-widest text-primary hover:opacity-80 transition-all pr-1">
                                 Reset Key?
                             </Link>
                         </div>
                         <div className="relative">
-                            <Lock className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                            <div className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-muted-foreground">
+                                <Lock className="h-4 w-4" />
+                            </div>
                             <input
                                 name="password"
                                 type={showPassword ? 'text' : 'password'}
@@ -318,16 +323,16 @@ function LoginContent() {
                 </div>
 
                 <Button
-                    variant="outline"
+                    type="button"
                     onClick={handleGoogleLogin}
                     disabled={isLoading}
-                    className="w-full h-16 bg-foreground text-background font-black uppercase tracking-[0.2em] text-xs rounded-2xl hover:opacity-90 transition-all shadow-sm flex items-center justify-center border-none"
+                    className="w-full h-16 bg-foreground text-background hover:opacity-90 font-black uppercase tracking-widest rounded-2xl flex items-center justify-center gap-3 transition-all"
                 >
-                    <Globe className="mr-3 h-5 w-5" />
+                    <Globe className="h-5 w-5" />
                     Google Fast Auth
                 </Button>
 
-                <div className="text-center pt-10 border-t border-border mt-8">
+                <div className="text-center pt-8 mt-8 border-t border-border">
                     <p className="text-muted-foreground font-bold text-xs uppercase tracking-widest">
                         No active clearance?{' '}
                         <Link href="/signup" className="text-primary font-black ml-2 hover:opacity-80">
