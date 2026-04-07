@@ -160,7 +160,7 @@ function LoginContent() {
     }
 
     return (
-        <div className="min-h-screen grid place-items-center p-4 bg-background text-foreground relative overflow-hidden transition-colors duration-300">
+        <div className="min-h-screen flex flex-col justify-center items-center p-4 py-12 bg-background text-foreground relative overflow-hidden transition-colors duration-300">
             
             {/* Background Glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[150px] pointer-events-none z-0" />
@@ -215,7 +215,7 @@ function LoginContent() {
             )}
 
             {/* Main Login Frame */}
-            <div className="w-full max-w-lg glass-card bg-card/80 border border-border shadow-2xl rounded-3xl md:rounded-[3rem] p-6 md:p-10 lg:p-14 relative z-10 m-auto mt-20 mb-20">
+            <div className="w-full max-w-lg glass-card bg-card/80 border border-border shadow-2xl rounded-3xl md:rounded-[3rem] p-6 md:p-10 lg:p-14 relative z-10 m-auto mt-8 mb-8">
                 <div className="text-center mb-12 space-y-4">
                     <div className="flex items-center justify-between mb-8">
                         <Link href="/" className="inline-flex items-center text-muted-foreground hover:text-foreground uppercase text-[10px] font-black tracking-widest transition-colors">
