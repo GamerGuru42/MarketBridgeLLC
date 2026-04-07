@@ -2,14 +2,15 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
-import { Eye, EyeOff, Loader2, Lock, User as UserIcon, Globe, KeyRound, AlertTriangle, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Lock, User as UserIcon, Globe, KeyRound, AlertTriangle, ArrowRight, ArrowLeft, Briefcase, ShieldAlert } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { normalizeIdentifier } from '@/lib/auth/utils';
 import { useAuth } from '@/contexts/AuthContext';
 
-const ADMIN_CODES = ['marketbridge2026', '1029384756', 'MB-FOUNDER-99', 'MB-TECH-2024', 'MB-OPS-2024', 'MB-MKT-2024'];
+type Step = 'role' | 'credentials';
+type Role = 'student_buyer' | 'student_seller' | 'admin' | 'ceo';
 
 function LoginContent() {
     const supabase = createClient();
@@ -18,15 +19,13 @@ function LoginContent() {
     const searchParams = useSearchParams();
     const redirectUrl = searchParams?.get('redirect') || searchParams?.get('next');
 
+    const [currentStep, setCurrentStep] = useState<Step>('role');
+    const [role, setRole] = useState<Role>('student_buyer');
+
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-
-    const [showAdminPin, setShowAdminPin] = useState(false);
-    const [adminPin, setAdminPin] = useState('');
-    const [adminPinError, setAdminPinError] = useState('');
-    const [adminVerified, setAdminVerified] = useState(false);
 
     useEffect(() => {
         if (!loading && sessionUser && user) {
@@ -39,38 +38,46 @@ function LoginContent() {
         const emailParam = searchParams?.get('email');
         if (emailParam) {
             setFormData(prev => ({ ...prev, email: decodeURIComponent(emailParam) }));
+            setCurrentStep('credentials');
+        }
+        const roleParam = searchParams?.get('role');
+        if (roleParam === 'student_seller' || roleParam === 'seller') {
+            setRole('student_seller');
+            setCurrentStep('credentials');
+        } else if (roleParam === 'student_buyer' || roleParam === 'buyer') {
+            setRole('student_buyer');
+            setCurrentStep('credentials');
         }
     }, [searchParams]);
 
-    function getRoleDestination(role: string) {
-        if (['dealer', 'student_seller', 'seller'].includes(role)) return '/seller/dashboard';
-        if (role === 'ceo') return '/admin/ceo';
-        if (['admin', 'technical_admin', 'operations_admin'].includes(role)) return '/admin';
+    function getRoleDestination(r: string) {
+        if (['dealer', 'student_seller', 'seller'].includes(r)) return '/seller/dashboard';
+        if (r === 'ceo') return '/admin/ceo';
+        if (['admin', 'technical_admin', 'operations_admin'].includes(r)) return '/admin';
         return '/marketplace';
     }
+
+    const handleRoleSelect = (selectedRole: Role) => {
+        setRole(selectedRole);
+        if (selectedRole === 'admin') {
+            router.push('/admin-access?target=admin');
+        } else if (selectedRole === 'ceo') {
+            router.push('/admin-access?target=ceo');
+        } else {
+            setCurrentStep('credentials');
+        }
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
         if (error) setError('');
     };
 
-    const handleAdminPinSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (ADMIN_CODES.includes(adminPin.trim())) {
-            setAdminVerified(true);
-            setShowAdminPin(false);
-            setAdminPinError('');
-        } else {
-            setAdminPinError('Clearance denied.');
-            setAdminPin('');
-        }
-    };
-
     const handleGoogleLogin = async () => {
         setIsLoading(true);
         setError('');
         try {
-            const next = redirectUrl || '/marketplace';
+            const next = redirectUrl || (role === 'student_seller' ? '/seller/dashboard' : '/marketplace');
             await signInWithGoogle(`${window.location.origin}/auth/callback?next=${next}`);
         } catch (err: any) {
             setError(err.message || 'Transmission failed.');
@@ -159,88 +166,105 @@ function LoginContent() {
         );
     }
 
-    return (
-        <div className="min-h-screen flex flex-col justify-center items-center p-4 py-12 bg-background text-foreground relative overflow-hidden transition-colors duration-300">
-            
-            {/* Background Glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[150px] pointer-events-none z-0" />
+    // ─── STEP 1: Role Selector (mirrors signup) ─────────────────────
+    if (currentStep === 'role') {
+        return (
+            <div className="min-h-screen flex flex-col justify-center items-center p-4 py-12 bg-background text-foreground relative overflow-hidden transition-colors duration-300">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[150px] pointer-events-none z-0" />
+                <div className="w-full max-w-2xl relative z-10 glass-card bg-card/80 border border-border rounded-3xl md:rounded-[3rem] p-6 md:p-10 lg:p-14 shadow-2xl">
+                    <div className="text-center mb-12 space-y-4">
+                        <Link href="/" className="inline-flex items-center text-muted-foreground hover:text-foreground uppercase text-[10px] font-black tracking-widest transition-colors mb-4">
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Abort To Main
+                        </Link>
+                        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading">
+                            Resume <span className="text-primary">Access</span>
+                        </h1>
+                        <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] italic">
+                            Select clearance authorization level
+                        </p>
+                    </div>
 
-            {/* Admin PIN Terminal */}
-            {showAdminPin && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-md p-4">
-                    <div className="w-full max-w-sm bg-card border border-primary/30 rounded-[2rem] p-8 space-y-6 shadow-[0_0_50px_rgba(255,98,0,0.15)]">
-                        <div className="text-center">
-                            <div className="mx-auto h-16 w-16 rounded-3xl bg-primary/10 flex items-center justify-center mb-6">
-                                <KeyRound className="h-8 w-8 text-primary" />
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-2">
+                        <button
+                            onClick={() => handleRoleSelect('student_buyer')}
+                            className="group bg-secondary border border-border rounded-3xl p-6 text-center cursor-pointer hover:border-primary/50 transition-all duration-300 flex flex-col items-center shadow-sm"
+                        >
+                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                                <UserIcon className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
                             </div>
-                            <h3 className="text-3xl font-black uppercase tracking-tighter text-foreground italic font-heading">Secure Terminal</h3>
-                            <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-[0.3em] mt-2">Enter cryptographic clearance</p>
-                        </div>
+                            <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Buyer</h3>
+                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest">Shop</p>
+                        </button>
+
+                        <button
+                            onClick={() => handleRoleSelect('student_seller')}
+                            className="group bg-secondary border border-border rounded-3xl p-6 text-center cursor-pointer hover:border-primary/50 transition-all duration-300 flex flex-col items-center shadow-sm relative overflow-hidden"
+                        >
+                            <div className="absolute top-3 right-3 h-1.5 w-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(255,98,0,0.8)]" />
+                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                                <Briefcase className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
+                            </div>
+                            <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Seller</h3>
+                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest">Merchant</p>
+                        </button>
                         
-                        {adminPinError && (
-                            <div className="bg-destructive/10 border border-destructive/20 rounded-2xl p-4 flex items-center gap-3">
-                                <AlertTriangle className="h-5 w-5 text-destructive shrink-0" />
-                                <p className="text-destructive text-xs font-bold uppercase tracking-widest leading-none">{adminPinError}</p>
+                        <button
+                            onClick={() => handleRoleSelect('admin')}
+                            className="group bg-secondary border border-border rounded-3xl p-6 text-center cursor-pointer hover:border-primary/50 transition-all duration-300 flex flex-col items-center shadow-sm"
+                        >
+                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                                <ShieldAlert className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
                             </div>
-                        )}
-                        
-                        <form onSubmit={handleAdminPinSubmit} className="space-y-4 pt-2">
-                            <input
-                                type="password"
-                                placeholder="ACCESS CODE"
-                                className="w-full h-16 bg-secondary border border-border rounded-2xl text-center tracking-[0.5em] font-black text-foreground focus:outline-none focus:border-primary/50 transition-all text-sm uppercase"
-                                value={adminPin}
-                                onChange={e => setAdminPin(e.target.value)}
-                                autoFocus
-                                required
-                            />
-                            <div className="flex gap-3">
-                                <Button
-                                    type="button"
-                                    onClick={() => { setShowAdminPin(false); setAdminPin(''); setAdminPinError(''); }}
-                                    className="flex-1 h-16 bg-transparent border border-border text-muted-foreground hover:text-foreground hover:bg-secondary uppercase text-[10px] font-black tracking-widest rounded-2xl"
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    className="flex-[2] h-16 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest rounded-2xl border-none shadow-[0_10px_30px_rgba(255,98,0,0.3)] transition-all"
-                                >
-                                    <Lock className="h-4 w-4 mr-2" /> Decrypt
-                                </Button>
+                            <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Admin</h3>
+                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest">Ops</p>
+                        </button>
+
+                        <button
+                            onClick={() => handleRoleSelect('ceo')}
+                            className="group bg-primary/5 border border-primary/20 rounded-3xl p-6 text-center cursor-pointer hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 flex flex-col items-center shadow-sm"
+                        >
+                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                                <KeyRound className="h-6 w-6 text-primary" />
                             </div>
-                        </form>
+                            <h3 className="text-sm font-black text-primary uppercase tracking-tight mb-1">CEO</h3>
+                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest">Growth</p>
+                        </button>
+                    </div>
+
+                    <div className="text-center pt-8 mt-8 border-t border-border">
+                        <p className="text-muted-foreground font-bold text-xs uppercase tracking-widest">
+                            No active clearance?{' '}
+                            <Link href="/signup" className="text-primary font-black ml-2 hover:opacity-80">
+                                Establish Protocol
+                            </Link>
+                        </p>
                     </div>
                 </div>
-            )}
+            </div>
+        );
+    }
 
-            {/* Main Login Frame */}
-            <div className="w-full max-w-lg glass-card bg-card/80 border border-border shadow-2xl rounded-3xl md:rounded-[3rem] p-6 md:p-10 lg:p-14 relative z-10 m-auto mt-8 mb-8">
+    // ─── STEP 2: Credentials Form ───────────────────────────────────
+    return (
+        <div className="min-h-screen flex flex-col justify-center items-center p-4 py-12 bg-background text-foreground relative overflow-hidden transition-colors duration-300">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[150px] pointer-events-none z-0" />
+            <div className="w-full max-w-lg glass-card bg-card/80 border border-border shadow-2xl rounded-3xl md:rounded-[3rem] p-6 md:p-10 lg:p-14 relative z-10">
                 <div className="text-center mb-12 space-y-4">
-                    <div className="flex items-center justify-between mb-8">
-                        <Link href="/" className="inline-flex items-center text-muted-foreground hover:text-foreground uppercase text-[10px] font-black tracking-widest transition-colors">
+                    <div className="flex justify-between items-center mb-6">
+                        <Button
+                            variant="ghost"
+                            onClick={() => setCurrentStep('role')}
+                            className="text-muted-foreground hover:text-foreground uppercase text-[10px] font-black tracking-widest px-0"
+                        >
                             <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
-                        </Link>
-                        {!adminVerified ? (
-                            <button
-                                type="button"
-                                onClick={() => setShowAdminPin(true)}
-                                className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/50 hover:text-primary transition-colors flex items-center gap-2"
-                            >
-                                <Lock className="h-3 w-3" /> Ops
-                            </button>
-                        ) : (
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-2">
-                                <Lock className="h-3 w-3" /> Cleared
-                            </span>
-                        )}
+                        </Button>
                     </div>
                     
                     <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading">
                         Resume <span className="text-primary">Access</span>
                     </h1>
                     <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] italic">
-                        {adminVerified ? 'Team terminal active' : 'Secure identification protocol'}
+                        Secure identification protocol
                     </p>
                 </div>
 
@@ -264,6 +288,7 @@ function LoginContent() {
                                 value={formData.email}
                                 onChange={handleChange}
                                 required
+                                autoFocus
                                 placeholder="you@address.com"
                                 className="w-full h-16 pl-14 pr-6 bg-secondary border border-border rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm"
                             />
@@ -332,14 +357,6 @@ function LoginContent() {
                     Google Fast Auth
                 </Button>
 
-                <div className="text-center pt-8 mt-8 border-t border-border">
-                    <p className="text-muted-foreground font-bold text-xs uppercase tracking-widest">
-                        No active clearance?{' '}
-                        <Link href="/signup" className="text-primary font-black ml-2 hover:opacity-80">
-                            Establish Protocol
-                        </Link>
-                    </p>
-                </div>
             </div>
         </div>
     );
