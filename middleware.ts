@@ -118,6 +118,10 @@ export async function middleware(request: NextRequest) {
     const { pathname, searchParams } = request.nextUrl;
     const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown-ip';
 
+    // ── 0. Subdomain & Host Detection ────────────────────────────────────────
+    const host = request.headers.get('host') || '';
+    const isHQSubdomain = host.startsWith('hq.');
+
     // ── 1. Rate Limiting ────────────────────────────────────────────────────
     const isPortalRoute = pathname.startsWith('/portal') || pathname.startsWith('/admin');
     const isAuthRoute = pathname.includes('/login') || pathname.includes('/auth') || pathname.includes('/signup');
@@ -146,6 +150,19 @@ export async function middleware(request: NextRequest) {
     // ── 3. Block /public/* when disabled ─────────────────────────────────────
     const disablePublic = process.env.NEXT_PUBLIC_DISABLE_PUBLIC_SECTION === 'true';
     if (disablePublic && pathname.startsWith('/public')) {
+        return new NextResponse('Not Found', { status: 404 });
+    }
+
+    // ── 3.5. Subdomain Flow Control ──────────────────────────────────────────
+    // If on HQ subdomain, rewrite root to portal login
+    if (isHQSubdomain && (pathname === '/' || pathname === '/login')) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/portal/login';
+        return NextResponse.rewrite(url);
+    }
+
+    // If NOT on HQ subdomain, heavily block direct access to internal routes
+    if (!isHQSubdomain && isPortalRoute) {
         return new NextResponse('Not Found', { status: 404 });
     }
 

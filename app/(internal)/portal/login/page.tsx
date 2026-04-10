@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { normalizeIdentifier } from '@/lib/auth/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import { cn } from '@/lib/utils';
 import { Logo } from '@/components/logo';
 
 const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
@@ -30,6 +31,13 @@ function PortalLoginContent() {
     const searchParams = useSearchParams();
     const redirectUrl = searchParams?.get('redirect') || searchParams?.get('next');
     const reason = searchParams?.get('reason');
+
+    type Step = 'role' | 'credentials';
+    type AdminRole = 'admin' | 'ceo';
+
+    const [currentStep, setCurrentStep] = useState<Step>('role');
+    const [selectedRole, setSelectedRole] = useState<AdminRole>('admin');
+    const [expandedRole, setExpandedRole] = useState<AdminRole | null>(null);
 
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [showPassword, setShowPassword] = useState(false);
@@ -155,26 +163,119 @@ function PortalLoginContent() {
         );
     }
 
+    const handleRoleSelect = (role: AdminRole) => {
+        setSelectedRole(role);
+        setCurrentStep('credentials');
+    };
+
+    if (currentStep === 'role') {
+        return (
+            <div className="min-h-screen flex flex-col justify-center items-center p-4 py-12 bg-background relative overflow-hidden transition-colors duration-300">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+
+                <div className="w-full max-w-2xl glass-card bg-card/80 border border-border shadow-2xl rounded-3xl md:rounded-[3rem] p-6 md:p-10 lg:p-14 relative z-10">
+                    <div className="text-center mb-12 space-y-4">
+                        <div className="flex justify-center mb-6">
+                            <Logo showText={false} className="scale-125" />
+                        </div>
+
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                            <Shield className="h-5 w-5 text-primary" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Restricted Access</span>
+                        </div>
+                        
+                        <h1 className="text-4xl font-black uppercase tracking-tighter text-foreground italic font-heading">
+                            HQ <span className="text-primary">Portal</span>
+                        </h1>
+                        <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] italic">
+                            Select Authentication Path
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:px-4">
+                        {/* ─── Admin / Staff Card ─────────────────────────────────── */}
+                        <div 
+                            onClick={() => setExpandedRole(expandedRole === 'admin' ? null : 'admin')}
+                            className={cn(
+                                "bg-secondary border rounded-3xl p-6 text-center flex flex-col items-center shadow-sm cursor-pointer transition-all duration-300",
+                                expandedRole === 'admin' ? "border-primary/50 ring-1 ring-primary/20 scale-[1.02]" : "border-border hover:border-primary/30"
+                            )}>
+                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4">
+                                <UserIcon className="h-6 w-6 text-muted-foreground" />
+                            </div>
+                            <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Admin Access</h3>
+                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest mb-2">Staff & Ops</p>
+                            
+                            <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'admin' ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
+                                <Button
+                                    onClick={(e) => { e.stopPropagation(); handleRoleSelect('admin'); }}
+                                    className="w-full h-12 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl shadow-[0_6px_20px_rgba(255,98,0,0.25)] transition-all"
+                                >
+                                    Log In <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* ─── CEO Card ────────────────────────────────────────── */}
+                        <div 
+                            onClick={() => setExpandedRole(expandedRole === 'ceo' ? null : 'ceo')}
+                            className={cn(
+                                "bg-secondary border rounded-3xl p-6 text-center flex flex-col items-center shadow-sm relative overflow-hidden cursor-pointer transition-all duration-300",
+                                expandedRole === 'ceo' ? "border-primary/50 ring-1 ring-primary/20 scale-[1.02]" : "border-border hover:border-primary/30"
+                            )}>
+                            <div className="absolute top-3 right-3 h-1.5 w-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(255,98,0,0.8)]" />
+                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4">
+                                <Lock className="h-6 w-6 text-muted-foreground" />
+                            </div>
+                            <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Vision Command</h3>
+                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest mb-2">CEO Only</p>
+                            
+                            <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'ceo' ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
+                                <Button
+                                    onClick={(e) => { e.stopPropagation(); handleRoleSelect('ceo'); }}
+                                    className="w-full h-12 bg-foreground text-background hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_6px_20px_rgba(0,0,0,0.25)]"
+                                >
+                                    Access Terminal <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="text-center pt-8 mt-8 border-t border-border">
+                        <p className="text-muted-foreground/50 text-[9px] uppercase tracking-widest font-bold">
+                            This portal is monitored. All access attempts are logged.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen flex flex-col justify-center items-center p-4 py-12 bg-background relative overflow-hidden transition-colors duration-300">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
             <div className="w-full max-w-lg glass-card bg-card/80 border border-border shadow-2xl rounded-3xl md:rounded-[3rem] p-6 md:p-10 lg:p-14 relative z-10">
                 <div className="text-center mb-12 space-y-4">
+                    <div className="flex justify-between items-center mb-6">
+                        <Button
+                            variant="ghost"
+                            onClick={() => setCurrentStep('role')}
+                            className="text-muted-foreground hover:text-foreground uppercase text-[10px] font-black tracking-widest px-0"
+                        >
+                            <ArrowRight className="mr-2 h-4 w-4 rotate-180" /> Back
+                        </Button>
+                    </div>
+
                     <div className="flex justify-center mb-6">
                         <Logo showText={false} className="scale-125" />
                     </div>
 
-                    <div className="flex items-center justify-center gap-2 mb-2">
-                        <Shield className="h-5 w-5 text-primary" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Restricted Access</span>
-                    </div>
-                    
                     <h1 className="text-4xl font-black uppercase tracking-tighter text-foreground italic font-heading">
-                        Team <span className="text-primary">Portal</span>
+                        {selectedRole === 'ceo' ? 'Decision' : 'Staff'} <span className="text-primary">Login</span>
                     </h1>
                     <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] italic">
-                        Authorized Personnel Only
+                        Enter Credentials
                     </p>
                 </div>
 
@@ -196,7 +297,7 @@ function PortalLoginContent() {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-2">
-                        <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-2">Team Email</label>
+                        <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-2">Secure Email</label>
                         <div className="relative">
                             <div className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-muted-foreground">
                                 <UserIcon className="h-4 w-4" />
@@ -208,7 +309,7 @@ function PortalLoginContent() {
                                 onChange={handleChange}
                                 required
                                 autoFocus
-                                placeholder="name@marketbridge.com"
+                                placeholder={selectedRole === 'ceo' ? "ceo@marketbridge.com" : "admin@marketbridge.com"}
                                 className="w-full h-16 pl-14 pr-6 bg-secondary border border-border rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm"
                             />
                         </div>
