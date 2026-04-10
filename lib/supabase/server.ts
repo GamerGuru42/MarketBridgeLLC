@@ -14,9 +14,11 @@ async function buildServerClient() {
                 },
                 setAll(cookiesToSet) {
                     try {
-                        cookiesToSet.forEach(({ name, value, options }) =>
-                            cookieStore.set(name, value, options)
-                        );
+                        cookiesToSet.forEach(({ name, value, options }) => {
+                            // Check host domain via headers if available or let it inherit
+                            const domain = process.env.NODE_ENV === 'production' ? '.marketbridge.com.ng' : undefined;
+                            cookieStore.set(name, value, { ...options, domain });
+                        });
                     } catch {
                         // The `setAll` method was called from a Server Component.
                         // This can be ignored if you have middleware refreshing

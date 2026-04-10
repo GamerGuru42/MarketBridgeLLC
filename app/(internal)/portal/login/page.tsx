@@ -187,11 +187,20 @@ function PortalLoginContent() {
         setIsLoading(true);
         setError(null);
         try {
-            const nextPath = selectedRole === 'ceo' ? '/admin/ceo' : '/admin';
+            let callbackOrigin = window.location.origin;
+            let targetDestination = selectedRole === 'ceo' ? '/admin/ceo' : '/admin';
+
+            if (callbackOrigin.includes('.marketbridge.com.ng')) {
+                // In production, force the OAuth callback to hit the main whitelisted domain.
+                // The callback route will set wildcard SSO cookies and then redirect back to the HQ subdomain.
+                callbackOrigin = 'https://marketbridge.com.ng';
+                targetDestination = `https://hq.marketbridge.com.ng${targetDestination}`;
+            }
+
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: `${window.location.origin}/auth/callback?role=${selectedRole}&next=${nextPath}`,
+                    redirectTo: `${callbackOrigin}/auth/callback?role=${selectedRole}&next=${encodeURIComponent(targetDestination)}`,
                 },
             });
             if (error) throw error;
