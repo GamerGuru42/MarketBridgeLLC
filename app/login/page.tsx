@@ -26,6 +26,7 @@ function LoginContent() {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [googleLoadingRole, setGoogleLoadingRole] = useState<Role | null>(null);
+    const [expandedRole, setExpandedRole] = useState<Role | null>(null);
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -179,23 +180,28 @@ function LoginContent() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:px-4">
                         {/* ─── Buyer Card ─────────────────────────────────────────── */}
-                        <div className="bg-secondary border border-border rounded-3xl p-6 text-center flex flex-col items-center shadow-sm">
+                        <div 
+                            onClick={() => setExpandedRole(expandedRole === 'student_buyer' ? null : 'student_buyer')}
+                            className={cn(
+                                "bg-secondary border rounded-3xl p-6 text-center flex flex-col items-center shadow-sm cursor-pointer transition-all duration-300",
+                                expandedRole === 'student_buyer' ? "border-primary/50 ring-1 ring-primary/20 scale-[1.02]" : "border-border hover:border-primary/30"
+                            )}>
                             <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4">
                                 <UserIcon className="h-6 w-6 text-muted-foreground" />
                             </div>
                             <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Buyer</h3>
-                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest mb-5">Shop & Browse</p>
+                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest mb-2">Shop & Browse</p>
                             
-                            <div className="w-full space-y-2.5">
+                            <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'student_buyer' ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
                                 <Button
-                                    onClick={() => handleRoleSelect('student_buyer')}
+                                    onClick={(e) => { e.stopPropagation(); handleRoleSelect('student_buyer'); }}
                                     className="w-full h-12 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl shadow-[0_6px_20px_rgba(255,98,0,0.25)] transition-all"
                                 >
                                     Log In with Email <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
                                 <Button
                                     type="button"
-                                    onClick={() => handleGoogleLogin('student_buyer')}
+                                    onClick={(e) => { e.stopPropagation(); handleGoogleLogin('student_buyer'); }}
                                     disabled={googleLoadingRole === 'student_buyer'}
                                     className="w-full h-12 bg-foreground text-background hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl flex items-center justify-center gap-2 transition-all"
                                 >
@@ -212,24 +218,29 @@ function LoginContent() {
                         </div>
 
                         {/* ─── Seller Card ────────────────────────────────────────── */}
-                        <div className="bg-secondary border border-border rounded-3xl p-6 text-center flex flex-col items-center shadow-sm relative overflow-hidden">
+                        <div 
+                            onClick={() => setExpandedRole(expandedRole === 'student_seller' ? null : 'student_seller')}
+                            className={cn(
+                                "bg-secondary border rounded-3xl p-6 text-center flex flex-col items-center shadow-sm relative overflow-hidden cursor-pointer transition-all duration-300",
+                                expandedRole === 'student_seller' ? "border-primary/50 ring-1 ring-primary/20 scale-[1.02]" : "border-border hover:border-primary/30"
+                            )}>
                             <div className="absolute top-3 right-3 h-1.5 w-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(255,98,0,0.8)]" />
                             <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4">
                                 <Briefcase className="h-6 w-6 text-muted-foreground" />
                             </div>
                             <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Seller</h3>
-                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest mb-5">Sell on Campus</p>
+                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest mb-2">Sell on Campus</p>
                             
-                            <div className="w-full space-y-2.5">
+                            <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'student_seller' ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
                                 <Button
-                                    onClick={() => handleRoleSelect('student_seller')}
+                                    onClick={(e) => { e.stopPropagation(); handleRoleSelect('student_seller'); }}
                                     className="w-full h-12 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl shadow-[0_6px_20px_rgba(255,98,0,0.25)] transition-all"
                                 >
                                     Log In with Email <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
                                 <Button
                                     type="button"
-                                    onClick={() => handleGoogleLogin('student_seller')}
+                                    onClick={(e) => { e.stopPropagation(); handleGoogleLogin('student_seller'); }}
                                     disabled={googleLoadingRole === 'student_seller'}
                                     className="w-full h-12 bg-foreground text-background hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl flex items-center justify-center gap-2 transition-all"
                                 >
@@ -242,9 +253,6 @@ function LoginContent() {
                                         </>
                                     )}
                                 </Button>
-                                <p className="text-[8px] text-muted-foreground font-bold uppercase tracking-widest mt-1">
-                                    Use your school email
-                                </p>
                             </div>
                         </div>
                     </div>
