@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { normalizeIdentifier } from '@/lib/auth/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import { cn } from '@/lib/utils';
 
 type Step = 'role' | 'credentials';
 type Role = 'student_buyer' | 'student_seller';
