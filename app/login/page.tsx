@@ -25,6 +25,7 @@ function LoginContent() {
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [googleLoadingRole, setGoogleLoadingRole] = useState<Role | null>(null);
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -52,8 +53,6 @@ function LoginContent() {
 
     function getRoleDestination(r: string) {
         if (['dealer', 'student_seller', 'seller'].includes(r)) return '/seller/dashboard';
-        if (r === 'ceo') return '/admin/ceo';
-        if (['admin', 'technical_admin', 'operations_admin'].includes(r)) return '/admin';
         return '/marketplace';
     }
 
@@ -67,15 +66,15 @@ function LoginContent() {
         if (error) setError('');
     };
 
-    const handleGoogleLogin = async () => {
-        setIsLoading(true);
+    const handleGoogleLogin = async (selectedRole: Role) => {
+        setGoogleLoadingRole(selectedRole);
         setError('');
         try {
-            const next = redirectUrl || (role === 'student_seller' ? '/seller/dashboard' : '/marketplace');
-            await signInWithGoogle(`${window.location.origin}/auth/callback?next=${next}`);
+            const next = redirectUrl || (selectedRole === 'student_seller' ? '/seller/dashboard' : '/marketplace');
+            await signInWithGoogle(`${window.location.origin}/auth/callback?role=${selectedRole}&next=${next}`);
         } catch (err: any) {
-            setError(err.message || 'Transmission failed.');
-            setIsLoading(false);
+            setError(err.message || 'Google Sign-In failed.');
+            setGoogleLoadingRole(null);
         }
     };
 
@@ -100,19 +99,19 @@ function LoginContent() {
             if (signInError) {
                 const msg = signInError.message?.toLowerCase() ?? '';
                 if (msg.includes('invalid login') || msg.includes('invalid credentials')) {
-                    setError('Incorrect identity or key.');
+                    setError('Incorrect email or password.');
                 } else if (msg.includes('email not confirmed')) {
-                    setError('Verify email endpoint first.');
+                    setError('Please verify your email first.');
                 } else if (msg.includes('timed out')) {
                     setError('Connection timed out.');
                 } else {
-                    setError(signInError.message || 'Authorization failed.');
+                    setError(signInError.message || 'Login failed.');
                 }
                 return;
             }
 
             if (!data?.user) {
-                setError('Authorization failed.');
+                setError('Login failed.');
                 return;
             }
 
@@ -146,7 +145,7 @@ function LoginContent() {
             router.replace(redirectUrl || getRoleDestination(userRole));
 
         } catch (err: any) {
-            setError(err.message || 'Authorization failed.');
+            setError(err.message || 'Login failed.');
         } finally {
             setIsLoading(false);
         }
@@ -160,15 +159,15 @@ function LoginContent() {
         );
     }
 
-    // ─── STEP 1: Role Selector (mirrors signup) ─────────────────────
+    // ─── STEP 1: Role Selector with Google Sign-In inside each card ──
     if (currentStep === 'role') {
         return (
             <div className="min-h-screen flex flex-col justify-center items-center p-4 py-12 bg-background text-foreground relative overflow-hidden transition-colors duration-300">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[150px] pointer-events-none z-0" />
                 <div className="w-full max-w-2xl relative z-10 glass-card bg-card/80 border border-border rounded-3xl md:rounded-[3rem] p-6 md:p-10 lg:p-14 shadow-2xl">
-                    <div className="text-center mb-12 space-y-4">
+                    <div className="text-center mb-10 space-y-4">
                         <Link href="/" className="inline-flex items-center text-muted-foreground hover:text-foreground uppercase text-[10px] font-black tracking-widest transition-colors mb-4">
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Abort To Main
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
                         </Link>
                         <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading">
                             Log <span className="text-primary">In</span>
@@ -178,47 +177,79 @@ function LoginContent() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 mb-2 md:px-12">
-                        <button
-                            onClick={() => handleRoleSelect('student_buyer')}
-                            className="group bg-secondary border border-border rounded-3xl p-6 text-center cursor-pointer hover:border-primary/50 transition-all duration-300 flex flex-col items-center shadow-sm"
-                        >
-                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                                <UserIcon className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:px-4">
+                        {/* ─── Buyer Card ─────────────────────────────────────────── */}
+                        <div className="bg-secondary border border-border rounded-3xl p-6 text-center flex flex-col items-center shadow-sm">
+                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4">
+                                <UserIcon className="h-6 w-6 text-muted-foreground" />
                             </div>
                             <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Buyer</h3>
-                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest">Shop</p>
-                        </button>
+                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest mb-5">Shop & Browse</p>
+                            
+                            <div className="w-full space-y-2.5">
+                                <Button
+                                    onClick={() => handleRoleSelect('student_buyer')}
+                                    className="w-full h-12 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl shadow-[0_6px_20px_rgba(255,98,0,0.25)] transition-all"
+                                >
+                                    Log In with Email <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                                <Button
+                                    type="button"
+                                    onClick={() => handleGoogleLogin('student_buyer')}
+                                    disabled={googleLoadingRole === 'student_buyer'}
+                                    className="w-full h-12 bg-foreground text-background hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl flex items-center justify-center gap-2 transition-all"
+                                >
+                                    {googleLoadingRole === 'student_buyer' ? (
+                                        <Loader2 className="animate-spin h-4 w-4" />
+                                    ) : (
+                                        <>
+                                            <Globe className="h-4 w-4" />
+                                            Google Sign-In
+                                        </>
+                                    )}
+                                </Button>
+                            </div>
+                        </div>
 
-                        <button
-                            onClick={() => handleRoleSelect('student_seller')}
-                            className="group bg-secondary border border-border rounded-3xl p-6 text-center cursor-pointer hover:border-primary/50 transition-all duration-300 flex flex-col items-center shadow-sm relative overflow-hidden"
-                        >
+                        {/* ─── Seller Card ────────────────────────────────────────── */}
+                        <div className="bg-secondary border border-border rounded-3xl p-6 text-center flex flex-col items-center shadow-sm relative overflow-hidden">
                             <div className="absolute top-3 right-3 h-1.5 w-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(255,98,0,0.8)]" />
-                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                                <Briefcase className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
+                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4">
+                                <Briefcase className="h-6 w-6 text-muted-foreground" />
                             </div>
                             <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Seller</h3>
-                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest">Merchant</p>
-                        </button>
+                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest mb-5">Sell on Campus</p>
+                            
+                            <div className="w-full space-y-2.5">
+                                <Button
+                                    onClick={() => handleRoleSelect('student_seller')}
+                                    className="w-full h-12 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl shadow-[0_6px_20px_rgba(255,98,0,0.25)] transition-all"
+                                >
+                                    Log In with Email <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                                <Button
+                                    type="button"
+                                    onClick={() => handleGoogleLogin('student_seller')}
+                                    disabled={googleLoadingRole === 'student_seller'}
+                                    className="w-full h-12 bg-foreground text-background hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl flex items-center justify-center gap-2 transition-all"
+                                >
+                                    {googleLoadingRole === 'student_seller' ? (
+                                        <Loader2 className="animate-spin h-4 w-4" />
+                                    ) : (
+                                        <>
+                                            <Globe className="h-4 w-4" />
+                                            School Google Sign-In
+                                        </>
+                                    )}
+                                </Button>
+                                <p className="text-[8px] text-muted-foreground font-bold uppercase tracking-widest mt-1">
+                                    Use your school email
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="relative py-8 flex items-center justify-center">
-                        <div className="absolute inset-x-0 h-px bg-border" />
-                        <span className="relative bg-card px-4 text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground">Or</span>
-                    </div>
-
-                    <Button
-                        type="button"
-                        onClick={handleGoogleLogin}
-                        disabled={isLoading}
-                        className="w-full h-16 bg-foreground text-background hover:opacity-90 font-black uppercase tracking-widest rounded-2xl flex items-center justify-center gap-3 transition-all"
-                    >
-                        <Globe className="h-5 w-5" />
-                        Google Sign-In
-                    </Button>
-
-                    <div className="text-center pt-8 mt-4 border-t border-border">
+                    <div className="text-center pt-8 mt-6 border-t border-border">
                         <p className="text-muted-foreground font-bold text-xs uppercase tracking-widest">
                             No account?{' '}
                             <Link href="/signup" className="text-primary font-black ml-2 hover:opacity-80">
@@ -251,7 +282,7 @@ function LoginContent() {
                         Log <span className="text-primary">In</span>
                     </h1>
                     <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] italic">
-                        Enter your credentials
+                        {role === 'student_seller' ? 'Seller credentials' : 'Enter your credentials'}
                     </p>
                 </div>
 
@@ -286,7 +317,7 @@ function LoginContent() {
                         <div className="flex justify-between items-center px-1">
                             <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-1">Password</label>
                             <Link href="/forgot-password" className="text-[9px] font-black uppercase tracking-widest text-primary hover:opacity-80 transition-all pr-1">
-                                Reset Key?
+                                Forgot Password?
                             </Link>
                         </div>
                         <div className="relative">
@@ -336,12 +367,16 @@ function LoginContent() {
 
                 <Button
                     type="button"
-                    onClick={handleGoogleLogin}
-                    disabled={isLoading}
+                    onClick={() => handleGoogleLogin(role)}
+                    disabled={googleLoadingRole !== null}
                     className="w-full h-16 bg-foreground text-background hover:opacity-90 font-black uppercase tracking-widest rounded-2xl flex items-center justify-center gap-3 transition-all"
                 >
-                    <Globe className="h-5 w-5" />
-                    Google Sign-In
+                    {googleLoadingRole ? <Loader2 className="animate-spin h-5 w-5" /> : (
+                        <>
+                            <Globe className="h-5 w-5" />
+                            {role === 'student_seller' ? 'School Google Sign-In' : 'Google Sign-In'}
+                        </>
+                    )}
                 </Button>
 
             </div>
