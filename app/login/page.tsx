@@ -169,7 +169,7 @@ function LoginContent() {
                         <Link href="/" className="inline-flex items-center text-muted-foreground hover:text-foreground uppercase text-[10px] font-black tracking-widest transition-colors mb-4">
                             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
                         </Link>
-                        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading">
                             Log <span className="text-primary">In</span>
                         </h1>
                         <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] italic">
@@ -278,7 +278,7 @@ function LoginContent() {
                         </Button>
                     </div>
                     
-                    <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading">
                         Log <span className="text-primary">In</span>
                     </h1>
                     <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] italic">

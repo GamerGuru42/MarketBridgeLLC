@@ -146,7 +146,7 @@ function SignupContent() {
                         <Link href="/" className="inline-flex items-center text-muted-foreground hover:text-foreground uppercase text-[10px] font-black tracking-widest transition-colors mb-4">
                             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
                         </Link>
-                        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading">
                             Create <span className="text-primary">Account</span>
                         </h1>
                         <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] italic">
@@ -254,7 +254,7 @@ function SignupContent() {
                         </Button>
                     </div>
                     
-                    <h2 className="text-4xl font-black uppercase tracking-tighter text-foreground italic font-heading leading-none">
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading leading-none">
                         Sign <span className="text-primary">Up</span>
                     </h2>
                     <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px] italic">
@@ -300,7 +300,7 @@ function SignupContent() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-2">Password</label>
                             <input
