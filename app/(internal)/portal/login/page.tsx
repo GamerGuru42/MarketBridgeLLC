@@ -34,12 +34,14 @@ function PortalLoginContent() {
 
     type Step = 'role' | 'credentials';
     type AdminRole = 'admin' | 'ceo';
+    type AuthMode = 'login' | 'signup';
 
     const [currentStep, setCurrentStep] = useState<Step>('role');
     const [selectedRole, setSelectedRole] = useState<AdminRole>('admin');
     const [expandedRole, setExpandedRole] = useState<AdminRole | null>(null);
+    const [authMode, setAuthMode] = useState<AuthMode>('login');
 
-    const [formData, setFormData] = useState({ email: '', password: '' });
+    const [formData, setFormData] = useState({ email: '', password: '', fullName: '' });
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
@@ -86,26 +88,47 @@ function PortalLoginContent() {
 
         try {
             const emailToUse = normalizeIdentifier(formData.email);
+            let authResponse: any;
 
-            const loginPromise = supabase.auth.signInWithPassword({
-                email: emailToUse,
-                password: formData.password,
-            });
-            const timeoutPromise = new Promise<never>((_, reject) =>
-                setTimeout(() => reject(new Error('Connection timed out.')), 8000)
-            );
+            if (authMode === 'signup') {
+                const signupPromise = supabase.auth.signUp({
+                    email: emailToUse,
+                    password: formData.password,
+                    options: {
+                        data: {
+                            full_name: formData.fullName,
+                            role: selectedRole,
+                        }
+                    }
+                });
+                const timeoutPromise = new Promise<never>((_, reject) =>
+                    setTimeout(() => reject(new Error('Connection timed out.')), 8000)
+                );
+                authResponse = await Promise.race([signupPromise, timeoutPromise as any]);
+            } else {
+                const loginPromise = supabase.auth.signInWithPassword({
+                    email: emailToUse,
+                    password: formData.password,
+                });
+                const timeoutPromise = new Promise<never>((_, reject) =>
+                    setTimeout(() => reject(new Error('Connection timed out.')), 8000)
+                );
+                authResponse = await Promise.race([loginPromise, timeoutPromise as any]);
+            }
 
-            const { data, error: signInError } = await Promise.race([loginPromise, timeoutPromise as any]);
+            const { data, error: authError } = authResponse;
 
-            if (signInError) {
-                await logAuditEvent('login_failure', null, `Failed login for ${emailToUse}: ${signInError.message}`);
-                const msg = signInError.message?.toLowerCase() ?? '';
+            if (authError) {
+                await logAuditEvent('login_failure', null, `Failed ${authMode} for ${emailToUse}: ${authError.message}`);
+                const msg = authError.message?.toLowerCase() ?? '';
                 if (msg.includes('invalid login') || msg.includes('invalid credentials')) {
                     setError('Incorrect email or password.');
+                } else if (msg.includes('already registered')) {
+                    setError('An account with this email already exists.');
                 } else if (msg.includes('timed out')) {
                     setError('Connection timed out.');
                 } else {
-                    setError(signInError.message || 'Authorization failed.');
+                    setError(authError.message || 'Authorization failed.');
                 }
                 return;
             }
@@ -113,6 +136,12 @@ function PortalLoginContent() {
             if (!data?.user) {
                 await logAuditEvent('login_failure', null, `No user returned for ${emailToUse}`);
                 setError('Authorization failed.');
+                return;
+            }
+
+            if (authMode === 'signup' && !data.session) {
+                setError('Registration successful. Please check your email inbox to verify your account.');
+                setIsLoading(false);
                 return;
             }
 
@@ -163,8 +192,9 @@ function PortalLoginContent() {
         );
     }
 
-    const handleRoleSelect = (role: AdminRole) => {
+    const handleRoleSelect = (role: AdminRole, mode: AuthMode = 'login') => {
         setSelectedRole(role);
+        setAuthMode(mode);
         setCurrentStep('credentials');
     };
 
@@ -208,10 +238,17 @@ function PortalLoginContent() {
                             
                             <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'admin' ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
                                 <Button
-                                    onClick={(e) => { e.stopPropagation(); handleRoleSelect('admin'); }}
+                                    onClick={(e) => { e.stopPropagation(); handleRoleSelect('admin', 'login'); }}
                                     className="w-full h-12 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl shadow-[0_6px_20px_rgba(255,98,0,0.25)] transition-all"
                                 >
                                     Log In <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    onClick={(e) => { e.stopPropagation(); handleRoleSelect('admin', 'signup'); }}
+                                    className="w-full h-12 font-black uppercase tracking-widest text-[10px] rounded-xl transition-all border-border text-muted-foreground hover:text-foreground"
+                                >
+                                    Apply For Access
                                 </Button>
                             </div>
                         </div>
@@ -232,10 +269,17 @@ function PortalLoginContent() {
                             
                             <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'ceo' ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
                                 <Button
-                                    onClick={(e) => { e.stopPropagation(); handleRoleSelect('ceo'); }}
+                                    onClick={(e) => { e.stopPropagation(); handleRoleSelect('ceo', 'login'); }}
                                     className="w-full h-12 bg-foreground text-background hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_6px_20px_rgba(0,0,0,0.25)]"
                                 >
                                     Access Terminal <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    onClick={(e) => { e.stopPropagation(); handleRoleSelect('ceo', 'signup'); }}
+                                    className="w-full h-12 font-black uppercase tracking-widest text-[10px] rounded-xl transition-all border-border text-muted-foreground hover:text-foreground"
+                                >
+                                    Apply For Access
                                 </Button>
                             </div>
                         </div>
@@ -272,10 +316,10 @@ function PortalLoginContent() {
                     </div>
 
                     <h1 className="text-4xl font-black uppercase tracking-tighter text-foreground italic font-heading">
-                        {selectedRole === 'ceo' ? 'Decision' : 'Staff'} <span className="text-primary">Login</span>
+                        {selectedRole === 'ceo' ? 'Decision' : 'Staff'} <span className="text-primary">{authMode === 'signup' ? 'Signup' : 'Login'}</span>
                     </h1>
                     <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] italic">
-                        Enter Credentials
+                        {authMode === 'signup' ? 'Create Team Account' : 'Enter Credentials'}
                     </p>
                 </div>
 
@@ -296,6 +340,26 @@ function PortalLoginContent() {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
+                    {authMode === 'signup' && (
+                        <div className="space-y-2 animate-in fade-in slide-in-from-top-4">
+                            <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-2">Full Name</label>
+                            <div className="relative">
+                                <div className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-muted-foreground">
+                                    <UserIcon className="h-4 w-4" />
+                                </div>
+                                <input
+                                    name="fullName"
+                                    type="text"
+                                    value={formData.fullName}
+                                    onChange={handleChange}
+                                    required
+                                    autoFocus
+                                    placeholder="John Doe"
+                                    className="w-full h-16 pl-14 pr-6 bg-secondary border border-border rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm"
+                                />
+                            </div>
+                        </div>
+                    )}
                     <div className="space-y-2">
                         <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-2">Secure Email</label>
                         <div className="relative">
@@ -355,7 +419,7 @@ function PortalLoginContent() {
                                 <Loader2 className="animate-spin h-6 w-6" />
                             ) : (
                                 <>
-                                    Authenticate <ArrowRight className="ml-4 h-5 w-5" />
+                                    {authMode === 'signup' ? 'Create Account' : 'Authenticate'} <ArrowRight className="ml-4 h-5 w-5" />
                                 </>
                             )}
                         </Button>

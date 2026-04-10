@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { useChat } from 'ai/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function AiAssistant() {
     const [isOpen, setIsOpen] = useState(false);
@@ -198,25 +199,35 @@ export function AiAssistant() {
 
     return (
         <>
-            <Button
+            <motion.button
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                    "fixed bottom-6 right-4 sm:right-6 h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-lg z-[110] transition-all duration-300 hover:scale-110",
-                    isOpen ? "rotate-90 bg-destructive hover:bg-destructive/90" : "bg-primary hover:bg-primary/90"
+                    "fixed bottom-6 right-4 sm:right-6 h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-[0_10px_40px_rgba(255,98,0,0.4)] flex items-center justify-center text-white z-[110]",
+                    isOpen ? "bg-destructive hover:bg-destructive/90 shadow-[0_10px_40px_rgba(239,68,68,0.4)]" : "bg-[#FF6200] hover:bg-[#FF6200]/90"
                 )}
-                size="icon"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                initial={false}
+                animate={{ rotate: isOpen ? 90 : 0 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
-                {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
-            </Button>
+                {isOpen ? <X className="h-6 w-6 relative z-10" /> : <MessageCircle className="h-6 w-6 relative z-10" />}
+                {!isOpen && (
+                    <span className="absolute inset-0 rounded-full border-2 border-[#FF6200] animate-ping opacity-50"></span>
+                )}
+            </motion.button>
 
-            <div
-                className={cn(
-                    "fixed bottom-24 right-4 sm:right-6 z-[110] w-[calc(100vw-2rem)] sm:w-[400px] transition-all duration-300 ease-in-out origin-bottom-right",
-                    isOpen ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-10 pointer-events-none"
-                )}
-            >
-                <Card className="border-primary/20 shadow-2xl overflow-hidden backdrop-blur-sm bg-background/95 h-[500px] sm:h-[600px] flex flex-col">
-                    <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5 p-4 flex flex-row items-center gap-3 border-b border-primary/10 shrink-0">
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8, y: 50, filter: "blur(10px)" }}
+                        animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+                        exit={{ opacity: 0, scale: 0.8, y: 50, filter: "blur(10px)" }}
+                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                        className="fixed bottom-24 right-4 sm:right-6 z-[110] w-[calc(100vw-2rem)] sm:w-[400px] origin-bottom-right"
+                    >
+                        <Card className="border-white/10 shadow-[0_30px_100px_rgba(0,0,0,0.5)] overflow-hidden backdrop-blur-3xl bg-zinc-950/80 h-[500px] sm:h-[600px] flex flex-col ring-1 ring-white/10">
+                            <CardHeader className="bg-gradient-to-r from-primary/20 to-transparent p-4 flex flex-row items-center gap-3 border-b border-primary/10 shrink-0">
                         <div className="relative">
                             <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
                                 <Bot className="h-6 w-6 text-primary-foreground" />
@@ -234,9 +245,15 @@ export function AiAssistant() {
 
                     <CardContent className="p-0 flex-1 overflow-hidden flex flex-col">
                         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                            {messages.map((msg) => (
-                                <div key={msg.id}>
-                                    <div
+                            <AnimatePresence initial={false}>
+                                {messages.map((msg) => (
+                                    <motion.div 
+                                        key={msg.id}
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        transition={{ type: "spring", bounce: 0.4 }}
+                                    >
+                                        <div
                                         className={cn(
                                             "flex gap-3 max-w-[85%]",
                                             msg.role === 'user' ? "ml-auto flex-row-reverse" : ""
@@ -279,11 +296,16 @@ export function AiAssistant() {
 
                                             {msg.toolInvocations?.map(toolInvocation => renderTool(toolInvocation))}
                                         </div>
-                                    </div>
-                                </div>
-                            ))}
-                            {isLoading && messages[messages.length - 1]?.role !== 'assistant' && (
-                                <div className="flex gap-3 max-w-[85%]">
+                                        </div>
+                                    </motion.div>
+                                ))}
+                                {isLoading && messages[messages.length - 1]?.role !== 'assistant' && (
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.9 }}
+                                        className="flex gap-3 max-w-[85%]"
+                                    >
                                     <Avatar className="h-8 w-8 mt-1">
                                         <AvatarFallback className="bg-gradient-to-br from-primary to-primary/60 text-primary-foreground">
                                             <Bot className="h-4 w-4" />
@@ -294,8 +316,9 @@ export function AiAssistant() {
                                         <span className="w-2 h-2 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
                                         <span className="w-2 h-2 bg-primary/40 rounded-full animate-bounce"></span>
                                     </div>
-                                </div>
-                            )}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                             {error && retryCount >= 2 && (
                                 <div className="flex gap-3 max-w-[85%] mt-2">
                                     <Avatar className="h-8 w-8 mt-1">
@@ -353,7 +376,9 @@ export function AiAssistant() {
                         </form>
                     </CardFooter>
                 </Card>
-            </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </>
     );
 }
