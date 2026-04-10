@@ -22,3 +22,32 @@ export function normalizeIdentifier(identifier: string): string {
 export function isPhoneIdentifier(email: string): boolean {
     return email.startsWith('phone-') && email.endsWith('@marketbridge.local');
 }
+
+/**
+ * Strict Input Sanitization to strip potential XSS and SQL injection patterns.
+ * Designed to clean inputs before transmission to database.
+ */
+export function sanitizeInput(input: string): string {
+    if (!input) return '';
+    let sanitized = input.trim();
+    
+    // Strip common script injection tags
+    sanitized = sanitized.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
+    sanitized = sanitized.replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, "");
+    
+    // Strip inline event handlers (onerror, onload, alert)
+    sanitized = sanitized.replace(/on\w+\s*=/gi, "");
+    sanitized = sanitized.replace(/javascript:/gi, "");
+    
+    // Convert critical HTML entities to prevent basic DOM manipulation
+    const map: Record<string, string> = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#x27;',
+        "/": '&#x2F;',
+    };
+    
+    return sanitized.replace(/[&<>"'/]/g, (match) => map[match]);
+}

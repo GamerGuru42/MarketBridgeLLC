@@ -12,7 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
 type Step = 'role' | 'details';
-type Role = 'student_buyer' | 'student_seller' | 'admin' | 'ceo';
+type Role = 'student_buyer' | 'student_seller';
 
 function SignupContent() {
     const supabase = createClient();
@@ -51,10 +51,6 @@ function SignupContent() {
         setRole(selectedRole);
         if (selectedRole === 'student_seller') {
             router.push('/seller-onboard');
-        } else if (selectedRole === 'admin') {
-            router.push('/admin-access?target=admin');
-        } else if (selectedRole === 'ceo') {
-            router.push('/admin-access?target=ceo');
         } else {
             setCurrentStep('details');
         }
@@ -149,14 +145,14 @@ function SignupContent() {
                             <ArrowLeft className="mr-2 h-4 w-4" /> Abort To Main
                         </Link>
                         <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading">
-                            Network <span className="text-primary">Access</span>
+                            Create <span className="text-primary">Account</span>
                         </h1>
                         <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] italic">
-                            Select clearance authorization level
+                            Select your account type
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-2">
+                    <div className="grid grid-cols-2 gap-4 mb-2 md:px-12">
                         <button
                             onClick={() => handleRoleSelect('student_buyer')}
                             className="group bg-secondary border border-border rounded-3xl p-6 text-center cursor-pointer hover:border-primary/50 transition-all duration-300 flex flex-col items-center shadow-sm"
@@ -179,35 +175,28 @@ function SignupContent() {
                             <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Seller</h3>
                             <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest">Merchant</p>
                         </button>
-                        
-                        <button
-                            onClick={() => handleRoleSelect('admin')}
-                            className="group bg-secondary border border-border rounded-3xl p-6 text-center cursor-pointer hover:border-primary/50 transition-all duration-300 flex flex-col items-center shadow-sm"
-                        >
-                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                                <ShieldAlert className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
-                            </div>
-                            <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Admin</h3>
-                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest">Ops</p>
-                        </button>
-
-                        <button
-                            onClick={() => handleRoleSelect('ceo')}
-                            className="group bg-primary/5 border border-primary/20 rounded-3xl p-6 text-center cursor-pointer hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 flex flex-col items-center shadow-sm"
-                        >
-                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                                <KeyRound className="h-6 w-6 text-primary" />
-                            </div>
-                            <h3 className="text-sm font-black text-primary uppercase tracking-tight mb-1">CEO</h3>
-                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest">Growth</p>
-                        </button>
                     </div>
 
-                    <div className="text-center pt-8 mt-8 border-t border-border">
+                    <div className="relative py-8 flex items-center justify-center">
+                        <div className="absolute inset-x-0 h-px bg-border" />
+                        <span className="relative bg-card px-4 text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground">Or</span>
+                    </div>
+
+                    <Button
+                        type="button"
+                        onClick={handleGoogleAuth}
+                        disabled={isLoading}
+                        className="w-full h-16 bg-foreground text-background hover:opacity-90 font-black uppercase tracking-widest rounded-2xl flex items-center justify-center gap-3 transition-all"
+                    >
+                        <Globe className="h-5 w-5" />
+                        Google Sign-In
+                    </Button>
+
+                    <div className="text-center pt-8 mt-4 border-t border-border">
                         <p className="text-muted-foreground font-bold text-xs uppercase tracking-widest">
-                            System credentials active?{' '}
+                            Already have an account?{' '}
                             <Link href="/login" className="text-primary font-black ml-2 hover:opacity-80">
-                                Execute Login
+                                Log In
                             </Link>
                         </p>
                     </div>
@@ -232,16 +221,16 @@ function SignupContent() {
                     </div>
                     
                     <h2 className="text-4xl font-black uppercase tracking-tighter text-foreground italic font-heading leading-none">
-                        Establish <span className="text-primary">Identity</span>
+                        Sign <span className="text-primary">Up</span>
                     </h2>
                     <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px] italic">
-                        Standard clearance protocol
+                        Enter your details
                     </p>
                 </div>
 
                 <form onSubmit={handleSignup} className="space-y-6">
                     <div className="space-y-2">
-                        <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading">Legal Designation</label>
+                        <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading">Full Name</label>
                         <div className="relative">
                             <div className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-muted-foreground">
                                 <UserIcon className="h-4 w-4" />
@@ -253,14 +242,14 @@ function SignupContent() {
                                 value={formData.fullName}
                                 onChange={handleChange}
                                 required
-                                placeholder="Enter public designation..."
+                                placeholder="Full Name"
                                 className="w-full h-16 pl-14 pr-6 bg-secondary border border-border rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm"
                             />
                         </div>
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading">Secure Endpoint (Email)</label>
+                        <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading">Email Address</label>
                         <div className="relative">
                             <div className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-muted-foreground">
                                 <Mail className="h-4 w-4" />
@@ -279,7 +268,7 @@ function SignupContent() {
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-2">Secure Key</label>
+                            <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-2">Password</label>
                             <input
                                 name="password"
                                 type="password"
@@ -291,7 +280,7 @@ function SignupContent() {
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-2">Verify Key</label>
+                            <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-2">Confirm Password</label>
                             <input
                                 name="passwordConfirm"
                                 type="password"
@@ -312,7 +301,7 @@ function SignupContent() {
                         >
                             {isLoading ? <Loader2 className="animate-spin h-6 w-6 relative z-10" /> : (
                                 <>
-                                    Establish Account <ArrowRight className="ml-4 h-5 w-5" />
+                                    Create Account <ArrowRight className="ml-4 h-5 w-5" />
                                 </>
                             )}
                         </Button>
@@ -321,7 +310,7 @@ function SignupContent() {
 
                 <div className="relative py-8 flex items-center justify-center">
                     <div className="absolute inset-x-0 h-px bg-border" />
-                    <span className="relative bg-card px-4 text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground">Or Bypass</span>
+                    <span className="relative bg-card px-4 text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground">Or</span>
                 </div>
 
                 <Button
@@ -330,7 +319,7 @@ function SignupContent() {
                     className="w-full h-16 bg-foreground text-background hover:opacity-90 font-black uppercase tracking-widest rounded-2xl flex items-center justify-center gap-3 transition-all"
                 >
                     <Globe className="h-5 w-5" />
-                    Google Fast Auth
+                    Google Sign-In
                 </Button>
 
             </div>

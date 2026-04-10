@@ -131,8 +131,8 @@ function AdminAccessContent() {
             if (profileError) throw profileError;
 
             if (!authData.session) {
-                toast('Account created! Check your email to verify, then log in at /login.', 'success');
-                router.push('/login');
+                toast('Account created! Check your email to verify, then log in at /portal/login.', 'success');
+                router.push('/portal/login');
                 return;
             }
 
@@ -199,7 +199,7 @@ function AdminAccessContent() {
 
                     <p className="text-muted-foreground text-xs font-semibold">
                         Already have an account?{' '}
-                        <Link href="/login" className="text-primary hover:underline font-bold">Log In</Link>
+                        <Link href="/portal/login" className="text-primary hover:underline font-bold">Log In</Link>
                     </p>
                 </div>
             </div>

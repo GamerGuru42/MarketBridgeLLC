@@ -10,7 +10,7 @@ import { normalizeIdentifier } from '@/lib/auth/utils';
 import { useAuth } from '@/contexts/AuthContext';
 
 type Step = 'role' | 'credentials';
-type Role = 'student_buyer' | 'student_seller' | 'admin' | 'ceo';
+type Role = 'student_buyer' | 'student_seller';
 
 function LoginContent() {
     const supabase = createClient();
@@ -59,13 +59,7 @@ function LoginContent() {
 
     const handleRoleSelect = (selectedRole: Role) => {
         setRole(selectedRole);
-        if (selectedRole === 'admin') {
-            router.push('/admin-access?target=admin');
-        } else if (selectedRole === 'ceo') {
-            router.push('/admin-access?target=ceo');
-        } else {
-            setCurrentStep('credentials');
-        }
+        setCurrentStep('credentials');
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -177,14 +171,14 @@ function LoginContent() {
                             <ArrowLeft className="mr-2 h-4 w-4" /> Abort To Main
                         </Link>
                         <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading">
-                            Resume <span className="text-primary">Access</span>
+                            Log <span className="text-primary">In</span>
                         </h1>
                         <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] italic">
-                            Select clearance authorization level
+                            Select your account type
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-2">
+                    <div className="grid grid-cols-2 gap-4 mb-2 md:px-12">
                         <button
                             onClick={() => handleRoleSelect('student_buyer')}
                             className="group bg-secondary border border-border rounded-3xl p-6 text-center cursor-pointer hover:border-primary/50 transition-all duration-300 flex flex-col items-center shadow-sm"
@@ -207,35 +201,28 @@ function LoginContent() {
                             <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Seller</h3>
                             <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest">Merchant</p>
                         </button>
-                        
-                        <button
-                            onClick={() => handleRoleSelect('admin')}
-                            className="group bg-secondary border border-border rounded-3xl p-6 text-center cursor-pointer hover:border-primary/50 transition-all duration-300 flex flex-col items-center shadow-sm"
-                        >
-                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                                <ShieldAlert className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
-                            </div>
-                            <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Admin</h3>
-                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest">Ops</p>
-                        </button>
-
-                        <button
-                            onClick={() => handleRoleSelect('ceo')}
-                            className="group bg-primary/5 border border-primary/20 rounded-3xl p-6 text-center cursor-pointer hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 flex flex-col items-center shadow-sm"
-                        >
-                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                                <KeyRound className="h-6 w-6 text-primary" />
-                            </div>
-                            <h3 className="text-sm font-black text-primary uppercase tracking-tight mb-1">CEO</h3>
-                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest">Growth</p>
-                        </button>
                     </div>
 
-                    <div className="text-center pt-8 mt-8 border-t border-border">
+                    <div className="relative py-8 flex items-center justify-center">
+                        <div className="absolute inset-x-0 h-px bg-border" />
+                        <span className="relative bg-card px-4 text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground">Or</span>
+                    </div>
+
+                    <Button
+                        type="button"
+                        onClick={handleGoogleLogin}
+                        disabled={isLoading}
+                        className="w-full h-16 bg-foreground text-background hover:opacity-90 font-black uppercase tracking-widest rounded-2xl flex items-center justify-center gap-3 transition-all"
+                    >
+                        <Globe className="h-5 w-5" />
+                        Google Sign-In
+                    </Button>
+
+                    <div className="text-center pt-8 mt-4 border-t border-border">
                         <p className="text-muted-foreground font-bold text-xs uppercase tracking-widest">
-                            No active clearance?{' '}
+                            No account?{' '}
                             <Link href="/signup" className="text-primary font-black ml-2 hover:opacity-80">
-                                Establish Protocol
+                                Sign Up
                             </Link>
                         </p>
                     </div>
@@ -261,10 +248,10 @@ function LoginContent() {
                     </div>
                     
                     <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading">
-                        Resume <span className="text-primary">Access</span>
+                        Log <span className="text-primary">In</span>
                     </h1>
                     <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] italic">
-                        Secure identification protocol
+                        Enter your credentials
                     </p>
                 </div>
 
@@ -277,7 +264,7 @@ function LoginContent() {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-2">
-                        <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-2">Secure Endpoint (Email)</label>
+                        <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-2">Email Address</label>
                         <div className="relative">
                             <div className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-muted-foreground">
                                 <UserIcon className="h-4 w-4" />
@@ -297,7 +284,7 @@ function LoginContent() {
 
                     <div className="space-y-2">
                         <div className="flex justify-between items-center px-1">
-                            <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-1">Cryptographic Key</label>
+                            <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-1">Password</label>
                             <Link href="/forgot-password" className="text-[9px] font-black uppercase tracking-widest text-primary hover:opacity-80 transition-all pr-1">
                                 Reset Key?
                             </Link>
@@ -335,7 +322,7 @@ function LoginContent() {
                                 <Loader2 className="animate-spin h-6 w-6" />
                             ) : (
                                 <>
-                                    Authenticate <ArrowRight className="ml-4 h-5 w-5" />
+                                    Log In <ArrowRight className="ml-4 h-5 w-5" />
                                 </>
                             )}
                         </Button>
@@ -344,7 +331,7 @@ function LoginContent() {
 
                 <div className="relative py-8 flex items-center justify-center">
                     <div className="absolute inset-x-0 h-px bg-border" />
-                    <span className="relative bg-card px-4 text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground">Or Bypass</span>
+                    <span className="relative bg-card px-4 text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground">Or</span>
                 </div>
 
                 <Button
@@ -354,7 +341,7 @@ function LoginContent() {
                     className="w-full h-16 bg-foreground text-background hover:opacity-90 font-black uppercase tracking-widest rounded-2xl flex items-center justify-center gap-3 transition-all"
                 >
                     <Globe className="h-5 w-5" />
-                    Google Fast Auth
+                    Google Sign-In
                 </Button>
 
             </div>

@@ -194,15 +194,6 @@ export const Header = () => {
                                                 </div>
                                             </DropdownMenuItem>
 
-                                            {['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'].includes(user.role) && (
-                                                <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5">
-                                                    <Link href="/admin" className="flex items-center gap-3 px-3 py-2.5">
-                                                        <Crown className="h-4 w-4 text-[#FF6200]" />
-                                                        <span className="text-sm font-bold text-[#FF6200]">Admin Panel</span>
-                                                    </Link>
-                                                </DropdownMenuItem>
-                                            )}
-
                                             <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/50" />
 
                                             <DropdownMenuItem
