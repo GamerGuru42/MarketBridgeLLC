@@ -54,18 +54,32 @@ export async function GET(request: Request) {
             }
 
             const finalRole = role || existingUser?.role || 'student_buyer';
+            let actualRole = finalRole;
+            let redirectPath = finalNext;
 
-            console.log('Auth Callback: Upserting profile with role:', finalRole);
+            // Enforce educational email requirement for sellers
+            if (actualRole === 'student_seller' || actualRole === 'seller') {
+                const userEmail = data.user.email?.toLowerCase() || '';
+                const isEducational = userEmail.endsWith('.edu.ng') || userEmail.endsWith('.edu') || userEmail.endsWith('.com.ng');
+                
+                if (!isEducational) {
+                    console.warn(`Auth Callback: Rejected seller login for non-educational email (${userEmail}). Downgrading to buyer.`);
+                    actualRole = 'student_buyer';
+                    redirectPath = '/marketplace?alert=invalid_school_email';
+                }
+            }
+
+            console.log('Auth Callback: Upserting profile with role:', actualRole);
             await supabase.from('users').upsert({
                 id: data.user.id,
                 email: data.user.email,
                 display_name: existingUser?.display_name || data.user.user_metadata?.full_name || data.user.email?.split('@')[0],
-                role: finalRole,
+                role: actualRole,
                 email_verified: true, // Social login implies verification
                 ...(isSocialLogin && { is_verified: true }) // Fast-track full verification for Google Sign-In
             }, { onConflict: 'id' });
 
-            return NextResponse.redirect(new URL(finalNext, origin))
+            return NextResponse.redirect(new URL(redirectPath, origin))
         } else {
             console.error('Auth Callback: Exchange failed:', error?.message);
         }

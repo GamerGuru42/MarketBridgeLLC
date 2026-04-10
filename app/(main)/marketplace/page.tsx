@@ -15,6 +15,7 @@ import { Loader2, Search, MapPin, Store, Globe, ShieldCheck, Star, SlidersHorizo
 import { CATEGORIES } from '@/lib/categories';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import { intelligentSearch, trackSearch } from '@/lib/ai-search';
 import { SponsoredBadge } from '@/components/listings/SponsoredBadge';
 
@@ -57,6 +58,7 @@ function ListingsContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { user, loading: authLoading } = useAuth();
+    const { toast } = useToast();
     const initialLocation = searchParams?.get('location') || '';
 
     const [listings, setListings] = useState<Listing[]>([]);
@@ -75,6 +77,20 @@ function ListingsContent() {
             setCampus(user.university);
         }
     }, [user, initialLocation, campus]);
+
+    useEffect(() => {
+        const alertMsg = searchParams?.get('alert');
+        if (alertMsg === 'invalid_school_email') {
+            // Slight delay ensures the toast component is fully mounted
+            setTimeout(() => {
+                toast('Seller access denied: Educational email (.edu.ng) is required. You have been placed in a Buyer account.', 'error');
+            }, 500);
+            
+            const url = new URL(window.location.href);
+            url.searchParams.delete('alert');
+            window.history.replaceState({}, '', url.toString());
+        }
+    }, [searchParams, toast]);
 
     useEffect(() => {
         fetchListings();
