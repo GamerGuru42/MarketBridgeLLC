@@ -107,6 +107,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const signInWithGoogle = async (redirectTo?: string) => {
+        if (redirectTo) {
+            try {
+                const url = new URL(redirectTo);
+                const roleParam = url.searchParams.get('role');
+                if (roleParam) {
+                    document.cookie = `mb_oauth_role=${roleParam}; path=/; max-age=600`;
+                }
+            } catch (e) { /* ignore */ }
+        }
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {

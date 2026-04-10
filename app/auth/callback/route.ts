@@ -7,7 +7,7 @@ export async function GET(request: Request) {
     const code = searchParams.get('code')
     // if "next" is in param, use it as the redirect URL
     const next = searchParams.get('next') ?? '/'
-    const role = searchParams.get('role')
+    const roleParam = searchParams.get('role')
 
     if (code) {
         console.log('Auth Callback: Code detected, initiating exchange...');
@@ -44,6 +44,10 @@ export async function GET(request: Request) {
             
             // Check if this is a social login (Google/Facebook)
             const isSocialLogin = data.user.app_metadata.provider !== 'email';
+
+            const cookieRole = cookieStore.get('mb_oauth_role')?.value;
+            const role = roleParam || cookieRole;
+            if (cookieRole) cookieStore.delete('mb_oauth_role');
 
             // Core Logic: If user not found and no role provided (e.g. login page via Social)
             // Just auto-create them as a student_buyer to ensure seamless entry.
