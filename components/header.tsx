@@ -50,14 +50,14 @@ export const Header = () => {
 
     return (
         <>
-            <header className="fixed top-0 left-0 right-0 z-[100] bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 h-16 shadow-sm">
+            <header className="fixed top-0 left-0 right-0 z-[100] bg-background/90 backdrop-blur-md border-b border-border h-16 shadow-sm">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between gap-4">
 
                     {/* Left: Logo + Campus Node */}
                     <div className="flex items-center gap-4 shrink-0">
                         <Logo />
                         <button
-                            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-zinc-100 dark:bg-zinc-900/80 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800/50 rounded-full transition-all group"
+                            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-secondary hover:bg-muted border border-border rounded-full transition-all group"
                             onClick={() => {
                                 localStorage.removeItem('mb-preferred-node');
                                 window.location.reload();
@@ -67,10 +67,10 @@ export const Header = () => {
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6200] opacity-75" />
                                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#FF6200]" />
                             </span>
-                            <span className="text-[11px] font-bold text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
+                            <span className="text-[11px] font-bold text-muted-foreground group-hover:text-foreground transition-colors">
                                 {currentNode}
                             </span>
-                            <ChevronDown className="h-3 w-3 text-zinc-400 dark:text-zinc-500" />
+                            <ChevronDown className="h-3 w-3 text-muted-foreground" />
                         </button>
                     </div>
 

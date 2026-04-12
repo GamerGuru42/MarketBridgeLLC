@@ -58,24 +58,39 @@
   }
 
   .dark {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
-    --card: 0 0% 6%;
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 6%;
-    --popover-foreground: 0 0% 100%;
+    --background: 0 0% 4%;
+    /* #0A0A0A — slightly off-black, easier on eyes */
+    --foreground: 0 0% 95%;
+    /* #F2F2F2 — slightly off-white to reduce glare */
+
+    --card: 0 0% 7%;
+    /* #121212 */
+    --card-foreground: 0 0% 93%;
+
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 93%;
+
     --primary: 23 100% 50%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 10%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
+    /* #FF6200 stays consistent */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 12%;
+    /* Slightly lighter for better button/card contrast */
+    --secondary-foreground: 0 0% 90%;
+
+    --muted: 0 0% 16%;
+    --muted-foreground: 0 0% 60%;
+    /* Bumped from 65% for better readability on dark bg */
+
     --accent: 23 100% 50%;
     --accent-foreground: 0 0% 100%;
+
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
+
+    --border: 0 0% 18%;
+    /* Slightly brighter borders so cards are distinguishable */
+    --input: 0 0% 18%;
     --ring: 23 100% 50%;
   }
 }

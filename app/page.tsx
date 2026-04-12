@@ -77,7 +77,7 @@ export default function HomePage() {
                             Campus<br />
                             <span className="text-[#FF6200]">Marketplace.</span>
                         </h1>
-                        <p className="text-lg md:text-xl text-zinc-600 font-medium max-w-lg leading-relaxed">
+                        <p className="text-lg md:text-xl text-muted-foreground font-medium max-w-lg leading-relaxed">
                             Buy from any campus safely. Order fresh food, textbooks, and services from verified student sellers. Zero middlemen. Zero delays.
                         </p>
 
@@ -90,17 +90,17 @@ export default function HomePage() {
                             </Link>
                             <Link
                                 href="/seller-onboard"
-                                className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-foreground border border-zinc-200 dark:border-zinc-700 font-bold uppercase tracking-wider text-sm rounded-2xl transition-all hover:scale-[1.03]"
+                                className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-secondary hover:bg-muted text-foreground border border-border font-bold uppercase tracking-wider text-sm rounded-2xl transition-all hover:scale-[1.03]"
                             >
                                 <Store className="h-4 w-4" /> Start Selling
                             </Link>
                         </div>
 
                         <div className="flex items-center gap-4 pt-6 opacity-70">
-                            <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-zinc-500">
+                            <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                                 <CheckCircle2 className="w-4 h-4 text-[#FF6200]" /> Verified Sellers
                             </span>
-                            <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-zinc-500">
+                            <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                                 <CheckCircle2 className="w-4 h-4 text-[#FF6200]" /> Secure Payments
                             </span>
                         </div>
@@ -126,7 +126,7 @@ export default function HomePage() {
                                             <ShoppingBag className="w-6 h-6 text-[#FF6200]" />
                                         </div>
                                         <div>
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Delivering</p>
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Delivering</p>
                                             <h4 className="font-bold text-foreground text-sm leading-tight">Jollof & Chicken</h4>
                                         </div>
                                     </div>
@@ -145,12 +145,12 @@ export default function HomePage() {
                                             <Store className="w-6 h-6 text-foreground" />
                                         </div>
                                         <div>
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Fixed Cost</p>
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Fixed Cost</p>
                                             <h4 className="font-bold text-foreground text-sm leading-tight">MacBook Repair</h4>
                                         </div>
                                     </div>
                                     <div className="flex justify-between items-center border-t border-zinc-50 dark:border-zinc-800/50 pt-3">
-                                        <p className="text-zinc-500 font-bold text-xs truncate">Campus A</p>
+                                        <p className="text-muted-foreground font-bold text-xs truncate">Campus A</p>
                                         <div className="w-8 h-8 rounded-full bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center">
                                             <ArrowRight className="w-4 h-4 text-zinc-400" />
                                         </div>
@@ -179,7 +179,7 @@ export default function HomePage() {
                 </section>
 
                 {/* ─── Why MarketBridge ─── */}
-                <section className="w-full bg-card border-y border-zinc-100 dark:border-zinc-900 py-24">
+                <section className="w-full bg-card border-y border-border py-24">
                     <div className="max-w-6xl mx-auto px-6 md:px-10 text-center">
                         <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-foreground mb-16">
                             How it works on <span className="text-[#FF6200]">campus</span>
@@ -190,12 +190,12 @@ export default function HomePage() {
                                 { title: "Fast Delivery", icon: Zap, color: "text-[#FF6200]", bg: "bg-[#FF6200]/10", desc: "Sellers are in your hostels or faculty. From ordering to eating in minutes, not hours." },
                                 { title: "Grow Your Hustle", icon: Store, color: "text-foreground", bg: "bg-zinc-100 dark:bg-zinc-900", desc: "Easily set up a storefront, list products (food, gadgets, fashion), and start taking orders today." }
                             ].map((feat, i) => (
-                                <div key={i} className="flex flex-col items-center p-6 md:p-8 bg-background rounded-[2rem] md:rounded-[2.5rem] border border-zinc-100 dark:border-zinc-800 hover:border-zinc-200 dark:hover:border-zinc-700 transition-colors">
+                                <div key={i} className="flex flex-col items-center p-6 md:p-8 bg-background rounded-[2rem] md:rounded-[2.5rem] border border-border hover:border-primary/20 transition-colors">
                                     <div className={`w-20 h-20 rounded-3xl ${feat.bg} flex items-center justify-center mb-6`}>
                                         <feat.icon className={`w-10 h-10 ${feat.color}`} />
                                     </div>
                                     <h3 className="text-xl font-black text-foreground mb-3">{feat.title}</h3>
-                                    <p className="text-zinc-600 font-medium leading-relaxed">{feat.desc}</p>
+                                    <p className="text-muted-foreground font-medium leading-relaxed">{feat.desc}</p>
                                 </div>
                             ))}
                         </div>
