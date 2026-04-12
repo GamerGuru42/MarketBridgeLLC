@@ -9,6 +9,7 @@ import { Loader2, ArrowLeft, ArrowRight, User as UserIcon, Globe, Briefcase, Mai
 import Link from 'next/link';
 import { useToast } from '@/contexts/ToastContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSystem } from '@/contexts/SystemContext';
 import { cn } from '@/lib/utils';
 
 type Step = 'role' | 'details';
@@ -20,6 +21,7 @@ function SignupContent() {
     const searchParams = useSearchParams();
     const { refreshUser, signInWithGoogle } = useAuth();
     const { toast } = useToast();
+    const { isDemoMode } = useSystem();
 
     const [currentStep, setCurrentStep] = useState<Step>('role');
     const [role, setRole] = useState<Role>('student_buyer');
@@ -82,6 +84,17 @@ function SignupContent() {
         }
 
         const normalizedEmail = normalizeIdentifier(formData.email);
+
+        // DEMO RESTRICTION
+        if (isDemoMode) {
+            const allowedDomains = ['@bazeuniversity.edu.ng', '@nileuniversity.edu.ng', '@veritas.edu.ng'];
+            const isAllowed = allowedDomains.some(domain => normalizedEmail.endsWith(domain));
+            if (!isAllowed) {
+                toast('Demo Beta Access Restricted: Only Baze, Nile, and Veritas university emails are allowed during this phase.', 'error');
+                return;
+            }
+        }
+
         setIsLoading(true);
 
         try {
@@ -269,6 +282,18 @@ function SignupContent() {
                         Enter your details
                     </p>
                 </div>
+
+                {isDemoMode && (
+                    <div className="mb-6 p-4 bg-orange-500/10 border border-orange-500/30 rounded-2xl flex items-start gap-3">
+                        <ShieldAlert className="h-5 w-5 text-orange-500 shrink-0 mt-0.5" />
+                        <div>
+                            <h4 className="text-orange-500 font-black uppercase text-[10px] tracking-widest mb-1">Demo Version Restraints</h4>
+                            <p className="text-orange-500/80 text-[10px] font-bold leading-relaxed">
+                                You are testing the Private Beta. No real money or logistics will be processed. Access is strictly limited to students of Baze, Nile, and Veritas University.
+                            </p>
+                        </div>
+                    </div>
+                )}
 
                 <form onSubmit={handleSignup} className="space-y-6">
                     <div className="space-y-2">

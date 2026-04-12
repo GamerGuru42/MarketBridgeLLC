@@ -10,7 +10,9 @@ import { LocationChecker } from "@/components/location-checker";
 import BetaLabel from "@/components/BetaLabel";
 import { LocationProvider } from "@/contexts/LocationContext";
 import { ToastProvider } from "@/contexts/ToastContext";
+import { SystemProvider } from "@/contexts/SystemContext";
 import { OnboardingTour } from "@/components/OnboardingTour";
+import { DemoBanner } from "@/components/DemoBanner";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -28,10 +30,22 @@ const siteUrl = process.env.NEXT_PUBLIC_CLIENT_URL || 'https://marketbridge.com.
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "MarketBridge – Campus Marketplace for Abuja Universities",
-  description: "Buy, sell & trade safely with verified student sellers. Textbooks, laptops, wigs, food delivery & more.",
+  title: "MarketBridge – #1 Campus Marketplace for Nigerian Universities",
+  description: "Buy, sell & trade safely with verified student sellers at Baze, Nile, and Veritas. Textbooks, laptops, wigs, food delivery & more with Zero-Fraud Escrow Protection.",
+  keywords: ["MarketBridge", "Nigerian university marketplace", "Baze University market", "Nile University marketplace", "Veritas student market", "Abuja campus market", "student escrow", "campus delivery", "student to student selling", "buy laptops Baze"],
   alternates: {
     canonical: siteUrl,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   // verification: Add Google Search Console and Bing Webmaster codes when available
   manifest: "/manifest.json",
@@ -97,10 +111,12 @@ export default function RootLayout({
           defaultTheme="dark"
           enableSystem
         >
-          <AuthProvider>
+          <SystemProvider>
+            <AuthProvider>
             <LocationProvider>
               <CartProvider>
                 <ToastProvider>
+                  <DemoBanner />
                   <LocationChecker>
                     {children}
                   </LocationChecker>
@@ -115,6 +131,7 @@ export default function RootLayout({
               </CartProvider>
             </LocationProvider>
           </AuthProvider>
+          </SystemProvider>
         </ThemeProvider>
       </body>
     </html>

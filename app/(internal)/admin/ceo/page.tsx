@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSystem } from '@/contexts/SystemContext';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { TrendingUp, Users, DollarSign, Activity, MapPin, ShieldCheck, MessageSquare, AlertTriangle, Loader2, Store, Crown, ShoppingBag, ArrowUpRight } from 'lucide-react';
+import { TrendingUp, Users, DollarSign, Activity, MapPin, ShieldCheck, MessageSquare, AlertTriangle, Loader2, Store, Crown, ShoppingBag, ArrowUpRight, ShieldAlert, Power } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -22,6 +23,8 @@ export default function CEOPage() {
     const [loadingData, setLoadingData] = useState(true);
     const [messages, setMessages] = useState<any[]>([]);
     const [regionalStats, setRegionalStats] = useState({ abuja: 0, lagos: 0 });
+    const { isDemoMode, daysLeft } = useSystem();
+    const [togglingDemo, setTogglingDemo] = useState(false);
 
     React.useEffect(() => {
         if (!loading && (!user || !['ceo', 'cofounder'].includes(user.role))) {
@@ -69,6 +72,28 @@ export default function CEOPage() {
     const handleAction = async (id: string, action: 'approve' | 'decline') => {
         setProposals(prev => prev.map(p => p.id === id ? { ...p, status: action === 'approve' ? 'approved' : 'declined' } : p));
         // Real logic would update database
+    };
+
+    const handleToggleDemoMode = async () => {
+        const proceed = confirm(`Are you sure you want to ${isDemoMode ? 'DEACTIVATE' : 'ACTIVATE (Starts 30-day clock)'} the Private Beta Demo Mode?`);
+        if (!proceed) return;
+
+        setTogglingDemo(true);
+        try {
+            const newState = !isDemoMode;
+            const newDate = newState ? new Date().toISOString() : null;
+
+            const { error } = await supabase
+                .from('system_settings')
+                .upsert({ id: 'global', is_demo_mode: newState, demo_start_date: newDate }, { onConflict: 'id' });
+
+            if (error) throw error;
+            window.location.reload();
+        } catch (e: any) {
+            alert('Failed to toggle Demo Mode: ' + e.message);
+        } finally {
+            setTogglingDemo(false);
+        }
     };
 
     if (loading || loadingData) return (
@@ -139,6 +164,41 @@ export default function CEOPage() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                    <Card className="lg:col-span-3 bg-card border-border shadow-sm rounded-[3rem] overflow-hidden transition-colors duration-300">
+                        <div className="p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div className="flex items-center gap-6">
+                                <div className={`flex items-center justify-center h-16 w-16 rounded-2xl ${isDemoMode ? 'bg-orange-500/10 text-orange-500' : 'bg-primary/10 text-primary'}`}>
+                                    <Power className="h-8 w-8" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-black uppercase tracking-tighter italic">System Protocols</h3>
+                                    <p className="text-sm text-muted-foreground font-medium">Currently governing the live environment state.</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-6">
+                                {isDemoMode ? (
+                                    <div className="text-right">
+                                        <p className="text-xs font-black uppercase tracking-widest text-orange-500 mb-1">Demo Expires in: {daysLeft} Days</p>
+                                        <p className="text-[10px] text-muted-foreground uppercase opacity-80">Test mode active</p>
+                                    </div>
+                                ) : (
+                                    <div className="text-right">
+                                        <p className="text-xs font-black uppercase tracking-widest text-green-500 mb-1">Production Live</p>
+                                        <p className="text-[10px] text-muted-foreground uppercase opacity-80">All systems nominal</p>
+                                    </div>
+                                )}
+                                <Button 
+                                    onClick={handleToggleDemoMode} 
+                                    disabled={togglingDemo}
+                                    variant={isDemoMode ? 'destructive' : 'default'}
+                                    className="h-14 px-8 font-black uppercase tracking-widest text-xs rounded-2xl"
+                                >
+                                    {togglingDemo ? <Loader2 className="animate-spin h-5 w-5" /> : (isDemoMode ? 'Deactivate Demo' : 'Engage Demo Beta')}
+                                </Button>
+                            </div>
+                        </div>
+                    </Card>
+
                     {/* Proposal Nexus */}
                     <Card className="lg:col-span-2 bg-card border-border shadow-sm rounded-[3rem] overflow-hidden transition-colors duration-300">
                         <CardHeader className="p-10 border-b border-border bg-muted/20">

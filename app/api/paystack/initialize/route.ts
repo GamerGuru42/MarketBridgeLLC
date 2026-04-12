@@ -45,8 +45,21 @@ export async function POST(req: Request) {
             }
         }
 
-        // 2. Calculate Commission & Split (Two-Tier Transaction System)
+        // Demo Mode Safety Check
+        const { data: systemSettings } = await supabase
+            .from('system_settings')
+            .select('is_demo_mode')
+            .eq('id', 'global')
+            .maybeSingle();
+
+        const isDemo = systemSettings?.is_demo_mode || false;
         const finalPrice = listing.current_offered_price || listing.price;
+
+        if (isDemo && finalPrice > 5000) {
+            return NextResponse.json({ error: 'DEMO SECURITY ENFORCED: Maximum transaction size is ₦5,000 during this Private Beta phase.' }, { status: 403 });
+        }
+
+        // 2. Calculate Commission & Split (Two-Tier Transaction System)
         
         let baseCommission = 0;
         if (finalPrice <= 100000) {

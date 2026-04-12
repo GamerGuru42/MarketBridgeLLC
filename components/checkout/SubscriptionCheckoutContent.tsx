@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSystem } from '@/contexts/SystemContext';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -18,6 +19,7 @@ export default function SubscriptionCheckoutContent() {
     const searchParams = useSearchParams();
     const supabase = createClient();
     const { toast } = useToast();
+    const { isDemoMode } = useSystem();
     const planId = searchParams?.get('plan');
     const billingCycle = searchParams?.get('billing') as 'monthly' | 'annual' || 'monthly';
     const [loading, setLoading] = useState(true);
@@ -32,7 +34,9 @@ export default function SubscriptionCheckoutContent() {
         reference: `SUB-${Date.now()}-${user?.id.slice(0, 5)}`,
         email: user?.email || '',
         amount: amount * 100, // kobo
-        publicKey: PAYSTACK_PUBLIC_KEY_CLIENT,
+        publicKey: isDemoMode 
+            ? (process.env.NEXT_PUBLIC_PAYSTACK_TEST_PUBLIC_KEY || 'pk_test_dummy_key_ensure_env_is_set')
+            : PAYSTACK_PUBLIC_KEY_CLIENT,
         metadata: {
             plan_id: planId,
             billing_cycle: billingCycle,
@@ -142,6 +146,15 @@ export default function SubscriptionCheckoutContent() {
                             <div className="text-3xl font-black text-[#00FF85]">{formatCurrency(amount)}</div>
                         </div>
                     </div>
+
+                    {isDemoMode && (
+                        <Alert className="bg-orange-500/10 border-orange-500/50 text-orange-500 mb-8 rounded-2xl">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertTitle className="font-black uppercase tracking-widest text-xs">Demo Mode Active</AlertTitle>
+                            <AlertDescription className="text-xs font-medium">This is a test/demo version. No real transactions or money will be processed. For testing purposes only.</AlertDescription>
+                        </Alert>
+                    )}
+
                     {error && (
                         <Alert variant="destructive" className="bg-red-500/10 border-red-500/50 text-red-500 mb-8 rounded-2xl">
                             <AlertCircle className="h-4 w-4" />

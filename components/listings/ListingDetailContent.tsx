@@ -15,6 +15,7 @@ import { supabase } from '@/lib/supabase';
 import { startConversation } from '@/lib/chat';
 import { ReviewsSection } from '@/components/ReviewsSection';
 import { cn } from '@/lib/utils';
+import { useSystem } from '@/contexts/SystemContext';
 import { ListingMap } from '@/components/ListingMap';
 import { ABUJA_UNIVERSITIES } from '@/lib/location';
 import {
@@ -82,6 +83,7 @@ export default function ListingDetailContent() {
     const [reportReason, setReportReason] = useState('');
     const [reportDetails, setReportDetails] = useState('');
     const [isFavorite, setIsFavorite] = useState(false);
+    const { isDemoMode } = useSystem();
 
     const toggleFavorite = () => {
         if (!user) {
@@ -303,6 +305,11 @@ export default function ListingDetailContent() {
             return;
         }
 
+        if (isDemoMode && price > 5000) {
+            setError('Demo Mode restricts all transactions to a maximum of ₦5,000 for safety testing.');
+            return;
+        }
+
         // Optimistic UI updates
         setIsSubmittingOffer(true);
         const previousOffer = activeOffer;
@@ -372,6 +379,13 @@ export default function ListingDetailContent() {
         }
 
         if (!listing) return;
+        
+        const finalAmount = listing.current_offered_price || listing.price;
+
+        if (isDemoMode && finalAmount > 5000) {
+            setError('Demo Mode Demo Mode Active: You cannot process orders above ₦5,000. Please negotiate the price down for testing.');
+            return;
+        }
 
         setActionLoading(true);
 
@@ -382,7 +396,7 @@ export default function ListingDetailContent() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     listingId: listing.id,
-                    amount: listing.current_offered_price || listing.price // Use negotiated price
+                    amount: finalAmount
                 })
             });
 
