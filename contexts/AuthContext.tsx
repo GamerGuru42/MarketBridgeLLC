@@ -140,11 +140,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const logout = async () => {
-        const { error } = await supabase.auth.signOut();
-        if (error) throw error;
+        // 1. Forcibly destroy custom admin session cookies across all possible domains
+        document.cookie = 'mb-admin-session=; path=/; max-age=0';
+        document.cookie = 'mb-admin-session=; path=/; domain=.marketbridge.com.ng; max-age=0';
+
+        // 2. Forcibly target and destroy Supabase Auth ghost cookies 
+        // (@supabase/ssr sometimes fails to clear wildcard domain cookies properly)
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.startsWith('sb-')) {
+                const name = cookie.split('=')[0];
+                document.cookie = `${name}=; path=/; max-age=0`;
+                document.cookie = `${name}=; path=/; domain=.marketbridge.com.ng; max-age=0`;
+                document.cookie = `${name}=; path=/; domain=${window.location.hostname}; max-age=0`;
+            }
+        }
+        
+        // 3. Clear Supabase local memory
+        try {
+            await supabase.auth.signOut();
+        } catch (error) {
+            console.warn('Supabase soft signout error (cookies already dropped):', error);
+        }
+
+        // 4. Reset React Context
         setUser(null);
         setSessionUser(null);
-        window.location.href = '/'; // Redirect to home
+
+        // 5. Intelligent Redirect (HQ Portal vs Public Root)
+        if (typeof window !== 'undefined' && window.location.hostname.startsWith('hq.')) {
+            window.location.href = '/portal/login';
+        } else {
+            window.location.href = '/'; 
+        }
     };
 
     const refreshUser = async (userId?: string) => {
