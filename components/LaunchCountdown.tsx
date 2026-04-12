@@ -1,4 +1,8 @@
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import QRCode from 'react-qr-code';
+import { ArrowRight, ShieldCheck, Globe, Lock } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export function LaunchCountdown() {
     const router = useRouter();
