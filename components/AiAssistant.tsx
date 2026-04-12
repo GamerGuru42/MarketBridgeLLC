@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { MessageCircle, X, Send, Bot, User, ShoppingBag, Search, AlertCircle, Loader2, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
+import { useChat } from 'ai/react';
 
 export function AiAssistant() {
     const pathname = usePathname();
