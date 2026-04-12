@@ -162,9 +162,10 @@ export async function middleware(request: NextRequest) {
     }
 
     // If NOT on HQ subdomain, heavily block direct access to internal routes
-    if (!isHQSubdomain && isPortalRoute) {
-        return new NextResponse('Not Found', { status: 404 });
-    }
+    // DISABLED FOR PRIVATE BETA: Allow access via /portal/login directly on main domain
+    // if (!isHQSubdomain && isPortalRoute) {
+    //     return new NextResponse('Not Found', { status: 404 });
+    // }
 
     // ── 4. Internal System Isolation (Admin + Portal) ────────────────────────
     if (pathname.startsWith('/admin') || pathname.startsWith('/portal')) {
