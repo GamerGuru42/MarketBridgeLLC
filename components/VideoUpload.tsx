@@ -130,13 +130,26 @@ export function VideoUpload({
                 ))}
 
                 {videos.length < maxVideos && (
-                                <div className="p-4 rounded-xl bg-white/[0.02] group-hover:bg-[#FF6200]/10 transition-colors mb-3">
-                                    <VideoIcon className="h-6 w-6 text-zinc-600 group-hover:text-[#FF6200] transition-colors" />
+                    <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploading}
+                        className="relative aspect-video rounded-lg border-2 border-dashed border-zinc-200 hover:border-[#FF6200]/50 hover:bg-[#FF6200]/5 transition-all flex flex-col items-center justify-center gap-3 group overflow-hidden bg-[#FAFAFA]/50"
+                    >
+                        {uploading ? (
+                            <div className="flex flex-col items-center gap-2">
+                                <Loader2 className="h-8 w-8 animate-spin text-[#FF6200]" />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] animate-pulse">Syncing Video...</span>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="p-4 rounded-2xl bg-white group-hover:bg-[#FF6200]/10 transition-colors shadow-sm">
+                                    <VideoIcon className="h-6 w-6 text-zinc-400 group-hover:text-[#FF6200] transition-colors" />
                                 </div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-white transition-colors">Add Video</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 group-hover:text-black transition-colors">Add Video Feed</span>
                             </>
                         )}
-                    </div>
+                    </button>
                 )}
             </div>
 
