@@ -187,15 +187,19 @@ function PortalLoginContent() {
         setIsLoading(true);
         setError(null);
         try {
-            let callbackOrigin = window.location.origin;
-            let targetDestination = selectedRole === 'ceo' ? '/admin/ceo' : '/admin';
+            const targetDestination = selectedRole === 'ceo' ? '/admin/ceo' : '/admin';
+            const callbackOrigin = window.location.hostname.includes('marketbridge.com.ng')
+                ? 'https://marketbridge.com.ng'
+                : window.location.origin;
 
-            if (callbackOrigin.includes('.marketbridge.com.ng')) {
-                // In production, force the OAuth callback to hit the main whitelisted domain.
-                // The callback route will set wildcard SSO cookies and then redirect back to the HQ subdomain.
-                callbackOrigin = 'https://marketbridge.com.ng';
-                targetDestination = `https://hq.marketbridge.com.ng${targetDestination}`;
-            }
+            // Set resilient fallback cookies BEFORE redirecting to Google
+            // Google frequently strips custom query params during OAuth, so these cookies
+            // ensure the auth callback can always recover the role and destination.
+            const domainSuffix = window.location.hostname.includes('marketbridge.com.ng')
+                ? '; domain=.marketbridge.com.ng'
+                : '';
+            document.cookie = `mb_oauth_role=${selectedRole}; path=/; max-age=600; SameSite=Lax${domainSuffix}`;
+            document.cookie = `mb_oauth_next=${encodeURIComponent(targetDestination)}; path=/; max-age=600; SameSite=Lax${domainSuffix}`;
 
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
@@ -204,7 +208,6 @@ function PortalLoginContent() {
                 },
             });
             if (error) throw error;
-            // No need to clear loading state as page will redirect to Google
         } catch (err: any) {
             setError(err.message || 'Google authorization failed.');
             setIsLoading(false);

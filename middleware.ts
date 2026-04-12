@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // ─── Rate Limiting ───────────────────────────────────────────────────────────
-// Lightweight Edge Rate Limiter (per-isolate, sufficient for brute force protection)
 const rateLimitMap = new Map<string, { count: number; firstAttempt: number }>();
 
 interface RateLimitConfig {
@@ -13,14 +12,14 @@ interface RateLimitConfig {
 
 const PUBLIC_RATE_LIMIT: RateLimitConfig = {
     maxAttempts: 10,
-    windowMs: 15 * 60 * 1000,       // 15 minutes
-    blockDurationMs: 30 * 60 * 1000, // 30 minutes
+    windowMs: 15 * 60 * 1000,
+    blockDurationMs: 30 * 60 * 1000,
 };
 
 const ADMIN_RATE_LIMIT: RateLimitConfig = {
     maxAttempts: 5,
-    windowMs: 15 * 60 * 1000,       // 15 minutes
-    blockDurationMs: 60 * 60 * 1000, // 60 minutes — harsher for admin
+    windowMs: 15 * 60 * 1000,
+    blockDurationMs: 60 * 60 * 1000,
 };
 
 function checkRateLimit(key: string, config: RateLimitConfig): boolean {
@@ -56,8 +55,6 @@ function checkRateLimit(key: string, config: RateLimitConfig): boolean {
 }
 
 // ─── JWT Helpers ─────────────────────────────────────────────────────────────
-// Decode (but don't verify signature — Edge can't do full HMAC easily).
-// We verify *existence* + *role claim*. Supabase server-side checks do full verification.
 function decodeJwtPayload(token: string): Record<string, any> | null {
     try {
         const parts = token.split('.');
@@ -72,28 +69,63 @@ function decodeJwtPayload(token: string): Record<string, any> | null {
 
 function extractRoleFromCookies(request: NextRequest): string | null {
     const cookies = request.cookies.getAll();
-    
-    // Find the Supabase auth token cookie
-    const authCookie = cookies.find(c => c.name.startsWith('sb-') && c.name.endsWith('-auth-token'));
-    if (!authCookie) return null;
 
-    // Supabase stores tokens as base64-encoded JSON array [access_token, refresh_token]
-    // or as a plain JWT depending on the version
+    // Find the Supabase auth token cookie (could be chunked or single)
+    // @supabase/ssr can split large cookies into chunks: sb-<ref>-auth-token.0, .1, etc.
+    const authCookieName = cookies.find(c => c.name.startsWith('sb-') && c.name.includes('-auth-token'))?.name;
+    if (!authCookieName) return null;
+
+    // Reconstruct the full cookie value from potential chunks
+    const baseName = authCookieName.replace(/\.\d+$/, ''); // strip chunk suffix like .0
+    const chunks: string[] = [];
+    
+    // Check for chunked cookies first
+    for (let i = 0; i < 10; i++) {
+        const chunk = request.cookies.get(`${baseName}.${i}`);
+        if (chunk) {
+            chunks.push(chunk.value);
+        } else {
+            break;
+        }
+    }
+
+    // If no chunks found, try the base cookie directly
+    let rawValue: string;
+    if (chunks.length > 0) {
+        rawValue = chunks.join('');
+    } else {
+        const singleCookie = request.cookies.get(baseName);
+        if (!singleCookie) return null;
+        rawValue = singleCookie.value;
+    }
+
     try {
         let accessToken: string | null = null;
 
-        // Try parsing as JSON array first (newer SSR format)
+        // Try parsing as JSON first (newer SSR format: base64 encoded JSON)
         try {
-            const parsed = JSON.parse(decodeURIComponent(authCookie.value));
+            const decoded = decodeURIComponent(rawValue);
+            const parsed = JSON.parse(decoded);
             if (Array.isArray(parsed) && parsed.length > 0) {
                 accessToken = parsed[0];
-            } else if (parsed?.access_token) {
+            } else if (typeof parsed === 'object' && parsed?.access_token) {
                 accessToken = parsed.access_token;
             }
         } catch {
-            // Maybe it's a raw JWT
-            if (authCookie.value.includes('.')) {
-                accessToken = authCookie.value;
+            // Try as base64-encoded value
+            try {
+                const decoded = atob(rawValue);
+                const parsed = JSON.parse(decoded);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    accessToken = parsed[0];
+                } else if (parsed?.access_token) {
+                    accessToken = parsed.access_token;
+                }
+            } catch {
+                // Maybe it's a raw JWT
+                if (rawValue.includes('.') && rawValue.split('.').length === 3) {
+                    accessToken = rawValue;
+                }
             }
         }
 
@@ -105,7 +137,14 @@ function extractRoleFromCookies(request: NextRequest): string | null {
         // Check expiry
         if (payload.exp && payload.exp * 1000 < Date.now()) return null;
 
-        return payload.user_metadata?.role || payload.role || null;
+        // Role can be in multiple places depending on how it was set:
+        // 1. user_metadata.role (set via updateUser)
+        // 2. app_metadata.role (set via admin API) 
+        // 3. payload.role (custom claim)
+        return payload.user_metadata?.role 
+            || payload.app_metadata?.role 
+            || payload.role 
+            || null;
     } catch {
         return null;
     }
@@ -154,24 +193,14 @@ export async function middleware(request: NextRequest) {
     }
 
     // ── 3.5. Subdomain Flow Control ──────────────────────────────────────────
-    // If on HQ subdomain, rewrite root to portal login
     if (isHQSubdomain && (pathname === '/' || pathname === '/login')) {
         const url = request.nextUrl.clone();
         url.pathname = '/portal/login';
         return NextResponse.rewrite(url);
     }
 
-    // If NOT on HQ subdomain, heavily block direct access to internal routes
-    // DISABLED FOR PRIVATE BETA: Allow access via /portal/login directly on main domain
-    // if (!isHQSubdomain && isPortalRoute) {
-    //     return new NextResponse('Not Found', { status: 404 });
-    // }
-
     // ── 4. Internal System Isolation (Admin + Portal) ────────────────────────
     if (pathname.startsWith('/admin') || pathname.startsWith('/portal')) {
-        const cookies = request.cookies.getAll();
-        const hasAuthCookie = cookies.some(c => c.name.startsWith('sb-') && c.name.endsWith('-auth-token'));
-        const hasAdminSession = request.cookies.has('mb-admin-session');
 
         // Allow unauthenticated access ONLY to portal login/signup
         if (pathname === '/portal/login' || pathname === '/portal/signup') {
@@ -179,6 +208,11 @@ export async function middleware(request: NextRequest) {
             response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
             return response;
         }
+
+        // Check for Supabase auth cookie
+        const cookies = request.cookies.getAll();
+        const hasAuthCookie = cookies.some(c => c.name.startsWith('sb-') && c.name.includes('-auth-token'));
+        const hasAdminSession = request.cookies.has('mb-admin-session');
 
         // No auth cookie at all → redirect to portal login
         if (!hasAuthCookie) {
@@ -191,6 +225,26 @@ export async function middleware(request: NextRequest) {
         const role = extractRoleFromCookies(request);
 
         if (!role || !ADMIN_ROLES.includes(role)) {
+            // Check mb-admin-session as fallback — the JWT might not have been
+            // refreshed yet but the auth callback already set the admin cookie
+            if (hasAdminSession) {
+                try {
+                    const adminPayload = request.cookies.get('mb-admin-session')?.value;
+                    if (adminPayload) {
+                        const decoded = JSON.parse(atob(adminPayload));
+                        if (decoded.role && ADMIN_ROLES.includes(decoded.role)) {
+                            // Admin session cookie is valid — allow through
+                            const response = NextResponse.next();
+                            response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+                            response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+                            return response;
+                        }
+                    }
+                } catch {
+                    // Invalid admin session cookie — fall through to block
+                }
+            }
+
             // User is authenticated but NOT an admin — hard block
             return new NextResponse(
                 JSON.stringify({ error: 'Access denied. Insufficient privileges.' }),
@@ -198,16 +252,8 @@ export async function middleware(request: NextRequest) {
             );
         }
 
-        // Has valid admin role but no admin session cookie → redirect to portal login
-        // (They need to authenticate through the portal specifically)
-        if (!hasAdminSession) {
-            const url = request.nextUrl.clone();
-            url.pathname = '/portal/login';
-            url.searchParams.set('reason', 'session_required');
-            return NextResponse.redirect(url);
-        }
-
-        // ✅ Fully authenticated admin — allow through with security headers
+        // ✅ JWT role check passed — allow through even without mb-admin-session
+        // (The JWT is the source of truth; mb-admin-session is a backup)
         const response = NextResponse.next();
         response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
         response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
