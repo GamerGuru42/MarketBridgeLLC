@@ -83,6 +83,9 @@ export async function GET(request: Request) {
                 ...(isSocialLogin && { is_verified: true }) // Fast-track full verification for Google Sign-In
             }, { onConflict: 'id' });
 
+            // CRITICAL: Update the user's JWT metadata so Edge Middleware immediately recognizes the role
+            await supabase.auth.updateUser({ data: { role: actualRole } });
+
             return NextResponse.redirect(new URL(redirectPath, origin))
         } else {
             console.error('Auth Callback: Exchange failed:', error?.message);
