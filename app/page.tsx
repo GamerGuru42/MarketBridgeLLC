@@ -61,9 +61,9 @@ export default function HomePage() {
     }
 
     return (
-        <div className="flex flex-col min-h-screen bg-background text-foreground selection:bg-[#FF6200] selection:text-white">
+        <div className="flex flex-col min-h-screen bg-background text-foreground selection:bg-[#FF6200] selection:text-white overflow-x-hidden">
             <Header />
-            <main className="flex-1 w-full flex flex-col items-center pt-16">
+            <main className="flex-1 w-full max-w-[100vw] flex flex-col items-center pt-16 overflow-x-hidden">
 
                 {/* ─── Hero Section ─── */}
                 <section className="w-full max-w-6xl mx-auto px-6 md:px-10 lg:px-16 pt-24 pb-32 flex flex-col md:flex-row items-center gap-12 lg:gap-24 relative">
@@ -184,13 +184,13 @@ export default function HomePage() {
                         <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-foreground mb-16">
                             How it works on <span className="text-[#FF6200]">campus</span>
                         </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                             {[
                                 { title: "Verified Student Sellers", icon: MapPin, color: "text-foreground", bg: "bg-zinc-100 dark:bg-zinc-900", desc: "Every seller passes strict ID verification. Ensure you're trading with real, safe peers." },
                                 { title: "Fast Delivery", icon: Zap, color: "text-[#FF6200]", bg: "bg-[#FF6200]/10", desc: "Sellers are in your hostels or faculty. From ordering to eating in minutes, not hours." },
                                 { title: "Grow Your Hustle", icon: Store, color: "text-foreground", bg: "bg-zinc-100 dark:bg-zinc-900", desc: "Easily set up a storefront, list products (food, gadgets, fashion), and start taking orders today." }
                             ].map((feat, i) => (
-                                <div key={i} className="flex flex-col items-center p-8 bg-background rounded-[2.5rem] border border-zinc-100 dark:border-zinc-800 hover:border-zinc-200 dark:hover:border-zinc-700 transition-colors">
+                                <div key={i} className="flex flex-col items-center p-6 md:p-8 bg-background rounded-[2rem] md:rounded-[2.5rem] border border-zinc-100 dark:border-zinc-800 hover:border-zinc-200 dark:hover:border-zinc-700 transition-colors">
                                     <div className={`w-20 h-20 rounded-3xl ${feat.bg} flex items-center justify-center mb-6`}>
                                         <feat.icon className={`w-10 h-10 ${feat.color}`} />
                                     </div>
@@ -203,8 +203,8 @@ export default function HomePage() {
                 </section>
 
                 {/* ─── Open Access CTA ─── */}
-                <section className="w-full max-w-5xl mx-auto px-6 py-32">
-                    <div className="bg-[#111111] p-12 md:p-20 rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-12">
+                <section className="w-full max-w-5xl mx-auto px-4 md:px-6 py-20 md:py-32">
+                    <div className="bg-[#111111] p-8 md:p-20 rounded-[2.5rem] md:rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-10 md:gap-12">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-[#FF6200]/20 rounded-full blur-[80px]" />
                         <div className="relative z-10 flex-1 flex flex-col items-start text-left">
                             <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-white mb-6">
@@ -290,10 +290,10 @@ function AuthenticatedHome({ user }: { user: any }) {
     }, [user.id]);
 
     return (
-        <div className="flex flex-col min-h-screen bg-background text-foreground transition-all duration-300 selection:bg-primary selection:text-white">
+        <div className="flex flex-col min-h-screen bg-background text-foreground transition-all duration-300 selection:bg-primary selection:text-white overflow-x-hidden">
             <Header />
 
-            <main className="flex-1 w-full pt-20 md:pt-28 px-4 md:px-12 lg:px-24 space-y-10 md:space-y-20 pb-20 max-w-7xl mx-auto animate-in fade-in duration-700">
+            <main className="flex-1 w-full max-w-[100vw] overflow-x-hidden pt-20 md:pt-28 px-4 md:px-12 lg:px-24 space-y-10 md:space-y-20 pb-20 max-w-7xl mx-auto animate-in fade-in duration-700">
 
                 {/* ─── Simplified Hero / Context HUD ─── */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-8 pt-2 md:pt-4">
