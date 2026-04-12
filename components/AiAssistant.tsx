@@ -10,6 +10,7 @@ import { MessageCircle, X, Send, Bot, User, ShoppingBag, Search, AlertCircle, Lo
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 import { useChat } from 'ai/react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function AiAssistant() {
     const pathname = usePathname();
