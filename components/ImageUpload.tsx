@@ -81,10 +81,16 @@ export function ImageUpload({
             };
             const convertedBlob = await imageCompression(file, options);
 
+            // PROACTIVE SESSION CHECK
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                throw new Error("Authentication session expired. Please refresh the page and try again.");
+            }
+
             // Upload with 3-attempt retry
-            const { data: { user } } = await supabase.auth.getUser();
+            const user = session.user;
             const fileName = `${Math.random().toString(36).substring(2, 10)}_${Date.now()}.webp`;
-            const filePath = user ? `${user.id}/${fileName}` : `public/${fileName}`;
+            const filePath = `${user.id}/${fileName}`;
 
             let uploadError: any = null;
             for (let attempt = 1; attempt <= 3; attempt++) {
@@ -102,7 +108,10 @@ export function ImageUpload({
 
             if (uploadError) {
                 if (uploadError.message?.includes('bucket not found') || uploadError.message?.includes('404')) {
-                    throw new Error(`Storage bucket "${bucketName}" not found. Please run the SQL setup script.`);
+                    throw new Error(`Storage bucket "${bucketName}" not fully initialized on this instance. Please contact HQ support.`);
+                }
+                if (uploadError.message?.includes('new row violates row-level security')) {
+                    throw new Error("Authorization protocol rejected the upload. Please re-sign into your Seller Command session.");
                 }
                 throw new Error(`Upload failed after 3 attempts: ${uploadError.message}`);
             }

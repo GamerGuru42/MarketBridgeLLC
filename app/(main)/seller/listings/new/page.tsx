@@ -108,13 +108,21 @@ Condition: ${formData.condition.toUpperCase()}
 ${formData.description}`;
             }
 
+            // ROBUST PRICE VALIDATION
+            const priceNum = parseFloat(formData.price);
+            if (isNaN(priceNum) || priceNum <= 0) {
+                toast('Invalid price level detected. Please enter a positive numeric value.', 'error');
+                setLoading(false);
+                return;
+            }
+
             const { data, error } = await supabase
                 .from('listings')
                 .insert({
                     dealer_id: user.id,
                     title: formData.title,
                     description: finalDescription,
-                    price: parseFloat(formData.price),
+                    price: priceNum,
                     category: formData.category,
                     location: formData.location || null,
                     images: validImages,
@@ -161,10 +169,10 @@ ${formData.description}`;
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading">New Listing Process</span>
                         </div>
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
-                            Initialize <span className="text-[#FF6200]">Asset</span>
+                            Create New <span className="text-[#FF6200]">Listing</span>
                         </h1>
                         <p className="text-zinc-500 font-medium max-w-xl italic">
-                            Authorized deployment of new marketplace Campuss. Ensure all technical specifications are accurate.
+                            Deploy a new product or service to the campus marketplace. Ensure all details are accurate for a smooth transaction.
                         </p>
                     </div>
                 </div>
@@ -193,7 +201,7 @@ ${formData.description}`;
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                             <div className="space-y-8 md:col-span-2">
                                 <div className="space-y-3">
-                                    <Label htmlFor="title" className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading">Reference Title *</Label>
+                                    <Label htmlFor="title" className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading">Listing Title *</Label>
                                     <div className="relative group">
                                         <div className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-900/20 group-focus-within:text-[#FF6200] transition-colors">
                                             <Box className="h-5 w-5" />
@@ -210,7 +218,7 @@ ${formData.description}`;
                                 </div>
 
                                 <div className="space-y-3">
-                                    <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading">Technical Description *</Label>
+                                    <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading">Detailed Description *</Label>
                                     <Textarea
                                         id="description"
                                         value={formData.description}
@@ -224,7 +232,7 @@ ${formData.description}`;
                             </div>
 
                             <div className="space-y-3">
-                                <Label htmlFor="price" className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading">Financial Value (₦) *</Label>
+                                <Label htmlFor="price" className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading">Price (₦) *</Label>
                                 <div className="relative group">
                                     <div className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-900/20 group-focus-within:text-[#FF6200] transition-colors font-black font-heading text-lg italic">₦</div>
                                     <Input
@@ -240,7 +248,7 @@ ${formData.description}`;
                             </div>
 
                             <div className="space-y-3">
-                                <Label htmlFor="category" className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading">Asset Sector *</Label>
+                                <Label htmlFor="category" className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading">Category *</Label>
                                 <div className="relative">
                                     <Select
                                         value={formData.category}
@@ -269,12 +277,12 @@ ${formData.description}`;
                                         <SelectTrigger className="h-16 rounded-2xl bg-[#FAFAFA]/40 border-zinc-100 focus:ring-1 focus:ring-[#FF6200] font-heading text-[10px] font-black uppercase tracking-widest">
                                             <SelectValue placeholder="Select condition" />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-zinc-50">
-                                            <SelectItem value="new" className="py-3 text-[10px] font-black uppercase tracking-widest">Brand New</SelectItem>
-                                            <SelectItem value="like-new" className="py-3 text-[10px] font-black uppercase tracking-widest">Like New (Open Box)</SelectItem>
-                                            <SelectItem value="used-excellent" className="py-3 text-[10px] font-black uppercase tracking-widest">Used (Excellent)</SelectItem>
-                                            <SelectItem value="used-good" className="py-3 text-[10px] font-black uppercase tracking-widest">Used (Good)</SelectItem>
-                                            <SelectItem value="fair" className="py-3 text-[10px] font-black uppercase tracking-widest">Fair/Refurbished</SelectItem>
+                                        <SelectContent className="bg-zinc-50 border-zinc-200">
+                                            <SelectItem value="Brand New" className="py-3 text-[10px] font-black uppercase tracking-widest">Brand New</SelectItem>
+                                            <SelectItem value="Open Box" className="py-3 text-[10px] font-black uppercase tracking-widest">Like New (Open Box)</SelectItem>
+                                            <SelectItem value="used_clean" className="py-3 text-[10px] font-black uppercase tracking-widest">Used (Excellent)</SelectItem>
+                                            <SelectItem value="Used" className="py-3 text-[10px] font-black uppercase tracking-widest">Used (Good)</SelectItem>
+                                            <SelectItem value="UK Used" className="py-3 text-[10px] font-black uppercase tracking-widest">UK Used / Refurbished</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -314,7 +322,7 @@ ${formData.description}`;
                                         id="location"
                                         value={formData.location}
                                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                        placeholder="e.g., Victoria Island, Lagos"
+                                        placeholder="e.g., Baze University, Abuja"
                                         className="h-16 pl-16 rounded-2xl bg-[#FAFAFA]/40 border-zinc-100 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] transition-all text-sm font-bold uppercase tracking-widest font-heading"
                                     />
                                 </div>
@@ -362,7 +370,7 @@ ${formData.description}`;
                                     </>
                                 ) : (
                                     <>
-                                        Deploy Asset Stream <Zap className="ml-3 h-5 w-5 animate-pulse" />
+                                        Publish Listing <Zap className="ml-3 h-5 w-5 animate-pulse" />
                                     </>
                                 )}
                             </Button>
@@ -373,7 +381,7 @@ ${formData.description}`;
                                 disabled={loading}
                                 className="h-20 px-12 rounded-[1.5rem] bg-transparent border-zinc-200 text-zinc-900 font-black uppercase tracking-[0.3em] text-[10px] font-heading hover:bg-white transition-all"
                             >
-                                Abort Initialization
+                                Cancel
                             </Button>
                         </div>
                     </form>

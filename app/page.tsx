@@ -28,7 +28,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { supabase } from '@/lib/supabase';
-import Image from 'next/image';
+import { LaunchCountdown } from '@/components/LaunchCountdown';
 
 export default function HomePage() {
     const { user, loading } = useAuth();
@@ -48,22 +48,18 @@ export default function HomePage() {
         if (['student_seller', 'seller', 'dealer'].includes(user.role)) {
             // Sellers have their own distinct Premium Command Center
             typeof window !== 'undefined' && window.location.assign('/seller/dashboard');
-            return (
-                <div className="flex h-screen items-center justify-center bg-background">
-                    <div className="flex flex-col items-center gap-4">
-                        <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground animate-pulse">Routing to Seller Command Center...</p>
-                    </div>
-                </div>
-            )
+            return null;
         }
         return <AuthenticatedHome user={user} />;
     }
 
+    // Default entry for the Genesis Countdown phase
     return (
-        <div className="flex flex-col min-h-screen bg-background text-foreground selection:bg-[#FF6200] selection:text-white overflow-x-hidden">
-            <Header />
-            <main className="flex-1 w-full max-w-[100vw] flex flex-col items-center pt-16 overflow-x-hidden">
+        <main className="min-h-screen w-full">
+            <LaunchCountdown />
+        </main>
+    );
+}
 
                 {/* ─── Hero Section ─── */}
                 <section className="w-full max-w-6xl mx-auto px-6 md:px-10 lg:px-16 pt-24 pb-32 flex flex-col md:flex-row items-center gap-12 lg:gap-24 relative">

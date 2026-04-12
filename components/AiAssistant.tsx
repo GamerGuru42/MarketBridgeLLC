@@ -8,14 +8,17 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { MessageCircle, X, Send, Bot, User, ShoppingBag, Search, AlertCircle, Loader2, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
-import { useChat } from 'ai/react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { motion, AnimatePresence } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 
 export function AiAssistant() {
+    const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
+    
+    // Shield Sage from the cinematic countdown landing page
+    if (typeof window !== 'undefined' && (pathname === '/launch' || pathname === '/')) {
+        return null;
+    }
+
     const [retryCount, setRetryCount] = useState(0);
 
     const { messages, input, handleInputChange, handleSubmit, isLoading, append, error, reload } = useChat({

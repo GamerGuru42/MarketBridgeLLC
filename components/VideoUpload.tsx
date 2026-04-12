@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
@@ -52,8 +52,9 @@ export function VideoUpload({
                     continue;
                 }
 
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) throw new Error("Authentication required for upload.");
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session) throw new Error("Authentication session expired. Please log in again.");
+                const user = session.user;
 
                 const fileExt = file.name.split('.').pop()?.toLowerCase() || 'mp4';
                 const fileName = `${Math.random().toString(36).substring(2, 10)}_${Date.now()}.${fileExt}`;
@@ -129,21 +130,10 @@ export function VideoUpload({
                 ))}
 
                 {videos.length < maxVideos && (
-                    <div
-                        onClick={() => fileInputRef.current?.click()}
-                        className="aspect-video rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center cursor-pointer hover:bg-white/[0.03] hover:border-[#FF6200]/40 group transition-all"
-                    >
-                        {uploading ? (
-                            <div className="flex flex-col items-center gap-2">
-                                <Loader2 className="h-8 w-8 animate-spin text-[#FF6200]" />
-                                <span className="text-[10px] uppercase font-black tracking-widest text-[#FF6200]">Streaming Data...</span>
-                            </div>
-                        ) : (
-                            <>
                                 <div className="p-4 rounded-xl bg-white/[0.02] group-hover:bg-[#FF6200]/10 transition-colors mb-3">
                                     <VideoIcon className="h-6 w-6 text-zinc-600 group-hover:text-[#FF6200] transition-colors" />
                                 </div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-white transition-colors">Initialize Feed</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-white transition-colors">Add Video</span>
                             </>
                         )}
                     </div>
@@ -168,8 +158,8 @@ export function VideoUpload({
                 </p>
             )}
 
-            <p className="text-xs text-muted-foreground">
-                Supported formats: MP4, MOV, AVI, WEBM. Max size: 50MB per video. Max {maxVideos} videos.
+            <p className="text-xs text-muted-foreground italic">
+                Supported formats: MP4, MOV, AVI, WEBM. Max size: 50MB per video.
             </p>
         </div>
     );
