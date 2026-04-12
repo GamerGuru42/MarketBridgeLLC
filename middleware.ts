@@ -260,6 +260,33 @@ export async function middleware(request: NextRequest) {
         return response;
     }
 
+    // ── 4.5. Launch Shield (Global guest protection) ──────────────────────────
+    // Anyone not logged in visiting secondary pages is redirected to the countdown
+    const IS_LOGGED_IN = request.cookies.some(c => c.name.startsWith('sb-') && c.name.includes('-auth-token'));
+    
+    // Explicit list of pages guests ARE allowed to see during launch
+    const LAUNCH_PUBLIC_ROUTES = [
+        '/', 
+        '/login', 
+        '/signup', 
+        '/auth', 
+        '/seller-qr', 
+        '/seller-onboard', 
+        '/verify-email', 
+        '/reset-password',
+        '/api'
+    ];
+
+    const isPublicRoute = LAUNCH_PUBLIC_ROUTES.some(route => 
+        pathname === route || pathname.startsWith(route + '/')
+    );
+
+    if (!IS_LOGGED_IN && !isPublicRoute) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/';
+        return NextResponse.redirect(url);
+    }
+
     // ── 5. Universal Security Headers ────────────────────────────────────────
     const response = NextResponse.next();
     response.headers.set('X-Content-Type-Options', 'nosniff');
