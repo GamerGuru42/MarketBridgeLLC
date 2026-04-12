@@ -1,10 +1,13 @@
-"use client"
 import React from 'react'
 import { usePathname } from 'next/navigation'
+import { useSystem } from '@/contexts/SystemContext'
 
 export default function BetaLabel() {
   const pathname = usePathname() || ''
-  if (!pathname.startsWith('/campus')) return null
+  const { isDemoMode } = useSystem()
+
+  // Show if on campus route OR if system-wide Demo Mode is active
+  if (!pathname.startsWith('/campus') && !isDemoMode) return null
 
   return (
     <div className="fixed bottom-4 left-4 z-[9999] pointer-events-none">
@@ -13,7 +16,7 @@ export default function BetaLabel() {
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-black opacity-40"></span>
           <span className="relative inline-flex rounded-full h-2 w-2 bg-black"></span>
         </span>
-        MarketBridge Campus Beta – Testing Phase
+        {isDemoMode ? 'LIVE DEMO – Production Testing' : 'MarketBridge Campus Beta'}
       </div>
     </div>
   )

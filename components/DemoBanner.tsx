@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { useSystem } from '@/contexts/SystemContext';
-import { AlertCircle } from 'lucide-react';
 
 export function DemoBanner() {
     const { isDemoMode, daysLeft, isExpired } = useSystem();
@@ -10,11 +9,22 @@ export function DemoBanner() {
     if (!isDemoMode || isExpired) return null;
 
     return (
-        <div className="w-full bg-gradient-to-r from-orange-600 to-red-600 text-white px-4 py-2.5 flex items-center justify-center text-center shadow-md relative z-[100]">
-            <div className="flex items-center gap-2 max-w-7xl mx-auto flex-wrap justify-center">
-                <AlertCircle className="h-4 w-4 shrink-0 animate-pulse" />
-                <p className="text-[10px] sm:text-xs font-black uppercase tracking-widest leading-tight">
-                    🚀 DEMO MODE – 1 Month Private Beta | <span className="opacity-80">For testing only</span> | <span className="opacity-80">No real money used</span> | Expires in <span className="text-yellow-300 font-mono text-sm">{daysLeft}</span> days
+        <div className="w-full bg-[#FF6200] text-black px-4 py-2 flex items-center justify-center text-center shadow-lg relative z-[100] border-b border-black/5">
+            <div className="flex items-center gap-4 max-w-7xl mx-auto flex-wrap justify-center text-black">
+                <div className="flex items-center gap-2">
+                    <div className="relative flex h-2.5 w-2.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-black opacity-40"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-black"></span>
+                    </div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] italic">Live Testing: Demo Period</p>
+                </div>
+                <div className="h-5 w-px bg-black/10 hidden sm:block" />
+                <p className="text-[10px] font-bold tracking-widest uppercase flex items-center gap-3">
+                    <span>Active Production Engine</span>
+                    <span className="opacity-30">•</span>
+                    <span>Real Settlements Handled</span>
+                    <span className="opacity-30">•</span>
+                    <span>Ends in <span className="font-black text-xs">{daysLeft}D</span></span>
                 </p>
             </div>
         </div>
