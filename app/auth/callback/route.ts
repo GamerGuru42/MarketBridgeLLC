@@ -37,8 +37,6 @@ export async function GET(request: Request) {
         if (!error && data?.user) {
             console.log('Auth Callback: Exchange successful for:', data.user.email);
 
-            let finalNext = next;
-
             // Fetch existing profile if any
             const { data: existingUser } = await supabase.from('users').select('role, display_name').eq('id', data.user.id).maybeSingle();
             
@@ -47,7 +45,12 @@ export async function GET(request: Request) {
 
             const cookieRole = cookieStore.get('mb_oauth_role')?.value;
             const role = roleParam || cookieRole;
+            const cookieNext = cookieStore.get('mb_oauth_next')?.value;
+            const nextUrlParam = searchParams.get('next');
+            let finalNext = nextUrlParam || (cookieNext ? decodeURIComponent(cookieNext) : '/');
+
             if (cookieRole) cookieStore.delete('mb_oauth_role');
+            if (cookieNext) cookieStore.delete('mb_oauth_next');
 
             // Core Logic: If user not found and no role provided (e.g. login page via Social)
             // Just auto-create them as a student_buyer to ensure seamless entry.

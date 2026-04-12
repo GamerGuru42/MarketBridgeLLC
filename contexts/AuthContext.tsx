@@ -111,8 +111,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             try {
                 const url = new URL(redirectTo);
                 const roleParam = url.searchParams.get('role');
+                const nextParam = url.searchParams.get('next');
+                const domainSuffix = window.location.hostname.includes('marketbridge.com.ng') 
+                    ? '; domain=.marketbridge.com.ng' 
+                    : '';
+                
                 if (roleParam) {
-                    document.cookie = `mb_oauth_role=${roleParam}; path=/; max-age=600`;
+                    document.cookie = `mb_oauth_role=${roleParam}; path=/; max-age=600${domainSuffix}`;
+                }
+                if (nextParam) {
+                    document.cookie = `mb_oauth_next=${encodeURIComponent(nextParam)}; path=/; max-age=600${domainSuffix}`;
                 }
             } catch (e) { /* ignore */ }
         }
