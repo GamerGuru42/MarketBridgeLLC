@@ -1,5 +1,5 @@
--- MARKETBRIDGE COMPLETE NETWORK REDUX (APRIL 2026)
--- A comprehensive standardization of identity roles, escrow lifecycles, and economic loyalty.
+-- MARKETBRIDGE COMPLETE PLATFORM STANDARDIZATION (APRIL 2026)
+-- A comprehensive master migration for Identity, Escrow, and loyalty Economics.
 
 BEGIN;
 
