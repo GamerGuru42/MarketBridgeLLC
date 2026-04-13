@@ -242,7 +242,7 @@ export default function SellerListingsPage() {
             duration: '3 days',
             icon: <Zap className="h-5 w-5 text-[#FF6200]" />,
             perks: ['Pinned to top of your category', '3-day visibility window', '+10 MarketCoins reward'],
-            color: 'border-zinc-200 hover:border-[#FF6200]/40',
+            color: 'border-zinc-200 dark:border-white/5 hover:border-[#FF6200]/40 dark:hover:border-[#FF6200]/60',
             badge: null,
         },
         {
@@ -252,7 +252,7 @@ export default function SellerListingsPage() {
             duration: '7 days',
             icon: <TrendingUp className="h-5 w-5 text-amber-400" />,
             perks: ['Pinned for 7 days', 'FEATURED badge on card', '+25 MarketCoins reward'],
-            color: 'border-amber-500/30 hover:border-amber-400/60',
+            color: 'border-amber-500/30 hover:border-amber-400/60 dark:border-amber-500/20 dark:hover:border-amber-400/50',
             badge: 'POPULAR',
         },
         {
@@ -262,7 +262,7 @@ export default function SellerListingsPage() {
             duration: '14 days',
             icon: <Crown className="h-5 w-5 text-yellow-300" />,
             perks: ['Pinned for 14 days', 'PREMIUM badge + homepage exposure', 'Cost: 50 MarketCoins'],
-            color: 'border-yellow-500/30 hover:border-yellow-400/60',
+            color: 'border-yellow-500/30 hover:border-yellow-400/60 dark:border-yellow-500/20 dark:hover:border-yellow-400/50',
             badge: 'BEST VALUE',
         },
     ];
@@ -271,30 +271,30 @@ export default function SellerListingsPage() {
 
     if (authLoading || loading) {
         return (
-            <div className="container mx-auto py-10 px-4 space-y-8">
+            <div className="container mx-auto py-10 px-4 space-y-8 bg-transparent transition-colors">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <Skeleton className="h-12 w-64 bg-white" />
-                        <Skeleton className="h-4 w-96 mt-2 bg-white" />
+                        <Skeleton className="h-12 w-64 bg-zinc-100 dark:bg-zinc-800" />
+                        <Skeleton className="h-4 w-96 mt-2 bg-zinc-100 dark:bg-zinc-800" />
                     </div>
-                    <Skeleton className="h-12 w-48 rounded-xl bg-white" />
+                    <Skeleton className="h-12 w-48 rounded-xl bg-zinc-100 dark:bg-zinc-800" />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {[1, 2, 3].map((i) => (
-                        <div key={i} className="bg-white border border-zinc-200 shadow-sm rounded-[2rem] border-zinc-100 overflow-hidden flex flex-col h-full shadow-2xl">
-                            <Skeleton className="aspect-[4/3] w-full rounded-none bg-white" />
+                        <div key={i} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 shadow-sm rounded-[2rem] overflow-hidden flex flex-col h-full shadow-2xl">
+                            <Skeleton className="aspect-[4/3] w-full rounded-none bg-zinc-50 dark:bg-zinc-800/50" />
                             <div className="p-8 space-y-6 flex-1 flex flex-col justify-between">
                                 <div className="space-y-3">
-                                    <Skeleton className="h-6 w-3/4 bg-white" />
-                                    <Skeleton className="h-8 w-1/3 bg-[#FF6200]/20" />
+                                    <Skeleton className="h-6 w-3/4 bg-zinc-50 dark:bg-zinc-800/50" />
+                                    <Skeleton className="h-8 w-1/3 bg-[#FF6200]/10" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Skeleton className="h-4 w-full bg-white" />
-                                    <Skeleton className="h-4 w-2/3 bg-white" />
+                                    <Skeleton className="h-4 w-full bg-zinc-50 dark:bg-zinc-800/50" />
+                                    <Skeleton className="h-4 w-2/3 bg-zinc-50 dark:bg-zinc-800/50" />
                                 </div>
-                                <div className="grid grid-cols-2 gap-3 pt-6 border-t border-zinc-100">
-                                    <Skeleton className="h-8 w-full rounded-xl bg-white" />
-                                    <Skeleton className="h-8 w-full rounded-xl bg-white" />
+                                <div className="grid grid-cols-2 gap-3 pt-6 border-t border-zinc-100 dark:border-white/5">
+                                    <Skeleton className="h-8 w-full rounded-xl bg-zinc-50 dark:bg-zinc-800/50" />
+                                    <Skeleton className="h-8 w-full rounded-xl bg-zinc-50 dark:bg-zinc-800/50" />
                                 </div>
                             </div>
                         </div>
@@ -305,7 +305,7 @@ export default function SellerListingsPage() {
     }
 
     return (
-        <div className="container mx-auto py-10 px-4 space-y-8">
+        <div className="container mx-auto py-10 px-4 space-y-8 bg-transparent transition-colors">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">Inventory Campus</h1>
@@ -330,8 +330,8 @@ export default function SellerListingsPage() {
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {listings.map((listing) => (
-                        <Card key={listing.id} className="overflow-hidden border-zinc-100 bg-white0 hover:border-[#FF6200]/30 hover:shadow-2xl transition-all group rounded-[2rem]">
-                            <div className="aspect-[4/3] bg-white relative overflow-hidden">
+                        <Card key={listing.id} className="overflow-hidden border-zinc-100 dark:border-white/5 bg-white dark:bg-zinc-950 hover:border-[#FF6200]/30 hover:shadow-2xl transition-all group rounded-[2rem]">
+                            <div className="aspect-[4/3] bg-[#FAFAFA] dark:bg-zinc-900 relative overflow-hidden">
                                 {listing.images && listing.images.length > 0 ? (
                                     <Image
                                         src={listing.images[0]}
@@ -346,7 +346,7 @@ export default function SellerListingsPage() {
                                 )}
                                 <div className="absolute top-3 right-3 flex flex-col gap-2">
                                     <Badge
-                                        className={`font-black uppercase tracking-tighter shadow-lg ${listing.status === 'active' ? 'bg-[#FF6200] text-black hover:bg-[#FF7A29]' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-700'}`}
+                                        className={`font-black uppercase tracking-tighter shadow-lg ${listing.status === 'active' ? 'bg-[#FF6200] text-black hover:bg-[#FF7A29]' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'}`}
                                     >
                                         {listing.status}
                                     </Badge>
@@ -360,7 +360,7 @@ export default function SellerListingsPage() {
                             </div>
                             <CardHeader className="p-5">
                                 <div className="flex justify-between items-start gap-4">
-                                    <CardTitle className="text-xl font-black italic uppercase tracking-tighter line-clamp-1 group-hover:text-[#FF6200] transition-colors text-zinc-900">{listing.title}</CardTitle>
+                                    <CardTitle className="text-xl font-black italic uppercase tracking-tighter line-clamp-1 group-hover:text-[#FF6200] transition-colors text-zinc-900 dark:text-white">{listing.title}</CardTitle>
                                 </div>
                                 <p className="text-2xl font-black text-[#FF6200] mt-1">
                                     ₦{listing.price.toLocaleString()}
@@ -371,13 +371,13 @@ export default function SellerListingsPage() {
                                     {listing.description}
                                 </p>
                                 <div className="grid grid-cols-2 gap-3">
-                                    <Button asChild variant="outline" size="sm" className="font-bold border-zinc-200 hover:border-[#FF6200]/30 hover:bg-white rounded-xl text-[10px] uppercase tracking-widest font-heading">
+                                    <Button asChild variant="outline" size="sm" className="font-bold border-zinc-200 dark:border-white/10 hover:border-[#FF6200]/30 hover:bg-white dark:hover:bg-white/5 rounded-xl text-[10px] uppercase tracking-widest font-heading">
                                         <Link href={`/listings/${listing.id}`}>
                                             <Eye className="mr-2 h-3.5 w-3.5" />
                                             PREVIEW
                                         </Link>
                                     </Button>
-                                    <Button asChild variant="outline" size="sm" className="font-bold border-zinc-200 hover:border-[#FF6200]/30 hover:bg-white rounded-xl text-[10px] uppercase tracking-widest font-heading">
+                                    <Button asChild variant="outline" size="sm" className="font-bold border-zinc-200 dark:border-white/10 hover:border-[#FF6200]/30 hover:bg-white dark:hover:bg-white/5 rounded-xl text-[10px] uppercase tracking-widest font-heading">
                                         <Link href={`/seller/listings/${listing.id}/edit`}>
                                             <Edit className="mr-2 h-3.5 w-3.5" />
                                             MODIFY
@@ -386,7 +386,7 @@ export default function SellerListingsPage() {
                                     <Button
                                         variant="secondary"
                                         size="sm"
-                                        className="font-bold bg-zinc-100 text-zinc-900 hover:bg-zinc-700 rounded-xl text-[10px] uppercase tracking-widest font-heading"
+                                        className="font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl text-[10px] uppercase tracking-widest font-heading"
                                         onClick={() => toggleStatus(listing)}
                                     >
                                         {listing.status === 'active' ? 'OFFLINE' : 'ONLINE'}
@@ -445,53 +445,57 @@ export default function SellerListingsPage() {
 
             {/* ─── Boost Modal ───────────────────────────────────────── */}
             {boostListing && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#FAFAFA]/80 backdrop-blur-md animate-in fade-in duration-200">
-                    <div className="w-full max-w-xl bg-zinc-50 border border-zinc-200 rounded-[2.5rem] p-8 shadow-2xl relative animate-in fade-in zoom-in-95 duration-300">
+                <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-zinc-950/20 dark:bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+                    <div className="w-full max-w-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-[2.5rem] p-6 md:p-10 shadow-2xl relative animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
                         <button
                             onClick={() => setBoostListing(null)}
                             aria-label="Close boost modal"
                             title="Close"
-                            className="absolute top-6 right-6 text-zinc-900/30 hover:text-zinc-900 transition-colors"
+                            className="absolute top-6 right-6 text-zinc-900/30 dark:text-white/20 hover:text-zinc-900 dark:hover:text-white transition-colors"
                         >
-                            <X className="h-5 w-5" />
+                            <X className="h-6 w-6" />
                         </button>
 
-                        <div className="mb-6">
+                        <div className="mb-8">
                             <div className="flex items-center gap-3 mb-2">
-                                <Flame className="h-6 w-6 text-[#FF6200]" />
-                                <h2 className="text-2xl font-black uppercase tracking-tighter">Boost Listing</h2>
+                                <div className="h-10 w-10 rounded-xl bg-[#FF6200]/10 flex items-center justify-center">
+                                    <Flame className="h-6 w-6 text-[#FF6200]" />
+                                </div>
+                                <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter italic font-heading dark:text-white">Boost <span className="text-[#FF6200]">Listing</span></h2>
                             </div>
-                            <p className="text-zinc-500 text-sm font-medium italic">
+                            <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium italic border-l-2 border-[#FF6200]/30 pl-3">
                                 &ldquo;{boostListing.title}&rdquo; — choose your boost tier
                             </p>
                         </div>
 
-                        <div className="space-y-4 mb-6">
+                        <div className="space-y-4 mb-8">
                             {BOOST_TIERS.map((tier) => (
                                 <button
                                     key={tier.id}
                                     onClick={() => tier.id === 'premium' ? handleBoostWithCoins() : handleBoostTier(tier.id)}
                                     disabled={boostLoading}
-                                    className={`w-full text-left p-5 rounded-2xl border bg-[#FAFAFA]/30 transition-all hover:bg-[#FAFAFA]/60 relative ${tier.color} disabled:opacity-50 disabled:cursor-not-allowed`}
+                                    className={`w-full text-left p-6 rounded-2xl border transition-all hover:scale-[1.02] active:scale-[0.98] relative group ${tier.color} bg-[#FAFAFA]/50 dark:bg-white/[0.02] hover:bg-white dark:hover:bg-white/[0.05] disabled:opacity-50 disabled:cursor-not-allowed border-zinc-200 dark:border-white/5`}
                                 >
                                     {tier.badge && (
-                                        <span className="absolute top-4 right-4 text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-full bg-[#FF6200] text-black">
+                                        <span className="absolute top-4 right-4 text-[8px] font-black uppercase tracking-widest px-2.5 py-1.5 rounded-full bg-[#FF6200] text-black shadow-lg shadow-[#FF6200]/20">
                                             {tier.badge}
                                         </span>
                                     )}
-                                    <div className="flex items-center gap-3 mb-3">
-                                        {tier.icon}
-                                        <span className="font-black uppercase tracking-wider text-sm">{tier.label}</span>
-                                        <span className="ml-auto text-2xl font-black text-zinc-900">{tier.price}</span>
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="p-2 rounded-lg bg-white dark:bg-zinc-800 shadow-sm transition-transform group-hover:scale-110">
+                                            {tier.icon}
+                                        </div>
+                                        <span className="font-black uppercase tracking-wider text-sm dark:text-white">{tier.label}</span>
+                                        <span className="ml-auto text-2xl font-black text-zinc-900 dark:text-white group-hover:text-[#FF6200] transition-colors">{tier.price}</span>
                                     </div>
-                                    <div className="flex items-center gap-2 mb-3">
-                                        <Clock className="h-3.5 w-3.5 text-zinc-900/30" />
-                                        <span className="text-[11px] text-zinc-500 font-bold uppercase tracking-widest">{tier.duration}</span>
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <Clock className="h-3.5 w-3.5 text-[#FF6200]" />
+                                        <span className="text-[11px] text-[#FF6200] font-black uppercase tracking-widest">{tier.duration} Visibility</span>
                                     </div>
-                                    <ul className="space-y-1">
+                                    <ul className="space-y-2">
                                         {tier.perks.map((perk, i) => (
-                                            <li key={i} className="text-[11px] text-zinc-500 flex items-center gap-2">
-                                                <span className="h-1 w-1 rounded-full bg-[#FF6200]/60 flex-shrink-0" />
+                                            <li key={i} className="text-[11px] text-zinc-500 dark:text-zinc-400 flex items-center gap-3">
+                                                <Zap className="h-3 w-3 text-[#FF6200] opacity-50" />
                                                 {perk}
                                             </li>
                                         ))}
@@ -501,19 +505,29 @@ export default function SellerListingsPage() {
                         </div>
 
                         {boostError && (
-                            <p className="text-red-400 text-sm font-bold mb-4 text-center">{boostError}</p>
-                        )}
-
-                        {boostLoading && (
-                            <div className="flex items-center justify-center gap-3 text-zinc-600 text-sm font-bold">
-                                <Loader2 className="h-4 w-4 animate-spin text-[#FF6200]" />
-                                Taking you to checkout...
+                            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 mb-6">
+                                <p className="text-red-500 text-xs font-bold text-center leading-relaxed">{boostError}</p>
                             </div>
                         )}
 
-                        <p className="text-center text-[10px] text-zinc-900/20 mt-4 uppercase tracking-widest">
-                            Secure payment via Paystack — No recurring charges
-                        </p>
+                        <div className="space-y-4">
+                            {boostLoading && (
+                                <div className="flex items-center justify-center gap-3 text-zinc-600 dark:text-zinc-400 text-sm font-bold bg-zinc-100 dark:bg-zinc-800/50 py-4 rounded-xl animate-pulse">
+                                    <Loader2 className="h-4 w-4 animate-spin text-[#FF6200]" />
+                                    Authenticating Transaction...
+                                </div>
+                            )}
+
+                            <div className="flex flex-col items-center gap-2">
+                                <div className="flex items-center gap-4 py-2 px-4 bg-zinc-100 dark:bg-zinc-800/50 rounded-full">
+                                    <p className="text-[9px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-widest">Powered by</p>
+                                    <div className="h-4 w-20 bg-[url('/paystack-logo.png')] bg-contain bg-no-repeat bg-center opacity-40 grayscale" />
+                                </div>
+                                <p className="text-center text-[9px] text-zinc-300 dark:text-zinc-600 uppercase tracking-[0.2em] font-medium">
+                                    Secure Transfer Protocol — No Recurring Charges
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
