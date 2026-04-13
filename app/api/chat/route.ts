@@ -108,7 +108,16 @@ export async function POST(req: Request) {
         });
     }
 
-    const { messages } = await req.json();
+    const { messages, isLoggedIn, userDisplayName } = await req.json();
+
+    const contextualSystemPrompt = `
+${SAGE_SYSTEM_PROMPT}
+
+CURRENT CONTEXT:
+- User Status: ${isLoggedIn ? 'Authenticated' : 'Guest/Visitor'}
+- User Name: ${userDisplayName || 'Guest'}
+${!isLoggedIn ? '- IMPORTANT: You are in "Guest Mode". You can answer marketplace questions and search for products, but you MUST NOT check orders, escrow details, or escalate to human support. Politely ask the guest to log in if they try to access these features.' : ''}
+`;
 
     const primaryModel = 'gemini-2.5-pro';
     const fallbackModel = 'gemini-2.5-flash';
@@ -119,7 +128,7 @@ export async function POST(req: Request) {
         return streamText({
             // @ts-ignore
             model: google(modelId),
-            system: SAGE_SYSTEM_PROMPT,
+            system: contextualSystemPrompt,
             messages,
             tools: {
                 searchProducts: tool({
@@ -193,6 +202,9 @@ export async function POST(req: Request) {
                         userQuery: z.string().describe('What the user is asking about their order'),
                     }),
                     execute: async ({ userQuery }) => {
+                        if (!isLoggedIn) {
+                            return { found: false, message: 'Authentication required. Please log in to check your order status.', needsLogin: true };
+                        }
                         try {
                             const supabase = await createClient();
                             const { data, error } = await supabase
@@ -202,7 +214,7 @@ export async function POST(req: Request) {
                                 .limit(3);
 
                             if (error || !data || data.length === 0) {
-                                return { found: false, message: 'No recent orders found. The user may need to check /settings/transactions for their full history.', query: userQuery };
+                                return { found: false, message: 'No recent orders found. Check /settings/transactions for full history.', query: userQuery };
                             }
 
                             return {
@@ -218,18 +230,25 @@ export async function POST(req: Request) {
                             };
                         } catch (err) {
                             console.error('Order check error:', err);
-                            return { found: false, message: 'Could not retrieve order information. Direct user to /settings/transactions.' };
+                            return { found: false, message: 'Could not retrieve order information.' };
                         }
                     }
                 }),
                 escalateSupport: tool({
-                    description: 'Create a real support ticket and escalate to the human Operations team. ONLY use this as a last resort when you genuinely cannot resolve the issue yourself.',
+                    description: 'Create a real support ticket and escalate to the human Operations team. ONLY use this as a last resort.',
                     parameters: z.object({
                         issueArea: z.enum(['technical', 'operations']).describe('technical = app bug/error, operations = payment/refund/account issue'),
                         description: z.string().describe('Clear summary of the issue in 1-2 sentences'),
                         userId: z.string().optional().describe('The user ID if available from context'),
                     }),
                     execute: async ({ issueArea, description, userId }) => {
+                        if (!isLoggedIn) {
+                            return { 
+                                status: 'denied', 
+                                message: 'Authentication required to escalate support. Please log in first.',
+                                needsLogin: true 
+                            };
+                        }
                         try {
                             const supabase = await createClient();
                             const ticketCode = `${issueArea.toUpperCase().substring(0, 3)}-${Math.floor(Math.random() * 100000)}`;
@@ -251,7 +270,7 @@ export async function POST(req: Request) {
                                     status: 'escalated',
                                     department: issueArea,
                                     description,
-                                    note: 'Ticket logged. An operations agent will reach out shortly.'
+                                    note: 'Ticket logged manually. Our team will contact you.'
                                 };
                             }
 
@@ -259,7 +278,7 @@ export async function POST(req: Request) {
                                 ticket_id: ticket.id,
                                 sender_id: 'SYSTEM_AI',
                                 sender_type: 'ai',
-                                content: `[Sage AI Escalation] Issue Area: ${issueArea} | Description: ${description} | Auto-created by Sage AI after user requested human assistance.`,
+                                content: `[Sage AI Escalation] ${description}`,
                             });
 
                             return {
@@ -267,17 +286,10 @@ export async function POST(req: Request) {
                                 status: 'escalated',
                                 department: issueArea,
                                 description,
-                                note: 'Your ticket has been created. An operations team member will join this chat shortly. You can also email us directly.'
+                                note: 'Your ticket has been created. An agent will join this chat shortly.'
                             };
                         } catch (err) {
-                            console.error('Escalation error:', err);
-                            return {
-                                ticketId: `${issueArea.toUpperCase().substring(0, 3)}-${Math.floor(Math.random() * 100000)}`,
-                                status: 'escalated',
-                                department: issueArea,
-                                description,
-                                note: 'Ticket logged. An operations agent will reach out shortly.'
-                            };
+                            return { status: 'error', message: 'Failed to create ticket. Please contact support@marketbridge.com.ng directly.' };
                         }
                     }
                 })
