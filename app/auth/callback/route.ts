@@ -48,14 +48,15 @@ export async function GET(request: Request) {
             let actualRole = finalRole;
             let redirectPath = finalNext;
 
-            // Enforce educational email for sellers
+            // Enforce .edu.ng school email for sellers — reject personal emails
             if (actualRole === 'student_seller' || actualRole === 'seller') {
                 const userEmail = data.user.email?.toLowerCase() || '';
-                const isEducational = userEmail.endsWith('.edu.ng') || userEmail.endsWith('.edu') || userEmail.endsWith('.com.ng');
-                if (!isEducational) {
-                    console.warn(`Auth Callback: Non-educational email for seller. Downgrading.`);
-                    actualRole = 'student_buyer';
-                    redirectPath = '/marketplace?alert=invalid_school_email';
+                if (!userEmail.endsWith('.edu.ng')) {
+                    console.warn(`Auth Callback: Non-.edu.ng email "${userEmail}" attempted seller signup. Blocking.`);
+                    await supabase.auth.signOut();
+                    return NextResponse.redirect(
+                        new URL('/seller-onboard?error=' + encodeURIComponent('To sign up as a seller, please use your school email address (ending in .edu.ng). Personal emails like Gmail or Yahoo are not accepted for seller accounts.'), origin)
+                    );
                 }
             }
 
@@ -114,7 +115,7 @@ export async function GET(request: Request) {
         }
     }
 
-    const errorMsg = searchParams.get('error_description') || 'Authentication handshake failed'
+    const errorMsg = searchParams.get('error_description') || 'Something went wrong during sign in. Please try again.'
     console.warn('Auth Callback: Redirecting to login due to error:', errorMsg);
     return NextResponse.redirect(new URL(`/login?error=${encodeURIComponent(errorMsg)}`, origin))
 }

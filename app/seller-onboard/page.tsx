@@ -47,6 +47,17 @@ export default function SellerOnboardPage() {
         phoneNumber: ''
     });
 
+    // Show error from auth callback redirect (e.g. non-.edu.ng email)
+    const searchParams = useSearchParams();
+    useEffect(() => {
+        const errorMsg = searchParams.get('error');
+        if (errorMsg) {
+            toast(errorMsg, 'error');
+            // Clean up the URL without reloading
+            window.history.replaceState({}, '', '/seller-onboard');
+        }
+    }, [searchParams, toast]);
+
     useEffect(() => {
         if (!loading && user) {
             router.push('/seller-setup/bank');
@@ -56,7 +67,7 @@ export default function SellerOnboardPage() {
     useEffect(() => {
         const hash = window.location.hash;
         if (hash.includes('access_token')) {
-            toast('Secure authorization detected! Authenticating...', 'success');
+            toast('Signed in successfully! Setting up your account...', 'success');
             setTimeout(() => {
                 refreshUser();
             }, 1000);
@@ -82,7 +93,7 @@ export default function SellerOnboardPage() {
         try {
             await signInWithGoogle(`${window.location.origin}/auth/callback?role=student_seller&next=/seller-setup/bank`);
         } catch (error: any) {
-            toast(error.message || 'Google Sign-In failed.', 'error');
+            toast(error.message || 'Google Sign-In failed. Please try again.', 'error');
             setIsGoogleLoading(false);
         }
     };
@@ -90,7 +101,14 @@ export default function SellerOnboardPage() {
     const handleSendMagicLink = async () => {
         const uni = formData.university === 'Other Abuja Private University' ? formData.universityOther : formData.university;
         if (!formData.fullName || !uni || !formData.email || !formData.phoneNumber) {
-            toast('Please fill out all required fields to initiate transfer.', 'error');
+            toast('Please fill in all the fields to continue.', 'error');
+            return;
+        }
+
+        // Validate school email
+        const email = formData.email.toLowerCase().trim();
+        if (!email.endsWith('.edu.ng')) {
+            toast('Please use your school email address (ending in .edu.ng) to register as a seller.', 'error');
             return;
         }
 
@@ -112,23 +130,23 @@ export default function SellerOnboardPage() {
 
             if (error) {
                 if (error.message?.toLowerCase().includes('database') || error.message?.toLowerCase().includes('trigger')) {
-                    toast(`Database Error: ${error.message}`, 'error');
+                    toast(`Something went wrong on our end. Please try again later.`, 'error');
                     throw error;
                 }
                 throw error;
             }
-            toast('Secure access code transmitted. Monitor your inbox.', 'success');
+            toast('Login link sent! Check your email inbox.', 'success');
             setCountdown(1800);
             setStep(2);
         } catch (error: any) {
             if (error.message?.includes('rate limit')) {
-                toast('Transmission rate limited. Stand by.', 'error');
+                toast('Too many attempts. Please wait a moment and try again.', 'error');
             } else if (error.message?.includes('invalid')) {
-                toast('Invalid endpoint format.', 'error');
+                toast('That email address doesn\'t look right. Please check and try again.', 'error');
             } else if (error.message?.includes('Database error')) {
-                toast('Central server synchronization error.', 'error');
+                toast('Something went wrong on our end. Please try again later.', 'error');
             } else {
-                toast('Transmission failed. Retry.', 'error');
+                toast('Couldn\'t send the login link. Please try again.', 'error');
             }
         } finally {
             setIsSubmitting(false);
@@ -144,13 +162,13 @@ export default function SellerOnboardPage() {
                 <div className="text-center mb-12 space-y-4">
                     <div className="flex items-center justify-center gap-3">
                         <span className="h-2 w-2 rounded-full bg-primary animate-pulse shadow-[0_0_15px_rgba(255,98,0,0.8)]" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-muted-foreground font-heading">Secure Onboarding Portal</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-muted-foreground font-heading">Seller Registration</span>
                     </div>
                     <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading text-foreground">
-                        Enter The <span className="text-primary">Network</span>
+                        Start <span className="text-primary">Selling</span>
                     </h1>
                     <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px] mt-2 italic shadow-sm">
-                        Establishing merchant identity credentials
+                        Create your seller account to reach students on campus
                     </p>
                 </div>
 
@@ -165,6 +183,13 @@ export default function SellerOnboardPage() {
                         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 relative z-10">
                             
                             <div className="space-y-4">
+                                {/* Google Sign-In Info */}
+                                <div className="text-center mb-2">
+                                    <p className="text-[10px] text-muted-foreground font-medium tracking-wide">
+                                        Use your school Google account (<span className="text-primary font-bold">.edu.ng</span>) to sign up instantly
+                                    </p>
+                                </div>
+
                                 <Button 
                                     onClick={handleGoogleLogin} 
                                     disabled={isSubmitting || isGoogleLoading} 
@@ -186,7 +211,7 @@ export default function SellerOnboardPage() {
                                     
                                 <div className="relative flex items-center py-2">
                                     <div className="flex-grow border-t border-border"></div>
-                                    <span className="flex-shrink-0 mx-4 text-[10px] text-muted-foreground uppercase font-black tracking-widest">Or Register Manually</span>
+                                    <span className="flex-shrink-0 mx-4 text-[10px] text-muted-foreground uppercase font-black tracking-widest">Or Register with Email</span>
                                     <div className="flex-grow border-t border-border"></div>
                                 </div>
                             </div>
@@ -194,7 +219,7 @@ export default function SellerOnboardPage() {
                             <div className="grid grid-cols-1 gap-6">
                                 {/* Full Name */}
                                 <div className="space-y-2">
-                                    <label className="text-[10px] uppercase font-black text-muted-foreground tracking-[0.2em] font-heading ml-2">Full Identity</label>
+                                    <label className="text-[10px] uppercase font-black text-muted-foreground tracking-[0.2em] font-heading ml-2">Full Name</label>
                                     <div className="relative group/input">
                                         <div className="absolute left-6 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background flex items-center justify-center group-focus-within/input:bg-primary/20 transition-colors">
                                             <User className="h-4 w-4 text-muted-foreground group-focus-within/input:text-primary transition-colors" />
@@ -203,14 +228,14 @@ export default function SellerOnboardPage() {
                                             value={formData.fullName} 
                                             onChange={e => setFormData(p => ({...p, fullName: e.target.value}))} 
                                             className="w-full h-16 pl-16 pr-6 bg-secondary border border-border rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm" 
-                                            placeholder="Enter registered name..." 
+                                            placeholder="Your full name" 
                                         />
                                     </div>
                                 </div>
 
                                 {/* School Email */}
                                 <div className="space-y-2">
-                                    <label className="text-[10px] uppercase font-black text-muted-foreground tracking-[0.2em] font-heading ml-2">Institutional Endpoint (Email)</label>
+                                    <label className="text-[10px] uppercase font-black text-muted-foreground tracking-[0.2em] font-heading ml-2">School Email</label>
                                     <div className="relative group/input">
                                         <div className="absolute left-6 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background flex items-center justify-center group-focus-within/input:bg-primary/20 transition-colors">
                                             <Mail className="h-4 w-4 text-muted-foreground group-focus-within/input:text-primary transition-colors" />
@@ -223,11 +248,12 @@ export default function SellerOnboardPage() {
                                             placeholder="student@university.edu.ng" 
                                         />
                                     </div>
+                                    <p className="text-[9px] text-muted-foreground ml-2 tracking-wide">Must end in <span className="text-primary font-bold">.edu.ng</span> — only school emails are accepted for sellers</p>
                                 </div>
 
                                 {/* Phone Number */}
                                 <div className="space-y-2">
-                                    <label className="text-[10px] uppercase font-black text-muted-foreground tracking-[0.2em] font-heading ml-2">Secure Comms Line (WhatsApp)</label>
+                                    <label className="text-[10px] uppercase font-black text-muted-foreground tracking-[0.2em] font-heading ml-2">WhatsApp Number</label>
                                     <div className="relative group/input">
                                         <div className="absolute left-6 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background flex items-center justify-center group-focus-within/input:bg-primary/20 transition-colors">
                                             <Phone className="h-4 w-4 text-muted-foreground group-focus-within/input:text-primary transition-colors" />
@@ -236,14 +262,14 @@ export default function SellerOnboardPage() {
                                             value={formData.phoneNumber} 
                                             onChange={e => setFormData(p => ({...p, phoneNumber: e.target.value}))} 
                                             className="w-full h-16 pl-16 pr-6 bg-secondary border border-border rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm" 
-                                            placeholder="e.g. 0801234..." 
+                                            placeholder="e.g. 08012345678" 
                                         />
                                     </div>
                                 </div>
 
-                                {/* Private University Dropdown */}
+                                {/* University Dropdown */}
                                 <div className="space-y-2">
-                                    <label className="text-[10px] uppercase font-black text-muted-foreground tracking-[0.2em] font-heading ml-2">Base of Operations (Campus)</label>
+                                    <label className="text-[10px] uppercase font-black text-muted-foreground tracking-[0.2em] font-heading ml-2">University</label>
                                     <div className="relative group/input">
                                         <select 
                                             value={formData.university} 
@@ -253,7 +279,7 @@ export default function SellerOnboardPage() {
                                                 !formData.university ? "text-muted-foreground" : "text-foreground"
                                             )}
                                         >
-                                            <option value="" disabled>Select active campus...</option>
+                                            <option value="" disabled>Select your university...</option>
                                             {PRIVATE_UNIVERSITIES.map(u => <option key={u} value={u}>{u}</option>)}
                                         </select>
                                         <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none transition-colors" />
@@ -262,12 +288,12 @@ export default function SellerOnboardPage() {
 
                                 {formData.university === 'Other Abuja Private University' && (
                                     <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                                        <label className="text-[10px] uppercase font-black text-primary tracking-[0.2em] font-heading ml-2">Specify Classified Node</label>
+                                        <label className="text-[10px] uppercase font-black text-primary tracking-[0.2em] font-heading ml-2">University Name</label>
                                         <input 
                                             value={formData.universityOther} 
                                             onChange={e => setFormData(p => ({...p, universityOther: e.target.value}))} 
                                             className="w-full h-16 px-6 bg-primary/5 border border-primary/20 rounded-2xl text-primary placeholder:text-primary/30 focus:outline-none focus:border-primary/70 focus:bg-primary/10 transition-all font-bold tracking-wider text-sm" 
-                                            placeholder="Enter campus designation..." 
+                                            placeholder="Enter your university name..." 
                                         />
                                     </div>
                                 )}
@@ -275,7 +301,7 @@ export default function SellerOnboardPage() {
 
                             <div className="pt-6 border-t border-border flex flex-col sm:flex-row items-center gap-6">
                                 <Link href="/signup" className="group hidden sm:flex text-muted-foreground hover:text-foreground uppercase text-[10px] items-center font-black tracking-[0.3em] transition-colors shrink-0">
-                                    <ArrowLeft className="mr-3 h-4 w-4 group-hover:-translate-x-1 transition-transform" /> Abort
+                                    <ArrowLeft className="mr-3 h-4 w-4 group-hover:-translate-x-1 transition-transform" /> Back
                                 </Link>
                                 
                                 <Button 
@@ -285,7 +311,7 @@ export default function SellerOnboardPage() {
                                 >
                                     {isSubmitting ? <Loader2 className="animate-spin h-6 w-6 relative z-10" /> : (
                                         <>
-                                            Initiate Handshake <ArrowRight className="ml-4 h-5 w-5" />
+                                            Create Account <ArrowRight className="ml-4 h-5 w-5" />
                                         </>
                                     )}
                                 </Button>
@@ -304,19 +330,19 @@ export default function SellerOnboardPage() {
                             </div>
                             
                             <div className="space-y-3">
-                                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading">Transmission <span className="text-primary">Sent</span></h2>
-                                <p className="text-[10px] uppercase font-black text-muted-foreground tracking-[0.3em]">Access protocols deployed</p>
+                                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading">Check Your <span className="text-primary">Email</span></h2>
+                                <p className="text-[10px] uppercase font-black text-muted-foreground tracking-[0.3em]">We sent you a login link</p>
                             </div>
                             
                             <div className="bg-background border border-border p-8 rounded-[2rem] text-sm font-medium text-muted-foreground leading-relaxed max-w-sm mx-auto space-y-4">
-                                <p>We transmitted a 256-bit cryptographic access link to:</p>
+                                <p>We sent a login link to:</p>
                                 <div className="bg-secondary py-4 px-6 rounded-2xl border border-border text-foreground text-lg font-black tracking-wider break-all shadow-inner">
                                     {formData.email}
                                 </div>
-                                <p className="italic">Click the embedded authorization terminal in that email to proceed instantly.</p>
+                                <p className="italic">Click the link in that email to continue setting up your seller account.</p>
                                 
                                 <div className="pt-6 border-t border-border">
-                                    <span className="text-primary font-black uppercase tracking-[0.2em] text-[10px] animate-pulse">Signature validity: {formatTime(countdown)}</span>
+                                    <span className="text-primary font-black uppercase tracking-[0.2em] text-[10px] animate-pulse">Link expires in: {formatTime(countdown)}</span>
                                 </div>
                             </div>
 
@@ -327,7 +353,7 @@ export default function SellerOnboardPage() {
                                     disabled={isSubmitting} 
                                     className="w-full h-16 border-border bg-transparent text-muted-foreground hover:text-foreground font-black uppercase text-[10px] tracking-widest rounded-2xl hover:bg-secondary transition-all shadow-sm"
                                 >
-                                    {isSubmitting ? <Loader2 className="animate-spin h-5 w-5" /> : "Packet Dropped? Resend"}
+                                    {isSubmitting ? <Loader2 className="animate-spin h-5 w-5" /> : "Didn't get it? Resend"}
                                 </Button>
                                 
                                 <Button 
@@ -335,7 +361,7 @@ export default function SellerOnboardPage() {
                                     onClick={() => setStep(1)} 
                                     className="w-full uppercase text-[10px] font-black tracking-widest text-muted-foreground hover:text-foreground transition-colors"
                                 >
-                                    <ArrowLeft className="mr-3 h-3.5 w-3.5" /> Modify Contact Vector
+                                    <ArrowLeft className="mr-3 h-3.5 w-3.5" /> Change Email
                                 </Button>
                             </div>
                         </div>

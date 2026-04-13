@@ -45,7 +45,7 @@ export default function HomePage() {
             <div className="flex h-screen items-center justify-center bg-background">
                 <div className="flex flex-col items-center gap-4">
                     <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground animate-pulse">Syncing Network...</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground animate-pulse">Loading...</p>
                 </div>
             </div>
         );
@@ -58,7 +58,7 @@ export default function HomePage() {
                 <div className="flex h-screen items-center justify-center bg-background">
                     <div className="flex flex-col items-center gap-4">
                         <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground animate-pulse">Routing to Command Center...</p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground animate-pulse">Redirecting...</p>
                     </div>
                 </div>
             );
@@ -125,21 +125,21 @@ function AuthenticatedHome({ user }: { user: any }) {
                     <div className="space-y-2 md:space-y-4">
                         <div className="flex items-center gap-2">
                             <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground opacity-60">Identity Link Active</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground opacity-60">Welcome Back</span>
                         </div>
                         <h1 className="text-3xl sm:text-5xl md:text-7xl font-black uppercase italic tracking-tighter leading-none">
                             Welcome, <br />
                             <span className="text-primary">{firstName}</span>.
                         </h1>
                         <p className="text-muted-foreground font-medium text-sm md:text-lg leading-relaxed max-w-sm italic">
-                            Your secure campus command is active.
+                            Your campus marketplace is ready.
                         </p>
                     </div>
 
                     <div className="flex flex-col items-start md:items-end gap-2 md:text-right">
                         <div className="flex items-center gap-4 px-5 md:px-8 py-4 md:py-5 bg-card border border-border rounded-2xl md:rounded-[2.5rem] shadow-sm hover:border-primary/20 transition-colors w-full md:w-auto">
                             <div className="space-y-1">
-                                <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest leading-none">Nexus Balance</p>
+                                <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest leading-none">Wallet Balance</p>
                                 <p className="text-2xl md:text-3xl font-black italic tracking-tighter text-foreground">₦{user?.coins_balance?.toLocaleString() || '0'}</p>
                             </div>
                             <div className="h-10 w-10 md:h-12 md:w-12 rounded-2xl bg-primary/10 flex items-center justify-center ml-auto">
@@ -174,10 +174,10 @@ function AuthenticatedHome({ user }: { user: any }) {
                         <div className="flex items-center justify-between border-b border-border/50 pb-6">
                             <div className="flex items-center gap-3">
                                 <Zap className="h-5 w-5 text-primary" />
-                                <h2 className="text-xl font-black uppercase tracking-widest italic leading-none">Live Ops</h2>
+                                <h2 className="text-xl font-black uppercase tracking-widest italic leading-none">Recommended</h2>
                             </div>
                             <Link href="/marketplace" className="text-[10px] font-black uppercase tracking-widest text-primary hover:translate-x-1 transition-all flex items-center gap-2">
-                                Scanned Index <ArrowRight className="h-3 w-3" />
+                                See All <ArrowRight className="h-3 w-3" />
                             </Link>
                         </div>
 
@@ -219,7 +219,7 @@ function AuthenticatedHome({ user }: { user: any }) {
                             ) : (
                                 <div className="col-span-full py-24 flex flex-col items-center justify-center text-center bg-muted/20 border border-dashed border-border rounded-[3rem] opacity-40">
                                     <ShoppingBag className="h-16 w-16 mb-4 text-muted-foreground" />
-                                    <p className="text-xs font-black uppercase tracking-[0.3em] italic text-muted-foreground">Market Node Idle.</p>
+                                    <p className="text-xs font-black uppercase tracking-[0.3em] italic text-muted-foreground">No listings yet.</p>
                                 </div>
                             )}
                         </div>
@@ -229,7 +229,7 @@ function AuthenticatedHome({ user }: { user: any }) {
                     <div className="lg:col-span-4 space-y-6 md:space-y-12">
                         <div className="flex items-center gap-3 border-b border-border/50 pb-6">
                             <ShieldCheck className="h-5 w-5 text-primary" />
-                            <h2 className="text-xl font-black uppercase tracking-widest italic leading-none">Sync</h2>
+                            <h2 className="text-xl font-black uppercase tracking-widest italic leading-none">Profile</h2>
                         </div>
 
                         <Card className="bg-muted/40 border border-border rounded-2xl md:rounded-[3rem] p-6 md:p-10 flex flex-col items-center text-center space-y-5 md:space-y-8 shadow-sm">
@@ -260,7 +260,7 @@ function AuthenticatedHome({ user }: { user: any }) {
 
                             <Link href="/settings" className="w-full">
                                 <Button variant="outline" className="w-full h-14 rounded-2xl border-border bg-card/40 hover:border-primary font-black uppercase text-[10px] tracking-[0.2em] transition-all group/btn shadow-sm">
-                                    Nexus Registry <ChevronRight className="h-3 w-3 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                                    My Account <ChevronRight className="h-3 w-3 ml-2 group-hover/btn:translate-x-1 transition-transform" />
                                 </Button>
                             </Link>
                         </Card>
@@ -268,13 +268,13 @@ function AuthenticatedHome({ user }: { user: any }) {
                         {/* Quick Context Alerts */}
                         <div className="space-y-4">
                             <div className="flex items-center justify-between px-2">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-40">Context Logs</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-40">Activity</span>
                                 <Badge className="bg-primary text-white text-[8px] font-black rounded-full px-2">Live</Badge>
                             </div>
                             <div className="p-6 bg-card border border-border rounded-3xl opacity-30 hover:opacity-100 transition-all cursor-not-allowed group">
                                 <div className="flex items-center gap-4">
                                     <Clock className="h-4 w-4 text-primary group-hover:animate-spin" />
-                                    <p className="text-[10px] font-black uppercase tracking-widest italic text-muted-foreground">Scanning Network Signals...</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest italic text-muted-foreground">No recent activity</p>
                                 </div>
                             </div>
                         </div>
