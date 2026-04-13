@@ -59,7 +59,7 @@ export function LocationChecker({ children }: LocationCheckerProps) {
                         <div className="h-1 w-32 bg-zinc-900 rounded-full overflow-hidden">
                             <div className="h-full bg-[#FF6200] animate-pulse" />
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">Syncing Node...</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">Checking Location...</span>
                     </div>
                 </div>
             </div>
@@ -79,11 +79,11 @@ export function LocationChecker({ children }: LocationCheckerProps) {
                             <div className="absolute inset-0 rounded-full border border-[#FF6200] animate-ping opacity-20" />
                         </div>
                         <DialogTitle className="text-center text-3xl font-black uppercase italic tracking-tighter leading-none">
-                            Bridge <span className="text-[#FF6200]">Pilot</span> Active
+                            Location <span className="text-[#FF6200]">Verification</span>
                         </DialogTitle>
                         <DialogDescription className="text-center text-zinc-500 pt-4 font-medium leading-relaxed">
                             MarketBridge is currently live in <span className="text-white font-bold">Abuja (FCT)</span>.
-                            We detected your signal in <span className="text-white font-bold uppercase">{userLocation}</span>.
+                            We detected your location in <span className="text-white font-bold uppercase">{userLocation}</span>.
                         </DialogDescription>
                     </DialogHeader>
                     {!notified ? (
@@ -113,7 +113,7 @@ export function LocationChecker({ children }: LocationCheckerProps) {
                                         <option value="Kano">KANO HUB</option>
                                     </select>
                                     <Button type="submit" className="w-full h-12 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-black uppercase text-[10px] tracking-widest rounded-xl">
-                                        Monitor Sector
+                                        Notify Me
                                     </Button>
                                 </form>
                             </div>
@@ -122,7 +122,7 @@ export function LocationChecker({ children }: LocationCheckerProps) {
                                     onClick={handleTeleportToHub}
                                     className="w-full h-16 bg-[#FF6200] text-black hover:bg-[#FF6200] font-black uppercase tracking-[0.1em] rounded-2xl shadow-[0_10px_30px_rgba(255,184,0,0.2)] group"
                                 >
-                                    Teleport to Abuja
+                                    Switch to Abuja
                                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </Button>
                                 <Button

@@ -118,10 +118,10 @@ export default function SellerDashboardPage() {
 
     const tourSteps: TourStep[] = [
         { targetId: 'tour-header', title: 'Seller Command', description: "Welcome to your bridge. This is your mission control where you manage your entire campus business at a glance.", position: 'bottom' },
-        { targetId: 'tour-stats', title: 'Knowledge Node 1: Financial Vault', description: "Track every Naira real-time. 'Revenue' shows your verified earnings, while 'Success Rate' tracks how many campus deals you've closed.", position: 'bottom' },
-        { targetId: 'tour-actions', title: 'Knowledge Node 2: Inventory Control', description: "This is where you launch. List new products, manage your stock, and check your messages to keep the gear moving.", position: 'top' },
-        { targetId: 'tour-tabs', title: 'Knowledge Node 3: The Hub', description: "Master the deal here. Use the 'Offers' tab to counter-negotiate prices and the 'Orders' tab to track active escrow deliveries.", position: 'bottom' },
-        { targetId: 'tour-vanguard', title: 'Knowledge Node 4: Growth Center', description: "Own your campus. Become an Ambassador to unlock free Pro features, earn MarketCoins, and lead your university network.", position: 'top' },
+        { targetId: 'tour-stats', title: 'Dashboard Step 1: Earnings', description: "Track every Naira real-time. 'Revenue' shows your verified earnings, while 'Success Rate' tracks how many campus deals you've closed.", position: 'bottom' },
+        { targetId: 'tour-actions', title: 'Dashboard Step 2: Inventory', description: "This is where you launch. List new products, manage your stock, and check your messages to keep the gear moving.", position: 'top' },
+        { targetId: 'tour-tabs', title: 'Dashboard Step 3: Orders & Offers', description: "Master the deal here. Use the 'Offers' tab to counter-negotiate prices and the 'Orders' tab to track active escrow deliveries.", position: 'bottom' },
+        { targetId: 'tour-vanguard', title: 'Dashboard Step 4: Marketing', description: "Own your campus. Become an Ambassador to unlock free Pro features, earn MarketCoins, and lead your university network.", position: 'top' },
     ];
     const [orders, setOrders] = useState<Order[]>([]);
     const [stats, setStats] = useState<Stats>({
@@ -1480,7 +1480,7 @@ export default function SellerDashboardPage() {
                                         {submittingBank ? (
                                             <>
                                                 <Loader2 className="mr-3 h-5 w-5 animate-spin" />
-                                                Syncing System...
+                                                Updating...
                                             </>
                                         ) : (
                                             <>

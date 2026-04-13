@@ -139,14 +139,14 @@ export function VideoUpload({
                         {uploading ? (
                             <div className="flex flex-col items-center gap-2">
                                 <Loader2 className="h-8 w-8 animate-spin text-[#FF6200]" />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] animate-pulse">Syncing Video...</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] animate-pulse">Uploading Video...</span>
                             </div>
                         ) : (
                             <>
                                 <div className="p-4 rounded-2xl bg-white group-hover:bg-[#FF6200]/10 transition-colors shadow-sm">
                                     <VideoIcon className="h-6 w-6 text-zinc-400 group-hover:text-[#FF6200] transition-colors" />
                                 </div>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 group-hover:text-black transition-colors">Add Video Feed</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 group-hover:text-black transition-colors">Upload Video</span>
                             </>
                         )}
                     </button>

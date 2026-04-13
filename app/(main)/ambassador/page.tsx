@@ -162,11 +162,13 @@ export default function AmbassadorPage() {
                         </div>
                         {/* Status Card Overlay */}
                         <div className="absolute -bottom-10 -left-10 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 p-8 rounded-3xl shadow-2xl max-w-xs space-y-4">
-                             <div className="flex items-center gap-3">
-                                 <div className="h-10 w-10 rounded-full bg-[#FF6200] flex items-center justify-center text-black">
-                                     <Zap className="h-5 w-5" />
-                                 </div>
-                                 <span className="text-xs font-black uppercase tracking-widest">Active Operative</span>
+                             <div className="py-12 flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-500">
+                                <div className="h-16 w-16 rounded-full bg-[#FF6200]/10 flex items-center justify-center border border-[#FF6200]/20">
+                                    <CheckCircle className="h-8 w-8 text-[#FF6200]" />
+                                </div>
+                                <CardHeader>
+                                    <CardTitle className="font-black uppercase tracking-tighter text-2xl">Program Goals</CardTitle>
+                                </CardHeader>
                              </div>
                              <p className="text-[10px] text-zinc-500 italic">"The Lead program turned my campus hustle into a local empire." - Nile Lead</p>
                         </div>
@@ -177,8 +179,9 @@ export default function AmbassadorPage() {
             {/* Perks Section */}
             <section className="py-32 bg-zinc-50 dark:bg-white/[0.01]">
                 <div className="max-w-7xl mx-auto px-6">
-                    <div className="text-center space-y-4 mb-20">
-                         <h2 className="text-5xl font-black uppercase tracking-tighter italic font-heading">Lead Rewards</h2>
+                    <div className="max-w-2xl mx-auto text-center mb-20">
+                        <h2 className="text-[#FF6200] font-black tracking-widest uppercase text-xs mb-4">Ambassador Program</h2>
+                        <h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-zinc-900 dark:text-white font-heading">Lead Rewards</h3>
                          <p className="text-zinc-500 dark:text-white/40 font-medium tracking-widest uppercase text-[10px]">What you get for owning your campus</p>
                     </div>
                     
@@ -231,7 +234,7 @@ export default function AmbassadorPage() {
                          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#FF6200] to-transparent" />
                          
                          <div className="space-y-6">
-                            <h2 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-white font-heading">Initiate Application</h2>
+                            <h2 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-white font-heading">Apply Now</h2>
                             <p className="text-zinc-400 font-medium italic max-w-xl mx-auto">
                                 If you lead your university node, you lead the bridge. Are you ready to own your campus?
                             </p>
@@ -241,8 +244,8 @@ export default function AmbassadorPage() {
                              <div className="bg-[#FF6200]/10 border border-[#FF6200]/20 p-10 rounded-3xl space-y-6 animate-in zoom-in-95 duration-500">
                                  <CheckCircle className="h-16 w-16 text-[#FF6200] mx-auto" />
                                  <div className="space-y-2">
-                                     <h4 className="text-2xl font-black uppercase text-[#FF6200]">Data Transmitted</h4>
-                                     <p className="text-white/60 text-sm italic">Our Ops HQ is currently vetting your credentials. You will receive an uplink on your school email (.edu.ng) once the review is complete.</p>
+                                     <h4 className="text-2xl font-black uppercase text-[#FF6200]">Application Received</h4>
+                                     <p className="text-white/60 text-sm italic">Our team is currently reviewing your credentials. You will receive an update on your school email once the review is complete.</p>
                                  </div>
                                  <Button onClick={() => router.push('/seller/dashboard')} variant="outline" className="border-white/10 text-white hover:bg-white/5 font-black uppercase tracking-widest text-[10px] h-12 rounded-xl">
                                      Dashboard
@@ -260,7 +263,7 @@ export default function AmbassadorPage() {
                                     />
                                 </div>
                                 <div className="space-y-4">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 font-heading">Mission Motivation</Label>
+                                    <Label className="text-xs font-black uppercase tracking-widest text-zinc-600">About You</Label>
                                     <Textarea 
                                         placeholder="Why should we trust you to lead your university node?" 
                                         rows={4}
@@ -272,11 +275,12 @@ export default function AmbassadorPage() {
                                 <Button 
                                     className="w-full h-16 bg-[#FF6200] text-black hover:bg-[#FF7A29] font-black uppercase tracking-widest transition-all rounded-2xl shadow-xl shadow-[#FF6200]/20"
                                     disabled={isSubmitting}
+                                    onClick={() => setShowOnboard(false)}
                                 >
-                                    {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : "Authorize Transmission"}
+                                    {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : "Submit Application"}
                                 </Button>
                                 <p className="text-center text-[9px] text-white/20 font-bold uppercase tracking-widest italic">
-                                    * Application subject to manual HQ review. 44 days Pro status activates on approval.
+                                    * Application subject to manual review. 44 days Pro status activates on approval.
                                 </p>
                             </form>
                          )}

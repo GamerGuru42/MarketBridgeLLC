@@ -129,7 +129,7 @@ export default function ChatsPage() {
                 <div className="flex items-center justify-center min-h-[400px]">
                     <div className="text-center">
                         <Loader2 className="animate-spin h-12 w-12 text-[#FF6200] mx-auto" />
-                        <p className="mt-4 text-zinc-500 font-mono text-xs tracking-widest uppercase">Syncing Encrypted Feeds...</p>
+                        <p className="mt-4 text-zinc-500 font-mono text-xs tracking-widest uppercase">Loading Chats...</p>
                     </div>
                 </div>
             </div>
@@ -141,15 +141,15 @@ export default function ChatsPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl border-l-4 border-[#FF6200] pl-4 text-zinc-900">
-                        Dashboard Link
+                        Messages
                     </h1>
                     <p className="text-zinc-500 mt-2 font-mono text-sm uppercase tracking-wider">
-                        Secure Communication Hub v2.0
+                        Secure Communication Hub
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
                     <Badge variant="outline" className="px-3 py-1 font-mono text-[10px] border-[#FF6200]/20 bg-[#FF6200]/5 text-[#FF6200] animate-pulse">
-                        ENCRYPTION STATUS: ACTIVE
+                        SECURE CONNECTION
                     </Badge>
                 </div>
             </div>
@@ -159,7 +159,7 @@ export default function ChatsPage() {
                     <div className="relative group max-w-md w-full">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 group-focus-within:text-[#FF6200] transition-colors" />
                         <Input
-                            placeholder="FILTER CONVERSATIONS..."
+                            placeholder="SEARCH MESSAGES..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="pl-10 h-11 bg-[#FAFAFA]/50 border-zinc-200 font-mono text-xs tracking-widest uppercase focus:ring-1 focus:ring-[#FF6200] text-zinc-900 placeholder:text-zinc-900/20"
@@ -172,7 +172,7 @@ export default function ChatsPage() {
                             <div className="h-20 w-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 border border-zinc-100">
                                 <MessageSquare className="h-10 w-10 text-zinc-900/20" />
                             </div>
-                            <h3 className="text-xl font-black italic uppercase tracking-tighter mb-2 text-zinc-900">No Active Streams</h3>
+                            <h3 className="text-xl font-black italic uppercase tracking-tighter mb-2 text-zinc-900">No Active Chats</h3>
                             <p className="text-zinc-500 mb-8 text-sm italic max-w-md mx-auto">
                                 Connections will appear here once you initiate contact with a Dashboard provider (Seller).
                             </p>
@@ -230,7 +230,7 @@ export default function ChatsPage() {
                                                 <p className={cn("text-sm line-clamp-1 transition-colors",
                                                     chat.unread_count! > 0 ? "font-bold text-zinc-900" : "text-zinc-600 font-medium italic"
                                                 )}>
-                                                    {chat.last_message || 'Initializing stream session...'}
+                                                    {chat.last_message || 'Loading chat...'}
                                                 </p>
                                             </div>
                                         </div>
