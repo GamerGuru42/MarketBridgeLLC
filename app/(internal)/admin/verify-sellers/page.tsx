@@ -103,10 +103,10 @@ export default function AdminVerifySellers() {
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Operations Admin</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic">
-            Network <span className="text-[#FF6200]">Merchants</span>
+            Seller <span className="text-[#FF6200]">Verification</span>
           </h1>
           <p className="text-white/40 font-medium italic max-w-xl">
-            Total control overview. Review pending sellers, instantly approve manual uploads, or forcefully revoke fast-tracked Google users.
+            Operations review overview. Verify pending sellers, approve manual submissions, or revoke access for non-compliant merchant accounts.
           </p>
         </div>
 

@@ -62,14 +62,14 @@ export default function NewListingPage() {
 
         const allowedRoles = ['dealer', 'student_seller', 'ceo', 'admin', 'technical_admin', 'operations_admin'];
         if (!allowedRoles.includes(user.role)) {
-            console.warn("Access Denied: Role mismatch for listing deployment", user.role);
+            console.warn("Access Denied: Role mismatch for listing creation", user.role);
             router.push('/');
             return;
         }
 
         const isPending = user.subscriptionStatus === 'pending_verification';
         if (isPending) {
-            console.log("Dealer is pending verification - allowing deployment with security overview");
+            console.log("Dealer is pending verification - allowing creation with security overview");
         }
     }, [user, authLoading, router]);
 
@@ -111,7 +111,7 @@ ${formData.description}`;
             // ROBUST PRICE VALIDATION
             const priceNum = parseFloat(formData.price);
             if (isNaN(priceNum) || priceNum <= 0) {
-                toast('Invalid price level detected. Please enter a positive numeric value.', 'error');
+                toast('Invalid price level. Please enter a positive numeric value.', 'error');
                 setLoading(false);
                 return;
             }
@@ -223,7 +223,7 @@ ${formData.description}`;
                                         id="description"
                                         value={formData.description}
                                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                        placeholder={assetType === 'product' ? "Outline asset conditions, specifications, and history..." : "Describe the exact scope of your service, methodologies, and what the buyer receives..."}
+                                        placeholder={assetType === 'product' ? "Outline item condition, specifications, and history..." : "Describe the exact scope of your service, the process, and what the buyer receives..."}
                                         rows={6}
                                         className="p-8 rounded-[2rem] bg-[#FAFAFA]/40 border-zinc-100 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] transition-all text-xs font-medium leading-relaxed italic border-dashed"
                                         required
@@ -256,7 +256,7 @@ ${formData.description}`;
                                         required
                                     >
                                         <SelectTrigger className="h-16 rounded-2xl bg-[#FAFAFA]/40 border-zinc-100 focus:ring-1 focus:ring-[#FF6200] font-heading text-[10px] font-black uppercase tracking-widest">
-                                            <SelectValue placeholder="Select sector" />
+                                            <SelectValue placeholder="Select category" />
                                         </SelectTrigger>
                                         <SelectContent className="bg-zinc-50 border-zinc-200 text-zinc-900 font-heading text-[10px] uppercase font-black tracking-widest">
                                             {CATEGORIES.map((cat) => (

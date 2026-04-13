@@ -248,7 +248,7 @@ function PortalLoginContent() {
                             HQ <span className="text-primary">Portal</span>
                         </h1>
                         <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] italic">
-                            Select Authentication Path
+                            Select Access Level
                         </p>
                     </div>
 
@@ -294,7 +294,7 @@ function PortalLoginContent() {
                             <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4">
                                 <Lock className="h-6 w-6 text-muted-foreground" />
                             </div>
-                            <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Vision Command</h3>
+                            <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Executive Hub</h3>
                             <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest mb-2">CEO Only</p>
                             
                             <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'ceo' ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
@@ -302,7 +302,7 @@ function PortalLoginContent() {
                                     onClick={(e) => { e.stopPropagation(); handleRoleSelect('ceo', 'login'); }}
                                     className="w-full h-12 bg-foreground text-background hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_6px_20px_rgba(0,0,0,0.25)]"
                                 >
-                                    Access Terminal <ArrowRight className="ml-2 h-4 w-4" />
+                                    Open Dashboard <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
                                 <Button
                                     variant="outline"

@@ -12,8 +12,8 @@ import { cn } from '@/lib/utils';
 
 const PLANS = [
     {
-        id: 'campus_starter',
-        name: 'Starter',
+        id: 'basic',
+        name: 'Basic',
         price: 0,
         period: 'Free forever',
         icon: Star,
@@ -21,60 +21,56 @@ const PLANS = [
         iconBg: 'bg-zinc-100 dark:bg-zinc-900',
         iconColor: 'text-zinc-500',
         borderActive: 'border-zinc-400',
-        description: 'Perfect for students just getting started.',
+        description: 'Get started selling on campus for free.',
         features: [
             'Up to 5 active listings',
-            'Basic seller profile',
+            'Basic seller dashboard',
             'Buyer messaging',
-            'Sales dashboard',
-            'Manual approval verification',
+            'Standard escrow protection',
         ],
         cta: 'Current Plan',
         highlight: false,
     },
     {
-        id: 'campus_pro',
-        name: 'Pro Seller',
-        price: 2500,
+        id: 'standard',
+        name: 'Standard',
+        price: 1500,
         period: 'per month',
         icon: Zap,
         color: 'orange',
         iconBg: 'bg-[#FF6200]/10',
         iconColor: 'text-[#FF6200]',
         borderActive: 'border-[#FF6200]',
-        description: 'For serious sellers growing their campus business.',
+        description: 'For sellers ready to grow their campus business.',
         features: [
-            'Up to 30 active listings',
-            'Priority listing in search',
-            'Verified badge on profile',
-            'Analytics & insights',
-            'Offer / negotiation tools',
-            'WhatsApp order notifications',
+            'Unlimited active listings',
+            'Analytics dashboard',
+            'Basic priority in search results',
+            'Offer and negotiation tools',
+            'All Basic features included',
         ],
-        cta: 'Upgrade to Pro',
+        cta: 'Upgrade to Standard',
         highlight: true,
     },
     {
-        id: 'elite',
-        name: 'Elite Store',
-        price: 6000,
+        id: 'pro',
+        name: 'Pro',
+        price: 3500,
         period: 'per month',
         icon: Crown,
         color: 'amber',
         iconBg: 'bg-amber-500/10',
         iconColor: 'text-amber-500',
         borderActive: 'border-amber-500',
-        description: 'Full campus store with maximum exposure and features.',
+        description: 'Maximum visibility and priority support.',
         features: [
-            'Unlimited active listings',
-            'Homepage featured slot (1×/month)',
-            'Store banner & custom URL',
-            'Sponsored listing credits (3×/month)',
-            'Dedicated account manager',
-            'Priority support & faster approval',
-            'All Pro features included',
+            'Priority placement at top of feed',
+            'Featured Seller badge on profile',
+            'Advanced analytics and insights',
+            'Priority dispute resolution support',
+            'All Standard features included',
         ],
-        cta: 'Go Elite',
+        cta: 'Go Pro',
         highlight: false,
     },
 ];
@@ -88,7 +84,7 @@ export default function SellerUpgradePage() {
     const [billingAnnual, setBillingAnnual] = useState(false);
 
     const handleSelectPlan = async (planId: string) => {
-        if (planId === 'campus_starter') return; // Already free
+        if (planId === 'basic') return; // Already free
 
         if (!user) {
             router.push('/login?next=/seller/upgrade');
@@ -109,7 +105,7 @@ export default function SellerUpgradePage() {
             if (error) throw error;
 
             toast(
-                `Your ${planId === 'pro' ? 'Pro Seller' : 'Elite Store'} request has been sent! Our team will contact you within 24 hours to complete payment.`,
+                `Your ${planId === 'standard' ? 'Standard' : 'Pro'} plan request has been sent! Our team will contact you within 24 hours to complete payment.`,
                 'success'
             );
             router.push('/seller/dashboard');
@@ -186,7 +182,7 @@ export default function SellerUpgradePage() {
                         const price = billingAnnual && plan.price > 0
                             ? Math.round(plan.price * 12 * 0.8)
                             : plan.price;
-                        const isCurrentPlan = user?.subscriptionPlan === plan.id || (plan.id === 'campus_starter' && !user?.subscriptionPlan);
+                        const isCurrentPlan = user?.subscriptionPlan === plan.id || (plan.id === 'basic' && !user?.subscriptionPlan);
 
                         return (
                             <div
@@ -247,7 +243,7 @@ export default function SellerUpgradePage() {
                                     disabled={isCurrentPlan || loadingPlan === plan.id}
                                     className={cn(
                                         'w-full h-12 rounded-2xl font-black uppercase tracking-widest text-xs transition-all',
-                                        plan.id === 'campus_starter'
+                                        plan.id === 'basic'
                                             ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 cursor-default border-0'
                                             : plan.highlight
                                                 ? 'bg-[#FF6200] hover:bg-[#FF7A29] text-black border-0 hover:scale-105 shadow-[0_8px_24px_rgba(255,98,0,0.3)]'

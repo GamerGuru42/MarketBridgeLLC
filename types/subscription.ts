@@ -5,7 +5,7 @@
 // SUBSCRIPTION TYPES
 // ============================================
 
-export type SubscriptionPlanId = 'free' | 'campus_starter' | 'campus_pro' | 'enterprise' | 'beta_campus_founder';
+export type SubscriptionPlanId = 'basic' | 'standard' | 'pro' | 'beta_campus_founder';
 
 export type SubscriptionStatus =
     | 'active'      // Subscription is active and paid

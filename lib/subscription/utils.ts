@@ -87,16 +87,16 @@ export function getSubscriptionFeatures(plan: SubscriptionPlan | null): Subscrip
     return {
         canCreateListing: true,
         canUploadImages: true,
-        canAccessAnalytics: plan.id !== 'free',
+        canAccessAnalytics: plan.id !== 'basic',
         canUsePrioritySupport: limits.priority_support || false,
-        canCustomizePage: plan.id === 'campus_pro' || plan.id === 'enterprise',
-        canBulkUpload: plan.id === 'campus_pro' || plan.id === 'enterprise',
-        canUseAPI: plan.id === 'enterprise',
-        maxListings: limits.max_listings || 3,
+        canCustomizePage: plan.id === 'pro',
+        canBulkUpload: plan.id === 'pro',
+        canUseAPI: plan.id === 'pro',
+        maxListings: limits.max_listings || 5,
         maxImagesPerListing: limits.max_images_per_listing || 5,
         listingDurationDays: limits.listing_duration_days || 7,
         hasFeaturedBadge: limits.featured_badge || false,
-        hasVerificationBadge: plan.id !== 'free',
+        hasVerificationBadge: true, // All verified sellers are EDU verified
     };
 }
 
@@ -245,11 +245,11 @@ export async function getUpgradeRecommendation(userId: string): Promise<{
     const supabase = createClient();
     const { plan } = await getCurrentSubscription(userId);
 
-    if (!plan || plan.id === 'campus_pro' || plan.id === 'enterprise') {
+    if (!plan || plan.id === 'pro') {
         return {
             shouldUpgrade: false,
             recommendedPlan: null,
-            reason: 'Already on premium plan',
+            reason: 'Already on maximum capacity plan',
         };
     }
 
@@ -265,7 +265,7 @@ export async function getUpgradeRecommendation(userId: string): Promise<{
     if (listingCount && listingCount >= features.maxListings * 0.8) {
         return {
             shouldUpgrade: true,
-            recommendedPlan: plan.id === 'free' ? 'campus_starter' : 'campus_pro',
+            recommendedPlan: plan.id === 'basic' ? 'standard' : 'pro',
             reason: `You're using ${listingCount} of ${features.maxListings} listings. Upgrade for more capacity!`,
         };
     }

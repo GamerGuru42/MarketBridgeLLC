@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/contexts/ToastContext';
 import {
     Package,
@@ -137,6 +138,14 @@ export default function SellerDashboardPage() {
     const [trialExpiresAt, setTrialExpiresAt] = useState<Date | null>(null);
     const [showPlanPrompt, setShowPlanPrompt] = useState(false);
 
+    // Ambassador States
+    const [ambassadorStatus, setAmbassadorStatus] = useState<'none' | 'pending' | 'approved' | 'declined'>('none');
+    const [ambassadorDetails, setAmbassadorDetails] = useState<any>(null);
+    const [isAmbassadorModalOpen, setIsAmbassadorModalOpen] = useState(false);
+    const [ambassadorCampus, setAmbassadorCampus] = useState('');
+    const [ambassadorMotivation, setAmbassadorMotivation] = useState('');
+    const [isSubmittingAmbassador, setIsSubmittingAmbassador] = useState(false);
+
     const fetchBankDetails = async () => {
         if (!user) return;
         const { data, error } = await supabase
@@ -189,6 +198,7 @@ export default function SellerDashboardPage() {
             const unsubscribeOrders = subscribeToOrders();
             const unsubscribeOffers = subscribeToOffers();
             checkSubscriptionStatus();
+            fetchAmbassadorStatus();
             return () => {
                 if (unsubscribeOrders) unsubscribeOrders();
                 if (unsubscribeOffers) unsubscribeOffers();
@@ -231,6 +241,72 @@ export default function SellerDashboardPage() {
             }
         } catch (err) {
             console.error('Failed to check subscription trial:', err);
+        }
+    };
+
+    const fetchAmbassadorStatus = async () => {
+        if (!user) return;
+        try {
+            // Check application status
+            const { data: appData, error: appError } = await supabase
+                .from('ambassador_applications')
+                .select('*')
+                .eq('user_id', user.id)
+                .maybeSingle();
+
+            if (appError) throw appError;
+
+            if (appData) {
+                setAmbassadorStatus(appData.status);
+                setAmbassadorDetails(appData);
+            } else {
+                // Check if already an ambassador
+                const { data: ambData, error: ambError } = await supabase
+                    .from('ambassadors')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .maybeSingle();
+                
+                if (ambError) throw ambError;
+                
+                if (ambData) {
+                    setAmbassadorStatus('approved');
+                    setAmbassadorDetails(ambData);
+                }
+            }
+        } catch (err) {
+            console.error('Error fetching ambassador status:', err);
+        }
+    };
+
+    const handleApplyAmbassador = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!user) return;
+        if (!ambassadorCampus || !ambassadorMotivation) {
+            toast('Please fill in all fields', 'error');
+            return;
+        }
+
+        setIsSubmittingAmbassador(true);
+        try {
+            const { error } = await supabase
+                .from('ambassador_applications')
+                .insert({
+                    user_id: user.id,
+                    campus: ambassadorCampus,
+                    motivation: ambassadorMotivation,
+                    status: 'pending'
+                });
+
+            if (error) throw error;
+
+            toast('Application submitted successfully! Our team will review it soon.', 'success');
+            setIsAmbassadorModalOpen(false);
+            fetchAmbassadorStatus();
+        } catch (err: any) {
+            toast(err.message || 'Failed to submit application', 'error');
+        } finally {
+            setIsSubmittingAmbassador(false);
         }
     };
 
@@ -686,7 +762,7 @@ export default function SellerDashboardPage() {
                         <Zap className="h-10 w-10 text-[#FF6200] animate-bounce" />
                         <div className="absolute inset-0 rounded-2xl border border-[#FF6200] animate-ping opacity-25" />
                     </div>
-                    <p className="mt-8 text-zinc-500 font-black uppercase tracking-[0.3em] text-xs font-heading">Syncing Dashboard...</p>
+                    <p className="mt-8 text-zinc-500 font-black uppercase tracking-[0.3em] text-xs font-heading">Loading Dashboard...</p>
                 </div>
             </div>
         );
@@ -698,13 +774,13 @@ export default function SellerDashboardPage() {
                 <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none" />
                 <div className="max-w-md w-full bg-white border border-zinc-200 shadow-sm p-8 rounded-[2rem] text-center relative z-10 border border-zinc-200">
                     <AlertCircle className="h-16 w-16 text-[#FF6200] mx-auto mb-6" />
-                    <h2 className="text-3xl font-black uppercase italic tracking-tighter mb-4">Error Occurred</h2>
-                    <p className="text-zinc-500 font-medium mb-8">Secure connection to the Dashboard was interrupted. Please re-establish identity.</p>
+                    <h2 className="text-3xl font-black uppercase italic tracking-tighter mb-4">Session Expired</h2>
+                    <p className="text-zinc-500 font-medium mb-8">Your session has ended. Please log in again to continue.</p>
                     <Button onClick={() => window.location.reload()} className="w-full h-14 bg-[#FF6200] text-black font-black uppercase tracking-widest rounded-xl hover:bg-[#FF7A29] transition-all">
-                        Reconnect Campus
+                        Refresh Page
                     </Button>
                     <Button variant="ghost" onClick={() => router.push('/login')} className="w-full mt-4 text-zinc-500 hover:text-zinc-900 font-black uppercase tracking-widest text-[10px]">
-                        Return to Gate
+                        Go to Login
                     </Button>
                 </div>
             </div>
@@ -838,9 +914,9 @@ export default function SellerDashboardPage() {
 
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                             {[
-                                { name: 'Starter', price: '₦0', period: 'Free forever', icon: Star, features: ['5 listings', 'Basic profile', 'Messaging'], highlight: false },
-                                { name: 'Pro Seller', price: '₦2,500', period: '/month', icon: Zap, features: ['30 listings', 'Priority search', 'Analytics', 'Verified badge'], highlight: true },
-                                { name: 'Elite Store', price: '₦6,000', period: '/month', icon: Crown, features: ['Unlimited listings', 'Homepage slot', 'Store banner', 'Account manager'], highlight: false },
+                                { name: 'Basic', price: '₦0', period: 'Free forever', icon: Star, features: ['5 listings', 'Basic dashboard', 'Messaging'], highlight: false },
+                                { name: 'Standard', price: '₦1,500', period: '/month', icon: Zap, features: ['Unlimited listings', 'Analytics', 'Search priority', 'Negotiation tools'], highlight: true },
+                                { name: 'Pro', price: '₦3,500', period: '/month', icon: Crown, features: ['Feed priority', 'Featured badge', 'Advanced insights', 'Priority support'], highlight: false },
                             ].map((plan) => (
                                 <div key={plan.name} className={`relative rounded-2xl p-5 border ${plan.highlight
                                     ? 'border-[#FF6200] bg-[#FF6200]/5'
@@ -921,14 +997,14 @@ export default function SellerDashboardPage() {
                         </Button>
                         <div className="flex items-center gap-3">
                             <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 dark:text-white/40 font-heading leading-tight transition-colors">Live Operation Panel</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 dark:text-white/40 font-heading leading-tight transition-colors">Seller Dashboard</span>
                         </div>
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
                             Seller <span className="text-[#FF6200]">Hub</span>
                         </h1>
                         <p className="text-zinc-500 dark:text-white/40 font-medium max-w-xl italic transition-colors">
                             Command center for <span className="text-zinc-900 dark:text-white font-bold">{user?.displayName}</span>.
-                            Managing <span className="text-zinc-900 dark:text-white font-bold">{stats.totalOrders} assets</span> in current cycle.
+                            Managing <span className="text-zinc-900 dark:text-white font-bold">{stats.totalOrders} items</span> in current period.
                         </p>
                     </div>
 
@@ -975,12 +1051,12 @@ export default function SellerDashboardPage() {
                     ))}
                 </div>
 
-                {/* Quick Directive Actions */}
+                {/* Quick Actions */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {[
-                        { label: "New Listing", desc: "Deploy new asset to marketplace", href: "/seller/listings/new", icon: Package, primary: true },
-                        { label: "Inventory", desc: "Audit and verify live assets", href: "/seller/listings", icon: Eye },
-                        { label: "Messages", desc: "Check incoming communications", href: "/chats", icon: MessageCircle },
+                        { label: "New Listing", desc: "List new item on marketplace", href: "/seller/listings/new", icon: Package, primary: true },
+                        { label: "Inventory", desc: "Manage and update your items", href: "/seller/listings", icon: Eye },
+                        { label: "Messages", desc: "Check incoming customer chats", href: "/chats", icon: MessageCircle },
                         { label: "Upgrade Plan", desc: "Unlock pro features & visibility", href: "/seller/upgrade", icon: Crown, highlight: true },
                     ].map((action, i) => (
                         <Link key={i} href={action.href} className="group h-full">
@@ -1012,7 +1088,7 @@ export default function SellerDashboardPage() {
                     ))}
                 </div>
 
-                {/* Execution Management Container */}
+                {/* Transaction Hub Container */}
                 <div className="bg-white dark:bg-white/[0.02] border border-zinc-200 dark:border-white/5 shadow-sm dark:shadow-none rounded-[3rem] p-10 overflow-hidden transition-colors duration-300">
                     <Tabs defaultValue="orders" className="space-y-10">
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-zinc-200 dark:border-white/5 pb-8 transition-colors duration-300">
@@ -1233,10 +1309,77 @@ export default function SellerDashboardPage() {
                                                 <div>
                                                     <p className="text-[10px] font-black uppercase text-zinc-500 mb-1">Coins Earned</p>
                                                     <p className="text-2xl font-black text-[#FF6200] italic font-heading">{referralStats.coinsEarned} MC</p>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
+                                {/* Brand Ambassador Card */}
+                                <div className={cn(
+                                    "p-10 rounded-[3rem] border transition-all duration-500 flex flex-col justify-between group h-full relative overflow-hidden",
+                                    ambassadorStatus === 'approved' 
+                                        ? "bg-[#FF6200]/5 border-[#FF6200] shadow-[0_0_30px_rgba(255,98,0,0.1)]" 
+                                        : "bg-white/[0.02] border-zinc-100 dark:border-white/5 hover:border-[#FF6200]/30"
+                                )}>
+                                    <div className="space-y-6 relative z-10">
+                                        <div className="flex items-center gap-3">
+                                            <div className={cn(
+                                                "h-12 w-12 rounded-2xl border flex items-center justify-center transition-all duration-500 group-hover:scale-110",
+                                                ambassadorStatus === 'approved' 
+                                                    ? "bg-[#FF6200] text-black border-[#FF6200]" 
+                                                    : "bg-zinc-100 dark:bg-zinc-800/50 border-zinc-100 dark:border-white/5 text-[#FF6200]"
+                                            )}>
+                                                <Crown className="h-6 w-6" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-2xl font-black uppercase tracking-tighter italic font-heading">Brand Ambassador</h3>
+                                                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Campus Growth Expert</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            {ambassadorStatus === 'approved' ? (
+                                                <div className="p-6 bg-white dark:bg-black/40 border border-[#FF6200]/20 rounded-2xl space-y-3">
+                                                    <div className="flex items-center gap-2">
+                                                        <CheckCircle className="h-4 w-4 text-[#FF6200]" />
+                                                        <span className="text-xs font-black uppercase tracking-widest text-[#FF6200]">Active Status</span>
+                                                    </div>
+                                                    <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300 italic">
+                                                        You are an official MarketBridge Ambassador for <span className="text-zinc-900 dark:text-white font-black">{ambassadorDetails?.campus}</span>.
+                                                    </p>
+                                                    <div className="pt-2 flex flex-wrap gap-2">
+                                                        <Badge className="bg-[#FF6200] text-black font-black uppercase text-[8px] tracking-widest border-0">44 DAYS PRO ACTIVE</Badge>
+                                                        <Badge variant="outline" className="border-[#FF6200]/30 text-[#FF6200] font-black uppercase text-[8px] tracking-widest">AMBASSADOR BADGE</Badge>
+                                                    </div>
+                                                </div>
+                                            ) : ambassadorStatus === 'pending' ? (
+                                                <div className="p-6 bg-[#FF6200]/5 border border-[#FF6200]/10 rounded-2xl">
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <Clock className="h-4 w-4 text-[#FF6200] animate-pulse" />
+                                                        <span className="text-xs font-black uppercase tracking-widest text-[#FF6200]">Review in Progress</span>
+                                                    </div>
+                                                    <p className="text-xs font-medium text-zinc-500 italic">
+                                                        Your application to lead <span className="text-zinc-900 dark:text-white font-bold">{ambassadorDetails?.campus}</span> is being reviewed by the HQ Operations team. Success details will arrive via email.
+                                                    </p>
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-4">
+                                                    <p className="text-[10px] font-medium text-zinc-500 italic leading-relaxed">
+                                                        Become the face of MarketBridge on your campus. Approved Ambassadors get an exclusive profile badge, 44 days of Pro status, and 500 MarketCoins.
+                                                    </p>
+                                                    <Button 
+                                                        onClick={() => setIsAmbassadorModalOpen(true)}
+                                                        className="h-12 w-full bg-white dark:bg-zinc-900 text-black dark:text-white border border-zinc-200 dark:border-white/10 font-black uppercase tracking-widest text-[10px] hover:border-[#FF6200] hover:text-[#FF6200] transition-all"
+                                                    >
+                                                        Apply Now
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    {/* Visual Accent */}
+                                    <Crown className="absolute -bottom-6 -right-6 h-32 w-32 text-[#FF6200] opacity-[0.03] rotate-12" />
                                 </div>
                             </div>
                         </TabsContent>
@@ -1323,6 +1466,74 @@ export default function SellerDashboardPage() {
                     </p>
                 </div>
             </div>
+            {/* Ambassador Application Modal */}
+            {isAmbassadorModalOpen && (
+                <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                    <div className="relative w-full max-w-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-[2.5rem] p-8 md:p-10 shadow-2xl animate-in zoom-in-95 duration-200">
+                        <button
+                            onClick={() => setIsAmbassadorModalOpen(false)}
+                            className="absolute top-6 right-6 h-10 w-10 rounded-full bg-zinc-100 dark:bg-white/5 flex items-center justify-center hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors"
+                        >
+                            <X className="h-5 w-5" />
+                        </button>
+
+                        <div className="text-center mb-8">
+                            <div className="h-16 w-16 rounded-2xl bg-[#FF6200]/10 border border-[#FF6200]/20 flex items-center justify-center mx-auto mb-4">
+                                <Crown className="h-8 w-8 text-[#FF6200]" />
+                            </div>
+                            <h2 className="text-3xl font-black uppercase tracking-tighter italic font-heading">Campus Ambassador</h2>
+                            <p className="text-zinc-500 dark:text-zinc-400 text-xs font-medium mt-2">
+                                Represent MarketBridge and grow the community on your campus.
+                            </p>
+                        </div>
+
+                        <form onSubmit={handleApplyAmbassador} className="space-y-6">
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 font-heading">Your University</Label>
+                                <Select value={ambassadorCampus} onValueChange={setAmbassadorCampus} required>
+                                    <SelectTrigger className="h-14 bg-[#FAFAFA]/40 dark:bg-white/5 border-zinc-200 dark:border-white/10 rounded-xl font-heading text-[10px] font-black uppercase tracking-widest text-left">
+                                        <SelectValue placeholder="SELECT YOUR CAMPUS" />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-white font-heading text-[10px] font-black uppercase tracking-widest">
+                                        <SelectItem value="Baze University" className="focus:bg-[#FF6200] focus:text-black py-3">Baze University</SelectItem>
+                                        <SelectItem value="Nile University of Nigeria" className="focus:bg-[#FF6200] focus:text-black py-3">Nile University of Nigeria</SelectItem>
+                                        <SelectItem value="Veritas University" className="focus:bg-[#FF6200] focus:text-black py-3">Veritas University</SelectItem>
+                                        <SelectItem value="Cosmopolitan University" className="focus:bg-[#FF6200] focus:text-black py-3">Cosmopolitan University</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 font-heading">Why should we pick you?</Label>
+                                <Textarea 
+                                    value={ambassadorMotivation}
+                                    onChange={(e) => setAmbassadorMotivation(e.target.value)}
+                                    placeholder="Tell us about your campus influence and why you want to be an ambassador..."
+                                    className="min-h-[120px] bg-[#FAFAFA]/40 dark:bg-white/5 border-zinc-200 dark:border-white/10 rounded-xl focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] transition-colors p-4 text-sm font-medium"
+                                    required
+                                />
+                            </div>
+
+                            <div className="p-4 bg-[#FF6200]/5 rounded-2xl border border-[#FF6200]/10 space-y-2">
+                                <p className="text-[10px] font-black uppercase text-[#FF6200] tracking-widest">Ambassador Rewards</p>
+                                <ul className="text-[10px] text-zinc-600 dark:text-zinc-400 font-medium space-y-1 italic">
+                                    <li className="flex items-center gap-2"><Sparkles className="h-3 w-3" /> Exclusive Ambassador Profile Badge</li>
+                                    <li className="flex items-center gap-2"><Zap className="h-3 w-3" /> 44 Days of MarketBridge PRO status</li>
+                                    <li className="flex items-center gap-2"><Star className="h-3 w-3" /> 500 MarketCoins instant bonus</li>
+                                </ul>
+                            </div>
+
+                            <Button 
+                                type="submit" 
+                                disabled={isSubmittingAmbassador}
+                                className="w-full h-16 bg-[#FF6200] text-black hover:bg-[#FF7A29] rounded-2xl font-black uppercase tracking-widest transition-all shadow-lg active:scale-95"
+                            >
+                                {isSubmittingAmbassador ? <Loader2 className="animate-spin h-5 w-5" /> : "Submit Application"}
+                            </Button>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

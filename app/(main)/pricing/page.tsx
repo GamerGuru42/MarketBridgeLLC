@@ -20,7 +20,7 @@ export default function PricingPage() {
     const supabase = createClient();
     const [isAnnual, setIsAnnual] = useState(false);
     const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
-    const [currentPlan, setCurrentPlan] = useState<string>('free');
+    const [currentPlan, setCurrentPlan] = useState<string>('basic');
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -88,7 +88,7 @@ export default function PricingPage() {
             return;
         }
 
-        if (planId === 'free') {
+        if (planId === 'basic') {
             setLoading(true);
             try {
                 // Activate free plan
@@ -96,7 +96,7 @@ export default function PricingPage() {
                     .from('subscriptions')
                     .upsert({
                         user_id: user.id,
-                        plan_id: 'free',
+                        plan_id: 'basic',
                         status: 'active',
                         current_period_start: new Date().toISOString(),
                         current_period_end: new Date(new Date().setFullYear(new Date().getFullYear() + 10)).toISOString() // Permanent-ish
@@ -107,10 +107,10 @@ export default function PricingPage() {
                 // Mark onboarding as complete and update profile
                 await supabase.from('users').update({
                     subscription_status: 'active',
-                    subscription_plan_id: 'free'
+                    subscription_plan_id: 'basic'
                 }).eq('id', user.id);
 
-                toast('Free Dashboard Activated. Trade freely.', 'success');
+                toast('Basic Merchant Access Activated.', 'success');
                 router.push('/seller/dashboard');
             } catch (err) {
                 console.error('Activation failed:', err);
@@ -126,14 +126,12 @@ export default function PricingPage() {
 
     const getPlanIcon = (planId: string) => {
         switch (planId) {
-            case 'free':
+            case 'basic':
                 return <Sparkles className="h-6 w-6" />;
-            case 'campus_starter':
+            case 'standard':
                 return <Zap className="h-6 w-6" />;
-            case 'campus_pro':
+            case 'pro':
                 return <Crown className="h-6 w-6" />;
-            case 'enterprise':
-                return <Rocket className="h-6 w-6" />;
             default:
                 return <Shield className="h-6 w-6" />;
         }
@@ -217,8 +215,8 @@ export default function PricingPage() {
                     <div className="flex flex-wrap justify-center gap-8 mb-20">
                         {plans.map((plan, index) => {
                             const isCurrentPlan = currentPlan === plan.id;
-                            const isFree = plan.id === 'free';
-                            const isPro = plan.id === 'campus_pro' || plan.id === 'beta_campus_founder';
+                            const isFree = plan.id === 'basic';
+                            const isPro = plan.id === 'pro' || plan.id === 'beta_campus_founder';
                             const price = getPlanPrice(plan);
                             const savings = isAnnual ? getAnnualSavings(plan) : 0;
 
@@ -257,7 +255,7 @@ export default function PricingPage() {
                                         </CardDescription>
 
                                         <div className="mt-6">
-                                            {plan.id === 'enterprise' ? (
+                                            {plan.id === 'pro' && price === 0 ? (
                                                 <div className="text-4xl font-black uppercase tracking-tighter italic">
                                                     Custom
                                                 </div>
@@ -310,7 +308,7 @@ export default function PricingPage() {
                                                     : 'bg-white/5 border border-white/10 hover:bg-[#FF6200] hover:text-black hover:border-[#FF6200]'
                                                     }`}
                                             >
-                                                {isFree ? 'Get Started' : plan.id === 'enterprise' ? 'Contact Sales' : 'Join Beta'}
+                                                {isFree ? 'Get Started' : 'Join Beta'}
                                             </Button>
                                         )}
                                     </CardFooter>
