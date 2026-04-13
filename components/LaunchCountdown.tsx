@@ -86,7 +86,7 @@ export function LaunchCountdown() {
                     </div>
                     
                     <Button 
-                        onClick={() => router.push('/login')}
+                        onClick={() => router.push('/seller-onboard')}
                         className="h-12 md:h-14 px-6 md:px-8 rounded-xl md:rounded-2xl bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest text-[9px] md:text-[10px] transition-all hover:scale-[1.02] shadow-[0_10px_30px_rgba(255,98,0,0.2)] group"
                     >
                         Sign In <ArrowRight className="ml-3 h-4 w-4 group-hover:translate-x-1 transition-transform" />
