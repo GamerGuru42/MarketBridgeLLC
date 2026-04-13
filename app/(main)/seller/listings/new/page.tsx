@@ -252,7 +252,20 @@ ${formData.description}`;
                                 <div className="relative">
                                     <Select
                                         value={formData.category}
-                                        onValueChange={(value) => setFormData({ ...formData, category: value })}
+                                        onValueChange={(value) => {
+                                            const category = CATEGORIES.find(c => c.name === value);
+                                            const isService = category?.id === 'services';
+                                            const isFood = category?.id === 'food';
+                                            
+                                            setFormData({ 
+                                                ...formData, 
+                                                category: value,
+                                                condition: isFood ? 'Freshly Made' : (isService ? '' : 'Brand New')
+                                            });
+                                            
+                                            if (isService) setAssetType('service');
+                                            else setAssetType('product');
+                                        }}
                                         required
                                     >
                                         <SelectTrigger className="h-16 rounded-2xl bg-[#FAFAFA]/40 dark:bg-white/5 border-zinc-100 dark:border-white/5 focus:ring-1 focus:ring-[#FF6200] font-heading text-[10px] font-black uppercase tracking-widest dark:text-white">
@@ -270,7 +283,7 @@ ${formData.description}`;
                             </div>
 
                             {/* Dynamic Asset Type Fields */}
-                            {assetType === 'product' ? (
+                            {assetType === 'product' && CATEGORIES.find(c => c.name === formData.category)?.id !== 'services' && (
                                 <div className="space-y-3">
                                     <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading">Product Condition *</Label>
                                     <Select value={formData.condition} onValueChange={(val) => setFormData({ ...formData, condition: val })}>
@@ -278,15 +291,28 @@ ${formData.description}`;
                                             <SelectValue placeholder="Select condition" />
                                         </SelectTrigger>
                                         <SelectContent className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-white/10">
-                                            <SelectItem value="Brand New" className="py-3 text-[10px] font-black uppercase tracking-widest">Brand New</SelectItem>
-                                            <SelectItem value="Open Box" className="py-3 text-[10px] font-black uppercase tracking-widest">Like New (Open Box)</SelectItem>
-                                            <SelectItem value="used_clean" className="py-3 text-[10px] font-black uppercase tracking-widest">Used (Excellent)</SelectItem>
-                                            <SelectItem value="Used" className="py-3 text-[10px] font-black uppercase tracking-widest">Used (Good)</SelectItem>
-                                            <SelectItem value="UK Used" className="py-3 text-[10px] font-black uppercase tracking-widest">UK Used / Refurbished</SelectItem>
+                                            {CATEGORIES.find(c => c.name === formData.category)?.id === 'food' ? (
+                                                <>
+                                                    <SelectItem value="Freshly Made" className="py-3 text-[10px] font-black uppercase tracking-widest">Freshly Made</SelectItem>
+                                                    <SelectItem value="Made Today" className="py-3 text-[10px] font-black uppercase tracking-widest">Made Today</SelectItem>
+                                                    <SelectItem value="Pre-Packaged" className="py-3 text-[10px] font-black uppercase tracking-widest">Pre-Packaged (Sealed)</SelectItem>
+                                                    <SelectItem value="Pre-Order" className="py-3 text-[10px] font-black uppercase tracking-widest">Pre-Order (Made on Request)</SelectItem>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <SelectItem value="Brand New" className="py-3 text-[10px] font-black uppercase tracking-widest">Brand New</SelectItem>
+                                                    <SelectItem value="Open Box" className="py-3 text-[10px] font-black uppercase tracking-widest">Like New (Open Box)</SelectItem>
+                                                    <SelectItem value="used_clean" className="py-3 text-[10px] font-black uppercase tracking-widest">Used (Excellent)</SelectItem>
+                                                    <SelectItem value="Used" className="py-3 text-[10px] font-black uppercase tracking-widest">Used (Good)</SelectItem>
+                                                    <SelectItem value="UK Used" className="py-3 text-[10px] font-black uppercase tracking-widest">UK Used / Refurbished</SelectItem>
+                                                </>
+                                            )}
                                         </SelectContent>
                                     </Select>
                                 </div>
-                            ) : (
+                            )}
+
+                            {assetType === 'service' && (
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-3">
                                         <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading">Pricing Model *</Label>
