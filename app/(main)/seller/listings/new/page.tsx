@@ -172,7 +172,7 @@ ${formData.description}`;
                             Create New <span className="text-[#FF6200]">Listing</span>
                         </h1>
                         <p className="text-zinc-500 font-medium max-w-xl italic">
-                            Deploy a new product or service to the campus marketplace. Ensure all details are accurate for a smooth transaction.
+                            Add a new product or service to the campus marketplace. Ensure all details are accurate for a smooth transaction.
                         </p>
                     </div>
                 </div>
@@ -333,8 +333,8 @@ ${formData.description}`;
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8 border-t border-zinc-100">
                             <div className="space-y-6">
                                 <div className="space-y-1">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF6200] italic font-heading">Visual Evidence (Images) *</Label>
-                                    <p className="text-zinc-900/30 text-[10px] uppercase font-bold tracking-widest leading-relaxed">Max 5 units of high-fidelity capture.</p>
+                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF6200] italic font-heading">Images *</Label>
+                                    <p className="text-zinc-900/30 text-[10px] uppercase font-bold tracking-widest leading-relaxed">Max 5 high-quality images.</p>
                                 </div>
                                 <div className="p-8 rounded-[2.5rem] bg-[#FAFAFA]/40 border border-zinc-100 border-dashed group hover:border-[#FF6200]/20 transition-all">
                                     <ImageUpload
@@ -347,8 +347,8 @@ ${formData.description}`;
 
                             <div className="space-y-6">
                                 <div className="space-y-1">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading">Motion Feed (Videos - Optional)</Label>
-                                    <p className="text-zinc-900/30 text-[10px] uppercase font-bold tracking-widest leading-relaxed">Detailed video verification stream.</p>
+                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 italic font-heading">Videos (Optional)</Label>
+                                    <p className="text-zinc-900/30 text-[10px] uppercase font-bold tracking-widest leading-relaxed">Short video showing the item.</p>
                                 </div>
                                 <div className="p-8 rounded-[2.5rem] bg-[#FAFAFA]/40 border border-zinc-100 border-dashed group hover:border-[#FF6200]/20 transition-all">
                                     <VideoUpload
@@ -388,7 +388,7 @@ ${formData.description}`;
                 </div>
 
                 <div className="text-center py-6 text-zinc-900/20 text-[9px] font-black uppercase tracking-[0.4em] font-heading">
-                    Security Level: Alpha-7 // Encryption Active // Marketbridge Systems
+                    Marketbridge Systems
                 </div>
             </div>
         </div>

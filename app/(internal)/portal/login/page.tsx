@@ -185,7 +185,7 @@ function PortalLoginContent() {
 
     const handleGoogleLogin = async () => {
         setIsLoading(true);
-        setError(null);
+        setError('');
         try {
             const targetDestination = selectedRole === 'ceo' ? '/admin/ceo' : '/admin';
             const callbackOrigin = window.location.hostname.includes('marketbridge.com.ng')
