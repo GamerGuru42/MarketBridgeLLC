@@ -255,7 +255,7 @@ export default function AmbassadorPage() {
                                     <Input 
                                         placeholder="e.g. Baze University" 
                                         value={campus}
-                                        onChange={(e) => setCanvas(e.target.value)}
+                                        onChange={(e) => setCampus(e.target.value)}
                                         className="h-14 bg-white/5 border-white/10 text-white placeholder:text-white/20 rounded-xl focus:ring-[#FF6200] transition-all"
                                     />
                                 </div>

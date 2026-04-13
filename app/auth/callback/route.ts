@@ -89,10 +89,10 @@ export async function GET(request: Request) {
             let redirectUrl: URL;
             try {
                 // If redirectPath is already a full URL (e.g. https://hq.marketbridge.com.ng/admin/ceo)
-                redirectUrl = new URL(redirectPath);
+                redirectUrl = new URL(finalNext);
             } catch {
                 // It's a relative path
-                redirectUrl = new URL(redirectPath, origin);
+                redirectUrl = new URL(finalNext, origin);
             }
 
             console.log('Auth Callback: Redirecting to:', redirectUrl.toString(), '| Role:', actualRole, '| Admin:', isAdminUser);

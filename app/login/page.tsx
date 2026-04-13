@@ -290,7 +290,7 @@ function LoginContent() {
                         Log <span className="text-primary">In</span>
                     </h1>
                     <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] italic">
-                        {role === 'student_seller' ? 'Seller credentials' : 'Enter your credentials'}
+                        {role === 'seller' ? 'Seller credentials' : 'Enter your credentials'}
                     </p>
                 </div>
 
@@ -382,7 +382,7 @@ function LoginContent() {
                     {googleLoadingRole ? <Loader2 className="animate-spin h-5 w-5" /> : (
                         <>
                             <Globe className="h-5 w-5" />
-                            {role === 'student_seller' ? 'School Google Sign-In' : 'Google Sign-In'}
+                            {role === 'seller' ? 'School Google Sign-In' : 'Google Sign-In'}
                         </>
                     )}
                 </Button>
