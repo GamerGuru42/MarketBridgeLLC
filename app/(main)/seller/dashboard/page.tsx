@@ -755,14 +755,14 @@ export default function SellerDashboardPage() {
 
     if (authLoading || (loading && applicationStatus === 'loading') || (!mounted && !sessionLost)) {
         return (
-            <div className="min-h-[80vh] flex items-center justify-center bg-[#FAFAFA] relative overflow-hidden text-zinc-900">
-                <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20 pointer-events-none" />
+            <div className="min-h-[80vh] flex items-center justify-center bg-[#FAFAFA] dark:bg-zinc-950 relative overflow-hidden text-zinc-900 dark:text-white transition-colors duration-300">
+                <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20 dark:opacity-[0.03] pointer-events-none" />
                 <div className="relative text-center">
                     <div className="h-24 w-24 rounded-2xl border-2 border-[#FF6200]/20 flex items-center justify-center relative animate-pulse mx-auto">
                         <Zap className="h-10 w-10 text-[#FF6200] animate-bounce" />
                         <div className="absolute inset-0 rounded-2xl border border-[#FF6200] animate-ping opacity-25" />
                     </div>
-                    <p className="mt-8 text-zinc-500 font-black uppercase tracking-[0.3em] text-xs font-heading">Loading Dashboard...</p>
+                    <p className="mt-8 text-zinc-500 dark:text-zinc-400 font-black uppercase tracking-[0.3em] text-xs font-heading">Loading Dashboard...</p>
                 </div>
             </div>
         );
@@ -770,16 +770,16 @@ export default function SellerDashboardPage() {
 
     if (sessionLost) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] text-zinc-900 p-6 relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none" />
-                <div className="max-w-md w-full bg-white border border-zinc-200 shadow-sm p-8 rounded-[2rem] text-center relative z-10 border border-zinc-200">
+            <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] dark:bg-zinc-950 text-zinc-900 dark:text-white p-6 relative overflow-hidden transition-colors duration-300">
+                <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 dark:opacity-[0.03] pointer-events-none" />
+                <div className="max-w-md w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 shadow-2xl p-8 rounded-[2rem] text-center relative z-10 transition-colors">
                     <AlertCircle className="h-16 w-16 text-[#FF6200] mx-auto mb-6" />
                     <h2 className="text-3xl font-black uppercase italic tracking-tighter mb-4">Session Expired</h2>
-                    <p className="text-zinc-500 font-medium mb-8">Your session has ended. Please log in again to continue.</p>
+                    <p className="text-zinc-500 dark:text-zinc-400 font-medium mb-8">Your session has ended. Please log in again to continue.</p>
                     <Button onClick={() => window.location.reload()} className="w-full h-14 bg-[#FF6200] text-black font-black uppercase tracking-widest rounded-xl hover:bg-[#FF7A29] transition-all">
                         Refresh Page
                     </Button>
-                    <Button variant="ghost" onClick={() => router.push('/login')} className="w-full mt-4 text-zinc-500 hover:text-zinc-900 font-black uppercase tracking-widest text-[10px]">
+                    <Button variant="ghost" onClick={() => router.push('/login')} className="w-full mt-4 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white font-black uppercase tracking-widest text-[10px]">
                         Go to Login
                     </Button>
                 </div>
@@ -1399,16 +1399,16 @@ export default function SellerDashboardPage() {
                                 <form onSubmit={updateBankDetails} className="space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-3">
-                                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 font-heading">Select Bank</Label>
+                                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 dark:text-zinc-400 font-heading">Select Bank</Label>
                                             <Select
                                                 value={bankDetails.bankCode}
                                                 onValueChange={(val) => setBankDetails(prev => ({ ...prev, bankCode: val }))}
                                                 required
                                             >
-                                                <SelectTrigger className="h-14 bg-white border-zinc-200 rounded-xl font-heading text-[10px] font-black uppercase tracking-widest text-left">
+                                                <SelectTrigger className="h-14 bg-white dark:bg-white/5 border-zinc-200 dark:border-white/10 rounded-xl font-heading text-[10px] font-black uppercase tracking-widest text-left dark:text-white">
                                                     <SelectValue placeholder="CHOOSE INSTITUTION" />
                                                 </SelectTrigger>
-                                                <SelectContent className="bg-white border-zinc-200 text-zinc-900 font-heading text-[10px] font-black uppercase tracking-widest">
+                                                <SelectContent className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-white font-heading text-[10px] font-black uppercase tracking-widest">
                                                     {banks.map((bank) => (
                                                         <SelectItem key={bank.code} value={bank.code} className="focus:bg-[#FF6200] focus:text-black py-3">
                                                             {bank.name}
@@ -1418,13 +1418,13 @@ export default function SellerDashboardPage() {
                                             </Select>
                                         </div>
                                         <div className="space-y-3">
-                                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 font-heading">Account Serial</Label>
+                                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 dark:text-zinc-400 font-heading">Account Serial</Label>
                                             <div className="relative">
                                                 <Input
                                                     value={bankDetails.accountNumber}
                                                     onChange={(e) => setBankDetails({ ...bankDetails, accountNumber: e.target.value.replace(/\D/g, '').slice(0, 10) })}
                                                     placeholder="0123456789"
-                                                    className="h-14 bg-white border-zinc-200 rounded-xl focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] transition-colors font-mono tracking-widest"
+                                                    className="h-14 bg-white dark:bg-white/5 border-zinc-200 dark:border-white/10 rounded-xl focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] transition-colors font-mono tracking-widest dark:text-white"
                                                     required
                                                 />
                                                 {isResolving && <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-[#FF6200]" />}
@@ -1432,16 +1432,16 @@ export default function SellerDashboardPage() {
                                         </div>
                                     </div>
                                     <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 font-heading">Entity Name</Label>
+                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 dark:text-zinc-400 font-heading">Entity Name</Label>
                                         <Input
                                             value={bankDetails.accountName}
                                             readOnly
                                             placeholder="AUTO-RESOLVING NAME..."
-                                            className="h-14 bg-white/[0.02] border-zinc-200 rounded-xl font-heading text-sm uppercase tracking-widest text-zinc-900 cursor-not-allowed"
+                                            className="h-14 bg-zinc-50 dark:bg-black/20 border-zinc-200 dark:border-white/5 rounded-xl font-heading text-sm uppercase tracking-widest text-zinc-900 dark:text-white/60 cursor-not-allowed"
                                             required
                                         />
                                     </div>
-                                    <Button type="submit" disabled={submittingBank || isResolving} className="h-14 px-12 bg-white text-black hover:bg-zinc-200 rounded-xl font-black uppercase tracking-widest font-heading transition-all whitespace-nowrap shadow-xl shadow-white/5 group">
+                                    <Button type="submit" disabled={submittingBank || isResolving} className="h-14 px-12 bg-zinc-900 dark:bg-[#FF6200] text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-[#FF7A29] rounded-xl font-black uppercase tracking-widest font-heading transition-all whitespace-nowrap shadow-xl shadow-zinc-900/10 dark:shadow-[#FF6200]/10 group">
                                         {submittingBank ? (
                                             <>
                                                 <Loader2 className="mr-3 h-5 w-5 animate-spin" />
@@ -1609,6 +1609,16 @@ function OrderCard({
                             <SelectItem value="cancelled" className="focus:bg-zinc-100 dark:focus:bg-zinc-800 focus:text-zinc-900 dark:focus:text-white text-[#FF6200]">Cancel Order</SelectItem>
                         </SelectContent>
                     </Select>
+                )}
+
+                {order.status === 'confirmed' && (
+                    <Button 
+                        onClick={() => onUpdateStatus(order.id, 'completed')}
+                        disabled={isUpdating}
+                        className="flex-1 md:w-40 h-12 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-[10px] font-heading hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all"
+                    >
+                        {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : "Mark Delivered"}
+                    </Button>
                 )}
             </div>
         </div>
