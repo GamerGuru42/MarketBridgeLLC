@@ -51,7 +51,8 @@ export default function AdminHubPage() {
     const [actioningId, setActioningId] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!authLoading && (!user || !['admin', 'ceo', 'cofounder', 'operations_admin', 'technical_admin'].includes(user.role))) {
+        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
+        if (!authLoading && (!user || !ADMIN_ROLES.includes(user.role))) {
             router.replace('/portal/login');
         }
     }, [user, authLoading, router]);

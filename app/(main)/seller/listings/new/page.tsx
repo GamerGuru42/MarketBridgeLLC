@@ -32,7 +32,7 @@ export default function NewListingPage() {
         price: '',
         category: '',
         location: '',
-        condition: 'new',
+        condition: 'Brand New',
         serviceFormat: 'fixed',
         deliveryTimeframe: '1-3 days',
     });
@@ -60,7 +60,8 @@ export default function NewListingPage() {
             return;
         }
 
-        const allowedRoles = ['dealer', 'student_seller', 'ceo', 'admin', 'technical_admin', 'operations_admin'];
+        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
+        const allowedRoles = ['dealer', 'student_seller', ...ADMIN_ROLES];
         if (!allowedRoles.includes(user.role)) {
             console.warn("Access Denied: Role mismatch for listing creation", user.role);
             router.push('/');

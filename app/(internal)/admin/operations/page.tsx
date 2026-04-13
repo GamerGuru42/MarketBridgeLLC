@@ -7,10 +7,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, UserCheck, CreditCard, ShieldCheck, TrendingUp, DollarSign, Activity, ChevronRight, Scale, Inbox, MessageSquare, Crown } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
+import { useRouter } from 'next/navigation';
 
 export default function OperationsAdminPage() {
+    const { user, loading: authLoading } = useAuth();
+    const router = useRouter();
+    const { toast } = useToast();
     const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
+        if (!authLoading && (!user || !ADMIN_ROLES.includes(user.role))) {
+            router.replace('/portal/login');
+        }
+    }, [user, authLoading, router]);
     const [pendingSellers, setPendingSellers] = useState<any[]>([]);
     const [subscriptions, setSubscriptions] = useState<any[]>([]);
     const [feedback, setFeedback] = useState<any[]>([]);
@@ -19,7 +31,6 @@ export default function OperationsAdminPage() {
         totalVolume: 0,
         totalCommission: 0
     });
-    const { toast } = useToast();
 
     useEffect(() => {
         fetchOpsData();
@@ -107,7 +118,7 @@ export default function OperationsAdminPage() {
         }
     };
 
-    if (loading) return (
+    if (authLoading || loading) return (
         <div className="flex justify-center items-center h-screen bg-background transition-colors duration-300">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
         </div>

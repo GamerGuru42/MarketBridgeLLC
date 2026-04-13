@@ -280,7 +280,7 @@ export async function middleware(request: NextRequest) {
 
     const isPublicRoute = LAUNCH_PUBLIC_ROUTES.some(route => 
         pathname === route || pathname.startsWith(route + '/')
-    );
+    ) || (isHQSubdomain && (pathname === '/' || pathname === '/login' || pathname.startsWith('/portal')));
 
     if (!IS_LOGGED_IN && !isPublicRoute) {
         const url = request.nextUrl.clone();

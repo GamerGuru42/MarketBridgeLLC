@@ -71,9 +71,10 @@ export default function DisputesPage() {
             return;
         }
 
-        const role = user?.role || '';
-        if (user && !['admin', 'operations_admin', 'ceo', 'cofounder', 'super_admin', 'technical_admin'].includes(role)) {
-            // Check fallback via DB if role missing
+        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
+        if (user && !ADMIN_ROLES.includes(user.role)) {
+            router.replace('/portal/login');
+            return;
         }
 
         if (user) {

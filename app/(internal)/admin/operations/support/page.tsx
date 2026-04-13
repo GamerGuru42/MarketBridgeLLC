@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Headphones, Send, CheckCircle, ArrowLeft, User, Bot, Shield } from 'lucide-react';
 import { useToast } from '@/contexts/ToastContext';
+import { useRouter } from 'next/navigation';
 
 interface Ticket {
     id: string;
@@ -39,7 +40,15 @@ export default function OperationsSupportPage() {
     const [messages, setMessages] = useState<SupportMsg[]>([]);
     const [newMsg, setNewMsg] = useState('');
     const [sending, setSending] = useState(false);
+    const router = useRouter();
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
+        if (!authLoading && (!user || !ADMIN_ROLES.includes(user.role))) {
+            router.replace('/portal/login');
+        }
+    }, [user, authLoading, router]);
 
     useEffect(() => {
         if (!authLoading && user) fetchTickets();
@@ -139,11 +148,7 @@ export default function OperationsSupportPage() {
         fetchTickets();
     };
 
-    if (authLoading) return <div className="p-8 flex justify-center"><Loader2 className="animate-spin h-8 w-8 text-[#FF6600]" /></div>;
-
-    if (!['ceo', 'admin', 'operations_admin'].includes(user?.role || '')) {
-        return <div className="p-8 text-center text-red-500 font-bold">Unauthorized Access</div>;
-    }
+    if (authLoading || !user) return <div className="p-8 flex justify-center"><Loader2 className="animate-spin h-8 w-8 text-[#FF6600]" /></div>;
 
     // Chat View
     if (activeTicket) {

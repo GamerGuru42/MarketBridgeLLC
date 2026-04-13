@@ -30,6 +30,8 @@ export default function AdminLayout({
     const { user, loading } = useAuth();
     const pathname = usePathname();
     const isAuthPage = pathname?.includes('/login') || pathname?.includes('/signup');
+    const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
+    const router = useRouter();
 
     if (isAuthPage) return <>{children}</>;
 
@@ -39,8 +41,18 @@ export default function AdminLayout({
         </div>
     );
 
+    // CENTRALIZED SECURITY ENFORCEMENT
+    if (!user || !ADMIN_ROLES.includes(user.role)) {
+        router.replace('/portal/login');
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-background">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            </div>
+        );
+    }
+
     const getSidebarItems = () => {
-        const role = user?.role;
+        const role = user.role;
         const basicItems = [
             { label: 'Executive Chat', href: '/admin/executive-chat', icon: MessageSquare },
         ];

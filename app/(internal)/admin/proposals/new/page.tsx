@@ -22,8 +22,15 @@ import { useRouter } from 'next/navigation';
 import { createProposal, fetchProposals, Proposal } from '@/lib/analytics';
 
 export default function SubmitProposalPage() {
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const router = useRouter();
+
+    useEffect(() => {
+        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
+        if (!authLoading && (!user || !ADMIN_ROLES.includes(user.role))) {
+            router.replace('/portal/login');
+        }
+    }, [user, authLoading, router]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [myProposals, setMyProposals] = useState<Proposal[]>([]);

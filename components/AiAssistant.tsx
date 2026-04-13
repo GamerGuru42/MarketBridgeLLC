@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 import { useChat } from 'ai/react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
 
 export function AiAssistant() {
     const { user } = useAuth();

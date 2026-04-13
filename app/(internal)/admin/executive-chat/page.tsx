@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,7 +46,15 @@ import { useToast } from '@/contexts/ToastContext';
 
 export default function ExecutiveChatPage() {
     const { user, loading: authLoading } = useAuth();
+    const router = useRouter();
     const { toast } = useToast();
+
+    useEffect(() => {
+        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
+        if (!authLoading && (!user || !ADMIN_ROLES.includes(user.role))) {
+            router.replace('/portal/login');
+        }
+    }, [user, authLoading, router]);
     const [messages, setMessages] = useState<any[]>([]);
     const [channels, setChannels] = useState<any[]>([]);
     const [staff, setStaff] = useState<any[]>([]);

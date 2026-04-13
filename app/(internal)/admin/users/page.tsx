@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 import {
     Users as UsersIcon, Search, MoreVertical,
     CheckCircle2, ShieldAlert,
@@ -38,12 +39,20 @@ interface UserProfile {
 }
 
 export default function AdminUsersPage() {
-    const { user: currentUser } = useAuth();
+    const { user: currentUser, loading: authLoading } = useAuth();
+    const router = useRouter();
     const [users, setUsers] = useState<UserProfile[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterRole, setFilterRole] = useState<string | null>(null);
     const { toast } = useToast();
+
+    useEffect(() => {
+        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
+        if (!authLoading && (!currentUser || !ADMIN_ROLES.includes(currentUser.role))) {
+            router.replace('/portal/login');
+        }
+    }, [currentUser, authLoading, router]);
 
     const fetchUsers = async () => {
         setLoading(true);

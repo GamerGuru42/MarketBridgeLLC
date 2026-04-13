@@ -6,8 +6,8 @@ export async function POST(request: Request) {
     try {
         // Create a Supabase client with the SERVICE ROLE key to bypass RLS for administrative updates
         const supabaseAdmin = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!
+            process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
+            process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder'
         );
 
         const { reference, tx_ref } = await request.json();

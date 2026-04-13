@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -49,9 +51,18 @@ interface Listing {
 }
 
 export default function AdminListingsPage() {
+    const { user, loading: authLoading } = useAuth();
+    const router = useRouter();
     const [listings, setListings] = useState<Listing[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+
+    useEffect(() => {
+        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
+        if (!authLoading && (!user || !ADMIN_ROLES.includes(user.role))) {
+            router.replace('/portal/login');
+        }
+    }, [user, authLoading, router]);
 
     const fetchListings = async () => {
         setLoading(true);
@@ -101,7 +112,7 @@ export default function AdminListingsPage() {
             return;
         }
 
-        setListings(prev => prev.map(l =>
+        setListings((prev: Listing[]) => prev.map((l: Listing) =>
             l.id === listing.id
                 ? { ...l, is_sponsored: nowSponsored, sponsored_until: sponsoredUntil }
                 : l
@@ -112,7 +123,7 @@ export default function AdminListingsPage() {
         fetchListings();
     }, []);
 
-    const filteredListings = listings.filter(l =>
+    const filteredListings = listings.filter((l: Listing) =>
         l.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         l.dealer?.display_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         l.category.toLowerCase().includes(searchTerm.toLowerCase())
@@ -175,7 +186,7 @@ export default function AdminListingsPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {loading ? (
+                                    {authLoading || loading ? (
                                         <TableRow>
                                             <TableCell colSpan={6} className="h-64 text-center">
                                                 <div className="flex flex-col items-center gap-4">
@@ -194,7 +205,7 @@ export default function AdminListingsPage() {
                                             </TableCell>
                                         </TableRow>
                                     ) : (
-                                        filteredListings.map((listing) => (
+                                        filteredListings.map((listing: Listing) => (
                                             <TableRow key={listing.id} className="border-border hover:bg-muted/10 transition-colors group">
                                                 <TableCell className="px-8">
                                                     <div className="flex items-center gap-4">
