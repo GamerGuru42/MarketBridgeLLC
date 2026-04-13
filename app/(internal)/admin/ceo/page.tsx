@@ -28,7 +28,7 @@ export default function CEOPage() {
 
     React.useEffect(() => {
         if (!loading && (!user || !['ceo', 'cofounder'].includes(user.role))) {
-            router.replace('/login');
+            router.replace('/portal/login');
         }
     }, [user, loading, router]);
 

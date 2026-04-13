@@ -54,6 +54,8 @@ function LoginContent() {
     }, [searchParams]);
 
     function getRoleDestination(r: string) {
+        if (['admin', 'technical_admin', 'operations_admin', 'marketing_admin'].includes(r)) return '/admin';
+        if (['ceo', 'cofounder'].includes(r)) return '/admin/ceo';
         if (['dealer', 'student_seller', 'seller'].includes(r)) return '/seller/dashboard';
         return '/marketplace';
     }

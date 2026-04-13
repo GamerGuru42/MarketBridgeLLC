@@ -52,7 +52,7 @@ export default function AdminHubPage() {
 
     useEffect(() => {
         if (!authLoading && (!user || !['admin', 'ceo', 'cofounder', 'operations_admin', 'technical_admin'].includes(user.role))) {
-            router.replace('/login');
+            router.replace('/portal/login');
         }
     }, [user, authLoading, router]);
 

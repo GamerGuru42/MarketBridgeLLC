@@ -159,7 +159,7 @@ export async function middleware(request: NextRequest) {
 
     // ── 0. Subdomain & Host Detection ────────────────────────────────────────
     const host = request.headers.get('host') || '';
-    const isHQSubdomain = host.startsWith('hq.');
+    const isHQSubdomain = host.startsWith('hq.') || host.includes('.hq.');
 
     // ── 1. Rate Limiting ────────────────────────────────────────────────────
     const isPortalRoute = pathname.startsWith('/portal') || pathname.startsWith('/admin');
@@ -270,6 +270,7 @@ export async function middleware(request: NextRequest) {
         '/login', 
         '/signup', 
         '/auth', 
+        '/portal',
         '/seller-qr', 
         '/seller-onboard', 
         '/verify-email', 
