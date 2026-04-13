@@ -262,7 +262,7 @@ export async function middleware(request: NextRequest) {
 
     // ── 4.5. Launch Shield (Global guest protection) ──────────────────────────
     // Anyone not logged in visiting secondary pages is redirected to the countdown
-    const IS_LOGGED_IN = request.cookies.some(c => c.name.startsWith('sb-') && c.name.includes('-auth-token'));
+    const IS_LOGGED_IN = request.cookies.getAll().some(c => c.name.startsWith('sb-') && c.name.includes('-auth-token'));
     
     // Explicit list of pages guests ARE allowed to see during launch
     const LAUNCH_PUBLIC_ROUTES = [
