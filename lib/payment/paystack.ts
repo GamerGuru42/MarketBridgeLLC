@@ -403,6 +403,7 @@ export class PaystackWebhookHandler {
                 const buyerId = metadata?.buyer_id;
                 const sellerId = metadata?.seller_id;
                 const commissionRate = metadata?.platform_commission_percent || 5.3;
+                const fixedFee = 150; // Required platform fixed fee
 
                 if (!listingId) {
                     console.error('TXNL- payment missing listing_id in metadata');
@@ -410,7 +411,7 @@ export class PaystackWebhookHandler {
                 }
 
                 const amountTotal = amount / 100;
-                const amountPlatform = (amountTotal * commissionRate) / 100;
+                const amountPlatform = ((amountTotal * commissionRate) / 100) + fixedFee;
                 const amountSeller = amountTotal - amountPlatform;
 
                 // Mark listing as sold

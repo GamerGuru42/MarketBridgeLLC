@@ -124,6 +124,8 @@ export default function OperationsAdminPage() {
         } catch (e) {
             toast('Operation error', 'error');
         }
+    };
+
     const handleAmbassadorReview = async (appId: string, action: 'approved' | 'declined') => {
         try {
              const { data: { session } } = await supabase.auth.getSession();
