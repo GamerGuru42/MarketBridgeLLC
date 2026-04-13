@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
     ArrowRight,
     ShoppingBag,
@@ -44,11 +45,23 @@ export default function HomePage() {
         );
     }
 
+    useEffect(() => {
+        if (!loading && user && ['student_seller', 'seller', 'dealer'].includes(user.role)) {
+            window.location.assign('/seller/dashboard');
+        }
+    }, [user, loading]);
+
     if (user) {
         if (['student_seller', 'seller', 'dealer'].includes(user.role)) {
-            // Sellers have their own distinct Premium Command Center
-            typeof window !== 'undefined' && window.location.assign('/seller/dashboard');
-            return null;
+            // Sellers have their own distinct Premium Command Center (handling redirect via useEffect)
+            return (
+                <div className="flex h-screen items-center justify-center bg-background">
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground animate-pulse">Routing to Command Center...</p>
+                    </div>
+                </div>
+            );
         }
         return <AuthenticatedHome user={user} />;
     }
