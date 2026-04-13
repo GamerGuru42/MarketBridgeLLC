@@ -110,9 +110,9 @@ export default function AmbassadorPage() {
                     >
                         <div className="flex items-center gap-3">
                             <span className="h-0.5 w-12 bg-[#FF6200]" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#FF6200] font-heading">The vanguard initiative</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#FF6200] font-heading">Ambassador Program</span>
                         </div>
-                        <h1 className="text-6xl md:text-8xl font-black uppercase italic tracking-tighter leading-[0.9] font-heading">
+                        <h1 className="text-5xl sm:text-6xl md:text-8xl font-black uppercase italic tracking-tighter leading-[0.9] font-heading">
                             Own Your Campus. <br />
                             <span className="text-[#FF6200]">Lead the Bridge.</span>
                         </h1>
@@ -128,7 +128,7 @@ export default function AmbassadorPage() {
                 <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
                     <div className="space-y-10 order-2 lg:order-1">
                         <div className="space-y-4">
-                            <h2 className="text-4xl font-black uppercase tracking-tighter italic font-heading">The Mission Profile</h2>
+                            <h2 className="text-4xl font-black uppercase tracking-tighter italic font-heading">Program Goals</h2>
                             <p className="text-lg text-zinc-500 dark:text-white/40 leading-relaxed font-medium">
                                 We're solving campus scams and payment unreliability through a native escrow network. 
                                 As a Lead, you are the face of trust on your campus. Your mission is to recruit the best student merchants, 
@@ -161,7 +161,7 @@ export default function AmbassadorPage() {
                              </div>
                         </div>
                         {/* Status Card Overlay */}
-                        <div className="absolute -bottom-10 -left-10 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 p-8 rounded-3xl shadow-2xl max-w-xs space-y-4">
+                        <div className="hidden lg:block absolute -bottom-10 -left-10 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 p-8 rounded-3xl shadow-2xl max-w-xs space-y-4">
                              <div className="py-12 flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-500">
                                 <div className="h-16 w-16 rounded-full bg-[#FF6200]/10 flex items-center justify-center border border-[#FF6200]/20">
                                     <CheckCircle className="h-8 w-8 text-[#FF6200]" />
@@ -229,8 +229,8 @@ export default function AmbassadorPage() {
 
             {/* Application Section */}
             <section id="apply-section" className="py-40 bg-white dark:bg-zinc-950">
-                <div className="max-w-4xl mx-auto px-6">
-                    <div className="bg-zinc-900 border border-white/5 rounded-[3rem] p-12 md:p-20 relative overflow-hidden text-center space-y-12">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6">
+                    <div className="bg-zinc-900 border border-white/5 rounded-3xl md:rounded-[3rem] p-6 sm:p-12 md:p-20 relative overflow-hidden text-center space-y-8 md:space-y-12">
                          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#FF6200] to-transparent" />
                          
                          <div className="space-y-6">
@@ -275,7 +275,6 @@ export default function AmbassadorPage() {
                                 <Button 
                                     className="w-full h-16 bg-[#FF6200] text-black hover:bg-[#FF7A29] font-black uppercase tracking-widest transition-all rounded-2xl shadow-xl shadow-[#FF6200]/20"
                                     disabled={isSubmitting}
-                                    onClick={() => setShowOnboard(false)}
                                 >
                                     {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : "Submit Application"}
                                 </Button>
