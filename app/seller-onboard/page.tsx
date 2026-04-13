@@ -307,7 +307,7 @@ export default function SellerOnboardPage() {
                                 <Button 
                                     onClick={handleSendMagicLink} 
                                     disabled={isSubmitting || isGoogleLoading} 
-                                    className="w-full h-20 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-[0.2em] text-sm rounded-2xl border-none shadow-[0_15px_45px_rgba(255,98,0,0.3)] hover:shadow-[0_20px_50px_rgba(255,98,0,0.4)] transition-all flex items-center justify-center"
+                                    className="flex-1 w-full h-20 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-[0.2em] text-sm rounded-2xl border-none shadow-[0_15px_45px_rgba(255,98,0,0.3)] hover:shadow-[0_20px_50px_rgba(255,98,0,0.4)] transition-all flex items-center justify-center"
                                 >
                                     {isSubmitting ? <Loader2 className="animate-spin h-6 w-6 relative z-10" /> : (
                                         <>
