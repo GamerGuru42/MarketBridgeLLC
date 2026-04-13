@@ -863,7 +863,7 @@ export default function SellerDashboardPage() {
     if (applicationStatus === 'rejected') {
         return (
             <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] dark:bg-zinc-950 text-zinc-900 dark:text-white p-6">
-                <div className="max-w-lg w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl p-12 rounded-[3rem] text-center space-y-6">
+                <div className="max-w-lg w-full bg-white dark:bg-white/[0.02] border border-zinc-200 dark:border-white/5 shadow-2xl p-12 rounded-[3rem] text-center space-y-6">
                     <div className="h-24 w-24 rounded-3xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto">
                         <AlertCircle className="h-10 w-10 text-red-500" />
                     </div>
@@ -885,7 +885,7 @@ export default function SellerDashboardPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#FAFAFA] dark:bg-black text-zinc-900 dark:text-white relative flex flex-col selection:bg-[#FF6200] selection:text-black font-sans transition-colors duration-300">
+        <div className="min-h-screen bg-[#FAFAFA] dark:bg-zinc-950 text-zinc-900 dark:text-white relative flex flex-col selection:bg-[#FF6200] selection:text-black font-sans transition-colors duration-300">
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 dark:opacity-[0.03] pointer-events-none z-0 transition-opacity duration-300" />
 
@@ -920,7 +920,7 @@ export default function SellerDashboardPage() {
                             ].map((plan) => (
                                 <div key={plan.name} className={`relative rounded-2xl p-5 border ${plan.highlight
                                     ? 'border-[#FF6200] bg-[#FF6200]/5'
-                                    : 'border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50'
+                                    : 'border-zinc-200 dark:border-white/5 bg-zinc-50 dark:bg-white/[0.02]'
                                     }`}>
                                     {plan.highlight && (
                                         <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FF6200] text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
@@ -1237,7 +1237,7 @@ export default function SellerDashboardPage() {
                         <TabsContent value="rewards" className="divide-y divide-white/5 focus-visible:outline-none focus:outline-none">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                                 {/* MarketCoins Card */}
-                                <div className="p-10 rounded-[3rem] border border-zinc-100 bg-white/[0.02] flex flex-col justify-between">
+                                <div className="p-10 rounded-[3rem] border border-zinc-100 dark:border-white/5 bg-white/[0.02] flex flex-col justify-between transition-colors">
                                     <div className="space-y-6">
                                         <div className="flex items-center gap-3">
                                             <div className="h-12 w-12 rounded-2xl bg-[#FF6200]/10 border border-[#FF6200]/20 flex items-center justify-center">
@@ -1249,10 +1249,10 @@ export default function SellerDashboardPage() {
                                             </div>
                                         </div>
 
-                                        <div className="py-8 border-y border-zinc-100">
-                                            <p className="text-[10px] font-black uppercase text-zinc-900/30 tracking-[0.3em] mb-2 font-heading">Active Balance</p>
+                                        <div className="py-8 border-y border-zinc-100 dark:border-white/5">
+                                            <p className="text-[10px] font-black uppercase text-zinc-900/30 dark:text-white/20 tracking-[0.3em] mb-2 font-heading">Active Balance</p>
                                             <div className="flex items-baseline gap-2 font-heading">
-                                                <span className="text-6xl font-black text-zinc-900 italic tracking-tighter">{(user?.coins_balance || 0).toLocaleString()}</span>
+                                                <span className="text-6xl font-black text-zinc-900 dark:text-white italic tracking-tighter">{(user?.coins_balance || 0).toLocaleString()}</span>
                                                 <span className="text-xl font-black text-[#FF6200] italic">MC</span>
                                             </div>
                                         </div>
@@ -1270,7 +1270,7 @@ export default function SellerDashboardPage() {
                                 </div>
 
                                 {/* Refer & Earn Card */}
-                                <div className="p-10 rounded-[3rem] border border-zinc-100 bg-white/[0.02] space-y-8">
+                                <div className="p-10 rounded-[3rem] border border-zinc-100 dark:border-white/5 bg-white/[0.02] space-y-8 transition-colors">
                                     <div className="space-y-2">
                                         <h3 className="text-2xl font-black uppercase tracking-tighter italic font-heading">Refer & Earn</h3>
                                         <p className="text-zinc-500 text-xs italic">Expand the network and earn 100 MC for every verified referral.</p>
@@ -1280,7 +1280,7 @@ export default function SellerDashboardPage() {
                                         <div className="space-y-2">
                                             <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 font-heading">Your Referral Transmission Code</Label>
                                             <div className="flex gap-2">
-                                                <div className="flex-1 bg-[#FAFAFA]/40 border border-zinc-200 rounded-xl px-6 flex items-center h-14 font-mono text-lg font-black text-[#FF6200] tracking-widest">
+                                                <div className="flex-1 bg-[#FAFAFA]/40 dark:bg-white/5 border border-zinc-200 dark:border-white/5 rounded-xl px-6 flex items-center h-14 font-mono text-lg font-black text-[#FF6200] tracking-widest">
                                                     {user?.referral_link_code || 'PROTOCOL_PENDING'}
                                                 </div>
                                                 <Button
@@ -1289,15 +1289,15 @@ export default function SellerDashboardPage() {
                                                         navigator.clipboard.writeText(link);
                                                         toast('Referral link copied to clipboard! 🔗', 'success');
                                                     }}
-                                                    className="h-14 px-6 bg-white text-black font-black uppercase tracking-widest rounded-xl hover:bg-zinc-200 transition-colors"
+                                                    className="h-14 px-6 bg-white dark:bg-white/5 text-black dark:text-white font-black uppercase tracking-widest rounded-xl hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors"
                                                 >
                                                     Copy Link
                                                 </Button>
                                             </div>
                                         </div>
 
-                                        <div className="p-6 bg-white/[0.02] border border-zinc-100 rounded-2xl">
-                                            <div className="flex justify-between items-center mb-4 text-zinc-900/30">
+                                        <div className="p-6 bg-white/[0.02] border border-zinc-100 dark:border-white/5 rounded-2xl transition-colors">
+                                            <div className="flex justify-between items-center mb-4 text-zinc-900/30 dark:text-white/20">
                                                 <span className="text-[10px] font-black uppercase tracking-widest">Referral Stats</span>
                                                 <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
                                             </div>
@@ -1459,8 +1459,8 @@ export default function SellerDashboardPage() {
                     </Tabs>
                 </div>
 
-                <div className="border-t border-zinc-100 pt-8 text-center pb-8">
-                    <p className="text-[10px] text-zinc-900/30 font-medium leading-relaxed">
+                <div className="border-t border-zinc-100 dark:border-white/5 pt-8 text-center pb-8 transition-colors">
+                    <p className="text-[10px] text-zinc-900/30 dark:text-white/20 font-medium leading-relaxed">
                         Beta platform – technical problems? Email <a href="mailto:support@marketbridge.com.ng?subject=Tech%20Support" className="text-[#FF6200] hover:underline">support@marketbridge.com.ng</a><br />
                         Refunds, subscriptions or seller questions? Email <a href="mailto:ops-support@marketbridge.com.ng?subject=Ops%20Support" className="text-[#FF6200] hover:underline">ops-support@marketbridge.com.ng</a>
                     </p>
@@ -1552,9 +1552,9 @@ function OrderCard({
     const getStatusBadge = (status: string) => {
         const colors = {
             pending: 'bg-[#FF6200]/10 text-[#FF6200] border-[#FF6200]/20',
-            confirmed: 'bg-zinc-100 text-zinc-600 border-zinc-700',
-            completed: 'bg-white text-zinc-900 border-zinc-200',
-            cancelled: 'bg-white text-zinc-600 border-zinc-700',
+            confirmed: 'bg-zinc-100 dark:bg-white/5 text-zinc-600 dark:text-zinc-300 border-zinc-700 dark:border-white/10',
+            completed: 'bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white border-zinc-200 dark:border-white/10',
+            cancelled: 'bg-white dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 border-zinc-700 dark:border-white/10',
         } as const;
 
         return (
@@ -1568,15 +1568,15 @@ function OrderCard({
     };
 
     return (
-        <div className="bg-white border border-zinc-200 shadow-sm p-6 flex flex-col md:flex-row gap-8 group/card transition-all duration-500 hover:border-[#FF6200]/20">
+        <div className="bg-white dark:bg-white/[0.02] border border-zinc-200 dark:border-white/5 shadow-sm dark:shadow-none p-6 flex flex-col md:flex-row gap-8 group/card transition-all duration-500 hover:border-[#FF6200]/20">
             <div className="flex-1 flex gap-6 italic">
                 {order.listing?.images?.[0] ? (
-                    <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border border-zinc-100 bg-white group-hover/card:border-[#FF6200]/20 transition-all">
+                    <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border border-zinc-100 dark:border-white/5 bg-white dark:bg-zinc-900 group-hover/card:border-[#FF6200]/20 transition-all">
                         <Image src={order.listing.images[0]} alt={order.listing.title} fill className="object-cover group-hover/card:scale-110 transition-transform duration-700" />
                     </div>
                 ) : (
-                    <div className="h-24 w-24 shrink-0 rounded-2xl bg-white border border-zinc-100 flex items-center justify-center">
-                        <Package className="h-8 w-8 text-zinc-900/20" />
+                    <div className="h-24 w-24 shrink-0 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-white/5 flex items-center justify-center">
+                        <Package className="h-8 w-8 text-zinc-900/20 dark:text-white/10" />
                     </div>
                 )}
 
@@ -1585,17 +1585,17 @@ function OrderCard({
                         <span className="text-[10px] font-black text-zinc-900/30 uppercase tracking-widest font-heading">Ref: #{order.id.slice(-8).toUpperCase()}</span>
                         {getStatusBadge(order.status)}
                     </div>
-                    <h3 className="text-xl font-black uppercase tracking-tighter truncate font-heading">{order.listing?.title}</h3>
+                    <h3 className="text-xl font-black uppercase tracking-tighter truncate font-heading text-zinc-900 dark:text-white">{order.listing?.title}</h3>
                     <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-zinc-500">
-                        <span className="flex items-center gap-1.5 lowercase font-medium italic"><span className="text-zinc-900/20 underline">buyer:</span> <span className="text-zinc-900/70 font-bold">{order.buyer?.display_name}</span></span>
-                        <span className="flex items-center gap-1.5 lowercase font-medium italic"><span className="text-zinc-900/20 underline">value:</span> <span className="text-[#FF6200] font-black">₦{order.amount.toLocaleString()}</span></span>
-                        <span className="flex items-center gap-1.5 lowercase font-medium italic"><span className="text-zinc-900/20 underline">date:</span> <span>{new Date(order.created_at).toLocaleDateString()}</span></span>
+                        <span className="flex items-center gap-1.5 lowercase font-medium italic"><span className="text-zinc-900/20 dark:text-white/20 underline">buyer:</span> <span className="text-zinc-900/70 dark:text-zinc-300 font-bold">{order.buyer?.display_name}</span></span>
+                        <span className="flex items-center gap-1.5 lowercase font-medium italic"><span className="text-zinc-900/20 dark:text-white/20 underline">value:</span> <span className="text-[#FF6200] font-black">₦{order.amount.toLocaleString()}</span></span>
+                        <span className="flex items-center gap-1.5 lowercase font-medium italic"><span className="text-zinc-900/20 dark:text-white/20 underline">date:</span> <span className="dark:text-zinc-400">{new Date(order.created_at).toLocaleDateString()}</span></span>
                     </div>
                 </div>
             </div>
 
             <div className="flex md:flex-col justify-end gap-3 shrink-0">
-                <Button variant="outline" onClick={() => onOpenChat(order)} className="flex-1 md:w-40 h-12 rounded-xl bg-white border-zinc-200 hover:border-[#FF6200]/30 hover:bg-white text-zinc-900 font-black uppercase tracking-widest text-[10px] gap-2 font-heading transition-all">
+                <Button variant="outline" onClick={() => onOpenChat(order)} className="flex-1 md:w-40 h-12 rounded-xl bg-white dark:bg-white/5 border border-zinc-200 dark:border-white/10 hover:border-[#FF6200]/30 hover:bg-white dark:hover:bg-white/10 text-zinc-900 dark:text-white font-black uppercase tracking-widest text-[10px] gap-2 font-heading transition-all">
                     <MessageCircle className="h-4 w-4" /> Message Buyer
                 </Button>
 
@@ -1604,9 +1604,9 @@ function OrderCard({
                         <SelectTrigger className="flex-1 md:w-40 h-12 rounded-xl bg-[#FF6200] border-none text-black font-black uppercase tracking-widest text-[10px] font-heading shadow-lg shadow-[#FF6200]/10 hover:bg-[#FF7A29] transition-all">
                             <SelectValue placeholder="Dispatch" />
                         </SelectTrigger>
-                        <SelectContent className="bg-white border-zinc-200 text-zinc-900 font-heading text-[10px] uppercase font-black tracking-widest">
+                        <SelectContent className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-white font-heading text-[10px] uppercase font-black tracking-widest">
                             <SelectItem value="confirmed" className="focus:bg-[#FF6200] focus:text-black">Mark Shipped</SelectItem>
-                            <SelectItem value="cancelled" className="focus:bg-zinc-100 focus:text-zinc-900 text-[#FF6200]">Cancel Order</SelectItem>
+                            <SelectItem value="cancelled" className="focus:bg-zinc-100 dark:focus:bg-zinc-800 focus:text-zinc-900 dark:focus:text-white text-[#FF6200]">Cancel Order</SelectItem>
                         </SelectContent>
                     </Select>
                 )}

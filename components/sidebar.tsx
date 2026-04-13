@@ -39,8 +39,25 @@ export function Sidebar({ items, title, className }: SidebarProps) {
 
                     <div className="space-y-2">
                         {items.map((item) => {
+                            // Logic: 
+                            // 1. If it's an exact match, it's active.
+                            // 2. If it's a sub-path, it's active ONLY if no other sidebar item has a longer matching prefix.
                             const isExact = pathname === item.href;
-                            const isSubPath = pathname?.startsWith(item.href) && item.href !== '/' && item.href !== '/admin' && item.href !== '/ceo' && item.href !== '/seller/dashboard';
+                            
+                            // Check if any other item is a better match for the current pathname
+                            const hasBetterMatch = items.some(otherItem => 
+                                otherItem.href !== item.href && 
+                                pathname?.startsWith(otherItem.href) && 
+                                otherItem.href.length > item.href.length
+                            );
+
+                            const isSubPath = pathname?.startsWith(item.href) && 
+                                              item.href !== '/' && 
+                                              item.href !== '/admin' && 
+                                              item.href !== '/ceo' && 
+                                              item.href !== '/seller/dashboard' &&
+                                              !hasBetterMatch;
+                            
                             const isActive = isExact || isSubPath;
 
                             return (
