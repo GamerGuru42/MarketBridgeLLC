@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Send, ArrowLeft, DollarSign, Package, Image as ImageIcon, Loader2, X, Check, CheckCheck } from 'lucide-react';
+import { Send, ArrowLeft, ArrowRight, DollarSign, Package, Image as ImageIcon, Loader2, X, Check, CheckCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { SmartEscrowModal } from '@/components/chat/SmartEscrowModal';
@@ -43,6 +43,7 @@ interface Conversation {
         title: string;
         price: number;
         floor_price?: number;
+        location?: string;
         images: string[];
     };
     other_user?: {
