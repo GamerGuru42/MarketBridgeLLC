@@ -18,7 +18,7 @@ export default function OperationsAdminPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
+        const ADMIN_ROLES = ['ceo', 'tech_admin', 'ops_admin', 'marketing_admin'];
         if (!authLoading && (!user || !ADMIN_ROLES.includes(user.role))) {
             router.replace('/portal/login');
         }
@@ -26,6 +26,7 @@ export default function OperationsAdminPage() {
     const [pendingSellers, setPendingSellers] = useState<any[]>([]);
     const [subscriptions, setSubscriptions] = useState<any[]>([]);
     const [feedback, setFeedback] = useState<any[]>([]);
+    const [ambassadorApps, setAmbassadorApps] = useState<any[]>([]);
     const [revenue, setRevenue] = useState<{ transactions: any[], totalVolume: number, totalCommission: number }>({
         transactions: [],
         totalVolume: 0,
@@ -54,9 +55,16 @@ export default function OperationsAdminPage() {
                 .select('*, users(email)')
                 .order('created_at', { ascending: false });
 
+            const { data: ambApps } = await supabase
+                .from('ambassador_applications')
+                .select('*')
+                .eq('status', 'pending')
+                .order('created_at', { ascending: false });
+
             if (sellers) setPendingSellers(sellers);
             if (subs) setSubscriptions(subs);
             if (feed) setFeedback(feed);
+            if (ambApps) setAmbassadorApps(ambApps);
 
             const { data: txns } = await supabase
                 .from('sales_transactions')
@@ -116,6 +124,33 @@ export default function OperationsAdminPage() {
         } catch (e) {
             toast('Operation error', 'error');
         }
+    const handleAmbassadorReview = async (appId: string, action: 'approved' | 'declined') => {
+        try {
+             const { data: { session } } = await supabase.auth.getSession();
+             if (!session) return;
+
+             const { error } = await supabase
+                .from('ambassador_applications')
+                .update({
+                    status: action,
+                    reviewed_by: session.user.id,
+                    reviewed_at: new Date().toISOString()
+                })
+                .eq('id', appId);
+
+             if (error) throw error;
+
+             // If approved, update user role
+             if (action === 'approved') {
+                 const app = ambassadorApps.find(a => a.id === appId);
+                 if (app) {
+                     await supabase.from('users').update({ role: 'ambassador' }).eq('id', app.user_id);
+                 }
+             }
+
+             toast(`Ambassador application ${action}`, 'success');
+             fetchOpsData();
+        } catch (e) { toast('Review failed', 'error'); }
     };
 
     if (authLoading || loading) return (
@@ -154,6 +189,7 @@ export default function OperationsAdminPage() {
                 <TabsList className="bg-card border border-border rounded-2xl p-1.5 h-16 w-full md:w-auto overflow-x-auto no-scrollbar shadow-sm">
                     {[
                         { val: 'sellers', label: 'Verifications', count: pendingSellers.length, icon: UserCheck },
+                        { val: 'ambassadors', label: 'Ambassadors', count: ambassadorApps.length, icon: Crown },
                         { val: 'subscriptions', label: 'Subscriptions', count: subscriptions.length, icon: CreditCard },
                         { val: 'feedback', label: 'Intelligence', count: feedback.length, icon: Activity },
                         { val: 'revenue', label: 'Financials', count: null, icon: DollarSign },
@@ -218,6 +254,42 @@ export default function OperationsAdminPage() {
                                 <div className="text-center py-32 bg-muted/20 rounded-3xl border border-border border-dashed">
                                     <Inbox className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
                                     <p className="text-muted-foreground font-black uppercase tracking-[0.5em] text-[9px]">Ingestion Pipeline Idle</p>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="ambassadors">
+                    <Card className="bg-card border-border shadow-sm rounded-[3rem] overflow-hidden">
+                        <CardHeader className="bg-muted/20 py-10 px-10 border-b border-border">
+                            <CardTitle className="text-3xl font-black uppercase italic tracking-tighter">Strategic <span className="text-primary">Vetting</span></CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-10 space-y-4">
+                            {ambassadorApps.map((app) => (
+                                <div key={app.id} className="flex flex-col lg:flex-row lg:items-center justify-between bg-muted/40 p-8 rounded-[2rem] border border-border/50 gap-8 group">
+                                    <div className="flex items-center gap-8">
+                                        <div className="h-20 w-20 bg-primary/10 rounded-3xl flex items-center justify-center border border-primary/20">
+                                            <Crown className="h-8 w-8 text-primary" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <p className="text-2xl font-black text-foreground italic font-heading tracking-tighter uppercase">{app.full_name}</p>
+                                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">{app.university} // ID: {app.student_id}</p>
+                                            <div className="p-4 bg-card rounded-xl border border-border/50 mt-4">
+                                                <p className="text-xs text-muted-foreground italic">"{app.reason.slice(0, 100)}..."</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-3">
+                                        <Button onClick={() => handleAmbassadorReview(app.id, 'approved')} className="bg-primary h-12 px-6 rounded-xl font-black uppercase text-[10px] tracking-widest">Approve</Button>
+                                        <Button onClick={() => handleAmbassadorReview(app.id, 'declined')} variant="outline" className="border-red-500/20 text-red-500 h-12 px-6 rounded-xl font-black uppercase text-[10px] tracking-widest">Decline</Button>
+                                    </div>
+                                </div>
+                            ))}
+                            {ambassadorApps.length === 0 && (
+                                <div className="text-center py-32 opacity-20">
+                                    <Crown className="h-12 w-12 mx-auto mb-4" />
+                                    <p className="font-black uppercase tracking-widest text-xs">Ambassador Pipeline Empty</p>
                                 </div>
                             )}
                         </CardContent>

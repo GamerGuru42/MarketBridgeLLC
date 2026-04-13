@@ -463,8 +463,8 @@ export class PaystackWebhookHandler {
                     }).then(({ error }) => { if (error) console.error('Coin deduct error:', error); });
                 }
 
-                // MarketCoins: award buyer coins (1 coin per ₦100 spent)
-                const buyerEarned = Math.floor(amountTotal / 100);
+                // MarketCoins: award buyer coins (1 coin per ₦200 spent = 50 MC per ₦10k)
+                const buyerEarned = Math.floor(amountTotal / 200);
                 if (buyerEarned > 0 && buyerId) {
                     await supabaseAdmin.rpc('add_coins', {
                         user_id: buyerId,
@@ -474,8 +474,8 @@ export class PaystackWebhookHandler {
                     }).then(({ error }) => { if (error) console.error('Buyer coin earn error:', error); });
                 }
 
-                // MarketCoins: award seller coins (1 coin per ₦200 earned)
-                const sellerEarned = Math.floor(amountSeller / 200);
+                // MarketCoins: award seller coins (1 coin per ₦400 earned)
+                const sellerEarned = Math.floor(amountSeller / 400);
                 if (sellerEarned > 0 && sellerId) {
                     await supabaseAdmin.rpc('add_coins', {
                         user_id: sellerId,

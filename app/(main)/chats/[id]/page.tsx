@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { SmartEscrowModal } from '@/components/chat/SmartEscrowModal';
 import { EscrowProgress, EscrowAgreement, EscrowStep } from '@/components/chat/EscrowProgress';
+import { TermsBuilderPanel } from '@/components/chat/TermsBuilderPanel';
 import { formatDistanceToNow } from 'date-fns';
 
 interface Message {
@@ -87,6 +88,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
     const [aiReplySuggestion, setAiReplySuggestion] = useState<string | null>(null);
     const [isBlocked, setIsBlocked] = useState(false);
     const [blockEndTime, setBlockEndTime] = useState<Date | null>(null);
+    const [activeOrder, setActiveOrder] = useState<any>(null);
 
     // Unwrap params
     useEffect(() => {
@@ -103,6 +105,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
             fetchChat();
             fetchMessages();
             fetchActiveEscrow();
+            fetchActiveOrder();
 
             const unsubscribeMessages = subscribeToMessages();
             const unsubscribeEscrow = subscribeToEscrow();
@@ -186,33 +189,33 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                 .from('messages')
                 .select(`
                     *,
-                    sender:users!messages_sender_id_fkey(display_name, photo_url, avatar_url)
+                    sender:users!messages_sender_id_fkey(display_name, photo_url)
                 `)
-                .eq('conversation_id', chatId) // Note: Renamed from chat_id to conversation_id in schema migration?
-                // Wait, in schema I used 'conversation_id'? 
-                // Migration 20260213_messaging_system.sql: conversation_id UUID REFERENCES conversations(id)
-                // Yes.
+                .eq('conversation_id', chatId)
                 .order('created_at', { ascending: true });
 
-            if (error) {
-                // Determine if error is due to column name mismatch (if migration failed)
-                // We assume migration succeeded.
-                throw error;
-            }
+            if (error) throw error;
 
-            // Standardize sender photo
-            const mapped = (data || []).map((m: any) => ({
-                ...m,
-                sender: m.sender ? {
-                    ...m.sender,
-                    photo_url: m.sender.avatar_url || m.sender.photo_url
-                } : null
-            }));
-
-            setMessages(mapped);
+            setMessages(data || []);
         } catch (error) {
             console.error('Error fetching messages:', error);
         }
+    };
+
+    const fetchActiveOrder = async () => {
+        if (!chatId || !chat?.listing_id) return;
+        // Find order associated with this listing involving both users
+        const { data } = await supabase
+            .from('orders')
+            .select('*')
+            .eq('listing_id', chat.listing_id)
+            .or(`buyer_id.eq.${user?.id},seller_id.eq.${user?.id}`)
+            .neq('status', 'completed')
+            .neq('status', 'cancelled')
+            .limit(1)
+            .maybeSingle();
+            
+        if (data) setActiveOrder(data);
     };
 
     const fetchActiveEscrow = async () => {
@@ -522,52 +525,45 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
         tosText: string;
         autoReleaseHours: number;
     }) => {
-        if (!user || !chat || !chat.other_user || !chatId) return;
+        if (!user || !chat || !chat.other_user || !chatId || !chat.listing_id) return;
 
         try {
-            // 1. Create Agreement
-            const { data: agreement, error: agreementError } = await supabase
-                .from('escrow_agreements')
+            // 1. Create Stage 1 Order
+            const { data: order, error: orderError } = await supabase
+                .from('orders')
                 .insert({
-                    conversation_id: chatId,
                     buyer_id: user.id,
                     seller_id: chat.other_user.id,
+                    listing_id: chat.listing_id,
                     amount: data.amount,
-                    agreement_type: data.type,
                     status: 'pending',
-                    tos_accepted_buyer: true, // Creator accepts
+                    escrow_stage: 1, // Stage 1: Initiated
+                    contract_terms: {
+                        proposed_at: new Date().toISOString(),
+                        last_proposed_by: user.id,
+                        location: chat.listing?.location || 'Campus Gate'
+                    }
                 })
                 .select()
                 .single();
 
-            if (agreementError) throw agreementError;
+            if (orderError) throw orderError;
 
-            // 2. Create Steps
-            const stepsToInsert = data.steps.map((desc: string, index: number) => ({
-                agreement_id: agreement.id,
-                step_order: index,
-                description: desc,
-                status: 'pending'
-            }));
-
-            const { error: stepsError } = await supabase
-                .from('escrow_steps')
-                .insert(stepsToInsert);
-
-            if (stepsError) throw stepsError;
+            // 2. Identify and Link Escrow Stages/Agreements if needed
+            // For now, the Order itself handles the 7 stages via 'escrow_stage' column.
 
             // 3. Send System Message
             await supabase.from('messages').insert({
                 conversation_id: chatId,
                 sender_id: user.id,
-                content: `🔒 Smart Escrow initiated for ₦${data.amount.toLocaleString()}.\n⏱️ Auto-Release Timeframe: ${data.autoReleaseHours} Hours.\nPlease review and accept conditions.`,
+                content: `🔒 Smart Escrow Phase 1: Initiated for ₦${data.amount.toLocaleString()}.\nPlease use the Terms Builder above to finalize price and location.`,
             });
 
-            setActiveAgreement(agreement);
-            fetchActiveEscrow(); // Refresh steps
+            setActiveOrder(order);
+            fetchActiveOrder();
         } catch (error) {
-            console.error('Error creating escrow:', error);
-            toast('Failed to create escrow agreement. Please try again.', 'error');
+            console.error('Error initiating escrow:', error);
+            toast('Failed to initiate digital contract. Please try again.', 'error');
         }
     };
 
@@ -627,7 +623,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                                     {isOnline && <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]" title="Online now" />}
                                 </CardTitle>
                                 <Badge variant="secondary" className="mt-1 bg-white text-zinc-600 border border-zinc-100 text-[10px] uppercase tracking-wider">
-                                    {['dealer', 'student_seller'].includes(chat.other_user?.role || '') ? 'Verified Merchant' : 'User'}
+                                    {chat.other_user?.role === 'seller' ? 'Verified Merchant' : 'Campus User'}
                                 </Badge>
                             </div>
                         </div>
@@ -641,54 +637,32 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                 </CardHeader>
 
                 <CardContent className="flex-1 flex flex-col p-0 overflow-hidden relative border-t-0">
-                    {/* InDrive Negotiation UI */}
-                    {chat.listing && !activeAgreement && (
-                        <div className="bg-white border-b border-zinc-100 p-3 sm:p-5 shrink-0 shadow-sm z-10 sticky top-0 md:px-8">
-                            <div className="flex flex-col items-center max-w-xl mx-auto">
-                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-1">Current Offer</p>
-                                <h2 className="text-3xl sm:text-4xl font-black tracking-tighter text-zinc-900 mb-3 sm:mb-5">
-                                    ₦{currentOffer.toLocaleString()}
-                                </h2>
-                                
-                                {showFloorWarning && (chat.listing as any).floor_price && (
-                                    <div className="bg-amber-50 text-amber-900 border border-amber-200 text-xs px-4 py-3 rounded-xl mb-5 flex items-start gap-3 w-full animate-in fade-in slide-in-from-top-2 duration-300">
-                                        <span className="shrink-0 text-amber-500 text-base">⚠️</span>
-                                        <p className="leading-relaxed">This is below the reasonable market floor for this item. Recommended minimum: <strong>₦{((chat.listing as any).floor_price).toLocaleString()}</strong> (based on 12 similar listings on campus).</p>
-                                    </div>
-                                )}
-
-                                <div className="grid grid-cols-4 gap-2 w-full mb-5">
-                                    <Button variant="outline" onClick={() => handleOfferChange(-10000)} className="h-10 font-black tracking-widest text-[#FF6600] border-zinc-200 bg-white hover:bg-[#FF6600]/10 hover:border-[#FF6600]/30 transition-all shadow-sm">-10k</Button>
-                                    <Button variant="outline" onClick={() => handleOfferChange(-5000)} className="h-10 font-black tracking-widest text-[#FF6600] border-zinc-200 bg-white hover:bg-[#FF6600]/10 hover:border-[#FF6600]/30 transition-all shadow-sm">-5k</Button>
-                                    <Button variant="outline" onClick={() => handleOfferChange(5000)} className="h-10 font-black tracking-widest text-green-600 border-zinc-200 bg-white hover:bg-green-600/10 hover:border-green-600/30 transition-all shadow-sm">+5k</Button>
-                                    <Button variant="outline" onClick={() => handleOfferChange(10000)} className="h-10 font-black tracking-widest text-green-600 border-zinc-200 bg-white hover:bg-green-600/10 hover:border-green-600/30 transition-all shadow-sm">+10k</Button>
-                                </div>
-                                
-                                <input 
-                                    type="range" 
-                                    min="1000" 
-                                    max={(chat.listing.price || 50000) * 1.5} 
-                                    step="1000" 
-                                    value={currentOffer} 
-                                    onChange={(e) => handleOfferChange(Number(e.target.value), true)}
-                                    className="w-full h-2 bg-zinc-100 rounded-full appearance-none cursor-pointer mb-8 accent-[#FF6600] hover:accent-[#e55c00] transition-all"
-                                />
-                                
-                                <div className="flex gap-2 w-full">
-                                    <Button variant="ghost" className="flex-1 text-zinc-400 hover:text-red-500 hover:bg-red-50 font-bold uppercase tracking-widest text-[10px] h-11" onClick={() => router.push('/marketplace')}>Cancel Deal</Button>
-                                    <Button variant="outline" className="flex-1 border-[#FF6600]/30 text-[#FF6600] hover:bg-[#FF6600]/10 bg-white font-bold uppercase tracking-widest text-[10px] h-11 shadow-sm" onClick={handleCounter}>Counter</Button>
-                                    <Button 
-                                        className="flex-[1.5] bg-[#FF6600] text-black font-black uppercase tracking-[0.15em] text-xs hover:bg-[#FF6600]/90 shadow-[0_4px_14px_rgba(255,102,0,0.3)] h-11"
-                                        onClick={() => {
-                                            setEscrowAmount(currentOffer.toString());
-                                            setShowEscrowModal(true);
-                                        }}
-                                        disabled={isBlocked}
-                                    >
-                                        Accept Deal
-                                    </Button>
-                                </div>
-                            </div>
+                    {/* Advanced Terms Builder Panel */}
+                    {chat.listing && activeOrder && activeOrder.escrow_stage <= 2 && (
+                        <div className="p-4 sm:p-6 bg-transparent shrink-0 z-10 sticky top-0">
+                            <TermsBuilderPanel 
+                                orderId={activeOrder.id}
+                                buyerId={activeOrder.buyer_id}
+                                sellerId={activeOrder.seller_id}
+                                currentUserId={user?.id || ''}
+                                listingPrice={chat.listing.price}
+                                listingLocation={activeOrder.location || 'Baze University'}
+                                onTransition={(stage) => setActiveOrder({ ...activeOrder, escrow_stage: stage })}
+                            />
+                        </div>
+                    )}
+                    
+                    {/* Initial Initiation fallback if no order exists yet */}
+                    {chat.listing && !activeOrder && (
+                        <div className="bg-white border-b border-zinc-100 p-8 shrink-0 shadow-sm z-10 sticky top-0 text-center">
+                            <h3 className="text-sm font-black uppercase tracking-widest text-zinc-900 mb-2">Ready to secure this item?</h3>
+                            <p className="text-xs text-zinc-500 mb-6 italic">Initiate the digital escrow contract to begin negotiating formal terms.</p>
+                            <Button 
+                                onClick={() => setShowEscrowModal(true)}
+                                className="h-12 px-8 bg-[#FF6200] text-black font-black uppercase tracking-widest text-[10px] rounded-xl shadow-lg border-0"
+                            >
+                                Initiate Escrow Contract <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
                         </div>
                     )}
 

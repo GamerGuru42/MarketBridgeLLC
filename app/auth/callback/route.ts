@@ -44,18 +44,21 @@ export async function GET(request: Request) {
                 return NextResponse.redirect(new URL('/signup?error=Account+not+found.+Please+sign+up+to+continue.', origin));
             }
 
-            const finalRole = role || existingUser?.role || 'student_buyer';
+            const finalRole = role || existingUser?.role || 'buyer';
             let actualRole = finalRole;
-            let redirectPath = finalNext;
+            
+            // Standardize roles
+            if (actualRole === 'student_seller' || actualRole === 'dealer') actualRole = 'seller';
+            if (actualRole === 'student_buyer' || actualRole === 'customer') actualRole = 'buyer';
 
-            // Enforce .edu.ng school email for sellers — reject personal emails
-            if (actualRole === 'student_seller' || actualRole === 'seller') {
+            // Enforce .edu.ng school email for ALL sellers — reject personal emails
+            if (actualRole === 'seller') {
                 const userEmail = data.user.email?.toLowerCase() || '';
                 if (!userEmail.endsWith('.edu.ng')) {
-                    console.warn(`Auth Callback: Non-.edu.ng email "${userEmail}" attempted seller signup. Blocking.`);
+                    console.warn(`Auth Callback: Non-.edu.ng email "${userEmail}" attempted seller login/signup. Blocking.`);
                     await supabase.auth.signOut();
                     return NextResponse.redirect(
-                        new URL('/seller-onboard?error=' + encodeURIComponent('To sign up as a seller, please use your school email address (ending in .edu.ng). Personal emails like Gmail or Yahoo are not accepted for seller accounts.'), origin)
+                        new URL('/login?error=' + encodeURIComponent('Sellers must use a school email ending in .edu.ng. Please use your university Google account.'), origin)
                     );
                 }
             }

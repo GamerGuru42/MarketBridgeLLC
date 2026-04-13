@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { createClient } from '@/lib/supabase/client';
 import { startConversation } from '@/lib/chat';
 import { Button } from '@/components/ui/button';
+import { GuidedTour, TourStep } from '@/components/GuidedTour';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
@@ -114,6 +115,14 @@ export default function SellerDashboardPage() {
     const router = useRouter();
     const supabase = createClient();
     const { toast } = useToast();
+
+    const tourSteps: TourStep[] = [
+        { targetId: 'tour-header', title: 'Seller Command', description: "Welcome to your bridge. This is your mission control where you manage your entire campus business at a glance.", position: 'bottom' },
+        { targetId: 'tour-stats', title: 'Knowledge Node 1: Financial Vault', description: "Track every Naira real-time. 'Revenue' shows your verified earnings, while 'Success Rate' tracks how many campus deals you've closed.", position: 'bottom' },
+        { targetId: 'tour-actions', title: 'Knowledge Node 2: Inventory Control', description: "This is where you launch. List new products, manage your stock, and check your messages to keep the gear moving.", position: 'top' },
+        { targetId: 'tour-tabs', title: 'Knowledge Node 3: The Hub', description: "Master the deal here. Use the 'Offers' tab to counter-negotiate prices and the 'Orders' tab to track active escrow deliveries.", position: 'bottom' },
+        { targetId: 'tour-vanguard', title: 'Knowledge Node 4: Growth Center', description: "Own your campus. Become an Ambassador to unlock free Pro features, earn MarketCoins, and lead your university network.", position: 'top' },
+    ];
     const [orders, setOrders] = useState<Order[]>([]);
     const [stats, setStats] = useState<Stats>({
         totalOrders: 0,
@@ -985,8 +994,9 @@ export default function SellerDashboardPage() {
             <div className="container mx-auto px-6 mt-6 relative z-10"><SellerWeatherWidget /></div>
 
             <div className="container mx-auto py-6 px-6 relative z-10 space-y-12 pb-24">
+                <GuidedTour steps={tourSteps} tourKey="seller_dashboard" />
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-zinc-200 dark:border-white/5 pb-12 transition-colors duration-300">
+                <div id="tour-header" className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-zinc-200 dark:border-white/5 pb-12 transition-colors duration-300">
                     <div className="space-y-4">
                         <Button 
                             variant="ghost" 
@@ -1016,7 +1026,7 @@ export default function SellerDashboardPage() {
                             </span>
                         </div>
                         <div className="flex gap-3 w-full md:w-auto">
-                            <Button onClick={fetchOrders} className="h-16 px-8 flex-1 md:flex-none bg-[#FF6200] text-black hover:bg-[#FF7A29] rounded-2xl font-black uppercase tracking-widest transition-all shadow-[0_4px_15px_rgba(255,98,0,0.2)] hover:shadow-[0_8px_30px_rgba(255,98,0,0.3)]">
+                            <Button id="tour-sync" onClick={fetchOrders} className="h-16 px-8 flex-1 md:flex-none bg-[#FF6200] text-black hover:bg-[#FF7A29] rounded-2xl font-black uppercase tracking-widest transition-all shadow-[0_4px_15px_rgba(255,98,0,0.2)] hover:shadow-[0_8px_30px_rgba(255,98,0,0.3)]">
                                 <RefreshCw className="h-4 w-4 mr-2" /> Sync Data
                             </Button>
                         </div>
@@ -1026,8 +1036,33 @@ export default function SellerDashboardPage() {
                 {/* Subscription Banners */}
                 <TrialBanner />
 
+                {/* Ambassador Vanguard Nudge */}
+                {ambassadorStatus === 'none' && (
+                    <div id="tour-vanguard" className="w-full">
+                        <div className="w-full">
+                        <Link href="/ambassador" className="group">
+                            <div className="p-8 rounded-[2.5rem] border border-[#FF6200]/20 bg-[#FF6200]/5 hover:bg-[#FF6200]/10 transition-all flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
+                                <Crown className="absolute -bottom-6 -right-6 h-32 w-32 text-[#FF6200] opacity-5 rotate-12" />
+                                <div className="flex items-center gap-6 relative z-10">
+                                    <div className="h-16 w-16 rounded-2xl bg-[#FF6200] text-black flex items-center justify-center shrink-0 shadow-[0_4px_20px_rgba(255,98,0,0.3)] group-hover:scale-105 transition-transform">
+                                        <Crown className="h-8 w-8" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <h3 className="text-2xl font-black uppercase tracking-tighter italic text-zinc-900 dark:text-white">Own Your Campus Node</h3>
+                                        <p className="text-xs font-medium text-zinc-500 dark:text-white/40 italic">Apply to be a Lead and get 44 days of Pro + 500 MarketCoins free. Lead the movement on your campus.</p>
+                                    </div>
+                                </div>
+                                <Button className="h-14 px-8 bg-[#FF6200] text-black hover:bg-[#FF7A29] font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-lg relative z-10 shrink-0">
+                                    Learn More & Apply
+                                </Button>
+                            </div>
+                        </Link>
+                    </div>
+                </div>
+                )}
+
                 {/* Performance Metrics */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div id="tour-stats" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {[
                         { label: "Revenue Cycle", val: `₦${stats.totalRevenue.toLocaleString()}`, icon: DollarSign, trend: revenueTrend },
                         { label: "Active Orders", val: stats.totalOrders, icon: ShoppingBag, trend: "Stable" },
@@ -1052,7 +1087,7 @@ export default function SellerDashboardPage() {
                 </div>
 
                 {/* Quick Actions */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div id="tour-actions" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {[
                         { label: "New Listing", desc: "List new item on marketplace", href: "/seller/listings/new", icon: Package, primary: true },
                         { label: "Inventory", desc: "Manage and update your items", href: "/seller/listings", icon: Eye },
@@ -1092,7 +1127,7 @@ export default function SellerDashboardPage() {
                 <div className="bg-white dark:bg-white/[0.02] border border-zinc-200 dark:border-white/5 shadow-sm dark:shadow-none rounded-[3rem] p-10 overflow-hidden transition-colors duration-300">
                     <Tabs defaultValue="orders" className="space-y-10">
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-zinc-200 dark:border-white/5 pb-8 transition-colors duration-300">
-                            <div className="flex bg-zinc-50 dark:bg-white/5 p-1.5 rounded-2xl border border-zinc-200 dark:border-white/5 transition-colors duration-300">
+                            <div id="tour-tabs" className="flex bg-zinc-50 dark:bg-white/5 p-1.5 rounded-2xl border border-zinc-200 dark:border-white/5 transition-colors duration-300">
                                 <TabsList className="bg-transparent gap-2 h-auto p-0 border-none shadow-none text-zinc-500 dark:text-zinc-400">
                                     <TabsTrigger value="orders" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading">Orders Queue</TabsTrigger>
                                     <TabsTrigger value="offers" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading relative">

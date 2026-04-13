@@ -46,16 +46,32 @@ export const Header = () => {
         return pathname?.startsWith(path);
     };
 
-    const navLinks: { href: string; label: string }[] = [];
+    const navLinks: { href: string; label: string }[] = [
+        { href: '/ambassador', label: 'Ambassador' },
+    ];
 
     return (
         <>
             <header className="fixed top-0 left-0 right-0 z-[100] bg-background/90 backdrop-blur-md border-b border-border h-16 shadow-sm">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between gap-4">
 
-                    {/* Left: Logo + Campus Node */}
-                    <div className="flex items-center gap-4 shrink-0">
+                    {/* Left: Logo + Campus Node + Nav */}
+                    <div className="flex items-center gap-6 shrink-0">
                         <Logo />
+                        <div className="hidden md:flex items-center gap-6 border-l border-zinc-200 dark:border-zinc-800 pl-6 h-6">
+                            {navLinks.map((link) => (
+                                <Link 
+                                    key={link.href} 
+                                    href={link.href}
+                                    className={cn(
+                                        "text-[11px] font-black uppercase tracking-[0.2em] transition-all hover:text-[#FF6200]",
+                                        isActive(link.href) ? "text-[#FF6200]" : "text-zinc-500 dark:text-white/40"
+                                    )}
+                                >
+                                    {link.label}
+                                </Link>
+                            ))}
+                        </div>
                         <button
                             className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-secondary hover:bg-muted border border-border rounded-full transition-all group"
                             onClick={() => {
@@ -178,6 +194,13 @@ export const Header = () => {
                                             </DropdownMenuItem>
 
                                             <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5">
+                                                <Link href="/ambassador" className="flex items-center gap-3 px-3 py-2.5">
+                                                    <Crown className="h-4 w-4 text-amber-500" />
+                                                    <span className="text-sm font-bold">Join Ambassador Program</span>
+                                                </Link>
+                                            </DropdownMenuItem>
+
+                                            <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5">
                                                 <Link href="/settings" className="flex items-center gap-3 px-3 py-2.5">
                                                     <User className="h-4 w-4 text-zinc-500" />
                                                     <span className="text-sm font-bold">My Account</span>
@@ -259,6 +282,7 @@ export const Header = () => {
                                     <Crown className="h-4 w-4" /> Upgrade Plan
                                 </Link>
                             )}
+                            <Link href="/ambassador" onClick={() => setMobileMenuOpen(false)} className={cn("font-black uppercase tracking-widest text-[11px] p-2", isActive('/ambassador') ? "text-[#FF6200]" : "text-zinc-600 dark:text-zinc-300")}>Be an Ambassador</Link>
                             <Link href="/settings" onClick={() => setMobileMenuOpen(false)} className="text-zinc-600 dark:text-zinc-300 hover:text-white font-bold p-2">My Account</Link>
                             <button onClick={() => { setMobileMenuOpen(false); handleSignOut(); }} className="text-red-500 font-bold text-left p-2">Log out</button>
                         </>
@@ -269,6 +293,9 @@ export const Header = () => {
                             </Link>
                             <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="w-full py-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-900 dark:text-white font-bold text-center text-sm">
                                 Log In
+                            </Link>
+                            <Link href="/ambassador" onClick={() => setMobileMenuOpen(false)} className="w-full py-3 text-center text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">
+                                Lead the Bridge
                             </Link>
                         </>
                     )}

@@ -32,7 +32,9 @@ export function AiAssistant() {
         initialMessages: [{
             id: '1',
             role: 'assistant',
-            content: "Hey there! 👋 I'm **Sage**, your personal MarketBridge assistant.\n\nI can help you with pretty much anything:\n- 🔍 **Find products** across Abuja campuses\n- 💰 **Explain** how escrow & payments work\n- 📦 **Track** your orders\n- 🛠️ **Fix issues** or connect you with our team\n\nJust type whatever's on your mind — I speak human! 😄",
+            content: !user 
+                ? "Hey there! 👋 I'm **Sage**, your personal MarketBridge assistant.\n\nLooking for something specific on campus? I can help you find products, explain how our secure escrow works, or guide you through setting up your account. \n\nHow can I help you own your campus today?" 
+                : "Welcome back! 👋 I'm **Sage**. Ready to bridge the gap today?\n\nI can help you:\n- 🔍 **Find products** across Abuja campuses\n- 📦 **Track active orders** in escrow\n- 🛠️ **Manage your shop** or verify listings\n- ⚖️ **Escalate disputes** to our operations team\n\nWhat's on your mind?",
         }],
         onError: (err) => {
             console.error('Sage chat error:', err);
@@ -57,16 +59,8 @@ export function AiAssistant() {
         scrollToBottom();
     }, [messages, isOpen, isLoading, error]);
 
-    // Hide Sage on landing, login, signup, and the seller onboarding splash
-    const isSplashPage = pathname === '/' || pathname === '/launch' || pathname === '/login' || pathname === '/signup';
-    
-    // Specifically hide on seller pages IF the user isn't already a verified seller/merchant
-    // (This targets the 'START SELLING' splash screen)
-    const isSellerOnboard = pathname?.startsWith('/seller') && (!user || !['dealer', 'student_seller'].includes(user.role));
-
-    if (isSplashPage || isSellerOnboard) {
-        return null;
-    }
+    // Sage is now persistent on EVERY page for full visitor support
+    const isSellerOnboard = pathname?.startsWith('/seller') && (user && user.role !== 'seller');
 
     const renderTool = (toolInvocation: any) => {
         const { toolName, toolCallId, state, result } = toolInvocation;

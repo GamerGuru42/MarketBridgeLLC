@@ -53,15 +53,15 @@ export default function NewListingPage() {
 
         // Auto-Verification for Google signups or fully verified custom emails
         const isGoogleAuth = sessionUser.app_metadata?.provider === 'google';
-        if (user.role === 'student_seller' && !user.isVerified && !isGoogleAuth) {
+        if (user.role === 'seller' && !user.isVerified && !isGoogleAuth) {
             // Show message and redirect to dashboard
             toast('Listing creation is restricted. You must be Ops-Approved or sign in with Google.', 'error');
             router.push('/seller/dashboard');
             return;
         }
 
-        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
-        const allowedRoles = ['dealer', 'student_seller', ...ADMIN_ROLES];
+        const ADMIN_ROLES = ['ceo', 'tech_admin', 'ops_admin', 'marketing_admin'];
+        const allowedRoles = ['seller', ...ADMIN_ROLES];
         if (!allowedRoles.includes(user.role)) {
             console.warn("Access Denied: Role mismatch for listing creation", user.role);
             router.push('/');
@@ -302,9 +302,9 @@ ${formData.description}`;
                                             ) : (
                                                 <>
                                                     <SelectItem value="Brand New" className="py-3 text-[10px] font-black uppercase tracking-widest">Brand New</SelectItem>
-                                                    <SelectItem value="Open Box" className="py-3 text-[10px] font-black uppercase tracking-widest">Like New (Open Box)</SelectItem>
-                                                    <SelectItem value="used_clean" className="py-3 text-[10px] font-black uppercase tracking-widest">Used (Excellent)</SelectItem>
-                                                    <SelectItem value="Used" className="py-3 text-[10px] font-black uppercase tracking-widest">Used (Good)</SelectItem>
+                                                    <SelectItem value="Like New (Open Box)" className="py-3 text-[10px] font-black uppercase tracking-widest">Like New (Open Box)</SelectItem>
+                                                    <SelectItem value="Used (Excellent)" className="py-3 text-[10px] font-black uppercase tracking-widest">Used (Excellent)</SelectItem>
+                                                    <SelectItem value="Used (Good)" className="py-3 text-[10px] font-black uppercase tracking-widest">Used (Good)</SelectItem>
                                                     <SelectItem value="UK Used" className="py-3 text-[10px] font-black uppercase tracking-widest">UK Used / Refurbished</SelectItem>
                                                 </>
                                             )}
