@@ -215,6 +215,19 @@
     -webkit-mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
     mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
   }
+
+  @keyframes subtle-zoom {
+    from {
+      transform: scale(1.05);
+    }
+    to {
+      transform: scale(1.15);
+    }
+  }
+
+  .animate-subtle-zoom {
+    animation: subtle-zoom 45s infinite alternate ease-in-out;
+  }
 }
 
 /* Mobile Optimizations */

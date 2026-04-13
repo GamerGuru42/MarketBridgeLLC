@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import QRCode from 'react-qr-code';
-import { ArrowRight, ShieldCheck, Globe, Lock } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Globe, Lock, Zap, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function LaunchCountdown() {
     const router = useRouter();
     const sellerUrl = "https://marketbridge.com.ng/seller-onboard";
-    // Target date: April 20th, 2026, 00:00:00
-    const targetDate = new Date('2026-04-20T00:00:00').getTime();
+    // Target date: April 20th, 2026, 00:00:00 +01:00 (Nigeria)
+    const targetDate = new Date('2026-04-20T00:00:00+01:00').getTime();
     
     const [timeLeft, setTimeLeft] = useState<{
         days: number;
@@ -151,27 +151,12 @@ export function LaunchCountdown() {
                 </div>
             </div>
 
-
             {/* Bottom Tech Decals */}
             <div className="absolute bottom-10 w-full flex justify-center opacity-20 pointer-events-none">
                 <div className="text-[8px] font-black uppercase tracking-[1em] text-zinc-500">
                     System Ver: 4.8.2 // Secured by MarketBridge Tech Group
                 </div>
             </div>
-
-            <style jsx global>{`
-                @keyframes subtle-zoom {
-                    from { transform: scale(1.05); }
-                    to { transform: scale(1.15); }
-                }
-                .animate-subtle-zoom {
-                    animation: subtle-zoom 30s infinite alternate ease-in-out;
-                }
-                @font-face {
-                    font-family: 'Heading';
-                    src: url('/fonts/Inter-BlackItalic.woff2') format('woff2');
-                }
-            `}</style>
         </div>
     );
 }
