@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,12 +18,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 export function AiAssistant() {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
-    
-    // Shield Sage from the cinematic countdown landing page
-    if (typeof window !== 'undefined' && (pathname === '/launch' || pathname === '/')) {
-        return null;
-    }
-
     const [retryCount, setRetryCount] = useState(0);
 
     const { messages, input, handleInputChange, handleSubmit, isLoading, append, error, reload } = useChat({
@@ -53,6 +50,11 @@ export function AiAssistant() {
     useEffect(() => {
         scrollToBottom();
     }, [messages, isOpen, isLoading, error]);
+
+    // Shield Sage from the cinematic countdown landing page
+    if (pathname === '/launch' || pathname === '/') {
+        return null;
+    }
 
     const renderTool = (toolInvocation: any) => {
         const { toolName, toolCallId, state, result } = toolInvocation;
