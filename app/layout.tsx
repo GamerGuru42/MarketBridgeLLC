@@ -10,6 +10,7 @@ import { LocationChecker } from "@/components/location-checker";
 import BetaLabel from "@/components/BetaLabel";
 import { LocationProvider } from "@/contexts/LocationContext";
 import { ToastProvider } from "@/contexts/ToastContext";
+import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { SystemProvider } from "@/contexts/SystemContext";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { DemoBanner } from "@/components/DemoBanner";
@@ -106,33 +107,35 @@ export default function RootLayout({
       <body
         className={`${manrope.variable} ${outfit.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-        >
-          <SystemProvider>
-            <AuthProvider>
-            <LocationProvider>
-              <CartProvider>
-                <ToastProvider>
-                  <DemoBanner />
-                  <LocationChecker>
-                    {children}
-                  </LocationChecker>
+        <AppErrorBoundary>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+          >
+            <SystemProvider>
+              <AuthProvider>
+              <LocationProvider>
+                <CartProvider>
+                  <ToastProvider>
+                    <DemoBanner />
+                    <LocationChecker>
+                      {children}
+                    </LocationChecker>
 
-                  {/* Beta label is shown only on campus pages */}
-                  <BetaLabel />
+                    {/* Beta label is shown only on campus pages */}
+                    <BetaLabel />
 
-                  <NetworkStatus />
-                </ToastProvider>
-                <GlobalWidgets />
-                <OnboardingTour />
-              </CartProvider>
-            </LocationProvider>
-          </AuthProvider>
-          </SystemProvider>
-        </ThemeProvider>
+                    <NetworkStatus />
+                  </ToastProvider>
+                  <GlobalWidgets />
+                  <OnboardingTour />
+                </CartProvider>
+              </LocationProvider>
+            </AuthProvider>
+            </SystemProvider>
+          </ThemeProvider>
+        </AppErrorBoundary>
       </body>
     </html>
   );

@@ -10,6 +10,7 @@ export function LaunchCountdown() {
     // Target date: April 20th, 2026, 00:00:00 +01:00 (Nigeria)
     const targetDate = new Date('2026-04-20T00:00:00+01:00').getTime();
     
+    const [isMounted, setIsMounted] = useState(false);
     const [timeLeft, setTimeLeft] = useState<{
         days: number;
         hours: number;
@@ -18,6 +19,7 @@ export function LaunchCountdown() {
     }>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
     useEffect(() => {
+        setIsMounted(true);
         const timer = setInterval(() => {
             const now = new Date().getTime();
             const distance = targetDate - now;
@@ -67,13 +69,13 @@ export function LaunchCountdown() {
                 </div>
 
                 <div className="grid grid-cols-2 md:flex items-center justify-center gap-4 md:gap-16">
-                    <TimeUnit value={timeLeft.days} label="Days" />
+                    <TimeUnit value={timeLeft.days} label="Days" isMounted={isMounted} />
                     <Separator className="opacity-20 flex items-center justify-center" />
-                    <TimeUnit value={timeLeft.hours} label="Hours" />
+                    <TimeUnit value={timeLeft.hours} label="Hours" isMounted={isMounted} />
                     <Separator className="hidden md:flex opacity-20 items-center justify-center" />
-                    <TimeUnit value={timeLeft.minutes} label="Minutes" />
+                    <TimeUnit value={timeLeft.minutes} label="Minutes" isMounted={isMounted} />
                     <Separator className="opacity-20 flex items-center justify-center" />
-                    <TimeUnit value={timeLeft.seconds} label="Seconds" />
+                    <TimeUnit value={timeLeft.seconds} label="Seconds" isMounted={isMounted} />
                 </div>
             </div>
 
@@ -119,11 +121,11 @@ export function LaunchCountdown() {
     );
 }
 
-function TimeUnit({ value, label }: { value: number, label: string }) {
+function TimeUnit({ value, label, isMounted }: { value: number, label: string, isMounted: boolean }) {
     return (
         <div className="flex flex-col items-center gap-1 group">
             <div className="text-[clamp(2.5rem,12vw,6rem)] font-black tabular-nums tracking-tighter italic leading-none group-hover:text-[#FF6200] transition-colors duration-500">
-                {String(value).padStart(2, '0')}
+                {isMounted ? String(value).padStart(2, '0') : '00'}
             </div>
             <div className="text-[8px] md:text-[10px] uppercase font-black tracking-[0.2em] md:tracking-[0.4em] text-zinc-600 italic">
                 {label}

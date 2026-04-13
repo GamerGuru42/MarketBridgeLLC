@@ -34,6 +34,12 @@ import { LaunchCountdown } from '@/components/LaunchCountdown';
 export default function HomePage() {
     const { user, loading } = useAuth();
 
+    useEffect(() => {
+        if (!loading && user && ['student_seller', 'seller', 'dealer'].includes(user.role)) {
+            window.location.assign('/seller/dashboard');
+        }
+    }, [user, loading]);
+
     if (loading) {
         return (
             <div className="flex h-screen items-center justify-center bg-background">
@@ -44,12 +50,6 @@ export default function HomePage() {
             </div>
         );
     }
-
-    useEffect(() => {
-        if (!loading && user && ['student_seller', 'seller', 'dealer'].includes(user.role)) {
-            window.location.assign('/seller/dashboard');
-        }
-    }, [user, loading]);
 
     if (user) {
         if (['student_seller', 'seller', 'dealer'].includes(user.role)) {
