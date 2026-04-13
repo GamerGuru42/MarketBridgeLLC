@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import QRCode from 'react-qr-code';
-import { ArrowRight, ShieldCheck, Globe, Lock, Zap, Shield } from 'lucide-react';
+import { ArrowRight, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function LaunchCountdown() {
@@ -39,56 +39,34 @@ export function LaunchCountdown() {
     }, [targetDate]);
 
     return (
-        <div className="relative min-h-screen w-full bg-[#050505] text-white flex flex-col items-center justify-center overflow-hidden font-heading selection:bg-[#FF6200] selection:text-black">
-            {/* Cinematic Background with Genesis Image */}
+        <div className="relative min-h-screen w-full bg-[#050505] text-white flex flex-col items-center justify-between overflow-hidden font-heading selection:bg-[#FF6200] selection:text-black py-16 px-6">
+            {/* Cinematic Background */}
             <div 
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40 scale-[1.05] animate-subtle-zoom"
+                className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30 scale-[1.05] animate-subtle-zoom pointer-events-none"
                 style={{ backgroundImage: 'url("/media/genesis_bg.png")' }}
             />
-            
-            {/* Futuristic Grid Overlay */}
-            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black pointer-events-none" />
 
-            {/* Top Navigation / Status Bar */}
-            <div className="absolute top-0 w-full p-8 flex justify-between items-start z-50">
-                <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 px-4 py-2 bg-black/40 backdrop-blur-md border border-white/10 rounded-full">
-                        <div className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#FF6200]">MarketBridge // Upcoming Launch</span>
-                    </div>
-                </div>
-
-                {/* Seller Fast-Track HUD */}
-                <div 
-                    onClick={() => router.push('/seller-qr')}
-                    className="hidden md:flex flex-col items-end gap-2 group cursor-pointer"
-                >
-                    <div className="bg-white p-2 rounded-xl group-hover:scale-105 transition-transform">
-                        <QRCode value={sellerUrl} size={64} viewBox="0 0 64 64" />
-                    </div>
-                    <div className="text-right">
-                        <p className="text-[8px] font-black uppercase tracking-widest text-zinc-500">Recruitment Asset</p>
-                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#FF6200] group-hover:text-white transition-colors">Seller Fast-Track</p>
-                    </div>
+            {/* Header */}
+            <div className="relative z-10 flex flex-col items-center gap-3">
+                <div className="flex items-center gap-3 px-4 py-2 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full">
+                    <div className="h-1.5 w-1.5 rounded-full bg-[#FF6200] animate-pulse" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">Genesis // MarketBridge</span>
                 </div>
             </div>
 
-            {/* Main Content Area */}
-            <div className="relative z-10 w-full max-w-6xl px-6 flex flex-col items-center text-center space-y-12 md:space-y-20 pt-16 md:pt-0">
-                
-                {/* Genesis Branding */}
-                <div className="space-y-4">
-                    <h1 className="text-[clamp(2.5rem,12vw,6.5rem)] font-black uppercase tracking-tighter leading-[0.85] italic">
-                        MarketBridge <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6200] to-[#FF9000]">Launch</span>
+            {/* Hero / Countdown */}
+            <div className="relative z-10 flex flex-col items-center gap-12 md:gap-16 w-full max-w-5xl">
+                <div className="space-y-4 text-center">
+                    <h1 className="text-[clamp(2.5rem,10vw,5.5rem)] font-black uppercase tracking-tighter leading-none italic">
+                        The <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6200] to-[#FF9000]">Market</span> is Coming
                     </h1>
-                    <p className="text-zinc-500 font-medium tracking-[0.3em] md:tracking-[0.5em] text-[10px] md:text-sm uppercase italic">
-                        Abuja Campus Pilot // Launching Soon
+                    <p className="text-zinc-500 font-bold tracking-[0.3em] text-[10px] md:text-sm uppercase italic">
+                        Abuja Campus Pilot // Live in:
                     </p>
                 </div>
 
-                {/* The Countdown Clock */}
-                <div className="grid grid-cols-2 md:flex items-center gap-4 md:gap-12">
+                <div className="grid grid-cols-2 md:flex items-center justify-center gap-6 md:gap-16">
                     <TimeUnit value={timeLeft.days} label="Days" />
                     <Separator />
                     <TimeUnit value={timeLeft.hours} label="Hours" />
@@ -97,65 +75,45 @@ export function LaunchCountdown() {
                     <Separator />
                     <TimeUnit value={timeLeft.seconds} label="Seconds" />
                 </div>
+            </div>
 
-                {/* Status HUD / Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl">
-                    <HUDCard 
-                        icon={Zap} 
-                        label="Platform Status" 
-                        value="Ready" 
-                    />
-                    <HUDCard 
-                        icon={Shield} 
-                        label="Payment Security" 
-                        value="Verified" 
-                    />
-                    <HUDCard 
-                        icon={Globe} 
-                        label="Available Locations" 
-                        value="Abuja Hub" 
-                    />
+            {/* Simple Onboarding Section */}
+            <div className="relative z-10 w-full max-w-2xl flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 bg-white/[0.03] backdrop-blur-xl border border-white/5 rounded-[2.5rem] p-8 md:p-10">
+                <div className="flex flex-col items-center md:items-start text-center md:text-left gap-6">
+                    <div className="space-y-2">
+                        <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-[0.2em]">Seller Entrance</p>
+                        <h2 className="text-2xl font-black italic tracking-tighter uppercase whitespace-nowrap">Join the <span className="text-[#FF6200]">Pilot</span></h2>
+                    </div>
+                    
+                    <Button 
+                        onClick={() => router.push('/login')}
+                        className="h-14 px-8 rounded-2xl bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest text-[10px] transition-all hover:scale-[1.02] shadow-[0_10px_30px_rgba(255,98,0,0.2)] group"
+                    >
+                        Sign In <ArrowRight className="ml-3 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Button>
                 </div>
 
-                {/* CTA / Entry Logic */}
-                <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
-                    <div className="flex flex-col items-center gap-6">
-                        <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-[0.3em] font-sans">
-                            Official Launching at 12:00 Midnight // April 20, 2026
-                        </p>
-                        <Button 
-                            onClick={() => router.push('/login')}
-                            className="h-20 px-12 rounded-full bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-[0.4em] text-xs transition-all hover:scale-[1.05] shadow-[0_0_50px_rgba(255,98,0,0.3)] group"
-                        >
-                            Seller Login <ArrowRight className="ml-4 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                        </Button>
-                    </div>
+                {/* Vertical Divider (Desktop) */}
+                <div className="hidden md:block w-px h-24 bg-white/10" />
+                {/* Horizontal Divider (Mobile) */}
+                <div className="md:hidden w-full h-px bg-white/10" />
 
-                    {/* Desktop QR Section */}
-                    <div className="hidden md:flex items-center gap-8 pl-12 border-l border-white/10 text-left">
-                        <div className="bg-white p-4 rounded-[1.5rem] shadow-2xl">
-                            <QRCode value={sellerUrl} size={100} viewBox="0 0 100 100" />
-                        </div>
-                        <div className="max-w-[180px] space-y-2">
-                            <div className="px-2 py-1 bg-[#FF6200]/20 rounded border border-[#FF6200]/30 inline-block">
-                                <span className="text-[8px] font-black uppercase tracking-widest text-[#FF6200]">Become a Seller</span>
-                            </div>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-300 leading-relaxed">
-                                Scan to create your <span className="text-[#FF6200]">Seller Account</span> and start earning now.
-                            </p>
-                            <p className="text-[8px] font-medium text-zinc-500 uppercase tracking-widest">
-                                Valid university ID required.
-                            </p>
-                        </div>
+                <div className="flex flex-col items-center gap-4">
+                    <div className="bg-white p-3 rounded-2xl shadow-2xl transition-transform hover:scale-105">
+                        <QRCode value={sellerUrl} size={80} viewBox="0 0 80 80" />
+                    </div>
+                    <div className="text-center">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-[#FF6200] mb-1">Seller QR</p>
+                        <p className="text-[8px] font-medium text-zinc-500 uppercase tracking-widest max-w-[120px]">Scan to register as a campus merchant</p>
                     </div>
                 </div>
             </div>
 
-            {/* Bottom Tech Decals */}
-            <div className="absolute bottom-10 w-full flex justify-center opacity-20 pointer-events-none">
-                <div className="text-[8px] font-black uppercase tracking-[1em] text-zinc-500">
-                    System Ver: 4.8.2 // Secured by MarketBridge Tech Group
-                </div>
+            {/* Footer Tech Decals */}
+            <div className="relative z-10 opacity-20 flex items-center gap-4">
+                <div className="h-px w-8 bg-zinc-500" />
+                <span className="text-[8px] font-black uppercase tracking-[1em] text-zinc-500">Secure Protocol v4.8</span>
+                <div className="h-px w-8 bg-zinc-500" />
             </div>
         </div>
     );
@@ -163,11 +121,11 @@ export function LaunchCountdown() {
 
 function TimeUnit({ value, label }: { value: number, label: string }) {
     return (
-        <div className="flex flex-col items-center space-y-1 md:space-y-2 group">
-            <div className="text-[clamp(2.5rem,15vw,7.5rem)] font-black tabular-nums tracking-tighter italic leading-none group-hover:text-[#FF6200] transition-colors duration-500">
+        <div className="flex flex-col items-center gap-1 group">
+            <div className="text-[clamp(2.5rem,12vw,6rem)] font-black tabular-nums tracking-tighter italic leading-none group-hover:text-[#FF6200] transition-colors duration-500">
                 {String(value).padStart(2, '0')}
             </div>
-            <div className="text-[9px] md:text-[12px] uppercase font-bold tracking-[0.2em] md:tracking-[0.4em] text-zinc-500 italic">
+            <div className="text-[8px] md:text-[10px] uppercase font-black tracking-[0.2em] md:tracking-[0.4em] text-zinc-600 italic">
                 {label}
             </div>
         </div>
@@ -176,20 +134,6 @@ function TimeUnit({ value, label }: { value: number, label: string }) {
 
 function Separator({ className }: { className?: string }) {
     return (
-        <div className={`text-4xl md:text-6xl font-black text-zinc-800 animate-pulse ${className}`}>/</div>
-    );
-}
-
-function HUDCard({ icon: Icon, label, value }: { icon: any, label: string, value: string }) {
-    return (
-        <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-3xl p-6 flex items-center gap-5 hover:bg-white/[0.05] hover:border-[#FF6200]/30 transition-all cursor-crosshair group">
-            <div className="h-12 w-12 rounded-2xl bg-white/[0.05] group-hover:bg-[#FF6200]/10 flex items-center justify-center transition-colors">
-                <Icon className="h-6 w-6 text-zinc-600 group-hover:text-[#FF6200] transition-colors" />
-            </div>
-            <div className="text-left">
-                <p className="text-[9px] uppercase font-black tracking-widest text-zinc-500 mb-1">{label}</p>
-                <p className="text-xs font-black uppercase tracking-widest text-zinc-100">{value}</p>
-            </div>
-        </div>
+        <div className={`text-3xl md:text-5xl font-black text-zinc-800/50 animate-pulse ${className}`}>/</div>
     );
 }
