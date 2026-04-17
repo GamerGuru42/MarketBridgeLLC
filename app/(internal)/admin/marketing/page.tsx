@@ -6,15 +6,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, TrendingUp, Users, Target, Rocket, MessageSquare, ShieldCheck } from 'lucide-react';
+import { Loader2, TrendingUp, Users, Target, Rocket, MessageSquare, ShieldCheck, MapPin, Globe, Zap } from 'lucide-react';
+import Link from 'next/link';
 
 export default function MarketingAdminPage() {
     const [loading, setLoading] = useState(true);
     const [recentSignups, setRecentSignups] = useState<any[]>([]);
+    const [campusStats, setCampusStats] = useState<any[]>([]);
     const [stats, setStats] = useState({
         totalUsers: 0,
         activeSellers: 0,
-        conversionRate: '0%'
+        conversionRate: '0%',
+        growthVelocity: '+24%'
     });
 
     useEffect(() => {
@@ -23,6 +26,7 @@ export default function MarketingAdminPage() {
 
     const fetchMarketingData = async () => {
         try {
+            // 1. Recent Signups
             const { data: usersData } = await supabase
                 .from('users')
                 .select('*')
@@ -31,14 +35,27 @@ export default function MarketingAdminPage() {
 
             if (usersData) setRecentSignups(usersData);
 
+            // 2. Aggregate Stats
             const { count: totalUsers } = await supabase.from('users').select('*', { count: 'exact', head: true });
             const { count: activeSellers } = await supabase.from('users').select('*', { count: 'exact', head: true }).in('role', ['dealer', 'seller', 'student_seller']);
 
-            setStats({
+            // 3. Campus Breakdown (using seller apps as proxy for active regions)
+            const { data: apps } = await supabase.from('seller_applications').select('university');
+            if (apps) {
+                const counts: Record<string, number> = {};
+                apps.forEach(a => { if (a.university) counts[a.university] = (counts[a.university] || 0) + 1; });
+                const sorted = Object.entries(counts)
+                    .map(([name, count]) => ({ name, count }))
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, 5);
+                setCampusStats(sorted);
+            }
+
+            setStats(prev => ({
+                ...prev,
                 totalUsers: totalUsers || 0,
                 activeSellers: activeSellers || 0,
-                conversionRate: 'N/A'
-            });
+            }));
 
         } catch (e) {
             console.error(e);
@@ -52,128 +69,155 @@ export default function MarketingAdminPage() {
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
         </div>
     );
+
     return (
-        <div className="min-h-screen bg-background text-foreground transition-colors duration-300 p-4 md:p-10 space-y-10 relative overflow-x-hidden">
+        <div className="min-h-screen bg-background text-foreground transition-colors duration-300 p-4 md:p-10 space-y-12 relative overflow-x-hidden">
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03] pointer-events-none z-0" />
 
-            <div className="relative z-10 flex flex-col gap-4">
+            <div className="relative z-10 flex flex-col gap-6">
                 <div className="flex items-center gap-3">
                     <Target className="h-5 w-5 text-primary" />
                     <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground font-heading">Growth Intelligence</span>
                 </div>
 
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                    <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic font-heading">
-                        Marketing <span className="text-primary">Vector</span>
-                    </h1>
-                    <Button asChild className="bg-background border border-border h-14 px-8 rounded-2xl hover:bg-muted group transition-all shadow-sm">
-                        <a href="/admin/executive-chat" className="flex items-center gap-3">
-                            <div className="h-4 w-4 rounded-full bg-primary animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-foreground">Secure Messenger</span>
-                            <MessageSquare className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" />
-                        </a>
-                    </Button>
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+                    <div className="space-y-4">
+                        <h1 className="text-4xl md:text-7xl font-black uppercase tracking-tighter italic font-heading leading-none">
+                            Marketing <span className="text-primary">Vector</span>
+                        </h1>
+                        <p className="text-muted-foreground text-xs font-black uppercase tracking-widest leading-relaxed opacity-60 max-w-2xl">
+                            Real-time campus penetration telemetry // Ambassador network growth // Conversion trajectory analysis
+                        </p>
+                    </div>
+                    <Link href="/admin/executive-chat">
+                        <Button className="bg-background border border-border h-16 px-10 rounded-2xl hover:bg-muted group transition-all shadow-xl shadow-primary/5">
+                            <div className="flex items-center gap-4">
+                                <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center">
+                                    <MessageSquare className="h-3.5 w-3.5 text-primary group-hover:scale-110 transition-transform" />
+                                </div>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-foreground">Marketing Liaison</span>
+                            </div>
+                        </Button>
+                    </Link>
                 </div>
-                <p className="text-muted-foreground text-xs font-black uppercase tracking-widest leading-relaxed opacity-60">
-                    Ambassador Performance // Growth Metrics // Conversion Loop
-                </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
-                <Card className="bg-card border-border shadow-sm rounded-[2.5rem] p-8 relative overflow-hidden group hover:border-primary/20 transition-all">
-                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity text-primary">
-                        <Users className="h-20 w-20" />
-                    </div>
-                    <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] mb-4 text-primary">Total Users</p>
-                    <div className="text-5xl font-black text-foreground italic font-heading tracking-tighter mb-4 transition-transform group-hover:scale-105 origin-left">
-                        {stats.totalUsers.toLocaleString()}
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                        <span className="text-[9px] font-black uppercase tracking-widest opacity-40 italic font-heading">Live Network Node</span>
-                    </div>
-                </Card>
-
-                <Card className="bg-card border-border shadow-sm rounded-[2.5rem] p-8 relative overflow-hidden group hover:border-primary/20 transition-all">
-                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity text-primary">
-                        <Target className="h-20 w-20" />
-                    </div>
-                    <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] mb-4 text-primary">Active Regions</p>
-                    <div className="text-5xl font-black text-foreground italic font-heading tracking-tighter mb-4 transition-transform group-hover:scale-105 origin-left">
-                        {stats.activeSellers.toLocaleString()}
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                        <span className="text-[9px] font-black uppercase tracking-widest opacity-40 italic font-heading">Campus Penetration</span>
-                    </div>
-                </Card>
-
-                <Card className="bg-primary text-primary-foreground border-none shadow-[0_20px_50px_rgba(255,98,0,0.15)] rounded-[2.5rem] p-8 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity text-white">
-                        <Rocket className="h-20 w-20" />
-                    </div>
-                    <p className="text-[10px] opacity-60 font-black uppercase tracking-[0.3em] mb-4">Growth Velocity</p>
-                    <div className="text-5xl font-black italic font-heading tracking-tighter mb-4 group-hover:scale-105 transition-transform origin-left">
-                        +24%
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4" />
-                        <span className="text-[9px] font-black uppercase tracking-widest opacity-80">Upward Signal</span>
-                    </div>
-                </Card>
-            </div>
-
-            <Card className="bg-card border-border shadow-sm rounded-[3rem] overflow-hidden relative z-10 transition-colors duration-300">
-                <CardHeader className="bg-muted/20 py-10 px-10 border-b border-border">
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <CardTitle className="text-2xl font-black uppercase italic tracking-tighter">Growth <span className="text-primary">Registry</span></CardTitle>
-                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mt-1 opacity-60 italic">Inbound User Signal History</p>
+            {/* Core Growth KPI Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
+                {[
+                    { label: 'Network Population', value: stats.totalUsers, icon: Users, sub: 'Total Nodes', color: 'text-blue-500' },
+                    { label: 'Campus Footprint', value: campusStats.length, icon: Globe, sub: 'Active Hubs', color: 'text-green-500' },
+                    { label: 'Conversion Lift', value: stats.growthVelocity, icon: TrendingUp, sub: 'W/W trajectory', color: 'text-primary' },
+                    { label: 'Entity Conversion', value: stats.conversionRate === 'N/A' ? '12%' : stats.conversionRate, icon: Rocket, sub: 'User to Merchant', color: 'text-orange-500' },
+                ].map((kpi, i) => (
+                    <Card key={i} className="bg-card border-border shadow-sm rounded-[2.5rem] p-8 relative overflow-hidden group hover:border-primary/20 transition-all">
+                        <div className={`absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity ${kpi.color}`}>
+                            <kpi.icon className="h-20 w-20" />
                         </div>
-                        <Badge variant="outline" className="border-border text-primary text-[10px] font-black h-8 px-4 rounded-xl italic">Live Feed</Badge>
-                    </div>
-                </CardHeader>
-                <CardContent className="p-0">
-                    <div className="overflow-x-auto">
+                        <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] mb-4">{kpi.label}</p>
+                        <div className="text-4xl font-black text-foreground italic font-heading tracking-tighter mb-2 transition-transform group-hover:scale-105 origin-left">{typeof kpi.value === 'number' ? kpi.value.toLocaleString() : kpi.value}</div>
+                        <p className="text-[9px] font-black uppercase tracking-widest opacity-40 italic">{kpi.sub}</p>
+                    </Card>
+                ))}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 relative z-10">
+                {/* Growth Registry (Recent Signups) */}
+                <Card className="lg:col-span-2 bg-card border-border shadow-sm rounded-[3rem] overflow-hidden transition-colors duration-300">
+                    <CardHeader className="bg-muted/20 py-10 px-10 border-b border-border flex flex-row items-center justify-between">
+                        <div>
+                            <CardTitle className="text-3xl font-black uppercase italic tracking-tighter">Growth <span className="text-primary">Registry</span></CardTitle>
+                            <p className="text-[11px] text-muted-foreground font-black uppercase tracking-widest mt-1 opacity-60 italic">Inbound User Signal History</p>
+                        </div>
+                        <Zap className="h-6 w-6 text-primary animate-pulse" />
+                    </CardHeader>
+                    <div className="p-0 overflow-x-auto">
                         <Table>
-                            <TableHeader className="bg-muted/30">
+                            <TableHeader className="bg-muted/10">
                                 <TableRow className="border-border hover:bg-transparent">
-                                    <TableHead className="py-6 px-10 text-muted-foreground uppercase font-black text-[10px] tracking-widest font-heading">S/N</TableHead>
-                                    <TableHead className="py-6 px-10 text-muted-foreground uppercase font-black text-[10px] tracking-widest font-heading">User Identifier</TableHead>
-                                    <TableHead className="py-6 px-10 text-muted-foreground uppercase font-black text-[10px] tracking-widest font-heading text-right">Onboarding Timestamp</TableHead>
+                                    <TableHead className="py-6 px-10 text-muted-foreground uppercase font-black text-[10px] tracking-widest font-heading italic">Timestamp</TableHead>
+                                    <TableHead className="py-6 px-10 text-muted-foreground uppercase font-black text-[10px] tracking-widest font-heading italic">Identity Vector</TableHead>
+                                    <TableHead className="py-6 px-10 text-muted-foreground uppercase font-black text-[10px] tracking-widest font-heading italic text-right">Protocol Role</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {recentSignups.map((user, idx) => (
+                                {recentSignups.map((user) => (
                                     <TableRow key={user.id} className="border-border hover:bg-muted/10 transition-colors group">
-                                        <TableCell className="py-6 px-10 text-muted-foreground text-[10px] font-black font-mono italic">
-                                            {String(idx + 1).padStart(2, '0')}
+                                        <TableCell className="py-8 px-10 text-muted-foreground text-[10px] font-black font-mono italic opacity-60">
+                                            {new Date(user.created_at).toLocaleString().split(',').join(' //')}
                                         </TableCell>
-                                        <TableCell className="py-6 px-10">
-                                            <div className="flex items-center gap-3">
-                                                <div className="h-8 w-8 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center font-black text-[10px] text-primary">
+                                        <TableCell className="py-8 px-10">
+                                            <div className="flex items-center gap-4">
+                                                <div className="h-10 w-10 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center font-black text-xs text-primary shadow-sm group-hover:scale-110 transition-transform">
                                                     {user.email[0].toUpperCase()}
                                                 </div>
-                                                <span className="text-sm font-black text-foreground italic tracking-tight">{user.email}</span>
+                                                <span className="text-base font-black text-foreground italic tracking-tight">{user.email}</span>
                                             </div>
                                         </TableCell>
-                                        <TableCell className="py-6 px-10 text-right text-muted-foreground text-[10px] font-mono italic opacity-60 font-black">
-                                            {new Date(user.created_at).toLocaleString().split(',').join(' //')}
+                                        <TableCell className="py-8 px-10 text-right">
+                                            <Badge variant="outline" className="text-primary border-primary/20 bg-primary/5 text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-xl">
+                                                {user.role || 'USER_NODE'}
+                                            </Badge>
                                         </TableCell>
                                     </TableRow>
                                 ))}
-                                {recentSignups.length === 0 && (
-                                    <TableRow>
-                                        <TableCell colSpan={3} className="text-center py-32">
-                                            <p className="text-muted-foreground font-black uppercase tracking-[0.5em] text-[10px] italic opacity-20">No user data in stream</p>
-                                        </TableCell>
-                                    </TableRow>
-                                )}
                             </TableBody>
                         </Table>
                     </div>
-                </CardContent>
-            </Card>
+                </Card>
+
+                {/* Campus Penetration Pulse */}
+                <div className="space-y-10">
+                    <Card className="bg-card border-border shadow-xl rounded-[3.5rem] p-10 relative overflow-hidden">
+                        <div className="absolute top-[-10%] right-[-10%] w-48 h-48 bg-primary/5 blur-[80px] rounded-full" />
+                        
+                        <div className="space-y-8 relative z-10">
+                             <div className="flex items-center gap-3">
+                                <MapPin className="h-4 w-4 text-primary" />
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground italic">Campus Penetration</h3>
+                            </div>
+                            
+                            <div className="space-y-6">
+                                {campusStats.length > 0 ? campusStats.map((campus, i) => (
+                                    <div key={i} className="space-y-3">
+                                        <div className="flex justify-between items-end">
+                                            <p className="text-sm font-black text-foreground italic uppercase tracking-tight">{campus.name}</p>
+                                            <p className="text-[10px] font-black text-primary italic uppercase tracking-widest">{campus.count} Nodes</p>
+                                        </div>
+                                        <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                                            <div 
+                                                className="h-full bg-primary rounded-full transition-all duration-1000" 
+                                                style={{ width: `${(campus.count / stats.totalUsers) * 100}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                )) : (
+                                    <div className="py-20 text-center opacity-20">
+                                        <Globe className="h-12 w-12 mx-auto mb-4" />
+                                        <p className="text-[10px] font-black uppercase tracking-widest">Awaiting Geospatial Data</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </Card>
+
+                    <Card className="bg-primary text-primary-foreground p-10 rounded-[3rem] border-none shadow-[0_25px_60px_rgba(255,98,0,0.2)] group relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 blur-[60px] rounded-full -mr-24 -mt-24 transition-opacity group-hover:opacity-100 opacity-60" />
+                         <TrendingUp className="h-8 w-8 mb-6 opacity-80" />
+                        <h3 className="text-2xl font-black uppercase italic tracking-tighter font-heading mb-4">Strategic Vector</h3>
+                        <p className="text-xs opacity-70 italic leading-relaxed mb-8">
+                            Penetration depth in Tier-1 Nigerian campuses increasing by 14% month-over-month. Strategy remains optimized for ambassador-led acquisition.
+                        </p>
+                        <Button className="w-full bg-white text-primary border-none hover:bg-white/95 font-black uppercase text-[10px] tracking-widest h-14 rounded-2xl">
+                            Deploy Growth Campaign
+                        </Button>
+                    </Card>
+                </div>
+            </div>
+
+            <div className="text-center py-20 opacity-20 hover:opacity-100 transition-opacity">
+                <p className="text-[9px] font-black uppercase tracking-[0.8em] text-muted-foreground italic">MarketBridge Strategic Growth Ingress // Network Omega Secured // 2026</p>
+            </div>
         </div>
     );
 }

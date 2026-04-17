@@ -33,12 +33,12 @@ function PortalLoginContent() {
     const reason = searchParams?.get('reason');
 
     type Step = 'role' | 'credentials';
-    type AdminRole = 'admin' | 'ceo';
+    type AdminRole = 'technical_admin' | 'operations_admin' | 'ceo';
     type AuthMode = 'login' | 'signup';
 
     const [currentStep, setCurrentStep] = useState<Step>('role');
-    const [selectedRole, setSelectedRole] = useState<AdminRole>('admin');
-    const [expandedRole, setExpandedRole] = useState<AdminRole | null>(null);
+    const [selectedRole, setSelectedRole] = useState<AdminRole>('technical_admin');
+    const [expandedRole, setExpandedRole] = useState<AdminRole | 'admin' | null>(null);
     const [authMode, setAuthMode] = useState<AuthMode>('login');
 
     const [formData, setFormData] = useState({ email: '', password: '', fullName: '' });
@@ -252,33 +252,63 @@ function PortalLoginContent() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:px-4">
-                        {/* ─── Admin / Staff Card ─────────────────────────────────── */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:px-2">
+                        {/* ─── Operations Head Card ─────────────────────────────────── */}
                         <div 
-                            onClick={() => setExpandedRole(expandedRole === 'admin' ? null : 'admin')}
+                            onClick={() => setExpandedRole(expandedRole === 'operations_admin' ? null : 'operations_admin')}
                             className={cn(
                                 "bg-secondary border rounded-3xl p-6 text-center flex flex-col items-center shadow-sm cursor-pointer transition-all duration-300",
-                                expandedRole === 'admin' ? "border-primary/50 ring-1 ring-primary/20 scale-[1.02]" : "border-border hover:border-primary/30"
+                                expandedRole === 'operations_admin' ? "border-[#FF6200]/50 ring-1 ring-[#FF6200]/20 scale-[1.02]" : "border-border hover:border-[#FF6200]/30"
                             )}>
                             <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4">
                                 <UserIcon className="h-6 w-6 text-muted-foreground" />
                             </div>
-                            <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Admin Access</h3>
-                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest mb-2">Staff & Ops</p>
+                            <h3 className="text-[11px] font-black text-foreground uppercase tracking-tight mb-1">Operations Head</h3>
+                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest mb-2">Ops Command</p>
                             
-                            <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'admin' ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
+                            <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'operations_admin' ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
                                 <Button
-                                    onClick={(e) => { e.stopPropagation(); handleRoleSelect('admin', 'login'); }}
-                                    className="w-full h-12 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl shadow-[0_6px_20px_rgba(255,98,0,0.25)] transition-all"
+                                    onClick={(e) => { e.stopPropagation(); handleRoleSelect('operations_admin', 'login'); }}
+                                    className="w-full h-12 bg-[#FF6200] text-black hover:opacity-90 font-black uppercase tracking-widest text-[9px] rounded-xl shadow-[0_6px_20px_rgba(255,98,0,0.25)] transition-all"
                                 >
                                     Log In <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    onClick={(e) => { e.stopPropagation(); handleRoleSelect('admin', 'signup'); }}
-                                    className="w-full h-12 font-black uppercase tracking-widest text-[10px] rounded-xl transition-all border-border text-muted-foreground hover:text-foreground"
+                                    onClick={(e) => { e.stopPropagation(); handleRoleSelect('operations_admin', 'signup'); }}
+                                    className="w-full h-12 font-black uppercase tracking-widest text-[9px] rounded-xl transition-all border-border text-muted-foreground hover:text-foreground"
                                 >
-                                    Apply For Access
+                                    Apply Access
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* ─── Technical Staff Card ─────────────────────────────────── */}
+                        <div 
+                            onClick={() => setExpandedRole(expandedRole === 'technical_admin' ? null : 'technical_admin')}
+                            className={cn(
+                                "bg-secondary border rounded-3xl p-6 text-center flex flex-col items-center shadow-sm cursor-pointer transition-all duration-300",
+                                expandedRole === 'technical_admin' ? "border-[#FF6200]/50 ring-1 ring-[#FF6200]/20 scale-[1.02]" : "border-border hover:border-[#FF6200]/30"
+                            )}>
+                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4">
+                                <Shield className="h-6 w-6 text-muted-foreground" />
+                            </div>
+                            <h3 className="text-[11px] font-black text-foreground uppercase tracking-tight mb-1">Technical Staff</h3>
+                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest mb-2">Systems Hub</p>
+                            
+                            <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'technical_admin' ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
+                                <Button
+                                    onClick={(e) => { e.stopPropagation(); handleRoleSelect('technical_admin', 'login'); }}
+                                    className="w-full h-12 bg-[#FF6200] text-black hover:opacity-90 font-black uppercase tracking-widest text-[9px] rounded-xl shadow-[0_6px_20px_rgba(255,98,0,0.25)] transition-all"
+                                >
+                                    Log In <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    onClick={(e) => { e.stopPropagation(); handleRoleSelect('technical_admin', 'signup'); }}
+                                    className="w-full h-12 font-black uppercase tracking-widest text-[9px] rounded-xl transition-all border-border text-muted-foreground hover:text-foreground"
+                                >
+                                    Apply Access
                                 </Button>
                             </div>
                         </div>
@@ -288,28 +318,28 @@ function PortalLoginContent() {
                             onClick={() => setExpandedRole(expandedRole === 'ceo' ? null : 'ceo')}
                             className={cn(
                                 "bg-secondary border rounded-3xl p-6 text-center flex flex-col items-center shadow-sm relative overflow-hidden cursor-pointer transition-all duration-300",
-                                expandedRole === 'ceo' ? "border-primary/50 ring-1 ring-primary/20 scale-[1.02]" : "border-border hover:border-primary/30"
+                                expandedRole === 'ceo' ? "border-[#FF6200]/50 ring-1 ring-[#FF6200]/20 scale-[1.02]" : "border-border hover:border-[#FF6200]/30"
                             )}>
-                            <div className="absolute top-3 right-3 h-1.5 w-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(255,98,0,0.8)]" />
+                            <div className="absolute top-3 right-3 h-1.5 w-1.5 rounded-full bg-[#FF6200] animate-pulse shadow-[0_0_10px_rgba(255,98,0,0.8)]" />
                             <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4">
                                 <Lock className="h-6 w-6 text-muted-foreground" />
                             </div>
-                            <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Executive Hub</h3>
+                            <h3 className="text-[11px] font-black text-foreground uppercase tracking-tight mb-1">Executive Hub</h3>
                             <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest mb-2">CEO Only</p>
                             
                             <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'ceo' ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
                                 <Button
                                     onClick={(e) => { e.stopPropagation(); handleRoleSelect('ceo', 'login'); }}
-                                    className="w-full h-12 bg-foreground text-background hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_6px_20px_rgba(0,0,0,0.25)]"
+                                    className="w-full h-12 bg-zinc-200 text-black hover:opacity-90 font-black uppercase tracking-widest text-[9px] rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_6px_20px_rgba(0,0,0,0.25)]"
                                 >
-                                    Open Dashboard <ArrowRight className="ml-2 h-4 w-4" />
+                                    Login <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
                                 <Button
                                     variant="outline"
                                     onClick={(e) => { e.stopPropagation(); handleRoleSelect('ceo', 'signup'); }}
-                                    className="w-full h-12 font-black uppercase tracking-widest text-[10px] rounded-xl transition-all border-border text-muted-foreground hover:text-foreground"
+                                    className="w-full h-12 font-black uppercase tracking-widest text-[9px] rounded-xl transition-all border-border text-muted-foreground hover:text-foreground"
                                 >
-                                    Apply For Access
+                                    Apply Access
                                 </Button>
                             </div>
                         </div>

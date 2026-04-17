@@ -53,58 +53,60 @@ export default function AdminLayout({
 
     const getSidebarItems = () => {
         const role = user.role;
-        const basicItems = [
-            { label: 'Executive Chat', href: '/admin/executive-chat', icon: MessageSquare },
-        ];
+        const missionControl = { label: 'Mission Control', href: '/admin', icon: LayoutDashboard };
+        const secureRelay = { label: 'Secure Relay', href: '/admin/executive-chat', icon: MessageSquare };
 
         if (role === 'marketing_admin') {
             return [
-                { label: 'Marketing Growth', href: '/admin/marketing', icon: BarChart3 },
-                { label: 'Listings Manager', href: '/admin/listings', icon: ShoppingBag },
-                ...basicItems
+                missionControl,
+                { label: 'Marketing Vector', href: '/admin/marketing', icon: Zap },
+                { label: 'Asset Manager', href: '/admin/listings', icon: ShoppingBag },
+                secureRelay
             ];
         }
         if (role === 'operations_admin') {
             return [
+                missionControl,
                 { label: 'Operations Hub', href: '/admin/operations', icon: Activity },
-                { label: 'Customer Support', href: '/admin/operations/support', icon: Headphones },
+                { label: 'Support Relay', href: '/admin/operations/support', icon: Headphones },
                 { label: 'Dispute Center', href: '/admin/disputes', icon: ShieldAlert },
-                { label: 'Users Manager', href: '/admin/users', icon: Users },
-                { label: 'Listings Manager', href: '/admin/listings', icon: ShoppingBag },
-                { label: 'Order Verification', href: '/admin/orders', icon: ClipboardCheck },
-                { label: 'Seller Payouts', href: '/admin/payouts', icon: Banknote },
-                ...basicItems
+                { label: 'Node Registry', href: '/admin/users', icon: Users },
+                { label: 'Asset Registry', href: '/admin/listings', icon: ShoppingBag },
+                { label: 'Order Nexus', href: '/admin/orders', icon: ClipboardCheck },
+                { label: 'Capital Flow', href: '/admin/payouts', icon: Banknote },
+                secureRelay
             ];
         }
         if (role === 'technical_admin') {
             return [
-                { label: 'Technical Campus', href: '/admin/technical', icon: Server },
-                { label: 'Users Manager', href: '/admin/users', icon: Users },
-                ...basicItems
+                missionControl,
+                { label: 'Technical Flow', href: '/admin/technical', icon: Server },
+                { label: 'Node Registry', href: '/admin/users', icon: Users },
+                secureRelay
             ];
         }
         if (role === 'ceo' || role === 'cofounder') {
             return [
                 { label: 'Mission Control', href: '/admin/ceo', icon: LayoutDashboard },
-                { label: 'Executive Chat', href: '/admin/executive-chat', icon: MessageSquare },
-                { label: 'Live Chat Monitoring', href: '/admin/live-chat', icon: ShieldAlert },
+                { label: 'Live Monitoring', href: '/admin/live-chat', icon: ShieldAlert },
+                secureRelay,
             ];
         }
 
         // Super Admin (or fallback) gets everything
         return [
-            { label: 'Mission Control', href: '/admin', icon: LayoutDashboard },
-            { label: 'Technical Campus', href: '/admin/technical', icon: Server },
+            missionControl,
+            { label: 'Technical Flow', href: '/admin/technical', icon: Server },
             { label: 'Operations Hub', href: '/admin/operations', icon: Activity },
-            { label: 'Customer Support', href: '/admin/operations/support', icon: Headphones },
-            { label: 'Live Chat Monitoring', href: '/admin/live-chat', icon: ShieldAlert },
-            { label: 'Marketing Growth', href: '/admin/marketing', icon: BarChart3 },
-            { label: 'Users Manager', href: '/admin/users', icon: Users },
-            { label: 'Listings Manager', href: '/admin/listings', icon: ShoppingBag },
+            { label: 'Support Relay', href: '/admin/operations/support', icon: Headphones },
+            { label: 'Monitoring Relay', href: '/admin/live-chat', icon: ShieldAlert },
+            { label: 'Marketing Vector', href: '/admin/marketing', icon: Zap },
+            { label: 'Node Registry', href: '/admin/users', icon: Users },
+            { label: 'Asset Registry', href: '/admin/listings', icon: ShoppingBag },
             { label: 'Dispute Center', href: '/admin/disputes', icon: ShieldAlert },
-            { label: 'Order Verification', href: '/admin/orders', icon: ClipboardCheck },
-            { label: 'Seller Payouts', href: '/admin/payouts', icon: Banknote },
-            ...basicItems
+            { label: 'Order Nexus', href: '/admin/orders', icon: ClipboardCheck },
+            { label: 'Capital Flow', href: '/admin/payouts', icon: Banknote },
+            secureRelay
         ];
     };
 
