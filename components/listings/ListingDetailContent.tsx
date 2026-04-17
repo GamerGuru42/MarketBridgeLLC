@@ -328,7 +328,6 @@ export default function ListingDetailContent() {
             buyer_id: user.id,
             seller_id: listing.dealer.id,
             offered_price: price,
-            message: offerMessage,
             status: 'pending'
         });
         setIsOfferOpen(false);
@@ -898,7 +897,7 @@ export default function ListingDetailContent() {
                                 const body = `Reporting Listing: ${listing.title} (ID: ${listing.id})\nDealer: ${listing.dealer.display_name}\nReason: ${reportReason}\nDetails: ${reportDetails}\n\nSubmitted by User: ${user?.email || 'Anonymous'}`;
                                 window.location.href = `mailto:safety@marketbridge.ng?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                                 setIsReportOpen(false);
-                                console.warn('UI_ALERT:', );
+                                console.warn('UI_ALERT: Report initiated');
                             }}
                             className="bg-red-600 text-zinc-900 hover:bg-red-700 font-bold uppercase tracking-widest text-xs"
                         >
@@ -908,5 +907,6 @@ export default function ListingDetailContent() {
                 </DialogContent>
             </Dialog>
         </div>
-    );
+    </div>
+);
 }
