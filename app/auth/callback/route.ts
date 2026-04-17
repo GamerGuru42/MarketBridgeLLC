@@ -17,16 +17,15 @@ export async function GET(request: Request) {
             console.log('Auth Callback: Exchange successful for:', data.user.email);
 
             // ── Resolve role & destination from query params OR fallback cookies ──
-            const cookieRole = cookieStore.get('mb_oauth_role')?.value;
-            const cookieNext = cookieStore.get('mb_oauth_next')?.value;
-
-            const role = roleParam || cookieRole;
+            const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo'];
+            const role = roleParam || cookieStore.get('mb_oauth_role')?.value;
             const nextParam = searchParams.get('next');
+            const cookieNext = cookieStore.get('mb_oauth_next')?.value;
             let finalNext = nextParam || (cookieNext ? decodeURIComponent(cookieNext) : '/');
 
             // Clean up one-time cookies
-            if (cookieRole) try { cookieStore.delete('mb_oauth_role'); } catch {}
-            if (cookieNext) try { cookieStore.delete('mb_oauth_next'); } catch {}
+            try { if (cookieStore.get('mb_oauth_role')) cookieStore.delete('mb_oauth_role'); } catch {}
+            try { if (cookieStore.get('mb_oauth_next')) cookieStore.delete('mb_oauth_next'); } catch {}
 
             // ── Fetch existing profile ──
             const { data: existingUser } = await supabase
@@ -37,15 +36,27 @@ export async function GET(request: Request) {
 
             const isSocialLogin = data.user.app_metadata.provider !== 'email';
 
-            // If not found and no role provided and not social → block
-            if (!existingUser && !role && !isSocialLogin) {
-                console.warn('Auth Callback: Manual signup attempt. Redirecting to signup...');
-                await supabase.auth.signOut();
-                return NextResponse.redirect(new URL('/signup?error=Account+not+found.+Please+sign+up+to+continue.', origin));
-            }
+            // ── Resolve Final Role ──
+            // Logic Priority:
+            // 1. Explicit role from cookie/param (Highest intent)
+            // 2. Existing database role (if it's already an admin)
+            // 3. Email-based auto-promotion (if it's a @marketbridge.com.ng email)
+            // 4. Default to 'buyer'
+            
+            let actualRole = 'buyer';
+            const userEmail = data.user.email?.toLowerCase() || '';
 
-            const finalRole = role || existingUser?.role || 'buyer';
-            let actualRole = finalRole;
+            if (role && ADMIN_ROLES.includes(role)) {
+                actualRole = role; // Prioritize intent if it's admin
+            } else if (existingUser?.role && ADMIN_ROLES.includes(existingUser.role)) {
+                actualRole = existingUser.role; // Prioritize existing admin status
+            } else if (userEmail.endsWith('@marketbridge.com.ng') && !existingUser) {
+                // Auto-promote internal staff on first login
+                actualRole = 'admin'; 
+            } else {
+                // Fallback to existing or buyer
+                actualRole = existingUser?.role || role || 'buyer';
+            }
             
             // Standardize roles
             if (actualRole === 'student_seller' || actualRole === 'dealer') actualRole = 'seller';
@@ -53,7 +64,6 @@ export async function GET(request: Request) {
 
             // Enforce .edu.ng school email for ALL sellers — reject personal emails
             if (actualRole === 'seller') {
-                const userEmail = data.user.email?.toLowerCase() || '';
                 if (!userEmail.endsWith('.edu.ng')) {
                     console.warn(`Auth Callback: Non-.edu.ng email "${userEmail}" attempted seller login/signup. Blocking.`);
                     await supabase.auth.signOut();
@@ -74,24 +84,26 @@ export async function GET(request: Request) {
                 ...(isSocialLogin && { is_verified: true })
             }, { onConflict: 'id' });
 
-            // ── Update JWT metadata so future middleware checks see the role ──
-            // NOTE: This updates metadata for NEXT session refresh, not the current JWT.
+            // ── Update JWT metadata ──
             await supabase.auth.updateUser({ data: { role: actualRole } });
 
-            // ── For admin roles, set the mb-admin-session cookie server-side ──
-            // This is critical: the portal login page sets this cookie client-side,
-            // but during Google OAuth flow, users never return to the portal login page.
-            // The middleware requires this cookie to grant admin access.
-            const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
             const isAdminUser = ADMIN_ROLES.includes(actualRole);
+
+            // ── Strict Admin Redirection ──
+            // If the user is an admin, ignore 'next' and force dashboard
+            if (isAdminUser) {
+                if (actualRole === 'ceo') {
+                    finalNext = '/admin/ceo';
+                } else {
+                    finalNext = '/admin';
+                }
+            }
 
             // ── Build redirect URL ──
             let redirectUrl: URL;
             try {
-                // If redirectPath is already a full URL (e.g. https://hq.marketbridge.com.ng/admin/ceo)
                 redirectUrl = new URL(finalNext);
             } catch {
-                // It's a relative path
                 redirectUrl = new URL(finalNext, origin);
             }
 

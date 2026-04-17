@@ -16,7 +16,9 @@ const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_
 // ─── Admin Session Cookie ────────────────────────────────────────────────────
 function setAdminSessionCookie(userId: string, role: string) {
     const payload = btoa(JSON.stringify({ uid: userId, role, ts: Date.now() }));
-    document.cookie = `mb-admin-session=${payload}; path=/; max-age=${8 * 60 * 60}; SameSite=Strict${window.location.protocol === 'https:' ? '; Secure' : ''}`;
+    const isProduction = window.location.origin.includes('marketbridge.com.ng');
+    const domain = isProduction ? '; domain=.marketbridge.com.ng' : '';
+    document.cookie = `mb-admin-session=${payload}; path=/; max-age=${8 * 60 * 60}; SameSite=Lax${window.location.protocol === 'https:' ? '; Secure' : ''}${domain}`;
 }
 
 function PortalLoginContent() {
@@ -160,9 +162,11 @@ function PortalLoginContent() {
             
             const targetDestination = dbRole === 'ceo' ? '/admin/ceo' : '/admin';
             const callbackOrigin = window.location.origin;
+            const isProduction = callbackOrigin.includes('marketbridge.com.ng');
+            const domain = isProduction ? '; domain=.marketbridge.com.ng' : '';
 
-            document.cookie = `mb_oauth_role=${dbRole}; path=/; max-age=600; SameSite=Lax`;
-            document.cookie = `mb_oauth_next=${encodeURIComponent(targetDestination)}; path=/; max-age=600; SameSite=Lax`;
+            document.cookie = `mb_oauth_role=${dbRole}; path=/; max-age=600; SameSite=Lax${domain}`;
+            document.cookie = `mb_oauth_next=${encodeURIComponent(targetDestination)}; path=/; max-age=600; SameSite=Lax${domain}`;
 
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',

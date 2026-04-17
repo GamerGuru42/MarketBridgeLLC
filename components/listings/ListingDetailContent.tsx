@@ -96,10 +96,20 @@ export default function ListingDetailContent() {
 
     // Negotiation State
     const [isOfferOpen, setIsOfferOpen] = useState(false);
-    const [offerPrice, setOfferPrice] = useState('');
-    const [offerMessage, setOfferMessage] = useState('');
+    const [offerPrice, setOfferPrice] = useState<number>(0);
     const [isSubmittingOffer, setIsSubmittingOffer] = useState(false);
     const [activeOffer, setActiveOffer] = useState<any>(null);
+
+    useEffect(() => {
+        if (listing) {
+            setOfferPrice(listing.current_offered_price || listing.price);
+        }
+    }, [listing]);
+
+    const adjustPrice = (amount: number) => {
+        setOfferPrice(prev => Math.max(0, prev + amount));
+    };
+
 
     const [sellerRating, setSellerRating] = useState<{ avg: number; count: number } | null>(null);
 
@@ -299,8 +309,8 @@ export default function ListingDetailContent() {
         }
         if (!listing) return;
 
-        const price = parseFloat(offerPrice);
-        if (isNaN(price) || price <= 0) {
+        const price = offerPrice;
+        if (price <= 0) {
             setError('Please enter a valid price.');
             return;
         }
@@ -331,7 +341,6 @@ export default function ListingDetailContent() {
                     buyer_id: user.id,
                     seller_id: listing.dealer.id,
                     offered_price: price,
-                    message: offerMessage,
                     status: 'pending'
                 });
 
@@ -343,7 +352,7 @@ export default function ListingDetailContent() {
             console.error("Offer Error:", err);
             // Revert on error
             setActiveOffer(previousOffer);
-            setIsOfferOpen(true);
+            setIsOfferOpen(false);
             setError('Failed to submit offer. Please try again.');
         } finally {
             setIsSubmittingOffer(false);
@@ -599,14 +608,21 @@ export default function ListingDetailContent() {
                                 {user && user.id !== listing.dealer.id ? (
                                     <div className="space-y-4">
                                         <div className="flex gap-4">
-                                            <Button
-                                                onClick={handlePlaceOrder}
-                                                disabled={actionLoading}
-                                                className="flex-3 h-16 bg-[#FF6200] text-black hover:bg-[#FF7A29] rounded-2xl font-black uppercase tracking-widest text-xs font-heading italic flex-1 border-none transition-all"
-                                            >
-                                                {actionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
-                                                Secure Asset Now
-                                            </Button>
+                                            <div className="flex-1 flex flex-col gap-2">
+                                                <Button
+                                                    onClick={handlePlaceOrder}
+                                                    disabled={actionLoading || !listing.dealer.paystack_subaccount_code}
+                                                    className="h-16 bg-[#FF6200] text-black hover:bg-[#FF7A29] rounded-2xl font-black uppercase tracking-widest text-xs font-heading italic w-full border-none transition-all disabled:opacity-50 disabled:grayscale"
+                                                >
+                                                    {actionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
+                                                    Confirm Purchase
+                                                </Button>
+                                                {!listing.dealer.paystack_subaccount_code && (
+                                                    <p className="text-[8px] font-black uppercase tracking-widest text-red-500 text-center px-4 animate-pulse">
+                                                        Seller Payouts Not Configured
+                                                    </p>
+                                                )}
+                                            </div>
                                             <Button
                                                 onClick={handleAddToCart}
                                                 variant="outline"
@@ -708,7 +724,7 @@ export default function ListingDetailContent() {
                             </div>
                             <h3 className="text-zinc-900 font-black uppercase text-xs tracking-[0.2em] font-heading mb-6 flex items-center gap-3 relative z-10">
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200]" />
-                                Merchant Intelligence
+                                Seller Information
                             </h3>
                             <div className="flex items-center gap-6 relative z-10">
                                 <div className="h-20 w-20 rounded-[1.5rem] bg-[#FAFAFA] border border-zinc-200 flex items-center justify-center overflow-hidden relative">
@@ -742,7 +758,7 @@ export default function ListingDetailContent() {
                         <div className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm p-8 rounded-[2.5rem] border-zinc-100">
                             <h3 className="text-zinc-900 font-black uppercase text-xs tracking-[0.2em] font-heading mb-6 flex items-center gap-3">
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200]" />
-                                Technical Manifest
+                                Item Description
                             </h3>
                             <p className="text-zinc-500 text-sm leading-relaxed font-medium whitespace-pre-wrap">
                                 {listing.description}
@@ -750,57 +766,89 @@ export default function ListingDetailContent() {
                         </div>
                     </div>
                 </div>
-            </div>
-
-            {/* Offer Dialog */}
+                        {/* Offer Dialog */}
             <Dialog open={isOfferOpen} onOpenChange={setIsOfferOpen}>
-                <DialogContent className="bg-zinc-50 border-zinc-200 text-zinc-900 sm:max-w-md">
+                <DialogContent className="bg-white border-zinc-200 text-zinc-900 sm:max-w-sm rounded-[2.5rem] overflow-hidden p-0">
                     <form onSubmit={handleMakeOffer}>
-                        <DialogHeader>
-                            <DialogTitle className="text-[#FF6200] uppercase font-black tracking-widest flex items-center gap-2">
-                                <Zap className="h-5 w-5" /> Negotiate Asset Price
-                            </DialogTitle>
-                            <DialogDescription className="text-zinc-500 text-xs">
-                                Submit your preferred valuation identifier. Secure payment remains mandatory through the platform.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="space-y-4 py-4">
-                            <div className="space-y-2">
-                                <Label className="text-xs uppercase font-bold text-zinc-500">Proposed Valuation (₦)</Label>
-                                <input
-                                    type="number"
-                                    value={offerPrice}
-                                    onChange={(e) => setOfferPrice(e.target.value)}
-                                    placeholder={listing.price.toString()}
-                                    className="w-full h-12 px-4 bg-[#FAFAFA] border border-zinc-200 rounded-xl text-zinc-900 placeholder:text-zinc-800 focus:outline-none focus:ring-1 focus:ring-[#FF6200]"
-                                    required
-                                />
+                        <div className="p-8 space-y-8">
+                            <div className="text-center space-y-2">
+                                <DialogTitle className="text-2xl font-black uppercase italic tracking-tighter italic">
+                                    Negotiate <span className="text-[#FF6200]">Price</span>
+                                </DialogTitle>
+                                <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">
+                                    Adjust valuation using controls below
+                                </p>
                             </div>
-                            <div className="space-y-2">
-                                <Label className="text-xs uppercase font-bold text-zinc-500">Transmission Message (Optional)</Label>
-                                <Textarea
-                                    value={offerMessage}
-                                    onChange={(e) => setOfferMessage(e.target.value)}
-                                    placeholder="Brief reason for your offer..."
-                                    className="bg-[#FAFAFA]/50 border-zinc-200 text-xs min-h-[100px] rounded-xl"
-                                />
+
+                            <div className="flex flex-col items-center justify-center space-y-6 py-4">
+                                <div className="text-center">
+                                    <p className="text-[10px] text-zinc-400 font-black uppercase tracking-widest mb-2">Current Proposal</p>
+                                    <div className="text-5xl font-black text-zinc-900 tracking-tighter tabular-nums">
+                                        ₦{offerPrice.toLocaleString()}
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-4 w-full px-4">
+                                    <Button 
+                                        type="button"
+                                        onClick={() => adjustPrice(-500)}
+                                        className="h-14 w-14 rounded-2xl bg-zinc-100 text-zinc-900 border-none hover:bg-red-50 hover:text-red-500 transition-all font-black text-xl"
+                                    >
+                                        -
+                                    </Button>
+                                    <div className="flex-1 text-center">
+                                        <div className="h-[1px] w-full bg-zinc-100 relative">
+                                            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-[9px] font-black uppercase tracking-widest text-zinc-300">
+                                                Adjustment
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <Button 
+                                        type="button"
+                                        onClick={() => adjustPrice(500)}
+                                        className="h-14 w-14 rounded-2xl bg-zinc-100 text-zinc-900 border-none hover:bg-green-50 hover:text-green-500 transition-all font-black text-xl"
+                                    >
+                                        +
+                                    </Button>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-2 w-full pt-4">
+                                     <Button 
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => setOfferPrice(listing.price)}
+                                        className="h-10 rounded-xl border-zinc-100 text-[9px] font-black uppercase tracking-widest text-zinc-500"
+                                    >
+                                        Reset to Base
+                                    </Button>
+                                    <Button 
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => adjustPrice(2000)}
+                                        className="h-10 rounded-xl border-zinc-100 text-[9px] font-black uppercase tracking-widest text-[#FF6200]"
+                                    >
+                                        Boost +2k
+                                    </Button>
+                                </div>
                             </div>
-                            <div className="bg-[#FF6200]/5 border border-[#FF6200]/20 p-4 rounded-xl">
-                                <p className="text-[10px] text-[#FF6200] font-black uppercase leading-relaxed text-center">
-                                    Keep negotiations in-app for security. Hand-to-hand or off-platform payments are not protected.
+
+                            <div className="bg-[#FF6200]/10 border border-[#FF6200]/20 p-4 rounded-2xl">
+                                <p className="text-[9px] text-[#FF6200] font-black uppercase leading-tight text-center">
+                                    In-app negotiations are secured by platform protocol.
                                 </p>
                             </div>
                         </div>
-                        <DialogFooter className="flex-col sm:flex-row gap-2">
-                            <Button type="button" variant="ghost" onClick={() => setIsOfferOpen(false)} className="text-zinc-500 hover:text-zinc-900 flex-1">Cancel</Button>
+
+                         <div className="flex p-4 bg-zinc-50 border-t border-zinc-100 gap-3">
+                            <Button type="button" variant="ghost" onClick={() => setIsOfferOpen(false)} className="flex-1 h-14 rounded-2xl text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Close</Button>
                             <Button
                                 type="submit"
                                 disabled={isSubmittingOffer}
-                                className="bg-[#FF6200] text-black hover:bg-[#FF7A29] font-black uppercase tracking-widest text-xs flex-1 transition-all border-none"
+                                className="flex-2 h-14 bg-[#FF6200] text-black hover:bg-[#FF7A29] font-black uppercase tracking-widest text-[10px] rounded-2xl transition-all border-none px-8"
                             >
-                                {isSubmittingOffer ? <Loader2 className="h-4 w-4 animate-spin" /> : "Dispatch Offer"}
+                                {isSubmittingOffer ? <Loader2 className="h-4 w-4 animate-spin" /> : "Dispatch Proposal"}
                             </Button>
-                        </DialogFooter>
+                        </div>
                     </form>
                 </DialogContent>
             </Dialog>
