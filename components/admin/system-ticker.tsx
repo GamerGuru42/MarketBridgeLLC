@@ -5,12 +5,12 @@ import { Activity, Zap, Shield, TrendingUp, Users, ShoppingBag } from 'lucide-re
 
 export const SystemTicker = () => {
     const items = [
-        { icon: Activity, text: "SYSTEM STATUS: OPERATIONAL", color: "text-green-500" },
-        { icon: Zap, text: "NETWORK LATENCY: 24MS", color: "text-primary" },
-        { icon: Shield, text: "ENCRYPTION: AES-256 ACTIVE", color: "text-blue-500" },
-        { icon: TrendingUp, text: "MARKET VOLUME: +12% 24H", color: "text-green-400" },
-        { icon: Users, text: "NEW NODE AUTHENTICATED: L-772", color: "text-primary" },
-        { icon: ShoppingBag, text: "TRANSACTION RELAY: NOMINAL", color: "text-orange-500" },
+        { icon: Activity, text: "PLATFORM STATUS: HEALTHY", color: "text-green-500" },
+        { icon: Zap, text: "AVERAGE LOAD TIME: 0.8S", color: "text-primary" },
+        { icon: Shield, text: "SECURITY: ENCRYPTED", color: "text-blue-500" },
+        { icon: TrendingUp, text: "DAILY GROWTH: +12%", color: "text-green-400" },
+        { icon: Users, text: "NEW USER REGISTERED: ABJ-UNIT", color: "text-primary" },
+        { icon: ShoppingBag, text: "PAYMENT PROCESSING: STABLE", color: "text-orange-500" },
     ];
 
     return (

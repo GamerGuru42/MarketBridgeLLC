@@ -94,10 +94,10 @@ export default function OperationsAdminPage() {
             });
 
             if (res.ok) {
-                toast('Seller authorized successfully!', 'success');
+                toast('Seller approved successfully!', 'success');
                 fetchOpsData();
             } else {
-                toast('Authorization failed', 'error');
+                toast('Approval failed', 'error');
             }
         } catch (e) {
             toast('Operation error', 'error');
@@ -112,30 +112,29 @@ export default function OperationsAdminPage() {
 
     return (
         <div className="min-h-screen bg-background text-foreground transition-colors duration-300 p-4 md:p-10 space-y-12 relative overflow-x-hidden">
-            <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03] pointer-events-none z-0" />
-
-            {/* Header / Station ID */}
+            
+            {/* Header / Admin ID */}
             <div className="relative z-10 flex flex-col gap-6">
                 <div className="flex items-center gap-3">
                     <ShieldCheck className="h-5 w-5 text-primary" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground font-heading">Operational Hub</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground font-heading">Operations Dashboard</span>
                 </div>
                 
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
                     <div className="space-y-4">
                         <h1 className="text-4xl md:text-7xl font-black uppercase tracking-tighter italic font-heading leading-none">
-                            Operations <span className="text-primary">Hub</span>
+                            General <span className="text-primary">Operations</span>
                         </h1>
                         <p className="text-muted-foreground text-xs font-black uppercase tracking-widest leading-relaxed opacity-60 max-w-2xl">
-                            Entity verification pipeline // Capital flow management // Ambassador strategic onboarding
+                             Account verification // Revenue management // Ambassador onboard checks
                         </p>
                     </div>
                     <div className="flex items-center gap-4">
                        <Badge variant="outline" className="h-16 px-8 rounded-2xl border-border bg-card shadow-sm flex items-center gap-4">
                             <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
                             <div className="text-left">
-                                <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Station ID</p>
-                                <p className="text-[12px] font-black text-foreground uppercase tracking-tighter">OPS-CENTER-{user?.id?.slice(0, 4).toUpperCase() || 'HUB'}</p>
+                                <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Administrator ID</p>
+                                <p className="text-[12px] font-black text-foreground uppercase tracking-tighter">ADMIN-UNIT-{user?.id?.slice(0, 4).toUpperCase() || 'HUB'}</p>
                             </div>
                         </Badge>
                         <Link href="/admin/executive-chat">
@@ -152,9 +151,9 @@ export default function OperationsAdminPage() {
                     {[
                         { val: 'sellers', label: 'Verifications', count: pendingSellers.length, icon: UserCheck },
                         { val: 'ambassadors', label: 'Ambassadors', count: ambassadorApps.length, icon: Crown },
-                        { val: 'revenue', label: 'Capital Flow', count: null, icon: Banknote },
-                        { val: 'subscriptions', label: 'Protocols', count: subscriptions.length, icon: Activity },
-                        { val: 'feedback', label: 'Intelligence', count: feedback.length, icon: MessageSquare },
+                        { val: 'revenue', label: 'Revenue', count: null, icon: Banknote },
+                        { val: 'subscriptions', label: 'Active Plans', count: subscriptions.length, icon: Activity },
+                        { val: 'feedback', label: 'Messages', count: feedback.length, icon: MessageSquare },
                     ].map((tab) => (
                         <TabsTrigger
                             key={tab.val}
@@ -170,7 +169,7 @@ export default function OperationsAdminPage() {
                 <TabsContent value="sellers" className="space-y-6">
                     <Card className="bg-card border-border shadow-sm rounded-[3.5rem] overflow-hidden">
                         <CardHeader className="bg-muted/10 py-12 px-12 border-b border-border">
-                            <CardTitle className="text-3xl font-black uppercase italic tracking-tighter">Verification <span className="text-primary">Pipeline</span></CardTitle>
+                            <CardTitle className="text-3xl font-black uppercase italic tracking-tighter">Pending <span className="text-primary">Verifications</span></CardTitle>
                         </CardHeader>
                         <CardContent className="p-12 space-y-6">
                             {pendingSellers.map((seller) => (
@@ -184,7 +183,7 @@ export default function OperationsAdminPage() {
                                             <p className="text-[11px] text-muted-foreground font-black uppercase tracking-[0.3em] italic opacity-60">{seller.student_email} // {seller.university}</p>
                                             <div className="flex gap-4">
                                                 <Badge variant="outline" className="border-border text-primary text-[10px] font-black uppercase tracking-widest bg-card px-4 py-1.5 rounded-full">{seller.business_type}</Badge>
-                                                <Badge variant="outline" className="border-border text-foreground/40 text-[10px] font-black uppercase tracking-widest bg-card px-4 py-1.5 rounded-full">{seller.items_ready} READYY</Badge>
+                                                <Badge variant="outline" className="border-border text-foreground/40 text-[10px] font-black uppercase tracking-widest bg-card px-4 py-1.5 rounded-full">{seller.items_ready} ITEMS READY</Badge>
                                             </div>
                                         </div>
                                     </div>
@@ -194,7 +193,7 @@ export default function OperationsAdminPage() {
                                                 onClick={() => handleVerify(seller.id)}
                                                 className="bg-primary text-primary-foreground hover:opacity-90 font-black uppercase text-[10px] tracking-widest h-16 flex-1 rounded-[1.5rem] border-none shadow-xl shadow-primary/10"
                                             >
-                                                Authorize Entity
+                                                Approve Account
                                             </Button>
                                             <Button
                                                 variant="outline"
@@ -205,7 +204,7 @@ export default function OperationsAdminPage() {
                                         </div>
                                         {seller.id_card_url && (
                                             <a href={seller.id_card_url} target="_blank" rel="noreferrer" className="text-[10px] text-primary hover:underline uppercase font-black tracking-widest flex items-center gap-3 pr-4">
-                                                Verify Credentials <ChevronRight className="h-4 w-4" />
+                                                Check ID Details <ChevronRight className="h-4 w-4" />
                                             </a>
                                         )}
                                     </div>
@@ -214,7 +213,7 @@ export default function OperationsAdminPage() {
                             {pendingSellers.length === 0 && (
                                 <div className="text-center py-40 border-2 border-border border-dashed rounded-[3rem] opacity-20">
                                     <Inbox className="h-16 w-16 mx-auto mb-6" />
-                                    <p className="text-xl font-black uppercase tracking-[0.4em] italic">Pipeline Clear</p>
+                                    <p className="text-xl font-black uppercase tracking-[0.4em] italic">No Pending Tasks</p>
                                 </div>
                             )}
                         </CardContent>
@@ -226,32 +225,32 @@ export default function OperationsAdminPage() {
                          <Card className="bg-card border-border shadow-xl rounded-[4rem] p-12 relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] rounded-full group-hover:bg-primary/10 transition-all" />
                             <p className="text-[11px] text-muted-foreground font-black uppercase tracking-[0.5em] mb-8 flex items-center gap-3">
-                                <Activity className="h-4 w-4" /> Network Gross Volume
+                                <Activity className="h-4 w-4" /> Total Transaction Volume
                             </p>
                             <p className="text-6xl md:text-8xl font-black text-foreground italic font-heading tracking-tighter leading-none mb-6">
                                 ₦{revenue.totalVolume.toLocaleString()}
                             </p>
                             <div className="flex items-center gap-3 text-green-500 text-[11px] font-black uppercase tracking-widest">
-                                <TrendingUp className="h-5 w-5" /> Positive Signal Stream
+                                <TrendingUp className="h-5 w-5" /> Positive Growth Trend
                             </div>
                         </Card>
                         <Card className="bg-primary text-primary-foreground border-none shadow-[0_25px_80px_rgba(255,98,0,0.25)] rounded-[4rem] p-12 relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-[100px] rounded-full group-hover:bg-white/20 transition-all" />
                             <p className="text-[11px] opacity-60 font-black uppercase tracking-[0.5em] mb-8 flex items-center gap-3">
-                                <Crown className="h-4 w-4" /> Platform Yield (Net)
+                                <Crown className="h-4 w-4" /> Platform Revenue (Net)
                             </p>
                             <p className="text-6xl md:text-8xl font-black italic font-heading tracking-tighter leading-none mb-6">
                                 ₦{revenue.totalCommission.toLocaleString()}
                             </p>
                             <div className="flex items-center gap-3 opacity-80 text-[11px] font-black uppercase tracking-widest">
-                                <Activity className="h-5 w-5" /> Capital Accrual: Nominal
+                                <Activity className="h-5 w-5" /> Financial Health: Nominal
                             </div>
                         </Card>
                     </div>
 
                     <Card className="bg-card border-border shadow-sm rounded-[3.5rem] overflow-hidden">
                          <CardHeader className="bg-muted/10 py-12 px-12 border-b border-border">
-                            <CardTitle className="text-3xl font-black uppercase italic tracking-tighter text-foreground">Capital <span className="text-primary">Registry</span></CardTitle>
+                            <CardTitle className="text-3xl font-black uppercase italic tracking-tighter text-foreground">Transaction <span className="text-primary">History</span></CardTitle>
                         </CardHeader>
                         <CardContent className="p-12">
                              <div className="space-y-8">
@@ -259,22 +258,22 @@ export default function OperationsAdminPage() {
                                     <div key={txn.id} className="grid grid-cols-1 md:grid-cols-4 gap-12 bg-muted/40 p-10 rounded-[3rem] border border-border/50 items-center hover:bg-muted/60 transition-colors group">
                                         <div className="space-y-3">
                                             <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-40 flex items-center gap-3">
-                                                <div className="h-1.5 w-1.5 bg-primary rounded-full animate-pulse" /> Signal Ref
+                                                <div className="h-1.5 w-1.5 bg-primary rounded-full animate-pulse" /> Record ID
                                             </span>
                                             <p className="text-sm text-foreground font-black italic font-mono tracking-tighter group-hover:text-primary transition-colors">{txn.paystack_reference || 'LEGACY-TX'}</p>
                                         </div>
                                         <div className="space-y-3">
-                                            <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-40">Operational Node</span>
+                                            <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-40">Store Name</span>
                                             <p className="text-base font-black uppercase tracking-tighter italic truncate">{txn.seller?.display_name || 'SYSTEM'}</p>
                                         </div>
                                         <div className="space-y-3">
-                                            <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-40">Value / Yield</span>
+                                            <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-40">Total / Commission</span>
                                             <p className="text-xl font-black italic font-mono tracking-tighter">
                                                 ₦{txn.amount_total.toLocaleString()} <span className="text-primary opacity-20 mx-3">//</span> <span className="text-primary font-black">₦{txn.amount_platform.toLocaleString()}</span>
                                             </p>
                                         </div>
                                         <div className="flex md:justify-end">
-                                            <Badge className="bg-primary/20 text-primary border border-primary/20 font-black uppercase text-[10px] tracking-widest px-8 py-3 rounded-2xl h-12">VALIDATED</Badge>
+                                            <Badge className="bg-primary/20 text-primary border border-primary/20 font-black uppercase text-[10px] tracking-widest px-8 py-3 rounded-2xl h-12">VERIFIED</Badge>
                                         </div>
                                     </div>
                                 ))}
@@ -283,11 +282,10 @@ export default function OperationsAdminPage() {
                     </Card>
                 </TabsContent>
                 
-                {/* Fallback for other tabs (existing logic maintained) */}
                 <TabsContent value="ambassadors">
                      <Card className="bg-card border-border shadow-sm rounded-[3.5rem] overflow-hidden">
                         <CardHeader className="bg-muted/10 py-12 px-12 border-b border-border">
-                            <CardTitle className="text-3xl font-black uppercase italic tracking-tighter">Strategic <span className="text-primary">Vetting</span></CardTitle>
+                            <CardTitle className="text-3xl font-black uppercase italic tracking-tighter">Ambassador <span className="text-primary">Applications</span></CardTitle>
                         </CardHeader>
                         <CardContent className="p-12 space-y-6">
                             {ambassadorApps.map((app) => (
@@ -298,11 +296,11 @@ export default function OperationsAdminPage() {
                                         </div>
                                         <div className="space-y-2">
                                             <p className="text-2xl font-black text-foreground italic font-heading tracking-tighter uppercase">{app.full_name}</p>
-                                            <p className="text-[11px] text-muted-foreground font-black uppercase tracking-widest opacity-60">{app.university} // NODE ID: {app.student_id}</p>
+                                            <p className="text-[11px] text-muted-foreground font-black uppercase tracking-widest opacity-60">{app.university} // ID: {app.student_id}</p>
                                         </div>
                                     </div>
                                     <div className="flex gap-4">
-                                        <Button className="bg-primary h-14 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest">Verify Ambassador</Button>
+                                        <Button className="bg-primary h-14 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest">Approve Ambassador</Button>
                                         <Button variant="outline" className="border-red-500/10 text-red-500 h-14 w-14 rounded-2xl flex items-center justify-center">
                                             <ShieldAlert className="h-5 w-5" />
                                         </Button>
@@ -314,7 +312,6 @@ export default function OperationsAdminPage() {
                 </TabsContent>
 
                 <TabsContent value="subscriptions">
-                    {/* Maintain existing premium sub view */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {subscriptions.map((sub) => (
                             <Card key={sub.id} className="bg-card border-border shadow-sm rounded-[3rem] p-10 hover:border-primary/20 transition-all group relative overflow-hidden">
@@ -325,9 +322,9 @@ export default function OperationsAdminPage() {
                                             <CreditCard className="h-6 w-6" />
                                         </div>
                                         <p className="text-xl font-black text-foreground italic uppercase tracking-tighter">{sub.users?.email}</p>
-                                        <Badge className="bg-primary text-white font-black uppercase text-[9px] tracking-widest rounded-full px-4 py-2">LIVE PROTOCOL</Badge>
+                                        <Badge className="bg-primary text-white font-black uppercase text-[9px] tracking-widest rounded-full px-4 py-2">ACTIVE PLAN</Badge>
                                     </div>
-                                    <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest italic opacity-40">System Node: Operational</p>
+                                    <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest italic opacity-40">Status: Running</p>
                                 </div>
                             </Card>
                         ))}
@@ -335,8 +332,8 @@ export default function OperationsAdminPage() {
                 </TabsContent>
             </Tabs>
 
-            <div className="text-center py-20 opacity-20 hover:opacity-100 transition-opacity">
-                <p className="text-[9px] font-black uppercase tracking-[0.8em] text-muted-foreground italic">MarketBridge Operational Deployment // Secure Network Hub //Nigeria 2026</p>
+            <div className="text-center py-20 opacity-20">
+                <p className="text-[9px] font-black uppercase tracking-[0.8em] text-muted-foreground italic">MarketBridge Operations Management Hub // Nigeria 2026</p>
             </div>
         </div>
     );

@@ -39,7 +39,7 @@ export default function MarketingAdminPage() {
             const { count: totalUsers } = await supabase.from('users').select('*', { count: 'exact', head: true });
             const { count: activeSellers } = await supabase.from('users').select('*', { count: 'exact', head: true }).in('role', ['dealer', 'seller', 'student_seller']);
 
-            // 3. Campus Breakdown (using seller apps as proxy for active regions)
+            // 3. Campus Breakdown
             const { data: apps } = await supabase.from('seller_applications').select('university');
             if (apps) {
                 const counts: Record<string, number> = {};
@@ -72,21 +72,20 @@ export default function MarketingAdminPage() {
 
     return (
         <div className="min-h-screen bg-background text-foreground transition-colors duration-300 p-4 md:p-10 space-y-12 relative overflow-x-hidden">
-            <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03] pointer-events-none z-0" />
-
+            
             <div className="relative z-10 flex flex-col gap-6">
                 <div className="flex items-center gap-3">
                     <Target className="h-5 w-5 text-primary" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground font-heading">Growth Intelligence</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground font-heading">Marketing Insights</span>
                 </div>
 
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
                     <div className="space-y-4">
                         <h1 className="text-4xl md:text-7xl font-black uppercase tracking-tighter italic font-heading leading-none">
-                            Marketing <span className="text-primary">Vector</span>
+                            Marketing <span className="text-primary">Dashboard</span>
                         </h1>
                         <p className="text-muted-foreground text-xs font-black uppercase tracking-widest leading-relaxed opacity-60 max-w-2xl">
-                            Real-time campus penetration telemetry // Ambassador network growth // Conversion trajectory analysis
+                             Campus growth tracking // Ambassador network analysis // User conversion statistics
                         </p>
                     </div>
                     <Link href="/admin/executive-chat">
@@ -95,20 +94,20 @@ export default function MarketingAdminPage() {
                                 <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center">
                                     <MessageSquare className="h-3.5 w-3.5 text-primary group-hover:scale-110 transition-transform" />
                                 </div>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-foreground">Marketing Liaison</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-foreground">Contact Team</span>
                             </div>
                         </Button>
                     </Link>
                 </div>
             </div>
 
-            {/* Core Growth KPI Cards */}
+            {/* Growth KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
                 {[
-                    { label: 'Network Population', value: stats.totalUsers, icon: Users, sub: 'Total Nodes', color: 'text-blue-500' },
-                    { label: 'Campus Footprint', value: campusStats.length, icon: Globe, sub: 'Active Hubs', color: 'text-green-500' },
-                    { label: 'Conversion Lift', value: stats.growthVelocity, icon: TrendingUp, sub: 'W/W trajectory', color: 'text-primary' },
-                    { label: 'Entity Conversion', value: stats.conversionRate === 'N/A' ? '12%' : stats.conversionRate, icon: Rocket, sub: 'User to Merchant', color: 'text-orange-500' },
+                    { label: 'Total Users', value: stats.totalUsers, icon: Users, sub: 'Registered Accounts', color: 'text-blue-500' },
+                    { label: 'Active Campuses', value: campusStats.length, icon: Globe, sub: 'University Hubs', color: 'text-green-500' },
+                    { label: 'Weekly Growth', value: stats.growthVelocity, icon: TrendingUp, sub: 'Progress Trend', color: 'text-primary' },
+                    { label: 'Seller Conversion', value: stats.conversionRate === 'N/A' ? '12%' : stats.conversionRate, icon: Rocket, sub: 'Users to Merchants', color: 'text-orange-500' },
                 ].map((kpi, i) => (
                     <Card key={i} className="bg-card border-border shadow-sm rounded-[2.5rem] p-8 relative overflow-hidden group hover:border-primary/20 transition-all">
                         <div className={`absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity ${kpi.color}`}>
@@ -122,12 +121,12 @@ export default function MarketingAdminPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 relative z-10">
-                {/* Growth Registry (Recent Signups) */}
+                {/* Recent Signups */}
                 <Card className="lg:col-span-2 bg-card border-border shadow-sm rounded-[3rem] overflow-hidden transition-colors duration-300">
                     <CardHeader className="bg-muted/20 py-10 px-10 border-b border-border flex flex-row items-center justify-between">
                         <div>
-                            <CardTitle className="text-3xl font-black uppercase italic tracking-tighter">Growth <span className="text-primary">Registry</span></CardTitle>
-                            <p className="text-[11px] text-muted-foreground font-black uppercase tracking-widest mt-1 opacity-60 italic">Inbound User Signal History</p>
+                            <CardTitle className="text-3xl font-black uppercase italic tracking-tighter">Recent <span className="text-primary">Signups</span></CardTitle>
+                            <p className="text-[11px] text-muted-foreground font-black uppercase tracking-widest mt-1 opacity-60 italic">Latest user registrations</p>
                         </div>
                         <Zap className="h-6 w-6 text-primary animate-pulse" />
                     </CardHeader>
@@ -135,16 +134,16 @@ export default function MarketingAdminPage() {
                         <Table>
                             <TableHeader className="bg-muted/10">
                                 <TableRow className="border-border hover:bg-transparent">
-                                    <TableHead className="py-6 px-10 text-muted-foreground uppercase font-black text-[10px] tracking-widest font-heading italic">Timestamp</TableHead>
-                                    <TableHead className="py-6 px-10 text-muted-foreground uppercase font-black text-[10px] tracking-widest font-heading italic">Identity Vector</TableHead>
-                                    <TableHead className="py-6 px-10 text-muted-foreground uppercase font-black text-[10px] tracking-widest font-heading italic text-right">Protocol Role</TableHead>
+                                    <TableHead className="py-6 px-10 text-muted-foreground uppercase font-black text-[10px] tracking-widest font-heading italic">Date & Time</TableHead>
+                                    <TableHead className="py-6 px-10 text-muted-foreground uppercase font-black text-[10px] tracking-widest font-heading italic">User Email</TableHead>
+                                    <TableHead className="py-6 px-10 text-muted-foreground uppercase font-black text-[10px] tracking-widest font-heading italic text-right">Account Type</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {recentSignups.map((user) => (
                                     <TableRow key={user.id} className="border-border hover:bg-muted/10 transition-colors group">
-                                        <TableCell className="py-8 px-10 text-muted-foreground text-[10px] font-black font-mono italic opacity-60">
-                                            {new Date(user.created_at).toLocaleString().split(',').join(' //')}
+                                        <TableCell className="py-8 px-10 text-muted-foreground text-[10px] font-black italic opacity-60">
+                                            {new Date(user.created_at).toLocaleString()}
                                         </TableCell>
                                         <TableCell className="py-8 px-10">
                                             <div className="flex items-center gap-4">
@@ -156,7 +155,7 @@ export default function MarketingAdminPage() {
                                         </TableCell>
                                         <TableCell className="py-8 px-10 text-right">
                                             <Badge variant="outline" className="text-primary border-primary/20 bg-primary/5 text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-xl">
-                                                {user.role || 'USER_NODE'}
+                                                {user.role || 'USER'}
                                             </Badge>
                                         </TableCell>
                                     </TableRow>
@@ -166,7 +165,7 @@ export default function MarketingAdminPage() {
                     </div>
                 </Card>
 
-                {/* Campus Penetration Pulse */}
+                {/* Campus Popularity */}
                 <div className="space-y-10">
                     <Card className="bg-card border-border shadow-xl rounded-[3.5rem] p-10 relative overflow-hidden">
                         <div className="absolute top-[-10%] right-[-10%] w-48 h-48 bg-primary/5 blur-[80px] rounded-full" />
@@ -174,7 +173,7 @@ export default function MarketingAdminPage() {
                         <div className="space-y-8 relative z-10">
                              <div className="flex items-center gap-3">
                                 <MapPin className="h-4 w-4 text-primary" />
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground italic">Campus Penetration</h3>
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground italic">Campus Coverage</h3>
                             </div>
                             
                             <div className="space-y-6">
@@ -182,7 +181,7 @@ export default function MarketingAdminPage() {
                                     <div key={i} className="space-y-3">
                                         <div className="flex justify-between items-end">
                                             <p className="text-sm font-black text-foreground italic uppercase tracking-tight">{campus.name}</p>
-                                            <p className="text-[10px] font-black text-primary italic uppercase tracking-widest">{campus.count} Nodes</p>
+                                            <p className="text-[10px] font-black text-primary italic uppercase tracking-widest">{campus.count} Active</p>
                                         </div>
                                         <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                                             <div 
@@ -194,7 +193,7 @@ export default function MarketingAdminPage() {
                                 )) : (
                                     <div className="py-20 text-center opacity-20">
                                         <Globe className="h-12 w-12 mx-auto mb-4" />
-                                        <p className="text-[10px] font-black uppercase tracking-widest">Awaiting Geospatial Data</p>
+                                        <p className="text-[10px] font-black uppercase tracking-widest">Awaiting Statistics</p>
                                     </div>
                                 )}
                             </div>
@@ -204,19 +203,19 @@ export default function MarketingAdminPage() {
                     <Card className="bg-primary text-primary-foreground p-10 rounded-[3rem] border-none shadow-[0_25px_60px_rgba(255,98,0,0.2)] group relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 blur-[60px] rounded-full -mr-24 -mt-24 transition-opacity group-hover:opacity-100 opacity-60" />
                          <TrendingUp className="h-8 w-8 mb-6 opacity-80" />
-                        <h3 className="text-2xl font-black uppercase italic tracking-tighter font-heading mb-4">Strategic Vector</h3>
+                        <h3 className="text-2xl font-black uppercase italic tracking-tighter font-heading mb-4">Growth Strategy</h3>
                         <p className="text-xs opacity-70 italic leading-relaxed mb-8">
-                            Penetration depth in Tier-1 Nigerian campuses increasing by 14% month-over-month. Strategy remains optimized for ambassador-led acquisition.
+                             Market presence in main Nigerian campuses is increasing steadily. Our focus remains on user acquisition through campus ambassador programs.
                         </p>
                         <Button className="w-full bg-white text-primary border-none hover:bg-white/95 font-black uppercase text-[10px] tracking-widest h-14 rounded-2xl">
-                            Deploy Growth Campaign
+                             Open Campaigns
                         </Button>
                     </Card>
                 </div>
             </div>
 
-            <div className="text-center py-20 opacity-20 hover:opacity-100 transition-opacity">
-                <p className="text-[9px] font-black uppercase tracking-[0.8em] text-muted-foreground italic">MarketBridge Strategic Growth Ingress // Network Omega Secured // 2026</p>
+            <div className="text-center py-20 opacity-20">
+                <p className="text-[9px] font-black uppercase tracking-[0.8em] text-muted-foreground italic">MarketBridge Growth Management // Nigeria 2026</p>
             </div>
         </div>
     );

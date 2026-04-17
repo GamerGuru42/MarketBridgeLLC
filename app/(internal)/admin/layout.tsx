@@ -13,21 +13,24 @@ import {
     ClipboardCheck,
     Server,
     Activity,
-    Zap,
+    LogOut,
     TrendingUp,
-    Headphones
+    Target,
+    Headphones,
+    Settings
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard-header';
+import { Button } from '@/components/ui/button';
 
 export default function AdminLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const { user, loading } = useAuth();
+    const { user, loading, logout } = useAuth();
     const pathname = usePathname();
     const isAuthPage = pathname?.includes('/login') || pathname?.includes('/signup');
     const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
@@ -41,7 +44,6 @@ export default function AdminLayout({
         </div>
     );
 
-    // CENTRALIZED SECURITY ENFORCEMENT
     if (!user || !ADMIN_ROLES.includes(user.role)) {
         router.replace('/portal/login');
         return (
@@ -53,77 +55,89 @@ export default function AdminLayout({
 
     const getSidebarItems = () => {
         const role = user.role;
-        const missionControl = { label: 'Mission Control', href: '/admin', icon: LayoutDashboard };
-        const secureRelay = { label: 'Secure Relay', href: '/admin/executive-chat', icon: MessageSquare };
+        // Terminology: Swapping "Mission Control" for "Dashboard" and other simple English terms
+        const mainDashboard = { label: 'Admin Dashboard', href: '/admin', icon: LayoutDashboard };
+        const messages = { label: 'Team Messages', href: '/admin/executive-chat', icon: MessageSquare };
 
         if (role === 'marketing_admin') {
             return [
-                missionControl,
-                { label: 'Marketing Vector', href: '/admin/marketing', icon: Zap },
-                { label: 'Asset Manager', href: '/admin/listings', icon: ShoppingBag },
-                secureRelay
+                mainDashboard,
+                { label: 'Marketing Stats', href: '/admin/marketing', icon: Target },
+                { label: 'Product Manager', href: '/admin/listings', icon: ShoppingBag },
+                messages
             ];
         }
         if (role === 'operations_admin') {
             return [
-                missionControl,
-                { label: 'Operations Hub', href: '/admin/operations', icon: Activity },
-                { label: 'Support Relay', href: '/admin/operations/support', icon: Headphones },
-                { label: 'Dispute Center', href: '/admin/disputes', icon: ShieldAlert },
-                { label: 'Node Registry', href: '/admin/users', icon: Users },
-                { label: 'Asset Registry', href: '/admin/listings', icon: ShoppingBag },
-                { label: 'Order Nexus', href: '/admin/orders', icon: ClipboardCheck },
-                { label: 'Capital Flow', href: '/admin/payouts', icon: Banknote },
-                secureRelay
+                mainDashboard,
+                { label: 'Operations Panel', href: '/admin/operations', icon: Activity },
+                { label: 'Support Center', href: '/admin/operations/support', icon: Headphones },
+                { label: 'Disputes', href: '/admin/disputes', icon: ShieldAlert },
+                { label: 'User Directory', href: '/admin/users', icon: Users },
+                { label: 'Product Registry', href: '/admin/listings', icon: ShoppingBag },
+                { label: 'Order History', href: '/admin/orders', icon: ClipboardCheck },
+                { label: 'Payouts', href: '/admin/payouts', icon: Banknote },
+                messages
             ];
         }
         if (role === 'technical_admin') {
             return [
-                missionControl,
-                { label: 'Technical Flow', href: '/admin/technical', icon: Server },
-                { label: 'Node Registry', href: '/admin/users', icon: Users },
-                secureRelay
+                mainDashboard,
+                { label: 'Technical Health', href: '/admin/technical', icon: Server },
+                { label: 'Account Registry', href: '/admin/users', icon: Users },
+                messages
             ];
         }
         if (role === 'ceo' || role === 'cofounder') {
             return [
-                { label: 'Mission Control', href: '/admin/ceo', icon: LayoutDashboard },
-                { label: 'Live Monitoring', href: '/admin/live-chat', icon: ShieldAlert },
-                secureRelay,
+                { label: 'CEO Dashboard', href: '/admin/ceo', icon: LayoutDashboard },
+                { label: 'Live Support', href: '/admin/live-chat', icon: Headphones },
+                messages,
             ];
         }
 
-        // Super Admin (or fallback) gets everything
         return [
-            missionControl,
-            { label: 'Technical Flow', href: '/admin/technical', icon: Server },
-            { label: 'Operations Hub', href: '/admin/operations', icon: Activity },
-            { label: 'Support Relay', href: '/admin/operations/support', icon: Headphones },
-            { label: 'Monitoring Relay', href: '/admin/live-chat', icon: ShieldAlert },
-            { label: 'Marketing Vector', href: '/admin/marketing', icon: Zap },
-            { label: 'Node Registry', href: '/admin/users', icon: Users },
-            { label: 'Asset Registry', href: '/admin/listings', icon: ShoppingBag },
-            { label: 'Dispute Center', href: '/admin/disputes', icon: ShieldAlert },
-            { label: 'Order Nexus', href: '/admin/orders', icon: ClipboardCheck },
-            { label: 'Capital Flow', href: '/admin/payouts', icon: Banknote },
-            secureRelay
+            mainDashboard,
+            { label: 'System Health', href: '/admin/technical', icon: Server },
+            { label: 'Operations', href: '/admin/operations', icon: Activity },
+            { label: 'Marketing', href: '/admin/marketing', icon: Target },
+            { label: 'User Registry', href: '/admin/users', icon: Users },
+            { label: 'Product Registry', href: '/admin/listings', icon: ShoppingBag },
+            { label: 'Financials', href: '/admin/payouts', icon: Banknote },
+            messages
         ];
     };
 
-    const filteredItems = getSidebarItems();
+    const sidebarItems = getSidebarItems();
 
     return (
         <div className="flex min-h-screen bg-background text-foreground transition-colors duration-300">
-            <div className="hidden md:block w-72 fixed h-full z-20">
-                <Sidebar items={filteredItems} title="VISION COMMAND" />
+            {/* Sidebar with only ONE logout button inside it (at the bottom) */}
+            <div className="hidden md:block w-72 fixed h-full z-20 border-r border-border">
+                <Sidebar 
+                    items={sidebarItems} 
+                    title="MARKETBRIDGE ADMIN" 
+                    footer={
+                        <div className="px-6 py-8">
+                            <Button 
+                                onClick={logout}
+                                variant="outline"
+                                className="w-full h-12 border-border text-muted-foreground hover:text-red-500 hover:border-red-500/30 font-black uppercase text-[10px] tracking-widest rounded-xl transition-all flex items-center justify-center gap-3"
+                            >
+                                <LogOut className="h-4 w-4" /> Sign Out
+                            </Button>
+                        </div>
+                    }
+                />
             </div>
-            <div className="flex-1 md:ml-72 flex flex-col relative overflow-hidden">
-                {/* Global Background Blobs */}
-                <div className="fixed top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 blur-[120px] rounded-full pointer-events-none -z-10" />
-                <div className="fixed bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[150px] rounded-full pointer-events-none -z-10" />
 
-                <DashboardHeader title="VISION COMMAND" sidebarItems={filteredItems} />
-                <main className="flex-1 p-4 md:p-8 relative z-10 overflow-y-auto w-full">
+            <div className="flex-1 md:ml-72 flex flex-col relative overflow-hidden">
+                {/* Global Background (Subtle) */}
+                <div className="fixed top-[-5%] right-[-5%] w-[40%] h-[40%] bg-primary/[0.03] blur-[150px] rounded-full pointer-events-none -z-10" />
+                
+                <DashboardHeader title="ADMIN PANEL" sidebarItems={sidebarItems} />
+                
+                <main className="flex-1 p-4 md:p-10 relative z-10 overflow-y-auto w-full">
                     {children}
                 </main>
             </div>
