@@ -205,12 +205,12 @@ function PortalLoginContent() {
                     <div className="space-y-4 mb-12">
                         <div className="flex items-center justify-center gap-2">
                             <Shield className="h-4 w-4 text-primary" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Administration Access</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Secure Authentication</span>
                         </div>
                         <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading">
                             Team <span className="text-primary">Portal</span>
                         </h1>
-                        <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] italic">Select your access group</p>
+                        <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] italic">Access Management Console</p>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-lg mx-auto">
@@ -247,10 +247,10 @@ function PortalLoginContent() {
 
     if (currentStep === 'role_select') {
         const roles: { role: AdminRole, label: string, icon: any, desc: string }[] = [
-            { role: 'operations_admin', label: 'Operations Admin', icon: Activity, desc: 'Verification & Orders' },
-            { role: 'marketing_admin', label: 'Marketing Admin', icon: Target, desc: 'Acquisition & Analytics' },
-            { role: 'technical_admin_alpha', label: 'Technical - Unit Alpha', icon: Zap, desc: 'Systems & Infrastructure' },
-            { role: 'technical_admin_beta', label: 'Technical - Unit Beta', icon: Zap, desc: 'Maintenance & Logs' },
+            { role: 'operations_admin', label: 'Operations Admin', icon: Activity, desc: 'Verification & Logistics' },
+            { role: 'marketing_admin', label: 'Marketing Admin', icon: Target, desc: 'Acquisition & Growth' },
+            { role: 'technical_admin_alpha', label: 'Systems Admin', icon: Zap, desc: 'Database & Security' },
+            { role: 'technical_admin_beta', label: 'IT Support', icon: Zap, desc: 'Maintenance & Reports' },
         ];
 
         return (

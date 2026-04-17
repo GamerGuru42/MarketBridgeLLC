@@ -94,7 +94,7 @@ export function Sidebar({ items, title, className }: SidebarProps) {
                     onClick={() => logout()}
                 >
                     <LogOut className="h-5 w-5 group-hover:rotate-12 transition-transform" />
-                    <span className="text-[11px] font-black uppercase tracking-[0.2em] italic">Terminate</span>
+                    <span className="text-[11px] font-black uppercase tracking-[0.2em] italic">Sign Out</span>
                 </button>
             </div>
         </div>

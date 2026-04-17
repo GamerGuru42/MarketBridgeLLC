@@ -195,22 +195,38 @@ export default function MissionControlPage() {
                                 <MessageSquare className="h-4 w-4 mr-3 text-primary" /> Team Chat
                             </Button>
                         </Link>
-                        <Link href={isTechAdmin ? '/admin/technical' : isMarketingAdmin ? '/admin/marketing' : '/admin/operations'}>
-                            <Button className="h-14 px-8 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 rounded-2xl font-black uppercase text-[10px] tracking-widest border shadow-xl shadow-primary/5">
-                                <Activity className="h-4 w-4 mr-3" /> Area Overview
-                            </Button>
-                        </Link>
+                        {isOpsAdmin && (
+                            <Link href="/admin/operations">
+                                <Button className="h-14 px-8 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 rounded-2xl font-black uppercase text-[10px] tracking-widest border shadow-xl shadow-primary/5">
+                                    <Activity className="h-4 w-4 mr-3" /> Operations Hub
+                                </Button>
+                            </Link>
+                        )}
+                        {isTechAdmin && (
+                            <Link href="/admin/technical">
+                                <Button className="h-14 px-8 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 rounded-2xl font-black uppercase text-[10px] tracking-widest border shadow-xl shadow-primary/5">
+                                    <Zap className="h-4 w-4 mr-3" /> Technical Hub
+                                </Button>
+                            </Link>
+                        )}
+                        {isMarketingAdmin && (
+                            <Link href="/admin/marketing">
+                                <Button className="h-14 px-8 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 rounded-2xl font-black uppercase text-[10px] tracking-widest border shadow-xl shadow-primary/5">
+                                    <TrendingUp className="h-4 w-4 mr-3" /> Marketing Hub
+                                </Button>
+                            </Link>
+                        )}
                     </div>
                 </div>
 
                 {/* Statistics Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {[
-                        { label: 'Total Accounts', value: stats.totalUsers, icon: Users, sub: 'All Registered Users', color: 'text-blue-500' },
-                        { label: 'Verified Sellers', value: stats.activeSellers, icon: UserCheck, sub: 'Active Business Accounts', color: 'text-green-500' },
-                        { label: 'Live Products', value: stats.activeListings, icon: ShoppingBag, sub: 'Items listed on site', color: 'text-orange-500' },
-                        { label: 'Action Required', value: stats.pendingSellers, icon: AlertTriangle, sub: 'Waiting for Approval', color: 'text-primary' },
-                    ].map((kpi, i) => (
+                        { label: 'Total Accounts', value: stats.totalUsers, icon: Users, sub: 'All Registered Users', color: 'text-blue-500', show: true },
+                        { label: 'Verified Sellers', value: stats.activeSellers, icon: UserCheck, sub: 'Active Business Accounts', color: 'text-green-500', show: true },
+                        { label: 'Live Products', value: stats.activeListings, icon: ShoppingBag, sub: 'Items listed on site', color: 'text-orange-500', show: isOpsAdmin || isMarketingAdmin },
+                        { label: 'Action Required', value: stats.pendingSellers, icon: AlertTriangle, sub: 'Waiting for Approval', color: 'text-primary', show: isOpsAdmin },
+                    ].filter(kpi => kpi.show).map((kpi, i) => (
                         <Card key={i} className="bg-card border-border shadow-sm rounded-[2.5rem] p-8 relative overflow-hidden transition-all hover:border-primary/20 group">
                             <div className={`absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity ${kpi.color}`}>
                                 <kpi.icon className="h-20 w-20" />
@@ -252,20 +268,32 @@ export default function MissionControlPage() {
                                 </div>
                         </Card>
 
-                        {/* Urgent Alert */}
-                        <Card className="bg-primary text-primary-foreground border-none shadow-[0_20px_60px_rgba(255,98,0,0.15)] rounded-[3rem] p-10 relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-[80px] -mr-32 -mt-32" />
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.5em] mb-4 opacity-60">System Notification</h4>
-                            <p className="text-2xl font-black italic tracking-tighter font-heading mb-4">Pending Seller Approvals</p>
-                            <p className="text-xs opacity-80 leading-relaxed mb-6 italic max-w-sm">
-                                There are currently {applications.length || 'several'} sellers waiting for verification. Please check the list below or go to the Operations page.
-                            </p>
-                            <Link href="/admin/operations">
-                                <Button className="bg-white text-primary hover:bg-white/90 font-black h-12 px-8 rounded-xl uppercase text-[10px] tracking-widest border-none">
-                                    View Requests
-                                </Button>
-                            </Link>
-                        </Card>
+                        {/* Notifications Module */}
+                        {isOpsAdmin && applications.length > 0 && (
+                            <Card className="bg-primary text-primary-foreground border-none shadow-[0_20px_60px_rgba(255,98,0,0.15)] rounded-[3rem] p-10 relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-[80px] -mr-32 -mt-32" />
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.5em] mb-4 opacity-60">System Notification</h4>
+                                <p className="text-2xl font-black italic tracking-tighter font-heading mb-4">Pending Seller Approvals</p>
+                                <p className="text-xs opacity-80 leading-relaxed mb-6 italic max-w-sm">
+                                    There are currently {applications.length} sellers waiting for verification. Please check the list below or go to the Operations page.
+                                </p>
+                                <Link href="/admin/operations">
+                                    <Button className="bg-white text-primary hover:bg-white/90 font-black h-12 px-8 rounded-xl uppercase text-[10px] tracking-widest border-none">
+                                        View Requests
+                                    </Button>
+                                </Link>
+                            </Card>
+                        )}
+
+                        {!isOpsAdmin && (
+                             <Card className="bg-secondary/40 border-border border shadow-sm rounded-[3rem] p-10 relative overflow-hidden group">
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.5em] mb-4 text-muted-foreground">Department Note</h4>
+                                <p className="text-2xl font-black italic tracking-tighter font-heading mb-4 text-foreground">Active <span className="text-primary">Session</span></p>
+                                <p className="text-xs text-muted-foreground leading-relaxed italic max-w-sm">
+                                    Your {user?.role?.replace('_', ' ')} clearance is active. All system interfaces are optimized for your current department duties.
+                                </p>
+                             </Card>
+                        )}
                     </div>
                 </div>
 
@@ -412,10 +440,10 @@ export default function MissionControlPage() {
                             </h3>
                             <div className="grid gap-3">
                                 {[
-                                    { label: 'Technical Dashboard', href: '/admin/technical', icon: Terminal, desc: 'Health & System Data' },
-                                    { label: 'Operations Panel', href: '/admin/operations', icon: Activity, desc: 'Users & Approvals' },
-                                    { label: 'Marketing Stats', href: '/admin/marketing', icon: Zap, desc: 'Trends & Growth' },
-                                ].map((hub, i) => (
+                                    { label: 'Technical Dashboard', href: '/admin/technical', icon: Terminal, desc: 'Health & System Data', show: isTechAdmin || user?.role === 'ceo' || user?.role === 'admin' },
+                                    { label: 'Operations Panel', href: '/admin/operations', icon: Activity, desc: 'Users & Approvals', show: isOpsAdmin },
+                                    { label: 'Marketing Stats', href: '/admin/marketing', icon: Zap, desc: 'Trends & Growth', show: isMarketingAdmin || user?.role === 'ceo' || user?.role === 'admin' },
+                                ].filter(link => link.show).map((hub, i) => (
                                     <Link key={i} href={hub.href} className="group flex items-center gap-6 p-5 rounded-2xl bg-muted/40 border border-border hover:border-primary/40 transition-all">
                                         <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center group-hover:bg-primary/10 border border-border/50">
                                             <hub.icon className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />

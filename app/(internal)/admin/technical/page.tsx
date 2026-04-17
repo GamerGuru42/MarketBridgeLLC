@@ -70,12 +70,12 @@ export default function TechnicalAdminPage() {
                     <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground font-heading">Technical Health</span>
                 </div>
                 
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 md:gap-10">
                     <div className="space-y-4">
-                        <h1 className="text-4xl md:text-7xl font-black uppercase tracking-tighter italic font-heading leading-none">
+                        <h1 className="text-4xl md:text-7xl font-black uppercase tracking-tighter italic font-heading leading-tight md:leading-none">
                             System <span className="text-primary">Status</span>
                         </h1>
-                        <p className="text-muted-foreground text-xs font-black uppercase tracking-widest leading-relaxed opacity-60 max-w-2xl">
+                        <p className="text-muted-foreground text-[10px] md:text-xs font-black uppercase tracking-widest leading-relaxed opacity-60 max-w-2xl">
                             Real-time analytics // Performance Monitoring // System Activity Logs
                         </p>
                     </div>
@@ -104,12 +104,12 @@ export default function TechnicalAdminPage() {
                     { label: 'Error Rate', value: stats.errorRate, icon: AlertTriangle, color: 'text-orange-500', desc: 'Recorded Technical Errors' },
                     { label: 'Connection', value: stats.serviceHealth, icon: Radio, color: 'text-blue-500', desc: 'Secure Server Link' },
                 ].map((stat, i) => (
-                    <Card key={i} className="bg-card border-border shadow-sm rounded-[2.5rem] p-8 relative overflow-hidden group hover:border-primary/20 transition-all">
-                        <div className={`absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity ${stat.color}`}>
-                            <stat.icon className="h-20 w-20" />
+                    <Card key={i} className="bg-card border-border shadow-sm rounded-3xl md:rounded-[2.5rem] p-6 md:p-8 relative overflow-hidden group hover:border-primary/20 transition-all">
+                        <div className={`absolute top-0 right-0 p-6 md:p-8 opacity-5 group-hover:opacity-10 transition-opacity ${stat.color}`}>
+                            <stat.icon className="h-16 md:h-20 w-16 md:w-20" />
                         </div>
-                        <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] mb-4">{stat.label}</p>
-                        <div className="text-4xl font-black text-foreground italic font-heading tracking-tighter mb-2">{stat.value}</div>
+                        <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] mb-3 md:mb-4">{stat.label}</p>
+                        <div className="text-3xl md:text-4xl font-black text-foreground italic font-heading tracking-tighter mb-2">{stat.value}</div>
                         <p className="text-[9px] font-black uppercase tracking-widest opacity-40 italic">{stat.desc}</p>
                     </Card>
                 ))}
@@ -117,11 +117,11 @@ export default function TechnicalAdminPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 relative z-10">
                 {/* Activity Logs */}
-                <Card className="lg:col-span-2 bg-card border-border shadow-2xl rounded-[3rem] overflow-hidden">
-                    <CardHeader className="py-10 px-10 border-b border-border flex flex-row items-center justify-between">
+                <Card className="lg:col-span-2 bg-card border-border shadow-2xl rounded-[2rem] md:rounded-[3rem] overflow-hidden">
+                    <CardHeader className="py-8 px-6 md:py-10 md:px-10 border-b border-border flex flex-row items-center justify-between">
                         <div className="space-y-1">
-                            <CardTitle className="text-3xl font-black uppercase italic tracking-tighter text-foreground">Activity <span className="text-primary">Logs</span></CardTitle>
-                            <p className="text-[11px] text-muted-foreground font-black uppercase tracking-widest italic">System and Account Events</p>
+                            <CardTitle className="text-2xl md:text-3xl font-black uppercase italic tracking-tighter text-foreground">Activity <span className="text-primary">Logs</span></CardTitle>
+                            <p className="text-[10px] md:text-[11px] text-muted-foreground font-black uppercase tracking-widest italic leading-tight">System and Account Events</p>
                         </div>
                         <Code className="h-6 w-6 text-primary" />
                     </CardHeader>

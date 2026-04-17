@@ -48,9 +48,9 @@ export default function AdminUsersPage() {
     const { toast } = useToast();
 
     useEffect(() => {
-        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
-        if (!authLoading && (!currentUser || !ADMIN_ROLES.includes(currentUser.role))) {
-            router.replace('/portal/login');
+        const ALLOWED_ROLES = ['operations_admin', 'technical_admin', 'ceo', 'cofounder', 'admin'];
+        if (!authLoading && (!currentUser || !ALLOWED_ROLES.includes(currentUser.role))) {
+            router.replace('/admin'); // Redirect back to general dash if not allowed
         }
     }, [currentUser, authLoading, router]);
 
@@ -145,10 +145,10 @@ export default function AdminUsersPage() {
                     <div>
                         <div className="flex items-center gap-3 mb-2">
                             <UsersIcon className="h-5 w-5 text-primary" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground font-heading">Network Administration</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground font-heading">User Administration</span>
                         </div>
                         <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-heading">
-                            Identity <span className="text-primary">Nexus</span>
+                            User <span className="text-primary">Directory</span>
                         </h2>
                     </div>
                 </div>
@@ -158,7 +158,7 @@ export default function AdminUsersPage() {
                         <div className="relative w-full md:w-96">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
-                                placeholder="Scan for identity signatures..."
+                                placeholder="Search by name or email..."
                                 className="pl-10 bg-background border-border text-foreground placeholder:text-muted-foreground/30 h-11 focus:ring-1 focus:ring-primary/30 rounded-xl"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -189,12 +189,12 @@ export default function AdminUsersPage() {
                         <Table>
                             <TableHeader className="bg-muted/30">
                                 <TableRow className="border-border hover:bg-transparent">
-                                    <TableHead className="w-[300px] text-muted-foreground uppercase text-[10px] font-black tracking-widest font-heading py-6 px-8">Identified Entity</TableHead>
-                                    <TableHead className="text-muted-foreground uppercase text-[10px] font-black tracking-widest font-heading py-6 px-4">Clearance</TableHead>
+                                    <TableHead className="w-[300px] text-muted-foreground uppercase text-[10px] font-black tracking-widest font-heading py-6 px-8">User Details</TableHead>
+                                    <TableHead className="text-muted-foreground uppercase text-[10px] font-black tracking-widest font-heading py-6 px-4">Role / Access</TableHead>
                                     <TableHead className="text-muted-foreground uppercase text-[10px] font-black tracking-widest font-heading py-6 px-4">Coins</TableHead>
                                     <TableHead className="text-muted-foreground uppercase text-[10px] font-black tracking-widest font-heading py-6 px-4">Status</TableHead>
-                                    <TableHead className="text-muted-foreground uppercase text-[10px] font-black tracking-widest font-heading py-6 px-4">Inception</TableHead>
-                                    <TableHead className="text-right text-muted-foreground uppercase text-[10px] font-black tracking-widest font-heading py-6 px-8">Controls</TableHead>
+                                    <TableHead className="text-muted-foreground uppercase text-[10px] font-black tracking-widest font-heading py-6 px-4">Joined Date</TableHead>
+                                    <TableHead className="text-right text-muted-foreground uppercase text-[10px] font-black tracking-widest font-heading py-6 px-8">Management</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -203,7 +203,7 @@ export default function AdminUsersPage() {
                                         <TableCell colSpan={6} className="h-64 text-center">
                                             <div className="flex flex-col items-center gap-4">
                                                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                                                <p className="text-muted-foreground font-black text-[10px] uppercase tracking-[0.3em] animate-pulse">Establishing Uplink...</p>
+                                                <p className="text-muted-foreground font-black text-[10px] uppercase tracking-[0.3em] animate-pulse">Syncing Database...</p>
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -276,7 +276,7 @@ export default function AdminUsersPage() {
                                                             </Button>
                                                         </DropdownMenuTrigger>
                                                         <DropdownMenuContent align="end" className="w-64 bg-card border-border shadow-2xl p-2 rounded-2xl">
-                                                            <DropdownMenuLabel className="text-[10px] font-black uppercase text-muted-foreground font-heading px-3 py-2">Entity Control</DropdownMenuLabel>
+                                                            <DropdownMenuLabel className="text-[10px] font-black uppercase text-muted-foreground font-heading px-3 py-2">Account Management</DropdownMenuLabel>
                                                             <DropdownMenuSeparator className="bg-border my-1" />
                                                             <DropdownMenuItem onClick={() => handleAction(u.id, 'manage_coins')} className="gap-3 cursor-pointer py-3 rounded-xl focus:bg-primary/10 focus:text-primary transition-colors">
                                                                 <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center font-black text-xs">MC</div>
@@ -318,8 +318,8 @@ export default function AdminUsersPage() {
                                                             <DropdownMenuItem className="gap-3 cursor-pointer py-3 rounded-xl focus:bg-muted transition-colors opacity-50">
                                                                 <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center"><Mail className="h-4 w-4" /></div>
                                                                 <div className="flex flex-col">
-                                                                    <span className="font-bold text-xs uppercase">Dispatch Ping</span>
-                                                                    <span className="text-[10px] opacity-40">Send email notification</span>
+                                                                    <span className="font-bold text-xs uppercase">Send Notification</span>
+                                                                    <span className="text-[10px] opacity-40">Direct email to user</span>
                                                                 </div>
                                                             </DropdownMenuItem>
                                                         </DropdownMenuContent>
@@ -335,7 +335,7 @@ export default function AdminUsersPage() {
                 </div>
 
                 <div className="text-center py-10 opacity-20 hover:opacity-100 transition-opacity">
-                    <p className="text-[9px] font-black uppercase tracking-[0.5em] text-muted-foreground">End of Transmission // Secure Identity Uplink 0.9.4</p>
+                    <p className="text-[9px] font-black uppercase tracking-[0.5em] text-muted-foreground">MarketBridge Administration Portal // 2026</p>
                 </div>
             </div>
         </div>

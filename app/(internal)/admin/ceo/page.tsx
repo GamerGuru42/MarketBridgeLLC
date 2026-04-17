@@ -104,7 +104,7 @@ export default function CEOPage() {
     if (!user || !['ceo', 'cofounder'].includes(user.role)) return null;
 
     return (
-        <div className="min-h-screen bg-background text-foreground pt-32 pb-20">
+        <div className="min-h-screen bg-background text-foreground pt-20 md:pt-32 pb-20">
             <div className="container px-4 mx-auto max-w-7xl space-y-12">
 
                 {/* Header */}
@@ -114,7 +114,7 @@ export default function CEOPage() {
                             <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground">Executive Center</span>
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic">
+                        <h1 className="text-4xl md:text-7xl font-black uppercase tracking-tighter italic leading-tight md:leading-none">
                             Platform <span className="text-primary">Overview</span>
                         </h1>
                         <p className="text-muted-foreground font-medium italic flex items-center gap-2">
@@ -149,12 +149,12 @@ export default function CEOPage() {
                         { label: 'Listed Products', value: stats?.activeListings || 0, icon: ShoppingBag, sub: 'Inventory Count', color: 'text-orange-500' },
                         { label: 'Platform Health', value: `${Math.round(stats?.trustScore || 100)}%`, icon: ShieldCheck, sub: 'System Stability', color: 'text-purple-500' },
                     ].map((card, i) => (
-                        <Card key={i} className="bg-card border-border shadow-sm rounded-[2.5rem] p-8 relative overflow-hidden hover:border-primary/20 transition-all group">
-                            <div className={`absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity ${card.color}`}>
-                                <card.icon className="h-24 w-24" />
+                        <Card key={i} className="bg-card border-border shadow-sm rounded-3xl md:rounded-[2.5rem] p-6 md:p-8 relative overflow-hidden hover:border-primary/20 transition-all group">
+                            <div className={`absolute top-0 right-0 p-6 md:p-8 opacity-5 group-hover:opacity-10 transition-opacity ${card.color}`}>
+                                <card.icon className="h-16 md:h-24 w-16 md:w-24" />
                             </div>
-                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] mb-4">{card.label}</p>
-                            <div className="text-4xl font-black text-foreground italic font-heading tracking-tighter mb-2">{card.value}</div>
+                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] mb-3 md:mb-4">{card.label}</p>
+                            <div className="text-3xl md:text-4xl font-black text-foreground italic font-heading tracking-tighter mb-2">{card.value}</div>
                             <p className={`text-[10px] font-black uppercase tracking-widest ${card.color} flex items-center`}>
                                 <TrendingUp className="h-3 w-3 mr-2" /> {card.sub}
                             </p>
@@ -164,17 +164,17 @@ export default function CEOPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                     <Card className="lg:col-span-3 bg-card border-border shadow-sm rounded-[3rem] overflow-hidden">
-                        <div className="p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-                            <div className="flex items-center gap-6">
-                                <div className={`flex items-center justify-center h-16 w-16 rounded-2xl ${isDemoMode ? 'bg-orange-500/10 text-orange-500' : 'bg-primary/10 text-primary'}`}>
-                                    <Power className="h-8 w-8" />
+                        <div className="p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div className="flex items-center gap-6 w-full md:w-auto">
+                                <div className={`flex items-center justify-center h-14 w-14 md:h-16 md:w-16 rounded-2xl ${isDemoMode ? 'bg-orange-500/10 text-orange-500' : 'bg-primary/10 text-primary'} shrink-0`}>
+                                    <Power className="h-6 w-6 md:h-8 md:w-8" />
                                 </div>
-                                <div>
-                                    <h3 className="text-xl font-black uppercase tracking-tighter italic">Platform State</h3>
-                                    <p className="text-sm text-muted-foreground font-medium">Currently managing the live site state.</p>
+                                <div className="flex-1">
+                                    <h3 className="text-lg md:text-xl font-black uppercase tracking-tighter italic">Platform State</h3>
+                                    <p className="text-[10px] md:text-sm text-muted-foreground font-medium">Currently managing the live site state.</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-6">
+                            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 w-full md:w-auto">
                                 {isDemoMode ? (
                                     <div className="text-right">
                                         <p className="text-xs font-black uppercase tracking-widest text-orange-500 mb-1">Demo Expires in: {daysLeft} Days</p>
@@ -200,11 +200,11 @@ export default function CEOPage() {
 
                     {/* Pending Proposals */}
                     <Card className="lg:col-span-2 bg-card border-border shadow-sm rounded-[3rem] overflow-hidden">
-                        <CardHeader className="p-10 border-b border-border bg-muted/20">
-                            <div className="flex justify-between items-center">
+                        <CardHeader className="p-6 md:p-10 border-b border-border bg-muted/20">
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                                 <div>
-                                    <h3 className="text-2xl font-black uppercase tracking-tighter italic">Team Proposals</h3>
-                                    <p className="text-xs text-muted-foreground font-black uppercase tracking-widest mt-1 opacity-60">Status updates and strategy requests</p>
+                                    <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter italic">Team Proposals</h3>
+                                    <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mt-1 opacity-60 leading-tight">Status updates and strategy requests</p>
                                 </div>
                                 <Badge className="bg-primary/20 text-primary border-none text-[10px] font-black h-8 px-4 rounded-full">
                                     {proposals.filter(p => p.status === 'pending').length} New

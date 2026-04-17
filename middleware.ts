@@ -152,6 +152,19 @@ function extractRoleFromCookies(request: NextRequest): string | null {
 
 const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
 
+const ROLE_PATH_ACCESS: Record<string, string[]> = {
+    '/admin/ceo': ['ceo', 'cofounder'],
+    '/admin/technical': ['technical_admin', 'ceo', 'cofounder', 'admin'],
+    '/admin/operations': ['operations_admin', 'ceo', 'cofounder', 'admin'],
+    '/admin/marketing': ['marketing_admin', 'ceo', 'cofounder', 'admin'],
+    '/admin/users': ['operations_admin', 'technical_admin', 'ceo', 'cofounder', 'admin'],
+    '/admin/listings': ['marketing_admin', 'operations_admin', 'ceo', 'cofounder', 'admin'],
+    '/admin/orders': ['operations_admin', 'ceo', 'cofounder', 'admin'],
+    '/admin/payouts': ['operations_admin', 'ceo', 'cofounder', 'admin'],
+    '/admin/revenue': ['ceo', 'cofounder', 'admin'],
+    '/admin/disputes': ['operations_admin', 'ceo', 'cofounder', 'admin'],
+};
+
 // ─── Middleware ──────────────────────────────────────────────────────────────
 export async function middleware(request: NextRequest) {
     const { pathname, searchParams } = request.nextUrl;
@@ -173,7 +186,7 @@ export async function middleware(request: NextRequest) {
         if (!isAllowed) {
             const blockMinutes = isPortalRoute ? 60 : 30;
             return new NextResponse(
-                JSON.stringify({ error: `Too many attempts. Access blocked for ${blockMinutes} minutes.` }),
+                JSON.stringify({ error: `Too many attempts. Your access is temporarily restricted for ${blockMinutes} minutes for security.` }),
                 { status: 429, headers: { 'Content-Type': 'application/json' } }
             );
         }
@@ -225,58 +238,61 @@ export async function middleware(request: NextRequest) {
         const role = extractRoleFromCookies(request);
 
         if (!role || !ADMIN_ROLES.includes(role)) {
-            // Check mb-admin-session as fallback — the JWT might not have been
-            // refreshed yet but the auth callback already set the admin cookie
+            // Check mb-admin-session as fallback
+            let backupRole: string | null = null;
             if (hasAdminSession) {
                 try {
                     const adminPayload = request.cookies.get('mb-admin-session')?.value;
                     if (adminPayload) {
                         const decoded = JSON.parse(atob(adminPayload));
                         if (decoded.role && ADMIN_ROLES.includes(decoded.role)) {
-                            // Admin session cookie is valid — allow through
-                            const response = NextResponse.next();
-                            response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
-                            response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-                            return response;
+                            backupRole = decoded.role;
                         }
                     }
-                } catch {
-                    // Invalid admin session cookie — fall through to block
-                }
+                } catch {}
             }
 
-            // User is authenticated but NOT an admin — hard block
-            return new NextResponse(
-                JSON.stringify({ error: 'Access denied. Insufficient privileges.' }),
-                { status: 403, headers: { 'Content-Type': 'application/json' } }
-            );
+            if (!backupRole) {
+                return new NextResponse(
+                    JSON.stringify({ error: 'Access denied. You do not have administrative privileges.' }),
+                    { status: 403, headers: { 'Content-Type': 'application/json' } }
+                );
+            }
         }
 
-        // ✅ JWT role check passed — allow through even without mb-admin-session
-        // (The JWT is the source of truth; mb-admin-session is a backup)
+        const effectiveRole = role || extractRoleFromCookies(request); // double check or use backup
+
+        // ── ROLE-BASED PATH FILTERING ────────────────────────────────────────
+        // Check if the user has permission for the specific sub-path
+        const activeRole = role || (hasAdminSession ? JSON.parse(atob(request.cookies.get('mb-admin-session')?.value || '{}')).role : null);
+        
+        for (const [path, allowedRoles] of Object.entries(ROLE_PATH_ACCESS)) {
+            if (pathname.startsWith(path) && !allowedRoles.includes(activeRole)) {
+                return new NextResponse(
+                    JSON.stringify({ error: 'Security Alert: Access to this department is restricted for your role.' }),
+                    { status: 403, headers: { 'Content-Type': 'application/json' } }
+                );
+            }
+        }
+
         const response = NextResponse.next();
         response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
         response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+        
+        // Add Security Headers
+        response.headers.set('X-Content-Type-Options', 'nosniff');
+        response.headers.set('X-Frame-Options', 'DENY');
+        response.headers.set('X-XSS-Protection', '1; mode=block');
+        response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+        response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+        response.headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co;");
+        
         return response;
     }
 
     // ── 4.5. Launch Shield (Global guest protection) ──────────────────────────
-    // Anyone not logged in visiting secondary pages is redirected to the countdown
     const IS_LOGGED_IN = request.cookies.getAll().some(c => c.name.startsWith('sb-') && c.name.includes('-auth-token'));
-    
-    // Explicit list of pages guests ARE allowed to see during launch
-    const LAUNCH_PUBLIC_ROUTES = [
-        '/', 
-        '/login', 
-        '/signup', 
-        '/auth', 
-        '/portal',
-        '/seller-qr', 
-        '/seller-onboard', 
-        '/verify-email', 
-        '/reset-password',
-        '/api'
-    ];
+    const LAUNCH_PUBLIC_ROUTES = ['/', '/login', '/signup', '/auth', '/portal', '/seller-qr', '/seller-onboard', '/verify-email', '/reset-password', '/api'];
 
     const isPublicRoute = LAUNCH_PUBLIC_ROUTES.some(route => 
         pathname === route || pathname.startsWith(route + '/')
@@ -288,11 +304,10 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(url);
     }
 
-    // ── 5. Universal Security Headers ────────────────────────────────────────
+    // ── 5. Universal Security Headers (Public Routes) ────────────────────────
     const response = NextResponse.next();
     response.headers.set('X-Content-Type-Options', 'nosniff');
-    response.headers.set('X-Frame-Options', 'DENY');
-    response.headers.set('X-XSS-Protection', '1; mode=block');
+    response.headers.set('X-Frame-Options', 'SAMEORIGIN');
     response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
 
     return response;

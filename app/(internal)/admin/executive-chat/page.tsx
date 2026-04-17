@@ -102,8 +102,8 @@ export default function ExecutiveChatPage() {
 
                 setStaff(staffData || []);
             } catch (err) {
-                console.error('Core sync error:', err);
-                setError('Signal degraded. Check uplink.');
+                console.error('Chat sync error:', err);
+                setError('Connection lost. Please check your internet or refresh.');
             }
         };
 
@@ -149,7 +149,7 @@ export default function ExecutiveChatPage() {
                 }));
                 setMessages(mapped);
             } catch (err) {
-                console.error('Intel fetch error:', err);
+                console.error('Message fetch error:', err);
             } finally {
                 setLoadingMessages(false);
             }
@@ -212,9 +212,9 @@ export default function ExecutiveChatPage() {
 
             if (error) throw error;
         } catch (err) {
-            console.error('TX failed:', err);
+            console.error('Send failed:', err);
             setNewMessage(content);
-            toast('Signal blocked. Retry broadcast.', 'error');
+            toast('Failed to send message. Please try again.', 'error');
         }
     };
 
@@ -239,7 +239,7 @@ export default function ExecutiveChatPage() {
             setActiveChannel(data);
             setIsCreateChannelOpen(false);
             setNewChannelName('');
-            toast(`Encrypted node #${data.name} online.`, 'success');
+            toast(`Channel #${data.name} is now live.`, 'success');
         } catch (err) {
             console.error('Node construction failed:', err);
             toast('Authorization failed or matrix unstable.', 'error');
@@ -281,8 +281,8 @@ export default function ExecutiveChatPage() {
             setIsNewDMOpen(false);
             toast(`Private relay with ${otherUser.display_name} activated.`, 'success');
         } catch (err) {
-            console.error('Secure line failed:', err);
-            toast('Secure handshake rejected.', 'error');
+            console.error('Private chat failed:', err);
+            toast('Could not start private chat.', 'error');
         }
     };
 
@@ -292,10 +292,10 @@ export default function ExecutiveChatPage() {
         setIsInitializing(true);
         try {
             const defaultChannels = [
-                { id: 'gen', name: 'general-ops', label: 'General Ops', type: 'public', is_dm: false },
-                { id: 'strat', name: 'ceo-strategy', label: 'CEO Strategy', type: 'private', is_dm: false },
-                { id: 'tech', name: 'tech-signals', label: 'Tech Signals', type: 'public', is_dm: false },
-                { id: 'abj', name: 'ops-abuja', label: 'Abuja Node', type: 'public', is_dm: false }
+                { id: 'gen', name: 'general-office', label: 'Office Chat', type: 'public', is_dm: false },
+                { id: 'strat', name: 'management-only', label: 'Management', type: 'private', is_dm: false },
+                { id: 'tech', name: 'technical-support', label: 'Tech Support', type: 'public', is_dm: false },
+                { id: 'ops', name: 'operations-desk', label: 'Operations', type: 'public', is_dm: false }
             ];
 
             const { error } = await supabase
@@ -322,9 +322,9 @@ export default function ExecutiveChatPage() {
                 <div className="relative mb-8 h-24 w-24 bg-background border border-border rounded-[2rem] flex items-center justify-center shadow-2xl group hover:scale-110 transition-transform">
                     <Terminal className="h-10 w-10 text-primary" />
                 </div>
-                <h3 className="text-4xl font-black uppercase tracking-tighter text-foreground italic mb-4">Relay <span className="text-primary">Matrix</span> Offline</h3>
+                <h3 className="text-4xl font-black uppercase tracking-tighter text-foreground italic mb-4">Chat System <span className="text-primary">Initializing</span></h3>
                 <p className="text-muted-foreground max-w-sm mb-12 font-medium leading-relaxed opacity-70 italic font-heading">
-                    The executive communication grid is currently inactive or unreachable. Deploy the secure infrastructure to enable personnel coordination.
+                    The team communication hub is currently setting up. Please activate the connection below to begin messaging.
                 </p>
                 <div className="flex flex-col gap-4">
                     <Button
@@ -333,13 +333,13 @@ export default function ExecutiveChatPage() {
                         className="h-16 px-12 bg-primary hover:opacity-90 text-primary-foreground font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-primary/20 transition-all border-none"
                     >
                         {isInitializing ? (
-                            <><Loader2 className="mr-3 h-6 w-6 animate-spin" /> Provisioning nodes...</>
+                            <><Loader2 className="mr-3 h-6 w-6 animate-spin" /> Connecting...</>
                         ) : (
-                            "Activate Secure Link ⚡"
+                            "Activate Communication Link ⚡"
                         )}
                     </Button>
                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground opacity-40">
-                        {error?.includes('42P01') ? "Table Missing: Manual activation required in SQL Editor." : "Check Uplink Connection."}
+                        {error?.includes('42P01') ? "Infrastructure Pending: Database table needs creation." : "Verifying Connection..."}
                     </p>
                 </div>
             </div>
@@ -464,7 +464,7 @@ export default function ExecutiveChatPage() {
                                 </div>
                                 <div>
                                     <h3 className="font-black text-foreground text-xl italic tracking-tighter uppercase">{activeChannel?.name}</h3>
-                                    <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-60">Department-wide Broadcast</p>
+                                    <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-60">Team Discussion</p>
                                 </div>
                             </div>
                         )}
@@ -559,8 +559,8 @@ export default function ExecutiveChatPage() {
             <Dialog open={isNewDMOpen} onOpenChange={setIsNewDMOpen}>
                 <DialogContent className="bg-card border-border rounded-[2rem] max-w-md">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black uppercase tracking-tighter italic">Personal <span className="text-primary">Handshake</span></DialogTitle>
-                        <DialogDescription className="uppercase text-[10px] font-bold tracking-widest opacity-60">Connect with a department lead.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black uppercase tracking-tighter italic">Message <span className="text-primary">Staff</span></DialogTitle>
+                        <DialogDescription className="uppercase text-[10px] font-bold tracking-widest opacity-60">Start a conversation with a department lead.</DialogDescription>
                     </DialogHeader>
                     <ScrollArea className="h-[300px] mt-4">
                         <div className="space-y-2 pr-4">

@@ -120,26 +120,26 @@ export default function OperationsAdminPage() {
                     <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground font-heading">Operations Dashboard</span>
                 </div>
                 
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 md:gap-10">
                     <div className="space-y-4">
-                        <h1 className="text-4xl md:text-7xl font-black uppercase tracking-tighter italic font-heading leading-none">
+                        <h1 className="text-4xl md:text-7xl font-black uppercase tracking-tighter italic font-heading leading-tight md:leading-none">
                             General <span className="text-primary">Operations</span>
                         </h1>
-                        <p className="text-muted-foreground text-xs font-black uppercase tracking-widest leading-relaxed opacity-60 max-w-2xl">
+                        <p className="text-muted-foreground text-[10px] md:text-xs font-black uppercase tracking-widest leading-relaxed opacity-60 max-w-2xl">
                              Account verification // Revenue management // Ambassador onboard checks
                         </p>
                     </div>
                     <div className="flex items-center gap-4">
-                       <Badge variant="outline" className="h-16 px-8 rounded-2xl border-border bg-card shadow-sm flex items-center gap-4">
+                       <Badge variant="outline" className="h-14 md:h-16 px-6 md:px-8 rounded-2xl border-border bg-card shadow-sm flex items-center gap-4">
                             <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
                             <div className="text-left">
-                                <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Administrator ID</p>
-                                <p className="text-[12px] font-black text-foreground uppercase tracking-tighter">ADMIN-UNIT-{user?.id?.slice(0, 4).toUpperCase() || 'HUB'}</p>
+                                <p className="text-[7px] md:text-[8px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Administrator ID</p>
+                                <p className="text-[10px] md:text-[12px] font-black text-foreground uppercase tracking-tighter">ADMIN-UNIT-{user?.id?.slice(0, 4).toUpperCase() || 'HUB'}</p>
                             </div>
                         </Badge>
                         <Link href="/admin/executive-chat">
-                            <Button className="h-16 w-16 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 rounded-2xl flex items-center justify-center border shadow-xl shadow-primary/5">
-                                <MessageSquare className="h-6 w-6" />
+                            <Button className="h-14 md:h-16 w-14 md:w-16 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 rounded-2xl flex items-center justify-center border shadow-xl shadow-primary/5">
+                                <MessageSquare className="h-5 md:h-6 w-5 md:w-6" />
                             </Button>
                         </Link>
                     </div>
@@ -167,11 +167,11 @@ export default function OperationsAdminPage() {
                 </TabsList>
 
                 <TabsContent value="sellers" className="space-y-6">
-                    <Card className="bg-card border-border shadow-sm rounded-[3.5rem] overflow-hidden">
-                        <CardHeader className="bg-muted/10 py-12 px-12 border-b border-border">
-                            <CardTitle className="text-3xl font-black uppercase italic tracking-tighter">Pending <span className="text-primary">Verifications</span></CardTitle>
+                    <Card className="bg-card border-border shadow-sm rounded-[2rem] md:rounded-[3.5rem] overflow-hidden">
+                        <CardHeader className="bg-muted/10 py-8 px-6 md:py-12 md:px-12 border-b border-border">
+                            <CardTitle className="text-2xl md:text-3xl font-black uppercase italic tracking-tighter">Pending <span className="text-primary">Verifications</span></CardTitle>
                         </CardHeader>
-                        <CardContent className="p-12 space-y-6">
+                        <CardContent className="p-6 md:p-12 space-y-6">
                             {pendingSellers.map((seller) => (
                                 <div key={seller.id} className="flex flex-col lg:flex-row lg:items-center justify-between bg-muted/30 p-10 rounded-[2.5rem] border border-border/50 gap-10 group hover:bg-muted/50 transition-all">
                                     <div className="flex items-center gap-10">
@@ -222,27 +222,27 @@ export default function OperationsAdminPage() {
 
                 <TabsContent value="revenue">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-12">
-                         <Card className="bg-card border-border shadow-xl rounded-[4rem] p-12 relative overflow-hidden group">
+                         <Card className="bg-card border-border shadow-xl rounded-[3rem] md:rounded-[4rem] p-8 md:p-12 relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] rounded-full group-hover:bg-primary/10 transition-all" />
-                            <p className="text-[11px] text-muted-foreground font-black uppercase tracking-[0.5em] mb-8 flex items-center gap-3">
+                            <p className="text-[10px] md:text-[11px] text-muted-foreground font-black uppercase tracking-[0.5em] mb-6 md:mb-8 flex items-center gap-3">
                                 <Activity className="h-4 w-4" /> Total Transaction Volume
                             </p>
-                            <p className="text-6xl md:text-8xl font-black text-foreground italic font-heading tracking-tighter leading-none mb-6">
+                            <p className="text-4xl md:text-8xl font-black text-foreground italic font-heading tracking-tighter leading-none mb-6">
                                 ₦{revenue.totalVolume.toLocaleString()}
                             </p>
-                            <div className="flex items-center gap-3 text-green-500 text-[11px] font-black uppercase tracking-widest">
+                            <div className="flex items-center gap-3 text-green-500 text-[10px] md:text-[11px] font-black uppercase tracking-widest">
                                 <TrendingUp className="h-5 w-5" /> Positive Growth Trend
                             </div>
                         </Card>
-                        <Card className="bg-primary text-primary-foreground border-none shadow-[0_25px_80px_rgba(255,98,0,0.25)] rounded-[4rem] p-12 relative overflow-hidden group">
+                        <Card className="bg-primary text-primary-foreground border-none shadow-[0_25px_80px_rgba(255,98,0,0.25)] rounded-[3rem] md:rounded-[4rem] p-8 md:p-12 relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-[100px] rounded-full group-hover:bg-white/20 transition-all" />
-                            <p className="text-[11px] opacity-60 font-black uppercase tracking-[0.5em] mb-8 flex items-center gap-3">
+                            <p className="text-[10px] md:text-[11px] opacity-60 font-black uppercase tracking-[0.5em] mb-6 md:mb-8 flex items-center gap-3">
                                 <Crown className="h-4 w-4" /> Platform Revenue (Net)
                             </p>
-                            <p className="text-6xl md:text-8xl font-black italic font-heading tracking-tighter leading-none mb-6">
+                            <p className="text-4xl md:text-8xl font-black italic font-heading tracking-tighter leading-none mb-6">
                                 ₦{revenue.totalCommission.toLocaleString()}
                             </p>
-                            <div className="flex items-center gap-3 opacity-80 text-[11px] font-black uppercase tracking-widest">
+                            <div className="flex items-center gap-3 opacity-80 text-[10px] md:text-[11px] font-black uppercase tracking-widest">
                                 <Activity className="h-5 w-5" /> Financial Health: Nominal
                             </div>
                         </Card>

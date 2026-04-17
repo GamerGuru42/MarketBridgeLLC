@@ -109,12 +109,12 @@ export default function MarketingAdminPage() {
                     { label: 'Weekly Growth', value: stats.growthVelocity, icon: TrendingUp, sub: 'Progress Trend', color: 'text-primary' },
                     { label: 'Seller Conversion', value: stats.conversionRate === 'N/A' ? '12%' : stats.conversionRate, icon: Rocket, sub: 'Users to Merchants', color: 'text-orange-500' },
                 ].map((kpi, i) => (
-                    <Card key={i} className="bg-card border-border shadow-sm rounded-[2.5rem] p-8 relative overflow-hidden group hover:border-primary/20 transition-all">
-                        <div className={`absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity ${kpi.color}`}>
-                            <kpi.icon className="h-20 w-20" />
+                    <Card key={i} className="bg-card border-border shadow-sm rounded-3xl md:rounded-[2.5rem] p-6 md:p-8 relative overflow-hidden group hover:border-primary/20 transition-all">
+                        <div className={`absolute top-0 right-0 p-6 md:p-8 opacity-5 group-hover:opacity-10 transition-opacity ${kpi.color}`}>
+                            <kpi.icon className="h-16 md:h-20 w-16 md:w-20" />
                         </div>
-                        <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] mb-4">{kpi.label}</p>
-                        <div className="text-4xl font-black text-foreground italic font-heading tracking-tighter mb-2 transition-transform group-hover:scale-105 origin-left">{typeof kpi.value === 'number' ? kpi.value.toLocaleString() : kpi.value}</div>
+                        <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] mb-3 md:mb-4">{kpi.label}</p>
+                        <div className="text-3xl md:text-4xl font-black text-foreground italic font-heading tracking-tighter mb-2 transition-transform group-hover:scale-105 origin-left">{typeof kpi.value === 'number' ? kpi.value.toLocaleString() : kpi.value}</div>
                         <p className="text-[9px] font-black uppercase tracking-widest opacity-40 italic">{kpi.sub}</p>
                     </Card>
                 ))}
@@ -122,13 +122,13 @@ export default function MarketingAdminPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 relative z-10">
                 {/* Recent Signups */}
-                <Card className="lg:col-span-2 bg-card border-border shadow-sm rounded-[3rem] overflow-hidden transition-colors duration-300">
-                    <CardHeader className="bg-muted/20 py-10 px-10 border-b border-border flex flex-row items-center justify-between">
+                <Card className="lg:col-span-2 bg-card border-border shadow-sm rounded-[2rem] md:rounded-[3rem] overflow-hidden transition-colors duration-300">
+                    <CardHeader className="bg-muted/20 py-8 px-6 md:py-10 md:px-10 border-b border-border flex flex-row items-center justify-between">
                         <div>
-                            <CardTitle className="text-3xl font-black uppercase italic tracking-tighter">Recent <span className="text-primary">Signups</span></CardTitle>
-                            <p className="text-[11px] text-muted-foreground font-black uppercase tracking-widest mt-1 opacity-60 italic">Latest user registrations</p>
+                            <CardTitle className="text-2xl md:text-3xl font-black uppercase italic tracking-tighter">Recent <span className="text-primary">Signups</span></CardTitle>
+                            <p className="text-[10px] md:text-[11px] text-muted-foreground font-black uppercase tracking-widest mt-1 opacity-60 italic leading-tight">Latest user registrations</p>
                         </div>
-                        <Zap className="h-6 w-6 text-primary animate-pulse" />
+                        <Zap className="h-5 md:h-6 w-5 md:w-6 text-primary animate-pulse" />
                     </CardHeader>
                     <div className="p-0 overflow-x-auto">
                         <Table>

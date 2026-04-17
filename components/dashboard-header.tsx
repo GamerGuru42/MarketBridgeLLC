@@ -29,7 +29,7 @@ export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
             <div className="flex items-center gap-6">
                 <Sheet>
                     <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon" className="md:hidden text-zinc-900">
+                        <Button variant="ghost" size="icon" className="md:hidden text-foreground">
                             <Menu className="h-6 w-6" />
                             <span className="sr-only">Toggle Menu</span>
                         </Button>
@@ -56,11 +56,6 @@ export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
 
                 <ThemeToggle />
 
-                <Button variant="outline" className="hidden md:flex items-center gap-2 border-red-500/20 text-red-500 hover:bg-red-500/10 hover:text-red-400 transition-colors uppercase tracking-widest text-[10px] font-black" onClick={async () => { await logout(); router.push('/'); }}>
-                    <LogOut className="h-4 w-4" />
-                    Logout
-                </Button>
-
                 <div className="flex items-center gap-4 pl-6 border-l border-zinc-100">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -70,20 +65,14 @@ export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" sideOffset={15} className="w-64 bg-[#FAFAFA] border border-zinc-200 p-2 text-zinc-900 z-[999] rounded-[2rem] shadow-2xl backdrop-blur-3xl">
                             <div className="px-4 py-3 mb-2 border-b border-zinc-100">
-                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Protocol Holder</p>
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Management Account</p>
                                 <p className="text-sm font-black truncate uppercase">{user?.displayName}</p>
                             </div>
                             <DropdownMenuItem asChild className="focus:bg-white rounded-xl cursor-pointer py-3 group outline-none transition-colors border border-transparent focus:border-zinc-100">
                                 <Link href="/settings" className="flex items-center gap-4 w-full px-2">
                                     <User className="h-4 w-4 text-zinc-500 group-hover:text-[#FF6200]" />
-                                    <span className="font-bold uppercase text-[10px] tracking-widest text-zinc-500 group-hover:text-zinc-900">Profile Node</span>
+                                    <span className="font-bold uppercase text-[10px] tracking-widest text-zinc-500 group-hover:text-zinc-900">Account Settings</span>
                                 </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={async () => { await logout(); router.push('/'); }} className="focus:bg-red-500/10 text-red-500 rounded-xl cursor-pointer py-3 group outline-none border border-transparent focus:border-red-500/10">
-                                <span className="flex items-center gap-4 w-full px-2">
-                                    <LogOut className="h-4 w-4 text-red-500" />
-                                    <span className="font-bold uppercase text-[10px] tracking-widest text-red-500">Disconnect / Logout</span>
-                                </span>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
