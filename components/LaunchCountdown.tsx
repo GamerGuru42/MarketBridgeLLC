@@ -1,14 +1,26 @@
-import { useState, useEffect } from 'react';
+'use client';
+
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import QRCode from 'react-qr-code';
-import { ArrowRight, Globe } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useSystem, DEMO_DURATION_DAYS } from '@/contexts/SystemContext';
 
 export function LaunchCountdown() {
     const router = useRouter();
+    const { isDemoMode, demoStartDate, launchDate } = useSystem();
     const sellerUrl = "https://marketbridge.com.ng/seller-onboard";
-    // Target date: April 20th, 2026, 00:00:00 +01:00 (Nigeria)
-    const targetDate = new Date('2026-04-20T00:00:00+01:00').getTime();
+
+    // Calculate dynamic target date
+    const targetDate = useMemo(() => {
+        if (isDemoMode && demoStartDate) {
+            const start = new Date(demoStartDate);
+            start.setDate(start.getDate() + DEMO_DURATION_DAYS);
+            return start.getTime();
+        }
+        return new Date(launchDate).getTime();
+    }, [isDemoMode, demoStartDate, launchDate]);
     
     const [isMounted, setIsMounted] = useState(false);
     const [timeLeft, setTimeLeft] = useState<{
@@ -26,6 +38,7 @@ export function LaunchCountdown() {
 
             if (distance < 0) {
                 clearInterval(timer);
+                setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
                 return;
             }
 
@@ -53,7 +66,9 @@ export function LaunchCountdown() {
             <div className="relative z-10 flex flex-col items-center gap-3">
                 <div className="flex items-center gap-3 px-4 py-2 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full">
                     <div className="h-1.5 w-1.5 rounded-full bg-[#FF6200] animate-pulse" />
-                    <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">Coming Soon // MarketBridge</span>
+                    <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">
+                        {isDemoMode ? 'Private Beta Testing Active' : 'Official Launch Sequence'} // MarketBridge
+                    </span>
                 </div>
             </div>
 
@@ -64,7 +79,7 @@ export function LaunchCountdown() {
                         The <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6200] to-[#FF9000]">Market</span> is Coming
                     </h1>
                     <p className="text-zinc-500 font-bold tracking-[0.3em] text-[9px] md:text-sm uppercase italic">
-                        Launching for Abuja campuses in:
+                        {isDemoMode ? 'Beta Phase concludes in:' : 'Launching for Abuja campuses in:'}
                     </p>
                 </div>
 

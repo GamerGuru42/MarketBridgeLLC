@@ -3,11 +3,15 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
+export const DEMO_TRANSACTION_LIMIT = 5000;
+export const DEMO_DURATION_DAYS = 30;
+
 interface SystemSettings {
     isDemoMode: boolean;
     demoStartDate: string | null;
     daysLeft: number;
     isExpired: boolean;
+    launchDate: string;
 }
 
 const defaultSettings: SystemSettings = {
@@ -15,6 +19,7 @@ const defaultSettings: SystemSettings = {
     demoStartDate: null,
     daysLeft: 30,
     isExpired: false,
+    launchDate: '2026-04-20T00:00:00+01:00',
 };
 
 const SystemContext = createContext<SystemSettings>(defaultSettings);
@@ -28,7 +33,6 @@ export const SystemProvider = ({ children }: { children: React.ReactNode }) => {
 
         async function fetchSettings() {
             try {
-                // Fetch the system settings from the database
                 const { data, error } = await supabase
                     .from('system_settings')
                     .select('*')
@@ -42,7 +46,7 @@ export const SystemProvider = ({ children }: { children: React.ReactNode }) => {
 
                 if (mounted && data) {
                     const isDemo = data.is_demo_mode;
-                    let daysLeft = 30;
+                    let daysLeft = DEMO_DURATION_DAYS;
                     let isExpired = false;
 
                     if (isDemo && data.demo_start_date) {
@@ -50,7 +54,7 @@ export const SystemProvider = ({ children }: { children: React.ReactNode }) => {
                         const now = new Date().getTime();
                         const diffMs = now - start;
                         const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-                        daysLeft = Math.max(0, 30 - diffDays);
+                        daysLeft = Math.max(0, DEMO_DURATION_DAYS - diffDays);
                         isExpired = daysLeft <= 0;
                     }
 
@@ -59,6 +63,7 @@ export const SystemProvider = ({ children }: { children: React.ReactNode }) => {
                         demoStartDate: data.demo_start_date,
                         daysLeft,
                         isExpired,
+                        launchDate: data.launch_date || '2026-04-20T00:00:00+01:00',
                     });
                 }
             } catch (err) {
@@ -68,7 +73,6 @@ export const SystemProvider = ({ children }: { children: React.ReactNode }) => {
 
         fetchSettings();
 
-        // Optional: subscribe to database changes for real-time updates
         const channel = supabase
             .channel('system_settings_changes')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'system_settings', filter: 'id=eq.global' }, (payload) => {
@@ -76,14 +80,14 @@ export const SystemProvider = ({ children }: { children: React.ReactNode }) => {
                 if (!newData) return;
 
                 const isDemo = newData.is_demo_mode;
-                let daysLeft = 30;
+                let daysLeft = DEMO_DURATION_DAYS;
                 let isExpired = false;
 
                 if (isDemo && newData.demo_start_date) {
                     const start = new Date(newData.demo_start_date).getTime();
                     const now = new Date().getTime();
                     const diffDays = Math.floor((now - start) / (1000 * 60 * 60 * 24));
-                    daysLeft = Math.max(0, 30 - diffDays);
+                    daysLeft = Math.max(0, DEMO_DURATION_DAYS - diffDays);
                     isExpired = daysLeft <= 0;
                 }
 
@@ -92,6 +96,7 @@ export const SystemProvider = ({ children }: { children: React.ReactNode }) => {
                     demoStartDate: newData.demo_start_date,
                     daysLeft,
                     isExpired,
+                    launchDate: newData.launch_date || '2026-04-20T00:00:00+01:00',
                 });
             })
             .subscribe();
@@ -114,7 +119,7 @@ export const SystemProvider = ({ children }: { children: React.ReactNode }) => {
                         <h1 className="text-4xl font-black uppercase tracking-tighter italic text-destructive">Demo Expired</h1>
                         <p className="text-muted-foreground font-medium">The 30-day private beta period for MarketBridge has officially concluded. Thank you to everyone who participated in the testing phase!</p>
                         <div className="bg-muted p-4 rounded-xl border border-border">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-foreground">Official launch sequence initiating soon.</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-foreground font-heading italic">Official launch sequence initiating soon.</p>
                         </div>
                     </div>
                 </div>

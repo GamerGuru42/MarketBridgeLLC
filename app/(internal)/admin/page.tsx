@@ -402,11 +402,58 @@ export default function MissionControlPage() {
 
                     {/* Right Column Modules */}
                     <div className="space-y-10">
+                        {/* Demo Mode Management (Consolidated) */}
+                        <Card className="bg-[#FF6200]/5 border-[#FF6200]/20 shadow-xl shadow-primary/5 rounded-[2.5rem] p-10 space-y-6">
+                            <div className="flex items-center justify-between">
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary italic">Live System Control</h4>
+                                <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                            </div>
+                            <h3 className="text-3xl font-black uppercase italic tracking-tighter font-heading">Demo <span className="text-primary">Shield</span></h3>
+                            
+                            <div className="p-6 bg-white dark:bg-black/40 border border-[#FF6200]/10 rounded-3xl space-y-4">
+                                <div className="flex justify-between items-end">
+                                    <div>
+                                        <p className="text-[8px] font-black uppercase text-muted-foreground mb-1">Status</p>
+                                        <p className="text-xl font-black text-primary italic uppercase">{isDemoMode ? 'Active / Private Beta' : 'Production Live'}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-[8px] font-black uppercase text-muted-foreground mb-1">Time Remaining</p>
+                                        <p className="text-xl font-black text-foreground italic">{daysLeft} Days</p>
+                                    </div>
+                                </div>
+                                <div className="w-full bg-muted/50 rounded-full h-2 overflow-hidden">
+                                    <div 
+                                        className="bg-primary h-full transition-all duration-1000" 
+                                        style={{ width: `${(daysLeft / 30) * 100}%` }}
+                                    />
+                                </div>
+                                <p className="text-[9px] text-muted-foreground font-medium italic leading-relaxed">
+                                    β Phase Protection: ₦5,000 Transaction Cap & Paystack Test Mode are currently enforced.
+                                </p>
+                            </div>
+
+                            <Button 
+                                onClick={async () => {
+                                    if (!confirm('Are you sure you want to reset the 30-day demo period? This will restart the countdown from today.')) return;
+                                    try {
+                                        const res = await fetch('/api/admin/reset-demo', { method: 'POST' });
+                                        if (res.ok) {
+                                            toast('Demo period reset successfully!', 'success');
+                                            window.location.reload();
+                                        }
+                                    } catch (e) { toast('Reset failed.', 'error'); }
+                                }}
+                                className="w-full h-14 bg-primary text-black hover:bg-primary/90 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg"
+                            >
+                                <RefreshCw className="h-4 w-4 mr-3" /> Reset 30-Day Window
+                            </Button>
+                        </Card>
+
                         {/* Messages Hub */}
-                        <Card className="bg-card dark:bg-black text-foreground dark:text-white border-border dark:border-none shadow-2xl shadow-primary/10 rounded-[2.5rem] overflow-hidden flex flex-col h-[520px]">
+                        <Card className="bg-card dark:bg-black text-foreground dark:text-white border-border dark:border-none shadow-2xl shadow-primary/10 rounded-[2.5rem] overflow-hidden flex flex-col h-[400px]">
                             <div className="p-8 bg-muted/50 dark:bg-zinc-950/50 flex items-center justify-between border-b border-border dark:border-white/5">
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground dark:text-white/50 flex items-center gap-3">
-                                    <div className="h-2 w-2 rounded-full bg-primary" /> Recent Messages
+                                    <div className="h-2 w-2 rounded-full bg-primary" /> Team Updates
                                 </h3>
                                 <MessageSquare className="h-4 w-4 text-primary" />
                             </div>
@@ -431,31 +478,6 @@ export default function MissionControlPage() {
                             <Link href="/admin/executive-chat" className="p-6 bg-primary text-primary-foreground text-center font-black uppercase text-[10px] tracking-widest hover:bg-primary/90 transition-all">
                                 Open Chat Hub
                             </Link>
-                        </Card>
-
-                        {/* Page Links */}
-                        <Card className="bg-card border-border shadow-sm rounded-[2.5rem] p-10 space-y-8">
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-3">
-                                Quick Navigation
-                            </h3>
-                            <div className="grid gap-3">
-                                {[
-                                    { label: 'Technical Dashboard', href: '/admin/technical', icon: Terminal, desc: 'Health & System Data', show: isTechAdmin || user?.role === 'ceo' || user?.role === 'admin' },
-                                    { label: 'Operations Panel', href: '/admin/operations', icon: Activity, desc: 'Users & Approvals', show: isOpsAdmin },
-                                    { label: 'Marketing Stats', href: '/admin/marketing', icon: Zap, desc: 'Trends & Growth', show: isMarketingAdmin || user?.role === 'ceo' || user?.role === 'admin' },
-                                ].filter(link => link.show).map((hub, i) => (
-                                    <Link key={i} href={hub.href} className="group flex items-center gap-6 p-5 rounded-2xl bg-muted/40 border border-border hover:border-primary/40 transition-all">
-                                        <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center group-hover:bg-primary/10 border border-border/50">
-                                            <hub.icon className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
-                                        </div>
-                                        <div>
-                                            <p className="text-[11px] font-black uppercase text-foreground italic font-heading tracking-tight">{hub.label}</p>
-                                            <p className="text-[9px] font-medium text-muted-foreground uppercase opacity-40 italic">{hub.desc}</p>
-                                        </div>
-                                        <ChevronRight className="h-4 w-4 ml-auto text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
-                                    </Link>
-                                ))}
-                            </div>
                         </Card>
                     </div>
                 </div>

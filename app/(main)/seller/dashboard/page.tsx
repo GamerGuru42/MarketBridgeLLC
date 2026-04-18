@@ -1018,8 +1018,13 @@ export default function SellerDashboardPage() {
                             <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 dark:text-white/40 font-heading leading-tight transition-colors">Seller Dashboard</span>
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
+                        <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading flex flex-wrap items-center gap-4">
                             Seller <span className="text-[#FF6200]">Dashboard</span>
+                            {ambassadorStatus === 'approved' && (
+                                <Badge className="h-10 px-6 bg-[#FF6200] text-black border-4 border-black font-black uppercase italic tracking-widest text-[10px] shadow-[0_4px_20px_rgba(255,98,0,0.5)] animate-in slide-in-from-right duration-500">
+                                    <Crown className="h-4 w-4 mr-2" /> Brand Ambassador
+                                </Badge>
+                            )}
                         </h1>
                         <p className="text-zinc-500 dark:text-white/40 font-medium max-w-xl italic transition-colors">
                             Command center for <span className="text-zinc-900 dark:text-white font-bold">{user?.displayName}</span>.
@@ -1425,6 +1430,28 @@ export default function SellerDashboardPage() {
                                     {/* Visual Accent */}
                                     <Crown className="absolute -bottom-6 -right-6 h-32 w-32 text-[#FF6200] opacity-[0.03] rotate-12" />
                                 </div>
+                                {ambassadorStatus === 'approved' && (
+                                    <div className="mt-10 pt-10 border-t border-zinc-100 dark:border-white/5 space-y-6">
+                                        <div className="flex items-center gap-2">
+                                            <TrendingUp className="h-4 w-4 text-[#FF6200]" />
+                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] italic">Ambassador Impact</h4>
+                                        </div>
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                            {[
+                                                { label: 'Network Growth', val: `${referralStats.totalInvited}`, desc: 'Users Onboarded' },
+                                                { label: 'Status Multiplier', val: '2.5x', desc: 'Bonus Coins Active' },
+                                                { label: 'Reward Pool', val: `${referralStats.coinsEarned + 500}`, desc: 'Total MC Earned' },
+                                                { label: 'Campus Rank', val: '#12', desc: 'Top Performer' },
+                                            ].map((m, i) => (
+                                                <div key={i} className="p-4 rounded-2xl bg-white dark:bg-white/[0.02] border border-zinc-100 dark:border-white/5">
+                                                    <p className="text-[8px] font-black uppercase text-zinc-500 mb-1">{m.label}</p>
+                                                    <p className="text-xl font-black text-zinc-900 dark:text-white italic font-heading leading-tight">{m.val}</p>
+                                                    <p className="text-[7px] font-bold text-zinc-400 uppercase tracking-widest mt-0.5">{m.desc}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </TabsContent>
 

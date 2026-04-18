@@ -616,6 +616,11 @@ export default function ListingDetailContent() {
                                                     {actionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
                                                     Confirm Purchase
                                                 </Button>
+                                                <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl">
+                                                    <p className="text-[9px] font-black uppercase tracking-tight text-amber-700 leading-tight">
+                                                        ⚠️ This is a test/demo version. No real transactions or money will be processed. This is for testing purposes only.
+                                                    </p>
+                                                </div>
                                                 {!listing.dealer.paystack_subaccount_code && (
                                                     <p className="text-[8px] font-black uppercase tracking-widest text-red-500 text-center px-4 animate-pulse">
                                                         Seller Payouts Not Configured

@@ -45,7 +45,7 @@ export async function POST(req: Request) {
             }
         }
 
-        // Demo Mode Safety Check
+        // Private Beta / Demo Mode Enforcement
         const { data: systemSettings } = await supabase
             .from('system_settings')
             .select('is_demo_mode')
@@ -56,7 +56,13 @@ export async function POST(req: Request) {
         const finalPrice = listing.current_offered_price || listing.price;
 
         if (isDemo && finalPrice > 5000) {
-            return NextResponse.json({ error: 'Beta Phase Limit: Maximum transaction size is ₦5,000 during this Private Beta. Please negotiate the price down for testing.' }, { status: 403 });
+            return NextResponse.json({ 
+                error: '🚧 PRIVATE BETA LIMIT: During this 30-day testing window, maximum transaction value is capped at ₦5,000. Please negotiate the price down in the chat to proceed with this test payment.' 
+            }, { status: 403 });
+        }
+
+        if (isDemo) {
+            console.log('NOTICE: Initializing transaction in DEMO MODE (Test Environment Enforced)');
         }
 
         // 2. Calculate Commission & Split (Two-Tier Transaction System)

@@ -294,6 +294,16 @@ function LoginContent() {
                     </p>
                 </div>
 
+                <div className="mb-8 p-4 bg-[#FF6200]/10 border border-[#FF6200]/30 rounded-2xl flex items-start gap-3">
+                    <ShieldAlert className="h-5 w-5 text-[#FF6200] shrink-0 mt-0.5" />
+                    <div>
+                        <h4 className="text-[#FF6200] font-black uppercase text-[10px] tracking-widest mb-1 italic">🚀 Private Beta Mode Active</h4>
+                        <p className="text-[#FF6200]/80 text-[10px] font-bold leading-relaxed">
+                            This is a test/demo version. No real transactions or money will be processed. Access is strictly for testing purposes during this Private Beta phase.
+                        </p>
+                    </div>
+                </div>
+
                 {error && (
                     <div className="bg-destructive/10 border border-destructive/20 rounded-2xl p-4 flex items-center gap-4 mb-8">
                         <AlertTriangle className="h-5 w-5 text-destructive shrink-0" />

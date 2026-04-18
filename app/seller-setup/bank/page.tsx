@@ -80,18 +80,37 @@ export default function BankSetupPage() {
         try {
             const selectedBank = banks.find(b => b.code === selectedBankCode);
             
-            // Save to supabase
+            // 1. Create Paystack Subaccount via API (Required for settlements)
+            const subRes = await fetch('/api/paystack/subaccount', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    businessName: user.display_name || 'MarketBridge Seller',
+                    bankCode: selectedBankCode,
+                    accountNumber: accountNumber,
+                    userId: user.id
+                })
+            });
+
+            const subData = await subRes.json();
+            
+            if (!subRes.ok || subData.error) {
+                throw new Error(subData.error || 'Failed to sync with payment processor');
+            }
+
+            // 2. Final Supabase Update for local fields (redundant but safe)
             const { error } = await supabase.from('users').update({
                 bank_name: selectedBank?.name || '',
                 bank_code: selectedBankCode,
                 account_number: accountNumber,
-                account_name: accountName
+                account_name: accountName,
+                paystack_subaccount_code: subData.subaccount_code
             }).eq('id', user.id);
 
             if (error) throw error;
             
             await refreshUser();
-            toast('Account setup complete! Welcome to MarketBridge Seller.', 'success');
+            toast('Account setup complete! Your payout profile is now active.', 'success');
             router.push('/seller/dashboard');
             
         } catch (error: any) {

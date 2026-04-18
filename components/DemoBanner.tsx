@@ -16,13 +16,13 @@ export function DemoBanner() {
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-black opacity-40"></span>
                         <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-black"></span>
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] italic">Live Testing: Demo Period</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] italic">🚀 DEMO MODE – Private Beta</p>
                 </div>
                 <div className="h-5 w-px bg-black/10 hidden sm:block" />
                 <p className="text-[10px] font-bold tracking-widest uppercase flex items-center gap-3">
-                    <span>Active Production Engine</span>
+                    <span>For Testing Only</span>
                     <span className="opacity-30">•</span>
-                    <span>Real Settlements Handled</span>
+                    <span>No Real Money Is Used</span>
                     <span className="opacity-30">•</span>
                     <span>Ends in <span className="font-black text-xs">{daysLeft}D</span></span>
                 </p>
