@@ -304,7 +304,17 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(url);
     }
 
-    // ── 5. Universal Security Headers (Public Routes) ────────────────────────
+    // ── 5. Administrative Isolation (Force redirects for Executive accounts) ──
+    const userRoleForIsolation = extractRoleFromCookies(request);
+    if (userRoleForIsolation && ADMIN_ROLES.includes(userRoleForIsolation)) {
+        if (pathname.startsWith('/seller') || pathname.startsWith('/buyer')) {
+            const portalUrl = request.nextUrl.clone();
+            portalUrl.pathname = userRoleForIsolation === 'ceo' ? '/admin/ceo' : '/admin';
+            return NextResponse.redirect(portalUrl);
+        }
+    }
+
+    // ── 6. Universal Security Headers (Public Routes) ──
     const response = NextResponse.next();
     response.headers.set('X-Content-Type-Options', 'nosniff');
     response.headers.set('X-Frame-Options', 'SAMEORIGIN');

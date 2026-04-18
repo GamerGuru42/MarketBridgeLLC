@@ -30,7 +30,7 @@ export default function ForgotPasswordPage() {
             setIsSent(true);
             toast('Recovery Code Sent', 'success');
         } catch (err: any) {
-            toast(err.message || 'Transmission failed', 'error');
+            toast(err.message || 'Request failed', 'error');
         } finally {
             setIsLoading(false);
         }
@@ -56,9 +56,9 @@ export default function ForgotPasswordPage() {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <h2 className="text-3xl font-black uppercase italic tracking-tighter">Notice <span className="text-[#FF6200]">Transmitted</span></h2>
+                                <h2 className="text-3xl font-black uppercase italic tracking-tighter">Email <span className="text-[#FF6200]">Sent</span></h2>
                                 <p className="text-white/40 font-bold uppercase text-[10px] tracking-widest max-w-[240px] mx-auto leading-relaxed">
-                                    Encrypted recovery link has been sent to your Dashboard mailbox.
+                                    A reset link has been sent to your email inbox.
                                 </p>
                             </div>
                             <Button
@@ -66,14 +66,14 @@ export default function ForgotPasswordPage() {
                                 variant="ghost"
                                 className="text-white/30 hover:text-white font-black uppercase tracking-widest text-[10px]"
                             >
-                                <ArrowLeft className="mr-2 h-4 w-4" /> Resend System
+                                <ArrowLeft className="mr-2 h-4 w-4" /> Resend
                             </Button>
                         </div>
                     ) : (
                         <div className="space-y-10">
                             <div className="text-center space-y-4">
                                 <h2 className="text-4xl font-black uppercase italic tracking-tighter">Recover <span className="text-[#FF6200]">Access</span></h2>
-                                <p className="text-white/40 text-[10px] font-black uppercase tracking-widest">Transmit reset link to verified email</p>
+                                <p className="text-white/40 text-[10px] font-black uppercase tracking-widest">Send reset link to your email</p>
                             </div>
 
                             <form onSubmit={handleReset} className="space-y-8">
@@ -85,7 +85,7 @@ export default function ForgotPasswordPage() {
                                             type="email"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
-                                            placeholder="operator@marketbridge.com.ng"
+                                            placeholder="user@example.com"
                                             className="w-full h-16 pl-14 bg-black border border-white/10 rounded-2xl text-white placeholder:text-white/5 focus:ring-2 focus:ring-[#FF6200]/50 outline-none font-bold"
                                             required
                                         />
@@ -99,7 +99,7 @@ export default function ForgotPasswordPage() {
                                 >
                                     {isLoading ? <Loader2 className="animate-spin h-6 w-6" /> : (
                                         <>
-                                            Transmit Recovery
+                                            Send Reset Link
                                             <ArrowRight className="h-4 w-4" />
                                         </>
                                     )}
@@ -111,7 +111,7 @@ export default function ForgotPasswordPage() {
                                     href="/login"
                                     className="text-[9px] font-black uppercase tracking-widest text-white/30 hover:text-white transition-colors flex items-center justify-center gap-2"
                                 >
-                                    <ArrowLeft className="h-3 w-3" /> Return to Base
+                                    <ArrowLeft className="h-3 w-3" /> Return to Login
                                 </Link>
                             </div>
                         </div>

@@ -74,7 +74,7 @@ const TOUR_STEPS: Step[] = [
     },
     {
         title: 'Find Your Campus',
-        content: 'MarketBridge is node-based — every campus has its own local feed. Tap the campus pill in the header to switch your active node.',
+        content: 'MarketBridge is campus-based - every campus has its own local feed. Tap the campus pill in the header to switch your active location.',
         icon: <MapPin className="h-6 w-6" />,
         accent: 'from-purple-500 to-purple-400',
         tag: 'CAMPUS',
@@ -108,7 +108,7 @@ export function AppTour() {
     useEffect(() => {
         if (!user) return;
 
-        const mainNodes = [
+        const mainPaths = [
             '/',
             '/marketplace',
             '/seller/dashboard',
@@ -117,7 +117,7 @@ export function AppTour() {
             '/admin/technical',
             '/admin/marketing',
         ];
-        if (!pathname || !mainNodes.includes(pathname)) return;
+        if (!pathname || !mainPaths.includes(pathname)) return;
 
         const hasSeenTour = localStorage.getItem(TOUR_STORAGE_KEY);
         if (!hasSeenTour) {

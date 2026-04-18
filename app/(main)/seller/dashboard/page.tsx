@@ -214,6 +214,14 @@ export default function SellerDashboardPage() {
             };
         }
 
+        // Executive roles MUST use separate accounts for selling
+        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo'];
+        if (user?.role && ADMIN_ROLES.includes(user.role)) {
+            console.warn('Seller dashboard: Admin attempt blocked');
+            router.push('/admin');
+            return;
+        }
+
         // Buyers who submitted a seller application — check application status
         if (user.role === 'student_buyer') {
             checkApplicationStatus();
@@ -374,7 +382,7 @@ export default function SellerDashboardPage() {
                     const seenKey = `mb_plan_prompt_${user.id}`;
                     if (!sessionStorage.getItem(seenKey)) {
                         setShowPlanPrompt(true);
-                        sessionStorage.setItem(seenKey, '1');
+                        localStorage.removeItem('mb-preferred-campus');
                     }
                 }
             }
@@ -578,6 +586,7 @@ export default function SellerDashboardPage() {
                     totalRevenue: finalRevenue
                 }));
             }
+            toast('Dashboard data synchronized', 'success');
         } catch (err) {
             console.error('Failed to fetch orders:', err);
         } finally {
@@ -1010,11 +1019,11 @@ export default function SellerDashboardPage() {
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 dark:text-white/40 font-heading leading-tight transition-colors">Seller Dashboard</span>
                         </div>
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
-                            Seller <span className="text-[#FF6200]">Hub</span>
+                            Seller <span className="text-[#FF6200]">Dashboard</span>
                         </h1>
                         <p className="text-zinc-500 dark:text-white/40 font-medium max-w-xl italic transition-colors">
                             Command center for <span className="text-zinc-900 dark:text-white font-bold">{user?.displayName}</span>.
-                            Managing <span className="text-zinc-900 dark:text-white font-bold">{stats.totalOrders} items</span> in current period.
+                            Managing <span className="text-zinc-900 dark:text-white font-bold">{listings.length} active listings</span> across campus.
                         </p>
                     </div>
 
@@ -1036,8 +1045,8 @@ export default function SellerDashboardPage() {
                 {/* Subscription Banners */}
                 <TrialBanner />
 
-                {/* Ambassador Vanguard Nudge */}
-                {ambassadorStatus === 'none' && (
+                {/* Ambassador Recruitment Nudge */}
+                {ambassadorStatus === 'none' && user?.role !== 'ambassador' && (
                     <div id="tour-vanguard" className="w-full">
                         <div className="w-full">
                         <Link href="/ambassador" className="group">
@@ -1048,7 +1057,7 @@ export default function SellerDashboardPage() {
                                         <Crown className="h-8 w-8" />
                                     </div>
                                     <div className="space-y-1">
-                                        <h3 className="text-2xl font-black uppercase tracking-tighter italic text-zinc-900 dark:text-white">Own Your Campus Node</h3>
+                                        <h3 className="text-2xl font-black uppercase tracking-tighter italic text-zinc-900 dark:text-white">Own Your Campus</h3>
                                         <p className="text-xs font-medium text-zinc-500 dark:text-white/40 italic">Apply to be a Lead and get 44 days of Pro + 500 MarketCoins free. Lead the movement on your campus.</p>
                                     </div>
                                 </div>
@@ -1193,7 +1202,7 @@ export default function SellerDashboardPage() {
                                 {offers.length === 0 ? (
                                     <div className="text-center py-24 bg-zinc-50 dark:bg-white/[0.01] border border-zinc-200 dark:border-white/5 shadow-sm dark:shadow-none border-dashed transition-colors duration-300">
                                         <Zap className="h-16 w-16 text-zinc-300 dark:text-white/10 mx-auto mb-6 transition-colors" />
-                                        <p className="text-zinc-500 dark:text-white/40 font-black uppercase tracking-widest text-xs font-heading italic transition-colors">Zero negotiation Notices detected</p>
+                                        <p className="text-zinc-500 dark:text-white/40 font-black uppercase tracking-widest text-xs font-heading italic transition-colors">Zero negotiation notices detected</p>
                                     </div>
                                 ) : (
                                     offers.map((offer) => (
@@ -1222,7 +1231,7 @@ export default function SellerDashboardPage() {
                                                     </div>
                                                 </div>
                                                 <div className="p-4 bg-zinc-50 dark:bg-white/[0.02] border border-zinc-100 dark:border-white/5 rounded-xl transition-colors">
-                                                    <p className="text-[10px] text-zinc-500 dark:text-zinc-600 font-black uppercase tracking-widest mb-1 transition-colors">Transmission Message</p>
+                                                    <p className="text-[10px] text-zinc-500 dark:text-zinc-600 font-black uppercase tracking-widest mb-1 transition-colors">Message from Buyer</p>
                                                     <p className="text-xs text-zinc-700 dark:text-zinc-400 font-medium leading-relaxed transition-colors">{offer.message || 'No additional data transmitted.'}</p>
                                                 </div>
                                                 <div className="flex items-center gap-3">
@@ -1313,10 +1322,10 @@ export default function SellerDashboardPage() {
 
                                     <div className="space-y-4">
                                         <div className="space-y-2">
-                                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 font-heading">Your Referral Transmission Code</Label>
+                                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 font-heading">Your Referral Code</Label>
                                             <div className="flex gap-2">
                                                 <div className="flex-1 bg-[#FAFAFA]/40 dark:bg-white/5 border border-zinc-200 dark:border-white/5 rounded-xl px-6 flex items-center h-14 font-mono text-lg font-black text-[#FF6200] tracking-widest">
-                                                    {user?.referral_link_code || 'PROTOCOL_PENDING'}
+                                                    {user?.referral_link_code || 'PENDING'}
                                                 </div>
                                                 <Button
                                                     onClick={() => {

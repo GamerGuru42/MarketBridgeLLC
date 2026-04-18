@@ -11,7 +11,7 @@ function VerifyContent() {
     const router = useRouter();
     const reference = searchParams?.get('reference');
     const [status, setStatus] = useState<'verifying' | 'success' | 'failed'>('verifying');
-    const [message, setMessage] = useState('Establishing secure connection to Paystack network...');
+    const [message, setMessage] = useState('Verifying payment with Paystack...');
 
     useEffect(() => {
         if (!reference) {
@@ -25,7 +25,7 @@ function VerifyContent() {
         // if it's coming from Paystack.
         const timer = setTimeout(() => {
             setStatus('success');
-            setMessage('Payment data received and synchronized with campus ledger.');
+            setMessage('Payment data received and confirmed.');
         }, 3000);
 
         return () => clearTimeout(timer);
@@ -54,12 +54,12 @@ function VerifyContent() {
                             <CheckCircle className="h-10 w-10 text-[#FF6200]" />
                         </div>
                         <div className="space-y-4">
-                            <h1 className="text-2xl font-black uppercase tracking-tighter italic font-heading text-[#FF6200]">System Secure</h1>
+                            <h1 className="text-2xl font-black uppercase tracking-tighter italic font-heading text-[#FF6200]">Payment Confirmed</h1>
                             <p className="text-zinc-600 text-sm font-medium italic">{message}</p>
                         </div>
                         <div className="pt-4 flex flex-col gap-3">
                             <Button asChild className="h-14 bg-[#FF6200] text-black hover:bg-[#FF7A29] rounded-2xl font-black uppercase tracking-widest text-xs font-heading italic shadow-xl shadow-[#FF6200]/10 border-none">
-                                <Link href="/purchases">View My Assets <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                                <Link href="/purchases">View My Purchases <ArrowRight className="ml-2 h-4 w-4" /></Link>
                             </Button>
                             <Button variant="ghost" asChild className="text-zinc-500 hover:text-zinc-900 text-[10px] uppercase font-black tracking-widest">
                                 <Link href="/marketplace">Continue Shopping</Link>
@@ -78,7 +78,7 @@ function VerifyContent() {
                             <p className="text-zinc-600 text-sm font-medium italic">{message}</p>
                         </div>
                         <Button onClick={() => router.push('/marketplace')} className="h-14 w-full bg-white border border-zinc-200 text-zinc-900 hover:bg-zinc-50 rounded-2xl font-black uppercase tracking-widest text-xs font-heading italic">
-                            Back to Stream
+                            Back to Marketplace
                         </Button>
                     </>
                 )}

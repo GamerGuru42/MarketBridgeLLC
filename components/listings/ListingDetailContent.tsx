@@ -391,7 +391,7 @@ export default function ListingDetailContent() {
         const finalAmount = listing.current_offered_price || listing.price;
 
         if (isDemoMode && finalAmount > 5000) {
-            setError('Demo Mode Demo Mode Active: You cannot process orders above ₦5,000. Please negotiate the price down for testing.');
+            setError('Demo Mode Active: You cannot process orders above ₦5,000 during the Private Beta. Please negotiate the price down for testing.');
             return;
         }
 
@@ -419,7 +419,7 @@ export default function ListingDetailContent() {
 
         } catch (err: any) {
             console.error('Checkout Error:', err);
-            setError('Checkout failed. Please try again.');
+            setError(err.message || 'Checkout failed. Please try again.');
             setActionLoading(false);
         }
     };
@@ -509,13 +509,13 @@ export default function ListingDetailContent() {
                             onClick={() => router.back()}
                             className="text-[#FF6200] hover:text-[#FF7A29] hover:bg-transparent p-0 h-auto text-[10px] font-black uppercase tracking-[0.2em] font-heading"
                         >
-                            <ArrowLeft className="mr-2 h-3 w-3" /> Return to Signal
+                            <ArrowLeft className="mr-2 h-3 w-3" /> Return to Search
                         </Button>
                         <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter italic font-heading">
                             {listing.title}
                         </h1>
                         <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-zinc-500">
-                            <span className="flex items-center gap-1.5 text-[#FF6200]"><Activity className="h-3 w-3" /> Active Protocol</span>
+                            <span className="flex items-center gap-1.5 text-[#FF6200]"><Activity className="h-3 w-3" /> Available</span>
                             <span className="w-1 h-1 rounded-full bg-zinc-700" />
                             <span className="text-zinc-900">{listing.category}</span>
                             <span className="w-1 h-1 rounded-full bg-zinc-700" />
@@ -539,7 +539,7 @@ export default function ListingDetailContent() {
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-zinc-700 font-black uppercase tracking-widest">
-                                        No Visual Signal
+                                        No Image Available
                                     </div>
                                 )}
 
@@ -547,7 +547,7 @@ export default function ListingDetailContent() {
                                 <div className="absolute top-6 left-6 flex flex-col gap-3">
                                     {(listing.is_verified_listing || listing.verification_status === 'verified') && (
                                         <div className="bg-[#FF6200] text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-[#FF6200]/20 font-heading italic">
-                                            <ShieldCheck className="h-3 w-3" /> Verified Node
+                                            <ShieldCheck className="h-3 w-3" /> Verified Seller
                                         </div>
                                     )}
                                 </div>
@@ -692,14 +692,14 @@ export default function ListingDetailContent() {
                                 title={listing.location}
                             />
                             <div className="flex items-center gap-3 text-[10px] font-bold text-zinc-500 uppercase tracking-widest italic">
-                                <MapPin className="h-3 w-3 text-[#FF6200]" /> {listing.location} Node Stream Active
+                                <MapPin className="h-3 w-3 text-[#FF6200]" /> {listing.location} Marketplace Active
                             </div>
                         </div>
 
                         {/* Specs Grid */}
                         <div className="grid grid-cols-2 gap-4">
                             {[
-                                { label: 'Campus Node', value: listing.location, icon: MapPin },
+                                { label: 'Campus', value: listing.location, icon: MapPin },
                                 { label: 'Item Brand', value: listing.make, icon: Box },
                                 { label: 'Type / Model', value: listing.model, icon: Box },
                                 { label: 'Condition', value: listing.condition, icon: Activity },
@@ -738,7 +738,7 @@ export default function ListingDetailContent() {
                                         <h4 className="text-xl font-black uppercase tracking-tighter italic">{listing.dealer.display_name}</h4>
                                         {listing.dealer.is_verified && <ShieldCheck className="h-4 w-4 text-[#FF6200]" />}
                                     </div>
-                                    <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mb-4">{listing.dealer.university || 'Verified Institutional Node'}</p>
+                                    <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mb-4">{listing.dealer.university || 'Verified Institution'}</p>
                                     <div className="flex items-center gap-4">
                                         <div className="flex items-center gap-1.5">
                                             <Star className="h-3 w-3 fill-[#FF6200] text-[#FF6200]" />
@@ -747,7 +747,7 @@ export default function ListingDetailContent() {
                                             </span>
                                         </div>
                                         <span className="w-1 h-1 rounded-full bg-zinc-200" />
-                                        <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">{listing.dealer.store_type || 'DIGITAL'} HUB</div>
+                                        <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">{listing.dealer.store_type || 'DIGITAL'}</div>
                                     </div>
                                 </div>
                             </div>
@@ -833,7 +833,7 @@ export default function ListingDetailContent() {
 
                             <div className="bg-[#FF6200]/10 border border-[#FF6200]/20 p-4 rounded-2xl">
                                 <p className="text-[9px] text-[#FF6200] font-black uppercase leading-tight text-center">
-                                    In-app negotiations are secured by platform protocol.
+                                    In-app negotiations are secured by platform policy.
                                 </p>
                             </div>
                         </div>

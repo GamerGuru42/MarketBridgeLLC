@@ -25,14 +25,14 @@ export const Header = () => {
     const router = useRouter();
     const pathname = usePathname();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [currentNode, setCurrentNode] = useState<string>('Abuja');
+    const [currentCampus, setCurrentCampus] = useState<string>('Abuja');
 
     useEffect(() => {
-        const saved = localStorage.getItem('mb-preferred-node');
+        const saved = localStorage.getItem('mb-preferred-campus');
         if (saved && saved !== 'global') {
-            setCurrentNode(saved);
+            setCurrentCampus(saved);
         } else if (saved === 'global') {
-            setCurrentNode('Global');
+            setCurrentCampus('Global');
         }
     }, []);
 
@@ -55,7 +55,7 @@ export const Header = () => {
             <header className="fixed top-0 left-0 right-0 z-[100] bg-background/90 backdrop-blur-md border-b border-border h-16 shadow-sm">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between gap-4">
 
-                    {/* Left: Logo + Campus Node + Nav */}
+                    {/* Left: Logo + Campus + Nav */}
                     <div className="flex items-center gap-6 shrink-0">
                         <Logo />
                         <div className="hidden md:flex items-center gap-6 border-l border-zinc-200 dark:border-zinc-800 pl-6 h-6">
@@ -75,7 +75,7 @@ export const Header = () => {
                         <button
                             className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-secondary hover:bg-muted border border-border rounded-full transition-all group"
                             onClick={() => {
-                                localStorage.removeItem('mb-preferred-node');
+                                localStorage.removeItem('mb-preferred-campus');
                                 window.location.reload();
                             }}
                         >
@@ -84,7 +84,7 @@ export const Header = () => {
                                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#FF6200]" />
                             </span>
                             <span className="text-[11px] font-bold text-muted-foreground group-hover:text-foreground transition-colors">
-                                {currentNode}
+                                {currentCampus}
                             </span>
                             <ChevronDown className="h-3 w-3 text-muted-foreground" />
                         </button>

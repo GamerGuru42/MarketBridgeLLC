@@ -27,7 +27,7 @@ export function LocationConsentModal() {
 
                     <div className="space-y-2">
                         <h2 className="text-2xl font-black uppercase italic tracking-tighter text-white">
-                            Verify <span className="text-[#FF6200]">Sector</span> Proximity
+                            Verify <span className="text-[#FF6200]">Location</span> Proximity
                         </h2>
                         <p className="text-zinc-500 text-sm font-medium leading-relaxed">
                             Allow location access to show nearby campus listings and highlight Abuja marketplaces.

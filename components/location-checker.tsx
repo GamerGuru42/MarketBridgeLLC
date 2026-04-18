@@ -38,7 +38,7 @@ export function LocationChecker({ children }: LocationCheckerProps) {
         setTimeout(() => setShowDialog(false), 2000);
     };
 
-    const handleTeleportToHub = () => {
+    const handleGoToMarket = () => {
         const defaultUni = ABUJA_UNIVERSITIES[0];
         setManualLocation(defaultUni);
     };
@@ -66,7 +66,7 @@ export function LocationChecker({ children }: LocationCheckerProps) {
         );
     }
 
-    const userLocation = city ? `${city}, ${region}` : (region || 'Unknown Sector');
+    const userLocation = city ? `${city}, ${region}` : (region || 'Unknown Area');
 
     return (
         <>
@@ -106,11 +106,11 @@ export function LocationChecker({ children }: LocationCheckerProps) {
                                         onChange={(e) => setNotifyForm({ ...notifyForm, state: e.target.value })}
                                     >
                                         <option value="">SELECT YOUR STATE</option>
-                                        <option value="Lagos">LAGOS HUB</option>
-                                        <option value="Rivers">RIVERS HUB</option>
-                                        <option value="Oyo">OYO HUB</option>
-                                        <option value="Enugu">ENUGU HUB</option>
-                                        <option value="Kano">KANO HUB</option>
+                                        <option value="Lagos">LAGOS MARKET</option>
+                                        <option value="Rivers">RIVERS MARKET</option>
+                                        <option value="Oyo">OYO MARKET</option>
+                                        <option value="Enugu">ENUGU MARKET</option>
+                                        <option value="Kano">KANO MARKET</option>
                                     </select>
                                     <Button type="submit" className="w-full h-12 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-black uppercase text-[10px] tracking-widest rounded-xl">
                                         Notify Me
@@ -119,7 +119,7 @@ export function LocationChecker({ children }: LocationCheckerProps) {
                             </div>
                             <div className="flex flex-col gap-3">
                                 <Button
-                                    onClick={handleTeleportToHub}
+                                    onClick={handleGoToMarket}
                                     className="w-full h-16 bg-[#FF6200] text-black hover:bg-[#FF6200] font-black uppercase tracking-[0.1em] rounded-2xl shadow-[0_10px_30px_rgba(255,184,0,0.2)] group"
                                 >
                                     Switch to Abuja

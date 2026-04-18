@@ -111,7 +111,7 @@ export function ImageUpload({
                     throw new Error(`Storage bucket "${bucketName}" not fully initialized on this instance. Please contact HQ support.`);
                 }
                 if (uploadError.message?.includes('new row violates row-level security')) {
-                    throw new Error("Authorization protocol rejected the upload. Please re-sign into your Seller Command session.");
+                    throw new Error("Authorization check rejected the upload. Please re-sign into your Seller session.");
                 }
                 throw new Error(`Upload failed after 3 attempts: ${uploadError.message}`);
             }

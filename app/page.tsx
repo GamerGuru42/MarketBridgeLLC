@@ -149,7 +149,7 @@ function AuthenticatedHome({ user }: { user: any }) {
                     </div>
                 </div>
 
-                {/* ─── Streamlined Action Nodes ─── */}
+                {/* 🚀 Quick Actions 🚀 */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 px-0 md:px-2">
                     {[
                         { label: 'Market', icon: ShoppingBag, color: 'text-blue-500', href: '/marketplace' },

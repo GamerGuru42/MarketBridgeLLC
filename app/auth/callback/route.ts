@@ -46,16 +46,16 @@ export async function GET(request: Request) {
             let actualRole = 'buyer';
             const userEmail = data.user.email?.toLowerCase() || '';
 
+            // ── Resolve Role with Admin Priority ──
             if (role && ADMIN_ROLES.includes(role)) {
-                actualRole = role; // Prioritize intent if it's admin
+                actualRole = role; // Force intent from portal login
             } else if (existingUser?.role && ADMIN_ROLES.includes(existingUser.role)) {
-                actualRole = existingUser.role; // Prioritize existing admin status
-            } else if (userEmail.endsWith('@marketbridge.com.ng') && !existingUser) {
-                // Auto-promote internal staff on first login
+                actualRole = existingUser.role; // Sustain existing admin status
+            } else if (userEmail.endsWith('@marketbridge.com.ng')) {
+                // Auto-promote internal staff
                 actualRole = 'admin'; 
             } else {
-                // Fallback to existing or buyer
-                actualRole = existingUser?.role || role || 'buyer';
+                actualRole = existingUser?.role || 'buyer';
             }
             
             // Standardize roles

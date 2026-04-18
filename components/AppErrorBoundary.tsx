@@ -52,7 +52,7 @@ export class AppErrorBoundary extends Component<Props, State> {
                 onClick={() => window.location.reload()}
                 style={{ marginTop: '40px', background: '#FF6200', color: 'black', border: 'none', padding: '16px 32px', borderRadius: '12px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.2em', cursor: 'pointer', fontSize: '12px' }}
               >
-                Reinitialize Node
+                Restart Application
               </button>
           </div>
         </div>

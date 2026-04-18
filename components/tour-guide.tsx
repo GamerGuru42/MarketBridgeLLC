@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, Check } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 interface TourStep {
     title: string;
@@ -27,6 +28,7 @@ interface TourGuideProps {
 export function TourGuide({ pageKey, steps, title }: TourGuideProps) {
     const [open, setOpen] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
+    const pathname = usePathname();
 
     useEffect(() => {
         const hasSeenTour = localStorage.getItem(`tour_seen_${pageKey}`);
@@ -63,7 +65,7 @@ export function TourGuide({ pageKey, steps, title }: TourGuideProps) {
                         </span>
                     </div>
                     <DialogDescription className="text-slate-400">
-                        Interactive Orientation Protocol
+                        Quick orientation to help you navigate this section.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -85,12 +87,12 @@ export function TourGuide({ pageKey, steps, title }: TourGuideProps) {
 
                 <DialogFooter className="flex-row justify-between sm:justify-between">
                     <Button variant="ghost" className="text-slate-500 hover:text-white" onClick={handleClose}>
-                        Skip Briefing
+                        Skip
                     </Button>
                     <Button onClick={handleNext} className="bg-primary hover:bg-primary/90 text-white">
                         {currentStep === steps.length - 1 ? (
                             <>
-                                <Check className="mr-2 h-4 w-4" /> Initialize
+                                <Check className="mr-2 h-4 w-4" /> Finish
                             </>
                         ) : (
                             <>
