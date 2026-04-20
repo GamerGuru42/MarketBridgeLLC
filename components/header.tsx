@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -113,7 +113,7 @@ export const Header = () => {
                                 </Link>
                             </div>
                         )}
-                        <div className="hidden md:block">
+                        <div className="flex items-center">
                             <ThemeToggle />
                         </div>
 
