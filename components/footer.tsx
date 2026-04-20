@@ -5,7 +5,7 @@ import { Logo } from '@/components/logo';
 
 export const Footer = () => {
     return (
-        <footer className="bg-card border-t border-border pt-24 pb-12 z-50 relative">
+        <footer className="bg-card border-t border-border pt-24 pb-36 md:pb-12 z-50 relative">
             <div className="container mx-auto px-4 max-w-6xl">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-20">
                     <div className="space-y-6">

@@ -105,7 +105,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${manrope.variable} ${outfit.variable} antialiased`}
+        className={`${manrope.variable} ${outfit.variable} antialiased pb-20 md:pb-0`}
       >
         <AppErrorBoundary>
           <ThemeProvider
@@ -129,8 +129,10 @@ export default function RootLayout({
                     <NetworkStatus />
                   </ToastProvider>
                   <GlobalWidgets />
-                  <OnboardingTour />
-                </CartProvider>
+                    <OnboardingTour />
+                  </CartProvider>
+                  <MobileBottomNav />
+                </LocationProvider>
               </LocationProvider>
             </AuthProvider>
             </SystemProvider>
