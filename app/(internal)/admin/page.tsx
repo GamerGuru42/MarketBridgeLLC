@@ -57,8 +57,8 @@ export default function MissionControlPage() {
 
     // Role-specific check
     const isOpsAdmin = user?.role === 'operations_admin' || user?.role === 'ceo' || user?.role === 'admin';
-    const isTechAdmin = user?.role === 'technical_admin';
-    const isMarketingAdmin = user?.role === 'marketing_admin';
+    const isTechAdmin = ['technical_admin', 'systems_admin', 'it_support', 'ceo', 'cto'].includes(user?.role || '');
+    const isMarketingAdmin = ['marketing_admin', 'ceo', 'cofounder'].includes(user?.role || '');
 
     const [campusStats, setCampusStats] = useState<Record<string, number>>({});
 

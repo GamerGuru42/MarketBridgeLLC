@@ -100,7 +100,6 @@ export default function AdminLayout({
 
         if (role === 'marketing_admin') {
             return [
-                mainDashboard,
                 { label: 'Marketing Stats', href: '/admin/marketing', icon: Target },
                 { label: 'Product Manager', href: '/admin/listings', icon: ShoppingBag },
                 messages
@@ -108,7 +107,6 @@ export default function AdminLayout({
         }
         if (role === 'operations_admin') {
             return [
-                mainDashboard,
                 { label: 'Operations Panel', href: '/admin/operations', icon: Activity },
                 { label: 'Support Center', href: '/admin/operations/support', icon: Headphones },
                 { label: 'Disputes', href: '/admin/disputes', icon: ShieldAlert },
@@ -121,7 +119,6 @@ export default function AdminLayout({
         }
         if (role === 'systems_admin' || role === 'technical_admin') {
             return [
-                mainDashboard,
                 { label: 'Systems Health', href: '/admin/technical', icon: Server },
                 { label: 'Account Registry', href: '/admin/users', icon: Users },
                 messages
@@ -129,7 +126,6 @@ export default function AdminLayout({
         }
         if (role === 'it_support') {
             return [
-                mainDashboard,
                 { label: 'Maintenance Logs', href: '/admin/technical', icon: Server },
                 { label: 'Support Center', href: '/admin/operations/support', icon: Headphones },
                 messages

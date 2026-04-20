@@ -137,7 +137,12 @@ function PortalLoginContent() {
             setAdminSessionCookie(data.user.id, userRole);
             await refreshUser(data.user.id);
 
-            const target = userRole === 'ceo' ? '/admin/ceo' : '/admin';
+            let target = '/admin';
+            if (userRole === 'ceo' || userRole === 'cofounder') target = '/admin/ceo';
+            else if (userRole === 'operations_admin') target = '/admin/operations';
+            else if (userRole === 'marketing_admin') target = '/admin/marketing';
+            else if (userRole === 'systems_admin' || userRole === 'it_support' || userRole === 'technical_admin') target = '/admin/technical';
+
             window.location.assign(target);
 
         } catch (err: any) {
@@ -153,7 +158,12 @@ function PortalLoginContent() {
             let dbRole: string = selectedRole;
             if (selectedRole.startsWith('technical_admin')) dbRole = 'technical_admin';
             
-            const targetDestination = dbRole === 'ceo' ? '/admin/ceo' : '/admin';
+            let targetDestination = '/admin';
+            if (dbRole === 'ceo' || dbRole === 'cofounder') targetDestination = '/admin/ceo';
+            else if (dbRole === 'operations_admin') targetDestination = '/admin/operations';
+            else if (dbRole === 'marketing_admin') targetDestination = '/admin/marketing';
+            else if (dbRole === 'systems_admin' || dbRole === 'it_support' || dbRole === 'technical_admin') targetDestination = '/admin/technical';
+
             const callbackOrigin = window.location.origin;
             const isProduction = callbackOrigin.includes('marketbridge.com.ng');
             const domain = isProduction ? '; domain=.marketbridge.com.ng' : '';
@@ -165,6 +175,9 @@ function PortalLoginContent() {
                 provider: 'google',
                 options: {
                     redirectTo: `${callbackOrigin}/auth/callback?role=${dbRole}&next=${encodeURIComponent(targetDestination)}`,
+                    queryParams: {
+                        prompt: 'select_account',
+                    },
                 },
             });
             if (error) throw error;
