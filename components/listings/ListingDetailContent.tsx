@@ -49,6 +49,7 @@ interface Listing {
         phone_number?: string;
         subscription_plan?: string;
         university?: string;
+        paystack_subaccount_code?: string;
     };
     created_at: string;
     make?: string;

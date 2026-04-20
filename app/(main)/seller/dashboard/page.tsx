@@ -1028,7 +1028,7 @@ export default function SellerDashboardPage() {
                         </h1>
                         <p className="text-zinc-500 dark:text-white/40 font-medium max-w-xl italic transition-colors">
                             Command center for <span className="text-zinc-900 dark:text-white font-bold">{user?.displayName}</span>.
-                            Managing <span className="text-zinc-900 dark:text-white font-bold">{listings.length} active listings</span> across campus.
+                            Managing <span className="text-zinc-900 dark:text-white font-bold">your active listings</span> across campus.
                         </p>
                     </div>
 

@@ -85,7 +85,7 @@ export default function BankSetupPage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    businessName: user.display_name || 'MarketBridge Seller',
+                    businessName: user.displayName || 'MarketBridge Seller',
                     bankCode: selectedBankCode,
                     accountNumber: accountNumber,
                     userId: user.id

@@ -117,18 +117,16 @@ export default function AdminLayout({
                 <Sidebar 
                     items={sidebarItems} 
                     title="MARKETBRIDGE ADMIN" 
-                    footer={
-                        <div className="px-6 py-8">
-                            <Button 
-                                onClick={logout}
-                                variant="outline"
-                                className="w-full h-12 border-border text-muted-foreground hover:text-red-500 hover:border-red-500/30 font-black uppercase text-[10px] tracking-widest rounded-xl transition-all flex items-center justify-center gap-3"
-                            >
-                                <LogOut className="h-4 w-4" /> Sign Out
-                            </Button>
-                        </div>
-                    }
                 />
+                <div className="px-6 py-8">
+                    <Button 
+                        onClick={logout}
+                        variant="outline"
+                        className="w-full h-12 border-border text-muted-foreground hover:text-red-500 hover:border-red-500/30 font-black uppercase text-[10px] tracking-widest rounded-xl transition-all flex items-center justify-center gap-3"
+                    >
+                        <LogOut className="h-4 w-4" /> Sign Out
+                    </Button>
+                </div>
             </div>
 
             <div className="flex-1 md:ml-72 flex flex-col relative overflow-hidden">
