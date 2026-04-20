@@ -14,6 +14,7 @@ import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { SystemProvider } from "@/contexts/SystemContext";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { DemoBanner } from "@/components/DemoBanner";
+import { FloatingFeedbackWidget } from "@/components/FloatingFeedbackWidget";
 
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 
@@ -129,6 +130,7 @@ export default function RootLayout({
                       <BetaLabel />
 
                       <NetworkStatus />
+                      <FloatingFeedbackWidget />
                     </ToastProvider>
                     <GlobalWidgets />
                     <OnboardingTour />

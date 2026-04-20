@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useSystem } from '@/contexts/SystemContext'
 
 interface LogoProps {
@@ -38,13 +37,12 @@ export const Logo: React.FC<LogoProps> = ({
             className={`flex items-center gap-2 transition-transform active:scale-95 ${className}`}
         >
             <div className="relative">
-                <Image
+                <img
                     src="/marketbridge_logo.png"
                     alt="MarketBridge"
                     width={iconSizes[size]}
                     height={iconSizes[size]}
-                    className="rounded-lg"
-                    priority
+                    className="rounded-lg object-contain"
                 />
                 {isDemoMode && (
                     <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
