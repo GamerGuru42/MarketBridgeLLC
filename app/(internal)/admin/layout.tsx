@@ -17,7 +17,17 @@ import {
     TrendingUp,
     Target,
     Headphones,
-    Settings
+    Settings,
+    Bug,
+    Wrench,
+    Database,
+    Shield,
+    FileText,
+    Rocket,
+    Coins,
+    Flag,
+    Eye,
+    Crown
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
@@ -47,8 +57,7 @@ export default function AdminLayout({
 
     const isAuthorized = user && ADMIN_ROLES.includes(user.role);
 
-    // Session Resilience Check: Don't bounce if they have a fresh admin session cookie, 
-    // giving time for the AuthContext to finish the role sync.
+    // Session Resilience Check
     const getCookie = (name: string) => {
         if (typeof document === 'undefined') return null;
         const value = `; ${document.cookie}`;
@@ -63,7 +72,7 @@ export default function AdminLayout({
         if (!isAuthorized && hasAdminSession && !loading) {
             const timer = setTimeout(() => {
                 setSyncTimeout(true);
-            }, 8000); // 8 second circuit breaker
+            }, 8000);
             return () => clearTimeout(timer);
         }
     }, [isAuthorized, hasAdminSession, loading]);
@@ -78,7 +87,6 @@ export default function AdminLayout({
             );
         }
         
-        // If we hit the timeout or have no reason to be here, eject.
         if (typeof document !== 'undefined') {
              document.cookie = 'mb-admin-session=; path=/; max-age=0;';
         }
@@ -88,78 +96,88 @@ export default function AdminLayout({
 
     const getSidebarItems = () => {
         const role = user.role;
-        const isExec = role === 'ceo' || role === 'cofounder';
-        const isOnExecPath = pathname?.startsWith('/admin/ceo');
-
-        const mainDashboard = { label: 'Admin Dashboard', href: '/admin', icon: LayoutDashboard };
         const messages = { label: 'Team Messages', href: '/admin/executive-chat', icon: MessageSquare };
 
-        // Full Suite (Operations, Marketing, Financials, etc.)
-        const fullSuite = [
-            mainDashboard,
-            { label: 'System Health', href: '/admin/technical', icon: Server },
-            { label: 'Operations hub', href: '/admin/operations', icon: Activity },
-            { label: 'Marketing hub', href: '/admin/marketing', icon: Target },
-            { label: 'User Registry', href: '/admin/users', icon: Users },
-            { label: 'Product Registry', href: '/admin/listings', icon: ShoppingBag },
-            { label: 'Financials', href: '/admin/payouts', icon: Banknote },
-            messages
-        ];
+        // ─── Operations Admin: ISOLATED ───
+        if (role === 'operations_admin') {
+            return [
+                { label: 'Operations Hub', href: '/admin/operations', icon: Activity },
+                { label: 'Disputes', href: '/admin/disputes', icon: ShieldAlert },
+                { label: 'Seller Management', href: '/admin/users', icon: Users },
+                { label: 'Product Registry', href: '/admin/listings', icon: ShoppingBag },
+                { label: 'Support Tickets', href: '/admin/operations/support', icon: Headphones },
+                { label: 'Feedback', href: '/admin/operations/feedback', icon: Flag },
+                { label: 'Escrow Overview', href: '/admin/orders', icon: ClipboardCheck },
+                messages
+            ];
+        }
 
-        // Executive Suite (High-level summary, Live help, Team chat)
-        const execSuite = [
-            { label: 'CEO Dashboard', href: '/admin/ceo', icon: LayoutDashboard },
-            { label: 'Live Support', href: '/admin/live-chat', icon: Headphones },
-            messages,
-        ];
-
+        // ─── Marketing Admin: ISOLATED ───
         if (role === 'marketing_admin') {
             return [
-                { label: 'Marketing Stats', href: '/admin/marketing', icon: Target },
+                { label: 'Marketing Hub', href: '/admin/marketing', icon: Target },
+                { label: 'User Acquisition', href: '/admin/marketing', icon: TrendingUp },
                 { label: 'Product Manager', href: '/admin/listings', icon: ShoppingBag },
                 messages
             ];
         }
-        if (role === 'operations_admin') {
-            return [
-                { label: 'Operations Panel', href: '/admin/operations', icon: Activity },
-                { label: 'Support Center', href: '/admin/operations/support', icon: Headphones },
-                { label: 'Disputes', href: '/admin/disputes', icon: ShieldAlert },
-                { label: 'User Directory', href: '/admin/users', icon: Users },
-                { label: 'Product Registry', href: '/admin/listings', icon: ShoppingBag },
-                { label: 'Order History', href: '/admin/orders', icon: ClipboardCheck },
-                { label: 'Payouts', href: '/admin/payouts', icon: Banknote },
-                messages
-            ];
-        }
+
+        // ─── Systems Admin: ISOLATED ───
         if (role === 'systems_admin' || role === 'technical_admin') {
             return [
-                { label: 'Systems Health', href: '/admin/technical', icon: Server },
-                { label: 'Account Registry', href: '/admin/users', icon: Users },
+                { label: 'Systems Hub', href: '/admin/systems', icon: Server },
+                { label: 'Database', href: '/admin/systems', icon: Database },
+                { label: 'Security Logs', href: '/admin/systems', icon: Shield },
+                { label: 'Admin Accounts', href: '/admin/systems', icon: Users },
                 messages
             ];
         }
+
+        // ─── IT Support: ISOLATED ───
         if (role === 'it_support') {
             return [
-                { label: 'Maintenance Logs', href: '/admin/technical', icon: Server },
-                { label: 'Support Center', href: '/admin/operations/support', icon: Headphones },
+                { label: 'IT Support Hub', href: '/admin/it-support', icon: Wrench },
+                { label: 'Bug Reports', href: '/admin/it-support', icon: Bug },
+                { label: 'Integrations', href: '/admin/it-support', icon: Rocket },
+                { label: 'Tech Docs', href: '/admin/it-support', icon: FileText },
                 messages
             ];
         }
 
-        // Executives see the Hub they are currently visiting
-        if (isExec) {
-            return isOnExecPath ? execSuite : fullSuite;
+        // ─── CEO / Executive: FULL ACCESS ───
+        if (role === 'ceo' || role === 'cofounder' || role === 'cto' || role === 'coo') {
+            const isOnExecPath = pathname?.startsWith('/admin/ceo');
+            if (isOnExecPath) {
+                return [
+                    { label: 'Executive Hub', href: '/admin/ceo', icon: Crown },
+                    { label: 'Live Support', href: '/admin/live-chat', icon: Headphones },
+                    messages,
+                ];
+            }
+            return [
+                { label: 'Executive Hub', href: '/admin/ceo', icon: Crown },
+                { label: 'Systems', href: '/admin/systems', icon: Server },
+                { label: 'Operations', href: '/admin/operations', icon: Activity },
+                { label: 'Marketing', href: '/admin/marketing', icon: Target },
+                { label: 'IT Support', href: '/admin/it-support', icon: Wrench },
+                { label: 'User Registry', href: '/admin/users', icon: Users },
+                { label: 'Product Registry', href: '/admin/listings', icon: ShoppingBag },
+                { label: 'Financials', href: '/admin/payouts', icon: Banknote },
+                messages
+            ];
         }
 
-        return fullSuite;
+        // Fallback (admin role)
+        return [
+            { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+            messages
+        ];
     };
 
     const sidebarItems = getSidebarItems();
 
     return (
         <div className="flex min-h-screen bg-background text-foreground transition-colors duration-300">
-            {/* Sidebar with only ONE logout button inside it (at the bottom) */}
             <div className="hidden md:block w-72 fixed h-full z-20 border-r border-border">
                 <Sidebar 
                     items={sidebarItems} 
@@ -178,7 +196,6 @@ export default function AdminLayout({
             </div>
 
             <div className="flex-1 md:ml-72 flex flex-col relative overflow-hidden">
-                {/* Global Background (Subtle) */}
                 <div className="fixed top-[-5%] right-[-5%] w-[40%] h-[40%] bg-primary/[0.03] blur-[150px] rounded-full pointer-events-none -z-10" />
                 
                 <DashboardHeader title="ADMIN PANEL" sidebarItems={sidebarItems} />

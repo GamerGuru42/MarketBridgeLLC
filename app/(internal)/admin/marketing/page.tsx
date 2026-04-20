@@ -3,60 +3,108 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Loader2, TrendingUp, Users, Target, Rocket, MessageSquare, ShieldCheck, MapPin, Globe, Zap } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Loader2, TrendingUp, Users, Target, Crown, MessageSquare, MapPin, Globe, Zap, Coins, Gift, Megaphone, ShoppingBag, BarChart3, Clock } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function MarketingAdminPage() {
+    const { user, loading: authLoading } = useAuth();
+    const router = useRouter();
     const [loading, setLoading] = useState(true);
+
     const [recentSignups, setRecentSignups] = useState<any[]>([]);
-    const [campusStats, setCampusStats] = useState<any[]>([]);
     const [stats, setStats] = useState({
         totalUsers: 0,
+        totalBuyers: 0,
         activeSellers: 0,
-        conversionRate: '0%',
-        growthVelocity: '+24%'
+        newSignupsToday: 0,
+        newSignupsWeek: 0,
     });
+    const [ambassadorStats, setAmbassadorStats] = useState({
+        total: 0, approved: 0, rejected: 0, pending: 0,
+        perCampus: {} as Record<string, number>,
+    });
+    const [campusSellers, setCampusSellers] = useState<Record<string, number>>({});
+    const [mcStats, setMcStats] = useState({ totalIssued: 0, totalRedeemed: 0 });
 
     useEffect(() => {
-        fetchMarketingData();
-    }, []);
+        const ALLOWED = ['marketing_admin', 'ceo', 'cofounder'];
+        if (!authLoading && (!user || !ALLOWED.includes(user.role))) {
+            router.replace('/portal/login');
+        }
+    }, [user, authLoading, router]);
+
+    useEffect(() => {
+        if (user) fetchMarketingData();
+    }, [user]);
 
     const fetchMarketingData = async () => {
         try {
-            // 1. Recent Signups
-            const { data: usersData } = await supabase
+            // Users
+            const { data: allUsers } = await supabase.from('users').select('id, email, role, created_at, coins_balance');
+            const { count: totalUsers } = await supabase.from('users').select('*', { count: 'exact', head: true });
+
+            if (allUsers) {
+                const sellers = allUsers.filter(u => ['seller', 'student_seller', 'dealer'].includes(u.role));
+                const buyers = allUsers.filter(u => ['buyer', 'student_buyer', 'customer'].includes(u.role));
+                const now = new Date();
+                const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const weekStart = new Date(todayStart.getTime() - 7 * 24 * 60 * 60 * 1000);
+                
+                setStats({
+                    totalUsers: totalUsers || 0,
+                    totalBuyers: buyers.length,
+                    activeSellers: sellers.length,
+                    newSignupsToday: allUsers.filter(u => new Date(u.created_at) >= todayStart).length,
+                    newSignupsWeek: allUsers.filter(u => new Date(u.created_at) >= weekStart).length,
+                });
+
+                // MarketCoins
+                const totalCoins = allUsers.reduce((sum, u) => sum + Number(u.coins_balance || 0), 0);
+                setMcStats({ totalIssued: totalCoins, totalRedeemed: 0 });
+
+                // Campus seller distribution
+                const dist: Record<string, number> = {};
+                sellers.forEach(s => {
+                    const email = s.email?.toLowerCase() || '';
+                    let campus = '';
+                    if (email.includes('baze')) campus = 'Baze University';
+                    else if (email.includes('nile')) campus = 'Nile University';
+                    else if (email.includes('veritas')) campus = 'Veritas University';
+                    else if (email.includes('cosmopolitan')) campus = 'Cosmopolitan University';
+                    if (campus) dist[campus] = (dist[campus] || 0) + 1;
+                });
+                setCampusSellers(dist);
+            }
+
+            // Recent signups
+            const { data: recent } = await supabase
                 .from('users')
                 .select('*')
                 .order('created_at', { ascending: false })
                 .limit(10);
+            if (recent) setRecentSignups(recent);
 
-            if (usersData) setRecentSignups(usersData);
-
-            // 2. Aggregate Stats
-            const { count: totalUsers } = await supabase.from('users').select('*', { count: 'exact', head: true });
-            const { count: activeSellers } = await supabase.from('users').select('*', { count: 'exact', head: true }).in('role', ['dealer', 'seller', 'student_seller']);
-
-            // 3. Campus Breakdown
-            const { data: apps } = await supabase.from('seller_applications').select('university');
-            if (apps) {
-                const counts: Record<string, number> = {};
-                apps.forEach(a => { if (a.university) counts[a.university] = (counts[a.university] || 0) + 1; });
-                const sorted = Object.entries(counts)
-                    .map(([name, count]) => ({ name, count }))
-                    .sort((a, b) => b.count - a.count)
-                    .slice(0, 5);
-                setCampusStats(sorted);
+            // Ambassadors
+            const { data: ambAll } = await supabase.from('ambassador_applications').select('*');
+            if (ambAll) {
+                const perCampus: Record<string, number> = {};
+                const approved = ambAll.filter(a => a.status === 'approved' || a.status === 'active');
+                approved.forEach(a => {
+                    if (a.university) perCampus[a.university] = (perCampus[a.university] || 0) + 1;
+                });
+                setAmbassadorStats({
+                    total: ambAll.length,
+                    approved: approved.length,
+                    rejected: ambAll.filter(a => a.status === 'rejected').length,
+                    pending: ambAll.filter(a => a.status === 'pending').length,
+                    perCampus,
+                });
             }
-
-            setStats(prev => ({
-                ...prev,
-                totalUsers: totalUsers || 0,
-                activeSellers: activeSellers || 0,
-            }));
-
         } catch (e) {
             console.error(e);
         } finally {
@@ -64,155 +112,234 @@ export default function MarketingAdminPage() {
         }
     };
 
-    if (loading) return (
-        <div className="flex justify-center items-center h-screen bg-background transition-colors duration-300">
+    if (authLoading || loading) return (
+        <div className="flex justify-center items-center h-screen bg-background">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-background text-foreground transition-colors duration-300 p-4 md:p-10 space-y-12 relative overflow-x-hidden">
-            
+        <div className="min-h-screen bg-background text-foreground p-4 md:p-10 space-y-12 relative overflow-x-hidden">
+            {/* Header */}
             <div className="relative z-10 flex flex-col gap-6">
                 <div className="flex items-center gap-3">
                     <Target className="h-5 w-5 text-primary" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground font-heading">Marketing Insights</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground">Marketing Dashboard</span>
                 </div>
-
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                     <div className="space-y-4">
                         <h1 className="text-4xl md:text-7xl font-black uppercase tracking-tighter italic font-heading leading-none">
-                            Marketing <span className="text-primary">Dashboard</span>
+                            Acquisition & <span className="text-primary">Growth</span>
                         </h1>
-                        <p className="text-muted-foreground text-xs font-black uppercase tracking-widest leading-relaxed opacity-60 max-w-2xl">
-                             Campus growth tracking // Ambassador network analysis // User conversion statistics
+                        <p className="text-muted-foreground text-xs font-black uppercase tracking-widest opacity-60 max-w-2xl">
+                            Ambassador programme // Sponsored listings // User acquisition // MarketCoins
                         </p>
                     </div>
                     <Link href="/admin/executive-chat">
-                        <Button className="bg-background border border-border h-16 px-10 rounded-2xl hover:bg-muted group transition-all shadow-xl shadow-primary/5">
-                            <div className="flex items-center gap-4">
-                                <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center">
-                                    <MessageSquare className="h-3.5 w-3.5 text-primary group-hover:scale-110 transition-transform" />
-                                </div>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-foreground">Contact Team</span>
-                            </div>
+                        <Button variant="outline" className="h-14 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest border-border">
+                            <MessageSquare className="h-4 w-4 mr-3 text-primary" /> Contact Team
                         </Button>
                     </Link>
                 </div>
             </div>
 
-            {/* Growth KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
-                {[
-                    { label: 'Total Users', value: stats.totalUsers, icon: Users, sub: 'Registered Accounts', color: 'text-blue-500' },
-                    { label: 'Active Campuses', value: campusStats.length, icon: Globe, sub: 'University Hubs', color: 'text-green-500' },
-                    { label: 'Weekly Growth', value: stats.growthVelocity, icon: TrendingUp, sub: 'Progress Trend', color: 'text-primary' },
-                    { label: 'Seller Conversion', value: stats.conversionRate === 'N/A' ? '12%' : stats.conversionRate, icon: Rocket, sub: 'Users to Merchants', color: 'text-orange-500' },
-                ].map((kpi, i) => (
-                    <Card key={i} className="bg-card border-border shadow-sm rounded-3xl md:rounded-[2.5rem] p-6 md:p-8 relative overflow-hidden group hover:border-primary/20 transition-all">
-                        <div className={`absolute top-0 right-0 p-6 md:p-8 opacity-5 group-hover:opacity-10 transition-opacity ${kpi.color}`}>
-                            <kpi.icon className="h-16 md:h-20 w-16 md:w-20" />
-                        </div>
-                        <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] mb-3 md:mb-4">{kpi.label}</p>
-                        <div className="text-3xl md:text-4xl font-black text-foreground italic font-heading tracking-tighter mb-2 transition-transform group-hover:scale-105 origin-left">{typeof kpi.value === 'number' ? kpi.value.toLocaleString() : kpi.value}</div>
-                        <p className="text-[9px] font-black uppercase tracking-widest opacity-40 italic">{kpi.sub}</p>
-                    </Card>
-                ))}
-            </div>
+            <Tabs defaultValue="ambassadors" className="space-y-12 relative z-10 w-full">
+                <TabsList className="bg-card border border-border rounded-3xl p-2 h-auto md:h-20 w-full overflow-x-auto no-scrollbar shadow-sm flex flex-wrap md:flex-nowrap gap-1">
+                    {[
+                        { val: 'ambassadors', label: 'Ambassadors', icon: Crown },
+                        { val: 'sponsored', label: 'Sponsored', icon: Megaphone },
+                        { val: 'partnerships', label: 'Partnerships', icon: Globe },
+                        { val: 'acquisition', label: 'Acquisition', icon: TrendingUp },
+                        { val: 'coins', label: 'MarketCoins', icon: Coins },
+                        { val: 'referrals', label: 'Referrals', icon: Gift },
+                        { val: 'campaigns', label: 'Campaigns', icon: Zap },
+                        { val: 'map', label: 'Sellers Map', icon: MapPin },
+                    ].map((tab) => (
+                        <TabsTrigger
+                            key={tab.val}
+                            value={tab.val}
+                            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-muted-foreground uppercase font-black text-[9px] tracking-widest h-16 rounded-2xl transition-all px-4 md:px-5 flex items-center gap-2 border-none"
+                        >
+                            <tab.icon className="h-4 w-4" />
+                            {tab.label}
+                        </TabsTrigger>
+                    ))}
+                </TabsList>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 relative z-10">
-                {/* Recent Signups */}
-                <Card className="lg:col-span-2 bg-card border-border shadow-sm rounded-[2rem] md:rounded-[3rem] overflow-hidden transition-colors duration-300">
-                    <CardHeader className="bg-muted/20 py-8 px-6 md:py-10 md:px-10 border-b border-border flex flex-row items-center justify-between">
-                        <div>
-                            <CardTitle className="text-2xl md:text-3xl font-black uppercase italic tracking-tighter">Recent <span className="text-primary">Signups</span></CardTitle>
-                            <p className="text-[10px] md:text-[11px] text-muted-foreground font-black uppercase tracking-widest mt-1 opacity-60 italic leading-tight">Latest user registrations</p>
-                        </div>
-                        <Zap className="h-5 md:h-6 w-5 md:w-6 text-primary animate-pulse" />
-                    </CardHeader>
-                    <div className="p-0 overflow-x-auto">
-                        <Table>
-                            <TableHeader className="bg-muted/10">
-                                <TableRow className="border-border hover:bg-transparent">
-                                    <TableHead className="py-6 px-10 text-muted-foreground uppercase font-black text-[10px] tracking-widest font-heading italic">Date & Time</TableHead>
-                                    <TableHead className="py-6 px-10 text-muted-foreground uppercase font-black text-[10px] tracking-widest font-heading italic">User Email</TableHead>
-                                    <TableHead className="py-6 px-10 text-muted-foreground uppercase font-black text-[10px] tracking-widest font-heading italic text-right">Account Type</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {recentSignups.map((user) => (
-                                    <TableRow key={user.id} className="border-border hover:bg-muted/10 transition-colors group">
-                                        <TableCell className="py-8 px-10 text-muted-foreground text-[10px] font-black italic opacity-60">
-                                            {new Date(user.created_at).toLocaleString()}
-                                        </TableCell>
-                                        <TableCell className="py-8 px-10">
-                                            <div className="flex items-center gap-4">
-                                                <div className="h-10 w-10 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center font-black text-xs text-primary shadow-sm group-hover:scale-110 transition-transform">
-                                                    {user.email[0].toUpperCase()}
-                                                </div>
-                                                <span className="text-base font-black text-foreground italic tracking-tight">{user.email}</span>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="py-8 px-10 text-right">
-                                            <Badge variant="outline" className="text-primary border-primary/20 bg-primary/5 text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-xl">
-                                                {user.role || 'USER'}
-                                            </Badge>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                {/* Ambassador Programme Overview */}
+                <TabsContent value="ambassadors" className="space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        {[
+                            { label: 'Total Applications', value: ambassadorStats.total, color: 'text-blue-500' },
+                            { label: 'Approved', value: ambassadorStats.approved, color: 'text-green-500' },
+                            { label: 'Rejected', value: ambassadorStats.rejected, color: 'text-red-500' },
+                            { label: 'Pending', value: ambassadorStats.pending, color: 'text-yellow-500' },
+                        ].map((m, i) => (
+                            <Card key={i} className="bg-card border-border rounded-[2.5rem] p-8">
+                                <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] mb-4">{m.label}</p>
+                                <p className={`text-4xl font-black italic tracking-tighter ${m.color}`}>{m.value}</p>
+                            </Card>
+                        ))}
                     </div>
-                </Card>
+                    <Card className="bg-card border-border rounded-[2.5rem] p-10">
+                        <h3 className="text-xl font-black italic uppercase tracking-tighter mb-6">Active Ambassadors by <span className="text-primary">University</span></h3>
+                        <div className="space-y-4">
+                            {['Baze University', 'Nile University', 'Veritas University', 'Cosmopolitan University'].map(uni => (
+                                <div key={uni} className="flex justify-between items-center p-4 bg-muted/30 rounded-2xl border border-border/50">
+                                    <span className="font-black text-sm">{uni}</span>
+                                    <span className="font-black text-primary text-lg">{ambassadorStats.perCampus[uni] || 0}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </Card>
+                </TabsContent>
 
-                {/* Campus Popularity */}
-                <div className="space-y-10">
-                    <Card className="bg-card border-border shadow-xl rounded-[3.5rem] p-10 relative overflow-hidden">
-                        <div className="absolute top-[-10%] right-[-10%] w-48 h-48 bg-primary/5 blur-[80px] rounded-full" />
-                        
-                        <div className="space-y-8 relative z-10">
-                             <div className="flex items-center gap-3">
-                                <MapPin className="h-4 w-4 text-primary" />
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground italic">Campus Coverage</h3>
+                {/* Sponsored Listings */}
+                <TabsContent value="sponsored" className="space-y-8">
+                    <Card className="bg-card border-border rounded-[2.5rem] p-10">
+                        <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-6">Sponsored Listings <span className="text-primary">Manager</span></h3>
+                        <p className="text-muted-foreground text-sm italic mb-6">View active boosted listings, approve/reject boost requests, and monitor performance.</p>
+                        <div className="text-center py-16 opacity-20">
+                            <Megaphone className="h-12 w-12 mx-auto mb-4" />
+                            <p className="text-[10px] font-black uppercase tracking-widest">No sponsored listings active</p>
+                            <p className="text-[9px] text-muted-foreground mt-2 italic">Sponsored listings will appear here when sellers submit boost requests.</p>
+                        </div>
+                    </Card>
+                </TabsContent>
+
+                {/* Campus Brand Partnerships */}
+                <TabsContent value="partnerships" className="space-y-8">
+                    <Card className="bg-card border-border rounded-[2.5rem] p-10">
+                        <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-6">Campus Brand <span className="text-primary">Partnerships</span></h3>
+                        <p className="text-muted-foreground text-sm italic mb-6">Manage brand partnerships with Nigerian FMCGs, telcos, and fintech companies for in-app placements.</p>
+                        <div className="text-center py-16 opacity-20">
+                            <Globe className="h-12 w-12 mx-auto mb-4" />
+                            <p className="text-[10px] font-black uppercase tracking-widest">No active partnerships</p>
+                            <p className="text-[9px] text-muted-foreground mt-2 italic">Partnerships will be configured here once brand agreements are finalized.</p>
+                        </div>
+                    </Card>
+                </TabsContent>
+
+                {/* User Acquisition Stats */}
+                <TabsContent value="acquisition" className="space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {[
+                            { label: 'Total Buyers', value: stats.totalBuyers, color: 'text-blue-500' },
+                            { label: 'Verified Sellers', value: stats.activeSellers, color: 'text-green-500' },
+                            { label: 'Signups Today', value: stats.newSignupsToday, color: 'text-primary' },
+                            { label: 'Signups This Week', value: stats.newSignupsWeek, color: 'text-purple-500' },
+                        ].map((m, i) => (
+                            <Card key={i} className="bg-card border-border rounded-[2.5rem] p-8">
+                                <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] mb-4">{m.label}</p>
+                                <p className={`text-4xl font-black italic tracking-tighter ${m.color}`}>{m.value}</p>
+                            </Card>
+                        ))}
+                    </div>
+                    <Card className="bg-card border-border rounded-[2.5rem] overflow-hidden">
+                        <CardHeader className="bg-muted/10 py-10 px-10 border-b border-border">
+                            <CardTitle className="text-xl font-black uppercase italic tracking-tighter">Recent <span className="text-primary">Signups</span></CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-6 md:p-10 space-y-4">
+                            {recentSignups.map(u => (
+                                <div key={u.id} className="flex justify-between items-center p-4 bg-muted/30 rounded-2xl border border-border/50">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-black text-xs">
+                                            {(u.email?.[0] || '?').toUpperCase()}
+                                        </div>
+                                        <p className="font-bold text-sm">{u.email}</p>
+                                    </div>
+                                    <Badge variant="outline" className="text-[9px] font-black uppercase px-3 py-1 rounded-lg">{u.role}</Badge>
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* MarketCoins Overview */}
+                <TabsContent value="coins" className="space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <Card className="bg-card border-border rounded-[2.5rem] p-8">
+                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] mb-4">Total MC Issued</p>
+                            <p className="text-4xl font-black italic tracking-tighter text-primary">{mcStats.totalIssued.toLocaleString()}</p>
+                        </Card>
+                        <Card className="bg-card border-border rounded-[2.5rem] p-8">
+                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] mb-4">Total MC Redeemed</p>
+                            <p className="text-4xl font-black italic tracking-tighter">{mcStats.totalRedeemed.toLocaleString()}</p>
+                        </Card>
+                        <Card className="bg-card border-border rounded-[2.5rem] p-8">
+                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] mb-4">Net MC in Circulation</p>
+                            <p className="text-4xl font-black italic tracking-tighter text-green-500">{(mcStats.totalIssued - mcStats.totalRedeemed).toLocaleString()}</p>
+                        </Card>
+                    </div>
+                </TabsContent>
+
+                {/* Referral Programme */}
+                <TabsContent value="referrals" className="space-y-8">
+                    <Card className="bg-card border-border rounded-[2.5rem] p-10">
+                        <div className="flex items-center gap-3 mb-6">
+                            <Gift className="h-6 w-6 text-primary" />
+                            <h3 className="text-2xl font-black italic uppercase tracking-tighter">Referral Programme <span className="text-primary">Tracker</span></h3>
+                        </div>
+                        <div className="flex items-center gap-3 p-6 bg-yellow-500/10 border border-yellow-500/20 rounded-2xl">
+                            <Clock className="h-5 w-5 text-yellow-500" />
+                            <p className="text-sm font-bold text-yellow-600 dark:text-yellow-400">Coming Soon — Referral programme tracking will activate when the system launches.</p>
+                        </div>
+                    </Card>
+                </TabsContent>
+
+                {/* Content and Campaign Tools */}
+                <TabsContent value="campaigns" className="space-y-8">
+                    <Card className="bg-card border-border rounded-[2.5rem] p-10">
+                        <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-6">Content & Campaign <span className="text-primary">Tools</span></h3>
+                        <p className="text-muted-foreground text-sm italic mb-6">Create, schedule, and manage promotional banners and announcements on the marketplace.</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="p-6 bg-muted/30 rounded-2xl border border-border/50 space-y-3">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Active Campaigns</p>
+                                <p className="text-3xl font-black italic">0</p>
+                                <Button variant="outline" className="h-10 rounded-xl font-black uppercase text-[9px] tracking-widest w-full">Create Campaign</Button>
                             </div>
-                            
-                            <div className="space-y-6">
-                                {campusStats.length > 0 ? campusStats.map((campus, i) => (
-                                    <div key={i} className="space-y-3">
-                                        <div className="flex justify-between items-end">
-                                            <p className="text-sm font-black text-foreground italic uppercase tracking-tight">{campus.name}</p>
-                                            <p className="text-[10px] font-black text-primary italic uppercase tracking-widest">{campus.count} Active</p>
-                                        </div>
-                                        <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                                            <div 
-                                                className="h-full bg-primary rounded-full transition-all duration-1000" 
-                                                style={{ width: `${(campus.count / stats.totalUsers) * 100}%` }}
-                                            />
-                                        </div>
-                                    </div>
-                                )) : (
-                                    <div className="py-20 text-center opacity-20">
-                                        <Globe className="h-12 w-12 mx-auto mb-4" />
-                                        <p className="text-[10px] font-black uppercase tracking-widest">Awaiting Statistics</p>
-                                    </div>
-                                )}
+                            <div className="p-6 bg-muted/30 rounded-2xl border border-border/50 space-y-3">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Scheduled</p>
+                                <p className="text-3xl font-black italic">0</p>
+                                <Button variant="outline" className="h-10 rounded-xl font-black uppercase text-[9px] tracking-widest w-full">Schedule Banner</Button>
                             </div>
                         </div>
                     </Card>
+                </TabsContent>
 
-                    <Card className="bg-primary text-primary-foreground p-10 rounded-[3rem] border-none shadow-[0_25px_60px_rgba(255,98,0,0.2)] group relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 blur-[60px] rounded-full -mr-24 -mt-24 transition-opacity group-hover:opacity-100 opacity-60" />
-                         <TrendingUp className="h-8 w-8 mb-6 opacity-80" />
-                        <h3 className="text-2xl font-black uppercase italic tracking-tighter font-heading mb-4">Growth Strategy</h3>
-                        <p className="text-xs opacity-70 italic leading-relaxed mb-8">
-                             Market presence in main Nigerian campuses is increasing steadily. Our focus remains on user acquisition through campus ambassador programs.
-                        </p>
-                        <Button className="w-full bg-white text-primary border-none hover:bg-white/95 font-black uppercase text-[10px] tracking-widest h-14 rounded-2xl">
-                             Open Campaigns
-                        </Button>
+                {/* Onboarded Sellers Map */}
+                <TabsContent value="map" className="space-y-8">
+                    <Card className="bg-card border-border rounded-[2.5rem] p-10">
+                        <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-6">Onboarded Sellers <span className="text-primary">Map</span></h3>
+                        <p className="text-muted-foreground text-sm italic mb-8">Abuja FCT — verified sellers grouped by campus hub. Only campuses with registered sellers appear.</p>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                            {Object.entries(campusSellers).length === 0 ? (
+                                <div className="col-span-2 text-center py-16 opacity-20">
+                                    <MapPin className="h-12 w-12 mx-auto mb-4" />
+                                    <p className="text-[10px] font-black uppercase tracking-widest">No verified sellers from any campus yet</p>
+                                </div>
+                            ) : Object.entries(campusSellers).map(([campus, count]) => (
+                                <div key={campus} className="p-6 bg-muted/30 rounded-2xl border border-border/50 flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-3 w-3 rounded-full bg-primary animate-pulse" />
+                                        <div>
+                                            <p className="font-black text-sm">{campus}</p>
+                                            <p className="text-[10px] text-muted-foreground font-bold">Active Campus Hub</p>
+                                        </div>
+                                    </div>
+                                    <span className="text-2xl font-black italic text-primary">{count}</span>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="p-6 bg-muted/30 rounded-2xl border border-border/50 text-center">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">Total Registered Buyers</p>
+                            <p className="text-5xl font-black italic text-foreground">{stats.totalBuyers.toLocaleString()}</p>
+                        </div>
                     </Card>
-                </div>
-            </div>
+                </TabsContent>
+            </Tabs>
 
             <div className="text-center py-20 opacity-20">
                 <p className="text-[9px] font-black uppercase tracking-[0.8em] text-muted-foreground italic">MarketBridge Growth Management // Nigeria 2026</p>

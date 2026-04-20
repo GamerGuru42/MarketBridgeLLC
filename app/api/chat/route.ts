@@ -1,4 +1,4 @@
-// Server-side API Route for Sage AI Chat — Powered by Gemini 2.5 Pro
+// Server-side API Route for Sage AI Chat — Powered by Gemini 2.0 Flash
 
 import { streamText, tool } from 'ai';
 import { google } from '@ai-sdk/google';
@@ -119,8 +119,8 @@ CURRENT CONTEXT:
 ${!isLoggedIn ? '- IMPORTANT: You are in "Guest Mode". You can answer marketplace questions and search for products, but you MUST NOT check orders, escrow details, or escalate to human support. Politely ask the guest to log in if they try to access these features.' : ''}
 `;
 
-    const primaryModel = 'gemini-2.5-pro';
-    const fallbackModel = 'gemini-2.5-flash';
+    const primaryModel = 'gemini-2.0-flash';
+    const fallbackModel = 'gemini-2.0-flash';
 
     async function runChat(modelId: string) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment

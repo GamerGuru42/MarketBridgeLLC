@@ -5,7 +5,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSystem } from '@/contexts/SystemContext';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { TrendingUp, Users, DollarSign, Activity, MapPin, ShieldCheck, MessageSquare, AlertTriangle, Loader2, Store, Crown, ShoppingBag, ArrowUpRight, ShieldAlert, Power } from 'lucide-react';
+import { TrendingUp, Users, DollarSign, Activity, MapPin, ShieldCheck, MessageSquare, AlertTriangle, Loader2, Store, Crown, ShoppingBag, ArrowUpRight, ShieldAlert, Power, Download, UserPlus, Zap, Wrench } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -25,6 +26,11 @@ export default function CEOPage() {
     const [regionalStats, setRegionalStats] = useState({ abuja: 0, lagos: 0 });
     const { isDemoMode, daysLeft } = useSystem();
     const [togglingDemo, setTogglingDemo] = useState(false);
+    const [auditLogs, setAuditLogs] = useState<any[]>([]);
+    const [newAdminEmail, setNewAdminEmail] = useState('');
+    const [newAdminRole, setNewAdminRole] = useState('operations_admin');
+    const [creatingAdmin, setCreatingAdmin] = useState(false);
+    const [financials, setFinancials] = useState({ gmv: 0, escrowFees: 0, subscriptionRev: 0, sponsoredRev: 0 });
 
     React.useEffect(() => {
         if (!loading && (!user || !['ceo', 'cofounder'].includes(user.role))) {
@@ -58,6 +64,31 @@ export default function CEOPage() {
                         .limit(8);
                     setMessages(recentMsgs || []);
                 } catch (e) { setMessages([]); }
+
+                // 5. Fetch team activity log
+                try {
+                    const { data: logs } = await supabase
+                        .from('system_audit_logs')
+                        .select('*')
+                        .order('created_at', { ascending: false })
+                        .limit(15);
+                    setAuditLogs(logs || []);
+                } catch (e) { setAuditLogs([]); }
+
+                // 6. Fetch financials
+                try {
+                    const { data: txns } = await supabase
+                        .from('sales_transactions')
+                        .select('amount_total, amount_platform');
+                    if (txns) {
+                        setFinancials({
+                            gmv: txns.reduce((s, t) => s + Number(t.amount_total || 0), 0),
+                            escrowFees: txns.reduce((s, t) => s + Number(t.amount_platform || 0), 0),
+                            subscriptionRev: 0,
+                            sponsoredRev: 0,
+                        });
+                    }
+                } catch (e) {}
 
             } catch (error) {
                 console.error("Dashboard Load Error:", error);
@@ -124,14 +155,16 @@ export default function CEOPage() {
 
                     <div className="flex flex-wrap gap-3 relative z-10">
                         {[
-                            { label: 'Marketing Hub', href: '/admin/marketing', icon: TrendingUp },
-                            { label: 'System Health', href: '/admin/technical', icon: ShieldCheck },
-                            { label: 'Team Messages', href: '/admin/executive-chat', icon: MessageSquare },
+                            { label: 'Operations', href: '/admin/operations', icon: Activity },
+                            { label: 'Marketing', href: '/admin/marketing', icon: TrendingUp },
+                            { label: 'Systems', href: '/admin/systems', icon: ShieldCheck },
+                            { label: 'IT Support', href: '/admin/it-support', icon: Wrench },
+                            { label: 'Team Chat', href: '/admin/executive-chat', icon: MessageSquare },
                         ].map((link, i) => (
                             <Link
                                 key={i}
                                 href={link.href}
-                                className="h-14 px-8 flex items-center justify-center bg-card border border-border rounded-[1.25rem] text-foreground font-black uppercase tracking-widest text-[10px] hover:border-primary/30 hover:bg-muted/50 transition-all shadow-sm group"
+                                className="h-14 px-6 flex items-center justify-center bg-card border border-border rounded-[1.25rem] text-foreground font-black uppercase tracking-widest text-[10px] hover:border-primary/30 hover:bg-muted/50 transition-all shadow-sm group"
                             >
                                 <link.icon className="h-4 w-4 mr-3 text-primary group-hover:scale-110 transition-transform" />
                                 {link.label}
@@ -315,8 +348,137 @@ export default function CEOPage() {
                     </div>
                 </div>
 
+                {/* Financial Summary */}
+                <Card className="bg-card border-border shadow-sm rounded-[3rem] p-8 md:p-10">
+                    <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-8">Financial <span className="text-primary">Summary</span></h3>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        {[
+                            { label: 'Total GMV', value: `₦${financials.gmv.toLocaleString()}` },
+                            { label: 'Escrow Fees Collected', value: `₦${financials.escrowFees.toLocaleString()}` },
+                            { label: 'Subscription Revenue', value: `₦${financials.subscriptionRev.toLocaleString()}` },
+                            { label: 'Sponsored Listing Rev', value: `₦${financials.sponsoredRev.toLocaleString()}` },
+                        ].map((m, i) => (
+                            <div key={i} className="p-6 bg-muted/30 rounded-2xl border border-border/50">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2">{m.label}</p>
+                                <p className="text-2xl font-black italic tracking-tighter">{m.value}</p>
+                            </div>
+                        ))}
+                    </div>
+                    <Button 
+                        onClick={() => {
+                            const rows = [
+                                ['Metric', 'Value (NGN)'],
+                                ['Total GMV', financials.gmv.toString()],
+                                ['Escrow Fees Collected', financials.escrowFees.toString()],
+                                ['Subscription Revenue', financials.subscriptionRev.toString()],
+                                ['Sponsored Listing Revenue', financials.sponsoredRev.toString()],
+                            ];
+                            const csv = rows.map(r => r.join(',')).join('\n');
+                            const blob = new Blob([csv], { type: 'text/csv' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `marketbridge-investor-report-Q${Math.ceil((new Date().getMonth() + 1) / 3)}-${new Date().getFullYear()}.csv`;
+                            a.click();
+                            URL.revokeObjectURL(url);
+                        }}
+                        className="h-14 px-10 bg-primary text-primary-foreground rounded-2xl font-black uppercase text-[10px] tracking-widest"
+                    >
+                        <Download className="h-4 w-4 mr-3" /> Export Investor Report (CSV)
+                    </Button>
+                </Card>
+
+                {/* Team Activity Log */}
+                <Card className="bg-card border-border shadow-sm rounded-[3rem] overflow-hidden">
+                    <CardHeader className="p-8 md:p-10 border-b border-border bg-muted/20">
+                        <h3 className="text-xl font-black uppercase italic tracking-tighter">Team Activity <span className="text-primary">Log</span></h3>
+                        <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mt-1 opacity-60">Recent admin actions</p>
+                    </CardHeader>
+                    <div className="p-6 md:p-10 space-y-4 max-h-[500px] overflow-y-auto">
+                        {auditLogs.length === 0 ? (
+                            <div className="text-center py-16 opacity-20">
+                                <Activity className="h-12 w-12 mx-auto mb-4" />
+                                <p className="text-[10px] font-black uppercase tracking-widest">No activity logged yet</p>
+                            </div>
+                        ) : auditLogs.map(log => (
+                            <div key={log.id} className="p-5 bg-muted/30 rounded-2xl border border-border/50 flex items-start gap-4">
+                                <Zap className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                                <div className="flex-1">
+                                    <div className="flex justify-between">
+                                        <span className="font-black text-xs uppercase">{log.action_type}</span>
+                                        <span className="text-[9px] text-muted-foreground">{new Date(log.created_at).toLocaleString()}</span>
+                                    </div>
+                                    <p className="text-[10px] text-muted-foreground mt-1">{log.details?.email || log.details?.reason || JSON.stringify(log.details)}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </Card>
+
+                {/* God Mode */}
+                <Card className="bg-card border-border shadow-sm rounded-[3rem] p-8 md:p-10">
+                    <div className="flex items-center gap-3 mb-6">
+                        <Zap className="h-6 w-6 text-primary" />
+                        <h3 className="text-2xl font-black uppercase italic tracking-tighter">God Mode <span className="text-primary">Access</span></h3>
+                    </div>
+                    <p className="text-muted-foreground text-sm italic mb-6">Full override capability across the entire platform — all departments, all data.</p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <Link href="/admin/operations"><Button variant="outline" className="h-14 w-full rounded-2xl font-black uppercase text-[10px] tracking-widest"><Activity className="h-4 w-4 mr-2" /> Operations Override</Button></Link>
+                        <Link href="/admin/systems"><Button variant="outline" className="h-14 w-full rounded-2xl font-black uppercase text-[10px] tracking-widest"><ShieldCheck className="h-4 w-4 mr-2" /> Systems Access</Button></Link>
+                        <Link href="/admin/users"><Button variant="outline" className="h-14 w-full rounded-2xl font-black uppercase text-[10px] tracking-widest"><Users className="h-4 w-4 mr-2" /> User Registry</Button></Link>
+                    </div>
+                </Card>
+
+                {/* Admin Account Management */}
+                <Card className="bg-card border-border shadow-sm rounded-[3rem] p-8 md:p-10">
+                    <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-2">Admin Account <span className="text-primary">Management</span></h3>
+                    <p className="text-muted-foreground text-xs italic mb-8">Assign a Gmail address to any department role. The user will sign in with Google to access their department.</p>
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <Input
+                            type="email"
+                            placeholder="staff@gmail.com"
+                            value={newAdminEmail}
+                            onChange={(e) => setNewAdminEmail(e.target.value)}
+                            className="h-14 rounded-2xl bg-secondary border-border px-6 font-bold text-sm flex-1"
+                        />
+                        <select
+                            value={newAdminRole}
+                            onChange={(e) => setNewAdminRole(e.target.value)}
+                            className="h-14 rounded-2xl bg-secondary border border-border px-6 font-bold text-sm appearance-none min-w-[200px]"
+                        >
+                            <option value="operations_admin">Operations Admin</option>
+                            <option value="marketing_admin">Marketing Admin</option>
+                            <option value="systems_admin">Systems Admin</option>
+                            <option value="it_support">IT Support</option>
+                            <option value="ceo">CEO</option>
+                            <option value="cofounder">Co-Founder</option>
+                        </select>
+                        <Button 
+                            onClick={async () => {
+                                if (!newAdminEmail.trim()) return;
+                                setCreatingAdmin(true);
+                                try {
+                                    const { data: existing } = await supabase.from('users').select('id').eq('email', newAdminEmail.toLowerCase().trim()).maybeSingle();
+                                    if (existing) {
+                                        await supabase.from('users').update({ role: newAdminRole }).eq('id', existing.id);
+                                    } else {
+                                        await supabase.from('users').insert({ email: newAdminEmail.toLowerCase().trim(), role: newAdminRole, display_name: newAdminEmail.split('@')[0] });
+                                    }
+                                    setNewAdminEmail('');
+                                    alert(`Admin account assigned: ${newAdminEmail} → ${newAdminRole}`);
+                                } catch (e: any) { alert('Failed: ' + e.message); }
+                                finally { setCreatingAdmin(false); }
+                            }}
+                            disabled={creatingAdmin}
+                            className="h-14 bg-primary text-primary-foreground font-black uppercase text-[10px] tracking-widest rounded-2xl px-10"
+                        >
+                            {creatingAdmin ? <Loader2 className="h-4 w-4 animate-spin" /> : <><UserPlus className="h-4 w-4 mr-2" /> Assign Role</>}
+                        </Button>
+                    </div>
+                </Card>
+
                 <div className="text-center py-20 opacity-20">
-                    <p className="text-[9px] font-black uppercase tracking-[0.6em] text-muted-foreground">MarketBridge Management Portal // 2026</p>
+                    <p className="text-[9px] font-black uppercase tracking-[0.6em] text-muted-foreground">MarketBridge Executive Hub // 2026</p>
                 </div>
             </div>
         </div>
