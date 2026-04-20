@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/logo';
 
-const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo'];
+const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo', 'systems_admin', 'it_support'];
 
 // ─── Admin Session Cookie ────────────────────────────────────────────────────
 function setAdminSessionCookie(userId: string, role: string) {
@@ -65,9 +65,8 @@ function PortalLoginContent() {
 
         try {
             const emailToUse = normalizeIdentifier(formData.email);
-            // Standardize sub-roles to primary database roles
+            // Standardize sub-roles if needed, but we now use specific roles for the 4 portals
             let dbRole: string = selectedRole;
-            if (selectedRole.startsWith('technical_admin')) dbRole = 'technical_admin';
 
             let authResponse: any;
 
@@ -247,8 +246,8 @@ function PortalLoginContent() {
         const roles: { role: AdminRole, label: string, icon: any, desc: string }[] = [
             { role: 'operations_admin', label: 'Operations Admin', icon: Activity, desc: 'Verification & Logistics' },
             { role: 'marketing_admin', label: 'Marketing Admin', icon: Target, desc: 'Acquisition & Growth' },
-            { role: 'technical_admin_alpha', label: 'Systems Admin', icon: Zap, desc: 'Database & Security' },
-            { role: 'technical_admin_beta', label: 'IT Support', icon: Zap, desc: 'Maintenance & Reports' },
+            { role: 'systems_admin', label: 'Systems Admin', icon: Zap, desc: 'Database & Security' },
+            { role: 'it_support', label: 'IT Support', icon: Zap, desc: 'Maintenance & Reports' },
         ];
 
         return (

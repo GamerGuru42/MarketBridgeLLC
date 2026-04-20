@@ -63,7 +63,7 @@ export default function MissionControlPage() {
     const [campusStats, setCampusStats] = useState<Record<string, number>>({});
 
     useEffect(() => {
-        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo'];
+        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo', 'systems_admin', 'it_support'];
         if (!authLoading && (!user || !ADMIN_ROLES.includes(user.role))) {
             router.replace('/portal/login');
         }

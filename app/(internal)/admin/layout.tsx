@@ -34,7 +34,7 @@ export default function AdminLayout({
     const { user, loading, logout } = useAuth();
     const pathname = usePathname();
     const isAuthPage = pathname?.includes('/login') || pathname?.includes('/signup');
-    const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo'];
+    const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo', 'systems_admin', 'it_support'];
     const router = useRouter();
 
     if (isAuthPage) return <>{children}</>;
@@ -47,16 +47,28 @@ export default function AdminLayout({
 
     const isAuthorized = user && ADMIN_ROLES.includes(user.role);
 
+    // Session Resilience Check: Don't bounce if they have a fresh admin session cookie, 
+    // giving time for the AuthContext to finish the role sync.
+    const getCookie = (name: string) => {
+        if (typeof document === 'undefined') return null;
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop()?.split(';').shift();
+        return null;
+    };
+    const hasAdminSession = !!getCookie('mb-admin-session');
+
     if (!isAuthorized) {
-        // If not authorized AND not loading, we bounce, but we give it a tiny grace period 
-        // in case a parallel 'refreshUser' is about to fire.
+        if (hasAdminSession || loading) {
+             return (
+                <div className="min-h-screen flex items-center justify-center bg-background text-muted-foreground flex-col gap-4">
+                    <Loader2 className="h-12 w-12 animate-spin text-primary opacity-20" />
+                    <p className="text-[10px] font-black uppercase tracking-widest italic animate-pulse">Syncing Permissions...</p>
+                </div>
+            );
+        }
         router.replace('/portal/login');
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-background text-muted-foreground flex-col gap-4">
-                <Loader2 className="h-12 w-12 animate-spin text-primary opacity-20" />
-                <p className="text-[10px] font-black uppercase tracking-widest italic animate-pulse">Syncing Permissions...</p>
-            </div>
-        );
+        return null;
     }
 
     const getSidebarItems = () => {
@@ -107,11 +119,19 @@ export default function AdminLayout({
                 messages
             ];
         }
-        if (role === 'technical_admin') {
+        if (role === 'systems_admin' || role === 'technical_admin') {
             return [
                 mainDashboard,
-                { label: 'Technical Health', href: '/admin/technical', icon: Server },
+                { label: 'Systems Health', href: '/admin/technical', icon: Server },
                 { label: 'Account Registry', href: '/admin/users', icon: Users },
+                messages
+            ];
+        }
+        if (role === 'it_support') {
+            return [
+                mainDashboard,
+                { label: 'Maintenance Logs', href: '/admin/technical', icon: Server },
+                { label: 'Support Center', href: '/admin/operations/support', icon: Headphones },
                 messages
             ];
         }

@@ -150,7 +150,7 @@ function extractRoleFromCookies(request: NextRequest): string | null {
     }
 }
 
-const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo'];
+const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo', 'systems_admin', 'it_support'];
 
 const ROLE_PATH_ACCESS: Record<string, string[]> = {
     '/admin/ceo': ['ceo', 'cofounder'],

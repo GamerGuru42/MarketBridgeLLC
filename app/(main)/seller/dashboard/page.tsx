@@ -215,7 +215,7 @@ export default function SellerDashboardPage() {
         }
 
         // Executive roles MUST use separate accounts for selling
-        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo'];
+        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo', 'systems_admin', 'it_support'];
         if (user?.role && ADMIN_ROLES.includes(user.role)) {
             console.warn('Seller dashboard: Admin attempt blocked');
             router.push('/admin');

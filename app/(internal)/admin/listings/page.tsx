@@ -58,7 +58,7 @@ export default function AdminListingsPage() {
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
+        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'systems_admin', 'it_support'];
         if (!authLoading && (!user || !ADMIN_ROLES.includes(user.role))) {
             router.replace('/portal/login');
         }

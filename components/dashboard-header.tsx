@@ -48,10 +48,11 @@ export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
                         <span className="mx-2 opacity-20">|</span> 
                         Context: <span className="text-primary font-black uppercase tracking-widest text-[9px]">
                             {pathname?.includes('/ceo') ? 'Executive Suite' : 
-                             pathname?.includes('/marketing') ? 'Marketing Management' :
-                             pathname?.includes('/technical') ? 'ID & Tech Support' :
-                             pathname?.includes('/operations') ? 'Operations Hub' :
-                             'Management Hub'}
+                             user?.role === 'operations_admin' ? 'Operations Admin' :
+                             user?.role === 'marketing_admin' ? 'Marketing Admin' :
+                             user?.role === 'systems_admin' ? 'Systems Admin' :
+                             user?.role === 'it_support' ? 'IT Support' :
+                             'Management Panel'}
                         </span>
                     </span>
                 </div>

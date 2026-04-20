@@ -17,7 +17,7 @@ export async function GET(request: Request) {
             console.log('Auth Callback: Exchange successful for:', data.user.email);
 
             // ── Resolve role & destination from query params OR fallback cookies ──
-            const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo'];
+            const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo', 'systems_admin', 'it_support'];
             const role = roleParam || cookieStore.get('mb_oauth_role')?.value;
             const nextParam = searchParams.get('next');
             const cookieNext = cookieStore.get('mb_oauth_next')?.value;

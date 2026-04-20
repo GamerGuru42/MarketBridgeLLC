@@ -29,7 +29,7 @@ export default function OperationsAdminPage() {
     });
 
     useEffect(() => {
-        const ADMIN_ROLES = ['admin', 'operations_admin', 'ceo', 'technical_admin', 'cofounder'];
+        const ADMIN_ROLES = ['admin', 'operations_admin', 'ceo', 'technical_admin', 'cofounder', 'systems_admin', 'it_support'];
         if (!authLoading && (!user || !ADMIN_ROLES.includes(user.role))) {
             router.replace('/portal/login');
         }
