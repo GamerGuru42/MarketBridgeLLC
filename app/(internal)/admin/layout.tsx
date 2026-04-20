@@ -57,15 +57,30 @@ export default function AdminLayout({
         return null;
     };
     const hasAdminSession = !!getCookie('mb-admin-session');
+    const [syncTimeout, setSyncTimeout] = React.useState(false);
+
+    React.useEffect(() => {
+        if (!isAuthorized && hasAdminSession && !loading) {
+            const timer = setTimeout(() => {
+                setSyncTimeout(true);
+            }, 8000); // 8 second circuit breaker
+            return () => clearTimeout(timer);
+        }
+    }, [isAuthorized, hasAdminSession, loading]);
 
     if (!isAuthorized) {
-        if (hasAdminSession || loading) {
+        if ((hasAdminSession && !syncTimeout) || loading) {
              return (
                 <div className="min-h-screen flex items-center justify-center bg-background text-muted-foreground flex-col gap-4">
                     <Loader2 className="h-12 w-12 animate-spin text-primary opacity-20" />
                     <p className="text-[10px] font-black uppercase tracking-widest italic animate-pulse">Syncing Permissions...</p>
                 </div>
             );
+        }
+        
+        // If we hit the timeout or have no reason to be here, eject.
+        if (typeof document !== 'undefined') {
+             document.cookie = 'mb-admin-session=; path=/; max-age=0;';
         }
         router.replace('/portal/login');
         return null;

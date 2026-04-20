@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
@@ -72,7 +73,7 @@ export async function GET(request: Request) {
 
             // ── Upsert profile ──
             console.log('Auth Callback: Upserting profile with role:', actualRole);
-            await supabase.from('users').upsert({
+            const { error: upsertError } = await supabaseAdmin.from('users').upsert({
                 id: data.user.id,
                 email: data.user.email,
                 display_name: existingUser?.display_name || data.user.user_metadata?.full_name || data.user.email?.split('@')[0],
@@ -80,6 +81,10 @@ export async function GET(request: Request) {
                 email_verified: true,
                 ...(isSocialLogin && { is_verified: true })
             }, { onConflict: 'id' });
+
+            if (upsertError) {
+                console.error('Auth Callback: Failed to upsert profile via Admin client:', upsertError);
+            }
 
             // ── Update JWT metadata ──
             await supabase.auth.updateUser({ data: { role: actualRole } });
@@ -89,8 +94,14 @@ export async function GET(request: Request) {
             // ── Strict Admin Redirection ──
             // If the user is an admin, ignore 'next' and force dashboard
             if (isAdminUser) {
-                if (actualRole === 'ceo') {
+                if (actualRole === 'ceo' || actualRole === 'cofounder') {
                     finalNext = '/admin/ceo';
+                } else if (actualRole === 'operations_admin') {
+                    finalNext = '/admin/operations';
+                } else if (actualRole === 'marketing_admin') {
+                    finalNext = '/admin/marketing';
+                } else if (actualRole === 'systems_admin' || actualRole === 'it_support' || actualRole === 'technical_admin') {
+                    finalNext = '/admin/technical';
                 } else {
                     finalNext = '/admin';
                 }
