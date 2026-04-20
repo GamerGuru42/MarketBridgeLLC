@@ -38,7 +38,7 @@ export async function GET(request: Request) {
 
             // ── Resolve Final Role ──
             // Logic Priority:
-            // 1. Explicit role from cookie/param (Highest intent)
+            // 1. Explicit role from cookie/param (Highest intent - used for Portal logins)
             // 2. Existing database role (if it's already an admin)
             // 3. Email-based auto-promotion (if it's a @marketbridge.com.ng email)
             // 4. Default to 'buyer'
@@ -48,7 +48,7 @@ export async function GET(request: Request) {
 
             // ── Resolve Role with Admin Priority ──
             if (role && ADMIN_ROLES.includes(role)) {
-                actualRole = role; // Force intent from portal login
+                actualRole = role; // Force intent from portal login (even if user existed as buyer)
             } else if (existingUser?.role && ADMIN_ROLES.includes(existingUser.role)) {
                 actualRole = existingUser.role; // Sustain existing admin status
             } else if (userEmail.endsWith('@marketbridge.com.ng')) {
@@ -111,6 +111,7 @@ export async function GET(request: Request) {
 
             const response = NextResponse.redirect(redirectUrl);
 
+            // ── Ensure Admin Session Cookie is set in the response ──
             if (isAdminUser) {
                 const payload = Buffer.from(JSON.stringify({ uid: data.user.id, role: actualRole, ts: Date.now() })).toString('base64');
                 const isProduction = origin.includes('marketbridge.com.ng');
@@ -132,5 +133,10 @@ export async function GET(request: Request) {
 
     const errorMsg = searchParams.get('error_description') || 'Something went wrong during sign in. Please try again.'
     console.warn('Auth Callback: Redirecting to login due to error:', errorMsg);
-    return NextResponse.redirect(new URL(`/login?error=${encodeURIComponent(errorMsg)}`, origin))
+    
+    // If we're coming from the portal, redirect back to portal login
+    const isPortalCallback = request.url.includes('role=') || cookies().get('mb_oauth_role');
+    const redirectPath = isPortalCallback ? '/portal/login' : '/login';
+    
+    return NextResponse.redirect(new URL(`${redirectPath}?error=${encodeURIComponent(errorMsg)}`, origin))
 }
