@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowRight, ShoppingBag, Store, MapPin, Zap, CheckCircle2, QrCode } from 'lucide-react';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
+import QRCode from 'react-qr-code';
 
 export default function HomePage() {
     return (
@@ -178,8 +179,13 @@ export default function HomePage() {
                         </div>
 
                         <div className="relative z-10 hidden md:flex flex-col items-center bg-white/5 border border-white/10 p-6 rounded-[2rem] backdrop-blur-sm transform hover:scale-105 transition-transform duration-300">
-                            <div className="bg-white p-4 rounded-2xl mb-4 text-[#111111] flex items-center justify-center shadow-lg">
-                                <QrCode className="h-24 w-24" strokeWidth={1.5} />
+                            <div className="bg-white p-5 rounded-2xl mb-4 text-[#111111] flex items-center justify-center shadow-lg">
+                                <QRCode 
+                                    value="https://marketbridge.com.ng/seller-onboard" 
+                                    size={100}
+                                    style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                                    viewBox={`0 0 256 256`}
+                                />
                             </div>
                             <p className="text-white font-black uppercase tracking-widest text-xs">Scan to Sell Fast</p>
                             <p className="text-[#FF6200] text-[10px] uppercase font-bold tracking-widest mt-1">Open Camera App</p>
