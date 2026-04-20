@@ -64,14 +64,32 @@ export async function GET(request: Request) {
             try { if (cookieStore.get('mb_oauth_dept')) cookieStore.delete('mb_oauth_dept'); } catch {}
 
             // ── Fetch existing profile ──
-            const { data: existingUser } = await supabase
+            let { data: existingUser } = await supabase
                 .from('users')
-                .select('role, display_name')
+                .select('id, role, display_name')
                 .eq('id', data.user.id)
                 .maybeSingle();
 
             const isSocialLogin = data.user.app_metadata.provider !== 'email';
             const userEmail = data.user.email?.toLowerCase() || '';
+
+            // Handle pre-registered admin accounts (created by CEO/Systems Admin via email)
+            if (!existingUser && userEmail) {
+                const { data: emailUser } = await supabaseAdmin
+                    .from('users')
+                    .select('id, role, display_name')
+                    .eq('email', userEmail)
+                    .maybeSingle();
+                
+                if (emailUser) {
+                    existingUser = emailUser;
+                    // Bridge the placeholder gap by updating the database to use their real Google Auth ID
+                    await supabaseAdmin
+                        .from('users')
+                        .update({ id: data.user.id })
+                        .eq('email', userEmail);
+                }
+            }
 
             // ── PORTAL (Admin) Login Path ──
             // If role or dept cookie is present, this is a portal login attempt
