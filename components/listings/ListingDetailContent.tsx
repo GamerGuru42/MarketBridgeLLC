@@ -427,7 +427,7 @@ export default function ListingDetailContent() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center text-zinc-900">
+            <div className="min-h-screen bg-[#FAFAFA] dark:bg-zinc-950 flex items-center justify-center text-zinc-900 dark:text-white">
                 <Loader2 className="h-10 w-10 animate-spin text-[#FF6200]" />
             </div>
         );
@@ -436,8 +436,8 @@ export default function ListingDetailContent() {
     // Auth Gate: Check if user is logged in
     if (!user && listing) {
         return (
-            <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 relative flex flex-col pt-28 pb-20 overflow-hidden">
-                <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
+            <div className="min-h-screen bg-[#FAFAFA] dark:bg-zinc-950 text-zinc-900 dark:text-white relative flex flex-col pt-28 pb-20 overflow-hidden">
+                <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0 dark:opacity-20" />
 
                 <div className="container px-6 mx-auto relative z-10 flex flex-col items-center justify-center flex-1 text-center space-y-8">
                     <div className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm rounded-[2.5rem] overflow-hidden p-2 border-zinc-100 relative group mb-8 max-w-sm w-full mx-auto shadow-2xl shadow-[#FF6200]/10">
@@ -483,11 +483,11 @@ export default function ListingDetailContent() {
 
     if (error || !listing) {
         return (
-            <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center px-4 text-zinc-900">
-                <div className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm p-10 rounded-[2.5rem] border-red-500/20 text-center max-w-md">
+            <div className="min-h-screen bg-[#FAFAFA] dark:bg-zinc-950 flex items-center justify-center px-4 text-zinc-900 dark:text-white">
+                <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-sm p-10 rounded-[2.5rem] border-red-500/20 text-center max-w-md">
                     <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-6" />
                     <p className="text-red-400 font-bold uppercase tracking-widest mb-6">{error || 'Asset Signal Lost'}</p>
-                    <Button onClick={() => router.push('/listings')} className="border-zinc-200 text-zinc-900 hover:bg-white/20">
+                    <Button onClick={() => router.push('/listings')} className="border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white hover:bg-white/20">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Return to Stream
                     </Button>
@@ -497,13 +497,13 @@ export default function ListingDetailContent() {
     }
 
     return (
-        <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 relative selection:bg-[#FF6200] selection:text-black pt-28 pb-20">
+        <div className="min-h-screen bg-[#FAFAFA] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 relative selection:bg-[#FF6200] selection:text-black pt-28 pb-20">
             {/* Background Grid */}
-            <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0" />
+            <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 pointer-events-none z-0 dark:opacity-20" />
 
             <div className="container px-4 mx-auto relative z-10 max-w-7xl">
                 {/* Header / Breadcrumb */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-zinc-100 pb-8">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-zinc-100 dark:border-zinc-900 pb-8">
                     <div className="space-y-4">
                         <Button
                             variant="ghost"
@@ -515,11 +515,11 @@ export default function ListingDetailContent() {
                         <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter italic font-heading">
                             {listing.title}
                         </h1>
-                        <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-zinc-500">
+                        <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
                             <span className="flex items-center gap-1.5 text-[#FF6200]"><Activity className="h-3 w-3" /> Available</span>
-                            <span className="w-1 h-1 rounded-full bg-zinc-700" />
-                            <span className="text-zinc-900">{listing.category}</span>
-                            <span className="w-1 h-1 rounded-full bg-zinc-700" />
+                            <span className="w-1 h-1 rounded-full bg-zinc-700 dark:bg-zinc-300" />
+                            <span className="text-zinc-900 dark:text-white">{listing.category}</span>
+                            <span className="w-1 h-1 rounded-full bg-zinc-700 dark:bg-zinc-300" />
                             <span>ID: #{listing.id.slice(0, 8).toUpperCase()}</span>
                         </div>
                     </div>
@@ -528,8 +528,8 @@ export default function ListingDetailContent() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                     {/* Left Column: Visuals */}
                     <div className="space-y-6">
-                        <div className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm rounded-[2.5rem] overflow-hidden p-2 border-zinc-100 relative group">
-                            <div className="aspect-[4/3] rounded-[2rem] overflow-hidden relative bg-zinc-100">
+                        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-sm rounded-[2.5rem] overflow-hidden p-2 border-zinc-100 relative group">
+                            <div className="aspect-[4/3] rounded-[2rem] overflow-hidden relative bg-zinc-100 dark:bg-zinc-800">
                                 {listing.images && listing.images.length > 0 ? (
                                     <Image
                                         src={listing.images[selectedImage]}
@@ -586,15 +586,15 @@ export default function ListingDetailContent() {
                     {/* Right Column: Interaction & Data */}
                     <div className="space-y-8">
                         {/* Price Card */}
-                        <div className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm rounded-[2.5rem] p-8 border-zinc-100 relative overflow-hidden">
+                        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-sm rounded-[2.5rem] p-8 relative overflow-hidden">
                             <div className="absolute top-0 right-0 p-8 opacity-50">
                                 <Zap className="h-24 w-24 text-[#FF6200]/10" />
                             </div>
 
                             <div className="relative z-10">
-                                <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] font-heading mb-2">Market Valuation</p>
+                                <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-black uppercase tracking-[0.3em] font-heading mb-2">Market Valuation</p>
                                 <div className="space-y-1 mb-6">
-                                    <div className="text-6xl font-black text-zinc-900 italic font-heading tracking-tighter">
+                                    <div className="text-6xl font-black text-zinc-900 dark:text-white italic font-heading tracking-tighter">
                                         ₦{(listing.current_offered_price || listing.price).toLocaleString()}
                                     </div>
                                     {listing.current_offered_price && listing.current_offered_price !== listing.price && (
@@ -617,8 +617,8 @@ export default function ListingDetailContent() {
                                                     {actionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
                                                     Confirm Purchase
                                                 </Button>
-                                                <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl">
-                                                    <p className="text-[9px] font-black uppercase tracking-tight text-amber-700 leading-tight">
+                                                <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 p-3 rounded-xl">
+                                                    <p className="text-[9px] font-black uppercase tracking-tight text-amber-700 dark:text-amber-400 leading-tight">
                                                         ⚠️ This is a test/demo version. No real transactions or money will be processed. This is for testing purposes only.
                                                     </p>
                                                 </div>
@@ -631,21 +631,21 @@ export default function ListingDetailContent() {
                                             <Button
                                                 onClick={handleAddToCart}
                                                 variant="outline"
-                                                className="h-16 aspect-square rounded-2xl border-zinc-200 bg-white hover:border-zinc-200 text-zinc-900 flex items-center justify-center p-0"
+                                                className="h-16 aspect-square rounded-2xl border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-zinc-200 text-zinc-900 dark:text-white flex items-center justify-center p-0"
                                             >
                                                 <ShoppingCart className="h-5 w-5" />
                                             </Button>
                                             <Button
                                                 onClick={toggleFavorite}
                                                 variant="outline"
-                                                className={cn("h-16 aspect-square rounded-2xl border-zinc-200 flex items-center justify-center p-0 transition-colors", isFavorite ? "bg-red-50 border-red-100 hover:bg-red-100" : "bg-white hover:bg-zinc-50")}
+                                                className={cn("h-16 aspect-square rounded-2xl border-zinc-200 dark:border-zinc-800 flex items-center justify-center p-0 transition-colors", isFavorite ? "bg-red-50 dark:bg-red-950/20 border-red-100 dark:border-red-900/50 hover:bg-red-100" : "bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800")}
                                             >
                                                 <Heart className={cn("h-6 w-6", isFavorite ? "fill-red-500 text-red-500" : "text-zinc-500")} />
                                             </Button>
                                         </div>
 
                                         {/* Contact Grid */}
-                                        <div className="grid grid-cols-2 gap-3 pt-4 border-t border-zinc-100">
+                                        <div className="grid grid-cols-2 gap-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
                                             {activeOffer && activeOffer.status === 'pending' ? (
                                                 <Button disabled className="h-12 rounded-xl border-[#FF6200]/20 bg-[#FF6200]/5 text-[#FF6200] text-[10px] uppercase font-bold tracking-widest opacity-80 cursor-default">
                                                     <Clock className="mr-2 h-3 w-3 animate-pulse" /> Offer Transmission Pending
@@ -655,7 +655,7 @@ export default function ListingDetailContent() {
                                                     <Zap className="mr-2 h-3 w-3" /> {activeOffer?.status === 'rejected' ? 'Re-Negotiate' : 'Make Offer'}
                                                 </Button>
                                             )}
-                                            <Button onClick={handleContactDealer} variant="outline" className="h-12 rounded-xl border-zinc-200 bg-transparent text-zinc-500 hover:text-zinc-900 hover:bg-white text-[10px] uppercase font-bold tracking-widest">
+                                            <Button onClick={handleContactDealer} variant="outline" className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 bg-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-white dark:hover:bg-zinc-900 text-[10px] uppercase font-bold tracking-widest">
                                                 <MessageCircle className="mr-2 h-3 w-3" /> Secure Chat
                                             </Button>
                                             <Button onClick={handleWhatsAppDealer} variant="outline" className="h-12 rounded-xl border-[#FF6200]/20 bg-[#FF6200]/5 text-[#FF6200] hover:bg-[#FF6200]/10 text-[10px] uppercase font-bold tracking-widest col-span-2">
@@ -672,23 +672,23 @@ export default function ListingDetailContent() {
                                             </button>
                                             <a
                                                 href="mailto:support@marketbridge.com.ng?subject=Buyer Help Request"
-                                                className="block text-[9px] uppercase font-bold tracking-widest text-zinc-600 hover:text-zinc-500 transition-colors"
+                                                className="block text-[9px] uppercase font-bold tracking-widest text-zinc-600 dark:text-zinc-400 hover:text-zinc-500 transition-colors"
                                             >
                                                 Need Platform Help?
                                             </a>
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="bg-zinc-100/50 rounded-2xl p-4 border border-zinc-100 text-center">
-                                        <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Owner Mode Active</p>
+                                    <div className="bg-zinc-100/50 dark:bg-zinc-800/50 rounded-2xl p-4 border border-zinc-100 dark:border-zinc-800 text-center">
+                                        <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-widest">Owner Mode Active</p>
                                     </div>
                                 )}
                             </div>
                         </div>
 
                         {/* Location Node Map */}
-                        <div className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm p-8 rounded-[2.5rem] border-zinc-100 space-y-6">
-                            <h3 className="text-zinc-900 font-black uppercase text-xs tracking-[0.2em] font-heading flex items-center gap-3">
+                        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-sm p-8 rounded-[2.5rem] space-y-6">
+                            <h3 className="text-zinc-900 dark:text-white font-black uppercase text-xs tracking-[0.2em] font-heading flex items-center gap-3">
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200]" />
                                 Asset Node Location
                             </h3>
@@ -697,7 +697,7 @@ export default function ListingDetailContent() {
                                 lng={ABUJA_UNIVERSITIES.find(u => u.name === listing.location || u.id === listing.location || u.id === 'baze')?.coords.lng || 7.3986}
                                 title={listing.location}
                             />
-                            <div className="flex items-center gap-3 text-[10px] font-bold text-zinc-500 uppercase tracking-widest italic">
+                            <div className="flex items-center gap-3 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest italic">
                                 <MapPin className="h-3 w-3 text-[#FF6200]" /> {listing.location} Marketplace Active
                             </div>
                         </div>
@@ -712,39 +712,39 @@ export default function ListingDetailContent() {
                                 { label: 'Category', value: listing.category, icon: Activity },
                                 { label: 'Notes', value: listing.mileage ? `${listing.mileage} KM` : 'Verified Student Listing', icon: Activity },
                             ].map((spec, i) => (
-                                <div key={i} className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm p-5 rounded-2xl border-zinc-100">
-                                    <div className="flex items-center gap-2 mb-2 text-zinc-500">
+                                <div key={i} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-sm p-5 rounded-2xl">
+                                    <div className="flex items-center gap-2 mb-2 text-zinc-500 dark:text-zinc-400">
                                         <spec.icon className="h-3 w-3" />
                                         <span className="text-[9px] font-black uppercase tracking-widest">{spec.label}</span>
                                     </div>
-                                    <p className="text-sm font-bold text-zinc-900 uppercase truncate">{spec.value || 'N/A'}</p>
+                                    <p className="text-sm font-bold text-zinc-900 dark:text-white uppercase truncate">{spec.value || 'N/A'}</p>
                                 </div>
                             ))}
                         </div>
 
                         {/* Merchant Intelligence */}
-                        <div className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm p-8 rounded-[2.5rem] border-zinc-200 bg-white/[0.03] backdrop-blur-xl relative overflow-hidden group">
+                        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-sm p-8 rounded-[2.5rem] bg-white/[0.03] dark:bg-zinc-900/[0.03] backdrop-blur-xl relative overflow-hidden group">
                             <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-10 transition-opacity">
                                 <ShieldCheck className="h-24 w-24 text-[#FF6200]" />
                             </div>
-                            <h3 className="text-zinc-900 font-black uppercase text-xs tracking-[0.2em] font-heading mb-6 flex items-center gap-3 relative z-10">
+                            <h3 className="text-zinc-900 dark:text-white font-black uppercase text-xs tracking-[0.2em] font-heading mb-6 flex items-center gap-3 relative z-10">
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200]" />
                                 Seller Information
                             </h3>
                             <div className="flex items-center gap-6 relative z-10">
-                                <div className="h-20 w-20 rounded-[1.5rem] bg-[#FAFAFA] border border-zinc-200 flex items-center justify-center overflow-hidden relative">
+                                <div className="h-20 w-20 rounded-[1.5rem] bg-[#FAFAFA] dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center overflow-hidden relative">
                                     {listing.dealer.photo_url ? (
                                         <Image src={listing.dealer.photo_url} alt={listing.dealer.display_name} fill className="object-cover" />
                                     ) : (
-                                        <Store className="h-8 w-8 text-zinc-700" />
+                                        <Store className="h-8 w-8 text-zinc-700 dark:text-zinc-300" />
                                     )}
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2 mb-1">
-                                        <h4 className="text-xl font-black uppercase tracking-tighter italic">{listing.dealer.display_name}</h4>
+                                        <h4 className="text-xl font-black uppercase tracking-tighter italic text-zinc-900 dark:text-white">{listing.dealer.display_name}</h4>
                                         {listing.dealer.is_verified && <ShieldCheck className="h-4 w-4 text-[#FF6200]" />}
                                     </div>
-                                    <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mb-4">{listing.dealer.university || 'Verified Institution'}</p>
+                                    <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-black uppercase tracking-widest mb-4">{listing.dealer.university || 'Verified Institution'}</p>
                                     <div className="flex items-center gap-4">
                                         <div className="flex items-center gap-1.5">
                                             <Star className="h-3 w-3 fill-[#FF6200] text-[#FF6200]" />
@@ -752,20 +752,20 @@ export default function ListingDetailContent() {
                                                 {sellerRating ? `${sellerRating.avg} (${sellerRating.count} reviews)` : 'New Seller'}
                                             </span>
                                         </div>
-                                        <span className="w-1 h-1 rounded-full bg-zinc-200" />
-                                        <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">{listing.dealer.store_type || 'DIGITAL'}</div>
+                                        <span className="w-1 h-1 rounded-full bg-zinc-200 dark:bg-zinc-700" />
+                                        <div className="text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">{listing.dealer.store_type || 'DIGITAL'}</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Description */}
-                        <div className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm p-8 rounded-[2.5rem] border-zinc-100">
-                            <h3 className="text-zinc-900 font-black uppercase text-xs tracking-[0.2em] font-heading mb-6 flex items-center gap-3">
+                        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-sm p-8 rounded-[2.5rem]">
+                            <h3 className="text-zinc-900 dark:text-white font-black uppercase text-xs tracking-[0.2em] font-heading mb-6 flex items-center gap-3">
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200]" />
                                 Item Description
                             </h3>
-                            <p className="text-zinc-500 text-sm leading-relaxed font-medium whitespace-pre-wrap">
+                            <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed font-medium whitespace-pre-wrap">
                                 {listing.description}
                             </p>
                         </div>
@@ -773,7 +773,7 @@ export default function ListingDetailContent() {
                 </div>
                         {/* Offer Dialog */}
             <Dialog open={isOfferOpen} onOpenChange={setIsOfferOpen}>
-                <DialogContent className="bg-white border-zinc-200 text-zinc-900 sm:max-w-sm rounded-[2.5rem] overflow-hidden p-0">
+                <DialogContent className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white sm:max-w-sm rounded-[2.5rem] overflow-hidden p-0">
                     <form onSubmit={handleMakeOffer}>
                         <div className="p-8 space-y-8">
                             <div className="text-center space-y-2">
