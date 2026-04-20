@@ -132,8 +132,8 @@ export default function RootLayout({
                     </ToastProvider>
                     <GlobalWidgets />
                     <OnboardingTour />
+                    <MobileBottomNav />
                   </CartProvider>
-                  <MobileBottomNav />
                 </LocationProvider>
               </AuthProvider>
             </SystemProvider>
