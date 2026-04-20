@@ -176,7 +176,7 @@ export async function middleware(request: NextRequest) {
 
     // ── 1. Rate Limiting ────────────────────────────────────────────────────
     const isPortalRoute = pathname.startsWith('/portal') || pathname.startsWith('/admin');
-    const isAuthRoute = pathname.includes('/login') || pathname.includes('/auth') || pathname.includes('/signup');
+    const isAuthRoute = (pathname.includes('/login') || pathname.includes('/auth') || pathname.includes('/signup')) && !pathname.includes('/callback');
 
     if (isAuthRoute) {
         const config = isPortalRoute ? ADMIN_RATE_LIMIT : PUBLIC_RATE_LIMIT;
