@@ -38,7 +38,7 @@ export const Logo: React.FC<LogoProps> = ({
         >
             <div className="relative">
                 <img
-                    src="/marketbridge_logo.png"
+                    src="/marketbridge_favicon.png"
                     alt="MarketBridge"
                     width={iconSizes[size]}
                     height={iconSizes[size]}
