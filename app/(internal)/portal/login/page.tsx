@@ -111,16 +111,7 @@ function PortalLoginContent() {
                 return;
             }
 
-            // PROACTIVE SYNC: Ensure the users table has the profile immediately
-            if (authMode === 'signup') {
-                 await supabase.from('users').upsert({
-                    id: data.user.id,
-                    email: emailToUse,
-                    display_name: formData.fullName || emailToUse.split('@')[0],
-                    role: dbRole,
-                    email_verified: true,
-                }, { onConflict: 'id' });
-            }
+            // PROACTIVE SYNC: Handled securely via Postgres Trigger on_auth_user_created
 
             if (authMode === 'signup' && !data.session) {
                 setError('Account created. Please verify your email.');
