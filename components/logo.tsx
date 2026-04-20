@@ -34,32 +34,19 @@ export const Logo: React.FC<LogoProps> = ({
     return (
         <Link
             href="/"
-            className={`flex items-center gap-2 transition-transform active:scale-95 ${className}`}
+            className={`flex flex-col items-start gap-0.5 transition-transform active:scale-95 ${className}`}
         >
-            <div className="relative">
-                <img
-                    src="/apple-touch-icon.png"
-                    alt="MarketBridgeIcon"
-                    width={iconSizes[size]}
-                    height={iconSizes[size]}
-                    className="rounded-lg object-contain"
-                />
+            <div className="flex flex-col">
+                <span className={`${textSizeClasses[size]} font-black tracking-tighter leading-none`}>
+                    <span className="text-foreground">Market</span>
+                    <span className="text-[#FF6200]">Bridge</span>
+                </span>
                 {isDemoMode && (
-                    <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6200] opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#FF6200]"></span>
-                    </span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF6200]/90 italic flex items-center gap-1.5 mt-0.5 border-t border-[#FF6200]/20 pt-0.5">
+                    Official Launch
+                  </span>
                 )}
             </div>
-            {showText !== false && (
-                <div className="flex flex-col">
-                    <span className={`${textSizeClasses[size]} font-black tracking-tight leading-none`}>
-                        <span className="text-foreground">Market</span>
-                        <span className="text-[#FF6200]">Bridge</span>
-                    </span>
-                    {isDemoMode && <span className="text-[8px] font-black uppercase tracking-[0.3em] text-[#FF6200] mt-1 italic">Official Launch</span>}
-                </div>
-            )}
         </Link>
     );
 };

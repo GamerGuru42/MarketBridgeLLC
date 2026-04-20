@@ -59,13 +59,9 @@ export const metadata: Metadata = {
     title: "MarketBridge",
   },
   icons: {
-    icon: [
-      { url: '/favicon-v2.png?v=2', type: 'image/png', sizes: 'any' },
-    ],
-    apple: [
-      { url: '/apple-touch-icon-v2.png?v=2' },
-    ],
-    shortcut: '/favicon-v2.ico?v=2',
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
   },
 
   openGraph: {
