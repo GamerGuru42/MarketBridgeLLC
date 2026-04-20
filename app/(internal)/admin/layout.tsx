@@ -60,8 +60,12 @@ export default function AdminLayout({
     }
 
     const getSidebarItems = () => {
+        const role = user.role;
         const isExec = role === 'ceo' || role === 'cofounder';
         const isOnExecPath = pathname?.startsWith('/admin/ceo');
+
+        const mainDashboard = { label: 'Admin Dashboard', href: '/admin', icon: LayoutDashboard };
+        const messages = { label: 'Team Messages', href: '/admin/executive-chat', icon: MessageSquare };
 
         // Full Suite (Operations, Marketing, Financials, etc.)
         const fullSuite = [

@@ -46,7 +46,13 @@ export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
                     <span className="text-zinc-500 text-[10px] hidden md:block">
                         Active Identity: <span className="font-black text-foreground uppercase tracking-widest">{user?.displayName}</span> 
                         <span className="mx-2 opacity-20">|</span> 
-                        Context: <span className="text-primary font-black uppercase tracking-widest text-[9px]">{pathname?.includes('/ceo') ? 'Executive Suite' : 'Operations Hub'}</span>
+                        Context: <span className="text-primary font-black uppercase tracking-widest text-[9px]">
+                            {pathname?.includes('/ceo') ? 'Executive Suite' : 
+                             pathname?.includes('/marketing') ? 'Marketing Management' :
+                             pathname?.includes('/technical') ? 'ID & Tech Support' :
+                             pathname?.includes('/operations') ? 'Operations Hub' :
+                             'Management Hub'}
+                        </span>
                     </span>
                 </div>
             </div>
