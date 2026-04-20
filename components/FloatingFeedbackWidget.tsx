@@ -64,12 +64,12 @@ export function FloatingFeedbackWidget() {
                             <select 
                                 value={type}
                                 onChange={(e) => setType(e.target.value)}
-                                className="w-full p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-transparent text-sm font-medium focus:ring-2 focus:ring-[#FF6200] outline-none"
+                                className="w-full p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm font-medium focus:ring-2 focus:ring-[#FF6200] outline-none"
                             >
-                                <option value="Bug Report">Bug Report</option>
-                                <option value="Feature Suggestion">Feature Suggestion</option>
-                                <option value="Transaction Issue">Transaction Issue</option>
-                                <option value="General Feedback">General Feedback</option>
+                                <option value="Bug Report" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Bug Report</option>
+                                <option value="Feature Suggestion" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Feature Suggestion</option>
+                                <option value="Transaction Issue" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Transaction Issue</option>
+                                <option value="General Feedback" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">General Feedback</option>
                             </select>
                         </div>
                         
@@ -81,7 +81,7 @@ export function FloatingFeedbackWidget() {
                                 onChange={(e) => setDescription(e.target.value)}
                                 placeholder="What did you experience?"
                                 rows={4}
-                                className="w-full p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-transparent text-sm resize-none focus:ring-2 focus:ring-[#FF6200] outline-none"
+                                className="w-full p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm resize-none focus:ring-2 focus:ring-[#FF6200] outline-none placeholder:text-zinc-400"
                             />
                         </div>
 
@@ -89,11 +89,11 @@ export function FloatingFeedbackWidget() {
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
                                     <label className="text-[10px] font-bold text-zinc-500 block mb-1">Name (Optional)</label>
-                                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent text-xs outline-none" />
+                                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-xs outline-none" />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-zinc-500 block mb-1">Email (Optional)</label>
-                                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent text-xs outline-none" />
+                                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-xs outline-none" />
                                 </div>
                             </div>
                         )}
