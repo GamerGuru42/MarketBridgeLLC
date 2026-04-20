@@ -15,6 +15,8 @@ import { SystemProvider } from "@/contexts/SystemContext";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { DemoBanner } from "@/components/DemoBanner";
 
+import { MobileBottomNav } from "@/components/MobileBottomNav";
+
 const manrope = Manrope({
   variable: "--font-manrope",
   subsets: ["latin"],
@@ -115,26 +117,25 @@ export default function RootLayout({
           >
             <SystemProvider>
               <AuthProvider>
-              <LocationProvider>
-                <CartProvider>
-                  <ToastProvider>
-                    <DemoBanner />
-                    <LocationChecker>
-                      {children}
-                    </LocationChecker>
+                <LocationProvider>
+                  <CartProvider>
+                    <ToastProvider>
+                      <DemoBanner />
+                      <LocationChecker>
+                        {children}
+                      </LocationChecker>
 
-                    {/* Beta label is shown only on campus pages */}
-                    <BetaLabel />
+                      {/* Beta label is shown only on campus pages */}
+                      <BetaLabel />
 
-                    <NetworkStatus />
-                  </ToastProvider>
-                  <GlobalWidgets />
+                      <NetworkStatus />
+                    </ToastProvider>
+                    <GlobalWidgets />
                     <OnboardingTour />
                   </CartProvider>
                   <MobileBottomNav />
                 </LocationProvider>
-              </LocationProvider>
-            </AuthProvider>
+              </AuthProvider>
             </SystemProvider>
           </ThemeProvider>
         </AppErrorBoundary>
