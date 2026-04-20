@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -7,7 +7,7 @@ import { Logo } from '@/components/logo';
 import { useAuth } from '@/contexts/AuthContext';
 import {
     Menu, User, LogOut, LayoutDashboard, Crown, Zap,
-    ShoppingBag, Store, ChevronDown, X, MessageCircle, AlertCircle
+    ShoppingBag, Store, ChevronDown, X, MessageCircle
 } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import {
@@ -25,14 +25,14 @@ export const Header = () => {
     const router = useRouter();
     const pathname = usePathname();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [currentCampus, setCurrentCampus] = useState<string>('Abuja');
+    const [currentNode, setCurrentNode] = useState<string>('Abuja');
 
     useEffect(() => {
-        const saved = localStorage.getItem('mb-preferred-campus');
+        const saved = localStorage.getItem('mb-preferred-node');
         if (saved && saved !== 'global') {
-            setCurrentCampus(saved);
+            setCurrentNode(saved);
         } else if (saved === 'global') {
-            setCurrentCampus('Global');
+            setCurrentNode('Global');
         }
     }, []);
 
@@ -46,36 +46,23 @@ export const Header = () => {
         return pathname?.startsWith(path);
     };
 
-    const navLinks: { href: string; label: string }[] = [
-        { href: '/ambassador', label: 'Ambassador' },
+    const navLinks = [
+        { href: '/marketplace', label: 'Browse' },
+        { href: '/seller-onboard', label: 'Sell on MarketBridge' },
     ];
 
     return (
         <>
-            <header className="fixed top-0 left-0 right-0 z-[100] bg-background/90 backdrop-blur-md border-b border-border h-16 shadow-sm">
+            <header className="fixed top-0 left-0 right-0 z-[100] bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 h-16 shadow-sm">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between gap-4">
 
-                    {/* Left: Logo + Campus + Nav */}
-                    <div className="flex items-center gap-6 shrink-0">
+                    {/* Left: Logo + Campus Node */}
+                    <div className="flex items-center gap-4 shrink-0">
                         <Logo />
-                        <div className="hidden md:flex items-center gap-6 border-l border-zinc-200 dark:border-zinc-800 pl-6 h-6">
-                            {navLinks.map((link) => (
-                                <Link 
-                                    key={link.href} 
-                                    href={link.href}
-                                    className={cn(
-                                        "text-[11px] font-black uppercase tracking-[0.2em] transition-all hover:text-[#FF6200]",
-                                        isActive(link.href) ? "text-[#FF6200]" : "text-zinc-500 dark:text-white/40"
-                                    )}
-                                >
-                                    {link.label}
-                                </Link>
-                            ))}
-                        </div>
                         <button
-                            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-secondary hover:bg-muted border border-border rounded-full transition-all group"
+                            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-zinc-100 dark:bg-zinc-900/80 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800/50 rounded-full transition-all group"
                             onClick={() => {
-                                localStorage.removeItem('mb-preferred-campus');
+                                localStorage.removeItem('mb-preferred-node');
                                 window.location.reload();
                             }}
                         >
@@ -83,12 +70,30 @@ export const Header = () => {
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6200] opacity-75" />
                                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#FF6200]" />
                             </span>
-                            <span className="text-[11px] font-bold text-muted-foreground group-hover:text-foreground transition-colors">
-                                {currentCampus}
+                            <span className="text-[11px] font-bold text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
+                                {currentNode}
                             </span>
-                            <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                            <ChevronDown className="h-3 w-3 text-zinc-400 dark:text-zinc-500" />
                         </button>
                     </div>
+
+                    {/* Centre: Nav Links (desktop) */}
+                    <nav className="hidden md:flex items-center gap-1">
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                className={cn(
+                                    'px-4 py-2 rounded-full text-sm font-bold transition-all',
+                                    isActive(link.href)
+                                        ? 'bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-800'
+                                        : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-900/50'
+                                )}
+                            >
+                                {link.label}
+                            </Link>
+                        ))}
+                    </nav>
 
                     {/* Right: Auth actions */}
                     <div className="flex items-center gap-2 shrink-0">
@@ -159,18 +164,10 @@ export const Header = () => {
                                                 <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5">
                                                     <Link href="/seller/dashboard" className="flex items-center gap-3 px-3 py-2.5">
                                                         <Store className="h-4 w-4 text-[#FF6200]" />
-                                                        <span className="text-sm font-bold">Merchant Center</span>
+                                                        <span className="text-sm font-bold">Seller Dashboard</span>
                                                     </Link>
                                                 </DropdownMenuItem>
                                             )}
-
-                                            {/* Buyer Command Center (For everyone who buys, but specifically useful for non-sellers) */}
-                                            <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5">
-                                                <Link href="/buyer/dashboard" className="flex items-center gap-3 px-3 py-2.5">
-                                                    <LayoutDashboard className="h-4 w-4 text-[#FF6200]" />
-                                                    <span className="text-sm font-bold">Buyer Center</span>
-                                                </Link>
-                                            </DropdownMenuItem>
 
                                             <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5">
                                                 <Link href="/marketplace" className="flex items-center gap-3 px-3 py-2.5">
@@ -187,43 +184,25 @@ export const Header = () => {
                                             </DropdownMenuItem>
 
                                             <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5">
-                                                <Link href="/disputes" className="flex items-center gap-3 px-3 py-2.5">
-                                                    <AlertCircle className="h-4 w-4 text-red-500" />
-                                                    <span className="text-sm font-bold">My Disputes</span>
-                                                </Link>
-                                            </DropdownMenuItem>
-
-                                            <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5">
-                                                <Link href="/ambassador" className="flex items-center gap-3 px-3 py-2.5">
-                                                    <Crown className="h-4 w-4 text-amber-500" />
-                                                    <span className="text-sm font-bold">Join Ambassador Program</span>
-                                                </Link>
-                                            </DropdownMenuItem>
-
-                                            <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5">
                                                 <Link href="/settings" className="flex items-center gap-3 px-3 py-2.5">
                                                     <User className="h-4 w-4 text-zinc-500" />
                                                     <span className="text-sm font-bold">My Account</span>
                                                 </Link>
                                             </DropdownMenuItem>
 
-                                            <DropdownMenuItem
-                                                onClick={() => window.dispatchEvent(new CustomEvent('mb-trigger-tour'))}
-                                                className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5"
-                                            >
-                                                <div className="flex items-center gap-3 px-3 py-2.5 w-full">
-                                                    <Zap className="h-4 w-4 text-[#FF6200]" />
-                                                    <span className="text-sm font-bold">Platform Tour</span>
-                                                </div>
-                                            </DropdownMenuItem>
+                                            {['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'].includes(user.role) && (
+                                                <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5">
+                                                    <Link href="/admin" className="flex items-center gap-3 px-3 py-2.5">
+                                                        <Crown className="h-4 w-4 text-[#FF6200]" />
+                                                        <span className="text-sm font-bold text-[#FF6200]">Admin Panel</span>
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                            )}
 
                                             <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/50" />
 
                                             <DropdownMenuItem
-                                                onSelect={(e) => {
-                                                    e.preventDefault();
-                                                    handleSignOut();
-                                                }}
+                                                onClick={handleSignOut}
                                                 className="rounded-xl cursor-pointer focus:bg-red-50 dark:focus:bg-red-950/30 text-red-600 dark:text-red-400 my-0.5 hover:text-red-700 dark:hover:text-red-300"
                                             >
                                                 <div className="flex items-center gap-3 px-3 py-2.5 w-full">
@@ -239,66 +218,48 @@ export const Header = () => {
                             </div>
                         )}
 
-                        {/* Mobile Controls */}
-                        <div className="flex md:hidden items-center gap-2">
-                            {user && (
-                                <div className="flex items-center gap-1 px-2 py-1.5 bg-[#FF6200]/10 border border-[#FF6200]/20 rounded-full" title="MarketCoins balance">
-                                    <Zap className="h-3 w-3 text-[#FF6200]" />
-                                    <span className="text-xs font-black text-zinc-900 dark:text-white">{(user.coins_balance || 0).toLocaleString()}</span>
-                                </div>
-                            )}
-                            <ThemeToggle />
-                            <button
-                                className="h-9 w-9 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
-                                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                                aria-label="Toggle menu"
-                            >
-                                {mobileMenuOpen ? <X className="h-4 w-4 text-zinc-900 dark:text-white" /> : <Menu className="h-4 w-4 text-zinc-900 dark:text-white" />}
-                            </button>
-                        </div>
+                        {/* Mobile Hamburger */}
+                        <button
+                            className="md:hidden h-9 w-9 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                            aria-label="Toggle menu"
+                        >
+                            {mobileMenuOpen ? <X className="h-4 w-4 text-zinc-900 dark:text-white" /> : <Menu className="h-4 w-4 text-zinc-900 dark:text-white" />}
+                        </button>
                     </div>
                 </div>
             </header>
 
             {/* Mobile Slide-down Menu */}
             {mobileMenuOpen && (
-                <div className="fixed top-16 left-0 right-0 z-[99] bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 px-6 py-8 flex flex-col gap-4 md:hidden shadow-2xl overflow-y-auto max-h-[calc(100vh-64px)]">
-                    {user ? (
-                        <>
-                            {/* Coins badge */}
-                            <div className="flex items-center gap-2 px-2 py-2">
-                                <Zap className="h-4 w-4 text-[#FF6200]" />
-                                <span className="text-sm font-black text-zinc-900 dark:text-white">{(user.coins_balance || 0).toLocaleString()}</span>
-                                <span className="text-[10px] font-black text-[#FF6200] uppercase">MarketCoins</span>
-                            </div>
-                            <Link href="/chats" onClick={() => setMobileMenuOpen(false)} className="text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white font-bold p-2 flex items-center gap-2">
-                                <MessageCircle className="h-4 w-4" /> Messages
-                            </Link>
-                            <Link href="/disputes" onClick={() => setMobileMenuOpen(false)} className="text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white font-bold p-2 flex items-center gap-2">
-                                <AlertCircle className="h-4 w-4 text-red-500" /> Disputes
-                            </Link>
-                            {['dealer', 'student_seller', 'seller'].includes(user.role) && (
-                                <Link href="/seller/upgrade" onClick={() => setMobileMenuOpen(false)} className="text-[#FF6200] font-bold p-2 flex items-center gap-2">
-                                    <Crown className="h-4 w-4" /> Upgrade Plan
+                <div className="fixed top-16 left-0 right-0 z-[99] bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 px-6 py-6 flex flex-col gap-4 md:hidden shadow-xl">
+                    {navLinks.map((link) => (
+                        <Link
+                            key={link.href}
+                            href={link.href}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white font-bold text-lg transition-colors p-2"
+                        >
+                            {link.label}
+                        </Link>
+                    ))}
+                    <div className="border-t border-zinc-100 dark:border-zinc-800 pt-4 flex flex-col gap-3 mt-2">
+                        {user ? (
+                            <>
+                                <Link href="/settings" onClick={() => setMobileMenuOpen(false)} className="text-zinc-600 dark:text-zinc-300 hover:text-white font-bold p-2">My Account</Link>
+                                <button onClick={() => { setMobileMenuOpen(false); handleSignOut(); }} className="text-red-500 font-bold text-left p-2">Log out</button>
+                            </>
+                        ) : (
+                            <>
+                                <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="w-full py-4 rounded-2xl bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black text-center text-sm uppercase tracking-widest shadow-md">
+                                    Sign Up Free
                                 </Link>
-                            )}
-                            <Link href="/ambassador" onClick={() => setMobileMenuOpen(false)} className={cn("font-black uppercase tracking-widest text-[11px] p-2", isActive('/ambassador') ? "text-[#FF6200]" : "text-zinc-600 dark:text-zinc-300")}>Be an Ambassador</Link>
-                            <Link href="/settings" onClick={() => setMobileMenuOpen(false)} className="text-zinc-600 dark:text-zinc-300 hover:text-white font-bold p-2">My Account</Link>
-                            <button onClick={() => { setMobileMenuOpen(false); handleSignOut(); }} className="text-red-500 font-bold text-left p-2">Log out</button>
-                        </>
-                    ) : (
-                        <>
-                            <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="w-full py-4 rounded-2xl bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black text-center text-sm uppercase tracking-widest shadow-md">
-                                Sign Up Free
-                            </Link>
-                            <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="w-full py-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-900 dark:text-white font-bold text-center text-sm">
-                                Log In
-                            </Link>
-                            <Link href="/ambassador" onClick={() => setMobileMenuOpen(false)} className="w-full py-3 text-center text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">
-                                Lead the Bridge
-                            </Link>
-                        </>
-                    )}
+                                <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="w-full py-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-900 dark:text-white font-bold text-center text-sm">
+                                    Log In
+                                </Link>
+                            </>
+                        )}
+                    </div>
                 </div>
             )}
         </>

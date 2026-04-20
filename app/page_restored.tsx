@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -78,7 +78,7 @@ export default function HomePage() {
                                         </div>
                                     </div>
                                     <div className="flex justify-between items-center border-t border-zinc-50 dark:border-zinc-800/50 pt-3">
-                                        <p className="text-[#FF6200] font-black">₦3,500</p>
+                                        <p className="text-[#FF6200] font-black">Γéª3,500</p>
                                         <div className="w-8 h-8 rounded-full bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center">
                                             <ArrowRight className="w-4 h-4 text-zinc-400" />
                                         </div>
