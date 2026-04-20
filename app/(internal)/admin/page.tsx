@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
-    Loader2, ShieldCheck, UserCheck, AlertTriangle, ChevronRight, Activity, Users, ShoppingBag, Zap, MessageSquare, ArrowUpRight, Power, MapPin, TrendingUp, Search, Terminal, Globe, Rocket, HelpCircle
+    Loader2, ShieldCheck, UserCheck, AlertTriangle, ChevronRight, Activity, Users, ShoppingBag, Zap, MessageSquare, ArrowUpRight, Power, MapPin, TrendingUp, Search, Terminal, Globe, Rocket, HelpCircle, RefreshCw
 } from 'lucide-react';
 import { useToast } from '@/contexts/ToastContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -60,7 +60,7 @@ export default function MissionControlPage() {
     const isMarketingAdmin = user?.role === 'marketing_admin';
 
     useEffect(() => {
-        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
+        const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo'];
         if (!authLoading && (!user || !ADMIN_ROLES.includes(user.role))) {
             router.replace('/portal/login');
         }

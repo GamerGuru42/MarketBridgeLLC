@@ -30,13 +30,27 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { supabase } from '@/lib/supabase';
 import { LaunchCountdown } from '@/components/LaunchCountdown';
+import PublicMarketplaceClient from '@/components/PublicMarketplaceClient';
 
 export default function HomePage() {
     const { user, loading } = useAuth();
 
     useEffect(() => {
-        if (!loading && user && ['student_seller', 'seller', 'dealer'].includes(user.role)) {
-            window.location.assign('/seller/dashboard');
+        if (!loading && user) {
+            const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo'];
+            
+            if (ADMIN_ROLES.includes(user.role)) {
+                if (user.role === 'ceo') {
+                    window.location.assign('/admin/ceo');
+                } else {
+                    window.location.assign('/admin');
+                }
+                return;
+            }
+
+            if (['student_seller', 'seller', 'dealer'].includes(user.role)) {
+                window.location.assign('/seller/dashboard');
+            }
         }
     }, [user, loading]);
 
@@ -66,13 +80,16 @@ export default function HomePage() {
         return <AuthenticatedHome user={user} />;
     }
 
-    // Default entry for the Genesis Countdown phase
+    // Guest/Landing view after official launch
     return (
         <main className="min-h-screen w-full">
-            <LaunchCountdown />
+            <PublicMarketplaceClient />
         </main>
     );
 }
+
+// Keep LaunchCountdown for specific historical or internal routes if necessary
+// but exported normally so it's not the primary entry.
 
 
 function AuthenticatedHome({ user }: { user: any }) {

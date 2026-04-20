@@ -316,7 +316,7 @@ export default function ListingDetailContent() {
         }
 
         if (isDemoMode && price > 5000) {
-            setError('Demo Mode restricts all transactions to a maximum of ₦5,000 for safety testing.');
+            setError('Market Launch Phase 1 restricts all transactions to a maximum of ₦5,000 for network safety.');
             return;
         }
 
@@ -391,7 +391,7 @@ export default function ListingDetailContent() {
         const finalAmount = listing.current_offered_price || listing.price;
 
         if (isDemoMode && finalAmount > 5000) {
-            setError('Demo Mode Active: You cannot process orders above ₦5,000 during the Private Beta. Please negotiate the price down for testing.');
+            setError('Market Launch Active: You cannot process orders above ₦5,000 during Launch Phase 1. Please negotiate the price down for testing.');
             return;
         }
 

@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/logo';
 
-const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
+const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo'];
 
 // ─── Admin Session Cookie ────────────────────────────────────────────────────
 function setAdminSessionCookie(userId: string, role: string) {
@@ -45,8 +45,11 @@ function PortalLoginContent() {
     useEffect(() => {
         if (!loading && sessionUser && user && ADMIN_ROLES.includes(user.role)) {
             setAdminSessionCookie(user.id, user.role);
-            if (user.role === 'ceo') router.push('/admin/ceo');
-            else router.push('/admin');
+            // Use window.location as fallback if router is already busy or stuck
+            const target = user.role === 'ceo' ? '/admin/ceo' : '/admin';
+            if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/admin')) {
+                window.location.assign(target);
+            }
         }
     }, [user, sessionUser, loading, router]);
 
@@ -144,8 +147,8 @@ function PortalLoginContent() {
             setAdminSessionCookie(data.user.id, userRole);
             await refreshUser(data.user.id);
 
-            if (userRole === 'ceo') router.replace('/admin/ceo');
-            else router.replace('/admin');
+            const target = userRole === 'ceo' ? '/admin/ceo' : '/admin';
+            window.location.assign(target);
 
         } catch (err: any) {
             setError(err.message || 'Authentication failed.');

@@ -59,7 +59,7 @@ export const Logo: React.FC<LogoProps> = ({
                         <span className="text-foreground">Market</span>
                         <span className="text-[#FF6200]">Bridge</span>
                     </span>
-                    {isDemoMode && <span className="text-[8px] font-black uppercase tracking-[0.3em] text-[#FF6200] mt-1 italic">Live Demo</span>}
+                    {isDemoMode && <span className="text-[8px] font-black uppercase tracking-[0.3em] text-[#FF6200] mt-1 italic">Official Launch</span>}
                 </div>
             )}
         </Link>

@@ -33,7 +33,7 @@ export default function AdminLayout({
     const { user, loading, logout } = useAuth();
     const pathname = usePathname();
     const isAuthPage = pathname?.includes('/login') || pathname?.includes('/signup');
-    const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'];
+    const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo'];
     const router = useRouter();
 
     if (isAuthPage) return <>{children}</>;
