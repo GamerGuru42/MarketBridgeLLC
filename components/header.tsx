@@ -48,7 +48,6 @@ export const Header = () => {
 
     const navLinks = [
         { href: '/marketplace', label: 'Browse' },
-        { href: '/seller-onboard', label: 'Sell on MarketBridge' },
     ];
 
     return (

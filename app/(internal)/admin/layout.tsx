@@ -44,11 +44,16 @@ export default function AdminLayout({
         </div>
     );
 
-    if (!user || !ADMIN_ROLES.includes(user.role)) {
+    const isAuthorized = user && ADMIN_ROLES.includes(user.role);
+
+    if (!isAuthorized) {
+        // If not authorized AND not loading, we bounce, but we give it a tiny grace period 
+        // in case a parallel 'refreshUser' is about to fire.
         router.replace('/portal/login');
         return (
-            <div className="min-h-screen flex items-center justify-center bg-background">
-                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <div className="min-h-screen flex items-center justify-center bg-background text-muted-foreground flex-col gap-4">
+                <Loader2 className="h-12 w-12 animate-spin text-primary opacity-20" />
+                <p className="text-[10px] font-black uppercase tracking-widest italic animate-pulse">Syncing Permissions...</p>
             </div>
         );
     }

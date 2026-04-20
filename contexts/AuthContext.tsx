@@ -58,18 +58,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 .eq('id', userId)
                 .single();
 
+            const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo'];
+            
+            // Check for Admin Intent via cookies (client-side)
+            const getCookie = (name: string) => {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop()?.split(';').shift();
+                return null;
+            };
+
+            const hasAdminIntent = getCookie('mb_oauth_role') || getCookie('mb-admin-session');
+
             if (error) {
                 // If record not found and we have retries left, wait and retry
                 // PGRST116 is Supabase/PostgREST code for "No rows found"
-                if (error.code === 'PGRST116' && retryCount < 3) {
-                    console.log(`Profile search retry ${retryCount + 1}...`);
-                    await new Promise(resolve => setTimeout(resolve, 1500)); // Wait 1.5s
+                if (error.code === 'PGRST116' && retryCount < 5) {
+                    console.log(`Profile search retry ${retryCount + 1} (Missing Record)...`);
+                    await new Promise(resolve => setTimeout(resolve, 800)); 
                     return fetchUserProfile(userId, retryCount + 1);
                 }
 
                 console.error('Error fetching user profile:', error);
                 setUser(null);
             } else {
+                // RACE CONDITION PROTECTION:
+                // If the user has Admin intent but the DB returns 'buyer', 
+                // the profile update hasn't propagated yet. We MUST re-check.
+                const dbRole = data?.role;
+                if (hasAdminIntent && (!dbRole || !ADMIN_ROLES.includes(dbRole)) && retryCount < 4) {
+                    console.warn(`Race Condition Detected: User has Admin Intent but DB role is "${dbRole}". Retrying sync ${retryCount + 1}/4...`);
+                    await new Promise(resolve => setTimeout(resolve, 1200)); // Wait 1.2s for DB consistency
+                    return fetchUserProfile(userId, retryCount + 1);
+                }
+
                 // Map Supabase user to our User type (include both id and _id for compatibility)
                 const mappedUser = {
                     ...data,
@@ -100,6 +122,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (error) {
             console.error('Unexpected error fetching profile:', error);
         } finally {
+            // Only stop loading if we have mapped a user or exhausted retries
+            // Use retryCount check to ensure we don't flash 'buyer' layout during sync
             if (retryCount === 0 || user) {
                 setLoading(false);
             }

@@ -40,20 +40,16 @@ export async function GET(request: Request) {
             // Logic Priority:
             // 1. Explicit role from cookie/param (Highest intent - used for Portal logins)
             // 2. Existing database role (if it's already an admin)
-            // 3. Email-based auto-promotion (if it's a @marketbridge.com.ng email)
-            // 4. Default to 'buyer'
+            // 3. Default to 'buyer'
             
             let actualRole = 'buyer';
             const userEmail = data.user.email?.toLowerCase() || '';
 
-            // ── Resolve Role with Admin Priority ──
+            // ── Resolve Role with Intent & Database Priority ──
             if (role && ADMIN_ROLES.includes(role)) {
                 actualRole = role; // Force intent from portal login (even if user existed as buyer)
             } else if (existingUser?.role && ADMIN_ROLES.includes(existingUser.role)) {
                 actualRole = existingUser.role; // Sustain existing admin status
-            } else if (userEmail.endsWith('@marketbridge.com.ng')) {
-                // Auto-promote internal staff
-                actualRole = 'admin'; 
             } else {
                 actualRole = existingUser?.role || 'buyer';
             }
