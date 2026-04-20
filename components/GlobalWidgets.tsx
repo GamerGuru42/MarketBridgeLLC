@@ -14,10 +14,8 @@ export function GlobalWidgets() {
     const authPaths = ['/login', '/signup', '/forgot-password'];
     if (authPaths.includes(pathname || '')) return null;
 
-    // Only show Sage AI to logged-in buyers and sellers within the actual web app 
-    const isPublicMarketingPage = ['/', '/ambassador'].includes(pathname || '');
-    const isWebAppUser = user && ['buyer', 'seller', 'ambassador', 'student_buyer', 'student_seller', 'dealer', 'customer'].includes(user.role);
-    const showSageAI = isWebAppUser && !isPublicMarketingPage;
+    // Enable Sage AI globally for the testing phase
+    const showSageAI = true;
 
     return (
         <>

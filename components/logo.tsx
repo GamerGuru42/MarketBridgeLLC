@@ -38,8 +38,8 @@ export const Logo: React.FC<LogoProps> = ({
         >
             <div className="relative">
                 <img
-                    src="/marketbridge_favicon.png"
-                    alt="MarketBridge"
+                    src="/favicon.png"
+                    alt="MarketBridgeIcon"
                     width={iconSizes[size]}
                     height={iconSizes[size]}
                     className="rounded-lg object-contain"
