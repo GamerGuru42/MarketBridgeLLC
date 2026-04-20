@@ -45,7 +45,7 @@ export function FloatingFeedbackWidget() {
     };
 
     return (
-        <div className="fixed bottom-24 md:bottom-8 right-4 md:right-8 z-[9999] flex flex-col items-end group">
+        <div className="fixed bottom-24 md:bottom-8 left-4 md:left-8 z-[9999] flex flex-col items-start group">
             {open && (
                 <div className="mb-4 w-[320px] md:w-[380px] bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5">
                     <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100 dark:border-zinc-900 bg-zinc-50 dark:bg-zinc-900/50">
