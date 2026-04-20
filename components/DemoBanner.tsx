@@ -1,12 +1,16 @@
 'use client';
 
 import React from 'react';
+import { usePathname } from 'next/navigation';
 import { useSystem } from '@/contexts/SystemContext';
 
 export function DemoBanner() {
+    const pathname = usePathname();
     const { isDemoMode, daysLeft, isExpired } = useSystem();
 
-    if (!isDemoMode || isExpired) return null;
+    const isAdminPath = pathname?.startsWith('/admin') || pathname?.startsWith('/portal') || pathname?.startsWith('/terminal');
+
+    if (!isDemoMode || isExpired || isAdminPath) return null;
 
     return (
         <div className="w-full bg-[#FF6200] text-black px-4 py-2 flex items-center justify-center text-center shadow-lg relative z-[100] border-b border-black/5">

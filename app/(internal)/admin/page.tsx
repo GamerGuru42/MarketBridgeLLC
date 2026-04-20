@@ -50,6 +50,7 @@ export default function MissionControlPage() {
         pendingSellers: 0,
         activeSellers: 0,
         activeListings: 0,
+        buyerCount: 0,
     });
     const [loading, setLoading] = useState(true);
     const [actioningId, setActioningId] = useState<string | null>(null);
@@ -58,6 +59,8 @@ export default function MissionControlPage() {
     const isOpsAdmin = user?.role === 'operations_admin' || user?.role === 'ceo' || user?.role === 'admin';
     const isTechAdmin = user?.role === 'technical_admin';
     const isMarketingAdmin = user?.role === 'marketing_admin';
+
+    const [campusStats, setCampusStats] = useState<Record<string, number>>({});
 
     useEffect(() => {
         const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo'];
@@ -74,8 +77,29 @@ export default function MissionControlPage() {
         setLoading(true);
         try {
             const { count: usersCount } = await supabase.from('users').select('*', { count: 'exact', head: true });
-            const { count: sellersCount } = await supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'student_seller');
+            const { data: allUsers } = await supabase.from('users').select('email, role');
+            
+            const sellers = allUsers?.filter(u => u.role === 'student_seller' || u.role === 'seller') || [];
+            const buyers = allUsers?.filter(u => u.role === 'student_buyer' || u.role === 'buyer') || [];
+            
             const { count: listingsCount } = await supabase.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'active');
+
+            // Aggregate sellers by campus (via email domain)
+            const distribution: Record<string, number> = {};
+            sellers.forEach(s => {
+                const email = s.email?.toLowerCase() || '';
+                let school = 'Unknown';
+                if (email.includes('baze')) school = 'Baze University';
+                else if (email.includes('nile')) school = 'Nile University';
+                else if (email.includes('veritas')) school = 'Veritas University';
+                else if (email.includes('uniabuja')) school = 'University of Abuja';
+                else if (email.includes('cosmopolitan')) school = 'Cosmopolitan University';
+                
+                if (school !== 'Unknown') {
+                    distribution[school] = (distribution[school] || 0) + 1;
+                }
+            });
+            setCampusStats(distribution);
 
             if (isOpsAdmin) {
                 const { data: apps, count: pendCount } = await supabase
@@ -118,8 +142,9 @@ export default function MissionControlPage() {
             setStats(prev => ({
                 ...prev,
                 totalUsers: usersCount || 0,
-                activeSellers: sellersCount || 0,
+                activeSellers: sellers.length,
                 activeListings: listingsCount || 0,
+                buyerCount: buyers.length
             }));
         } catch (error) {
             console.error('Error loading dashboard:', error);
@@ -174,7 +199,7 @@ export default function MissionControlPage() {
                             <span className="h-2 w-2 rounded-full bg-primary" />
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Admin Control Panel</span>
                         </div>
-                        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-foreground italic font-heading">
+                        <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-foreground font-heading">
                              General <span className="text-primary">Dashboard</span>
                         </h1>
                         <div className="flex flex-wrap items-center gap-6">
@@ -240,7 +265,10 @@ export default function MissionControlPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                     {/* Active Regions Map (Simplified Labels) */}
-                    <AdminMap />
+                    <AdminMap 
+                        distribution={campusStats} 
+                        buyerCount={stats.buyerCount} 
+                    />
                     
                     <div className="flex flex-col gap-10">
                         {/* Status Module */}

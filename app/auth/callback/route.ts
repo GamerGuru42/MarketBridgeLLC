@@ -46,10 +46,11 @@ export async function GET(request: Request) {
             const userEmail = data.user.email?.toLowerCase() || '';
 
             // ── Resolve Role with Intent & Database Priority ──
+            // If they chose a specific role in the portal, we HONOUR it (e.g. CEO testing Ops flow)
             if (role && ADMIN_ROLES.includes(role)) {
-                actualRole = role; // Force intent from portal login (even if user existed as buyer)
+                actualRole = role.trim(); 
             } else if (existingUser?.role && ADMIN_ROLES.includes(existingUser.role)) {
-                actualRole = existingUser.role; // Sustain existing admin status
+                actualRole = existingUser.role; // Sustained if no explicit intent provided
             } else {
                 actualRole = existingUser?.role || 'buyer';
             }

@@ -24,6 +24,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard-header';
 import { Button } from '@/components/ui/button';
+import { FeedbackLink } from '@/components/FloatingFeedbackWidget';
 
 export default function AdminLayout({
     children,
@@ -59,10 +60,27 @@ export default function AdminLayout({
     }
 
     const getSidebarItems = () => {
-        const role = user.role;
-        // Terminology: Swapping "Mission Control" for "Dashboard" and other simple English terms
-        const mainDashboard = { label: 'Admin Dashboard', href: '/admin', icon: LayoutDashboard };
-        const messages = { label: 'Team Messages', href: '/admin/executive-chat', icon: MessageSquare };
+        const isExec = role === 'ceo' || role === 'cofounder';
+        const isOnExecPath = pathname?.startsWith('/admin/ceo');
+
+        // Full Suite (Operations, Marketing, Financials, etc.)
+        const fullSuite = [
+            mainDashboard,
+            { label: 'System Health', href: '/admin/technical', icon: Server },
+            { label: 'Operations hub', href: '/admin/operations', icon: Activity },
+            { label: 'Marketing hub', href: '/admin/marketing', icon: Target },
+            { label: 'User Registry', href: '/admin/users', icon: Users },
+            { label: 'Product Registry', href: '/admin/listings', icon: ShoppingBag },
+            { label: 'Financials', href: '/admin/payouts', icon: Banknote },
+            messages
+        ];
+
+        // Executive Suite (High-level summary, Live help, Team chat)
+        const execSuite = [
+            { label: 'CEO Dashboard', href: '/admin/ceo', icon: LayoutDashboard },
+            { label: 'Live Support', href: '/admin/live-chat', icon: Headphones },
+            messages,
+        ];
 
         if (role === 'marketing_admin') {
             return [
@@ -93,24 +111,13 @@ export default function AdminLayout({
                 messages
             ];
         }
-        if (role === 'ceo' || role === 'cofounder') {
-            return [
-                { label: 'CEO Dashboard', href: '/admin/ceo', icon: LayoutDashboard },
-                { label: 'Live Support', href: '/admin/live-chat', icon: Headphones },
-                messages,
-            ];
+
+        // Executives see the Hub they are currently visiting
+        if (isExec) {
+            return isOnExecPath ? execSuite : fullSuite;
         }
 
-        return [
-            mainDashboard,
-            { label: 'System Health', href: '/admin/technical', icon: Server },
-            { label: 'Operations', href: '/admin/operations', icon: Activity },
-            { label: 'Marketing', href: '/admin/marketing', icon: Target },
-            { label: 'User Registry', href: '/admin/users', icon: Users },
-            { label: 'Product Registry', href: '/admin/listings', icon: ShoppingBag },
-            { label: 'Financials', href: '/admin/payouts', icon: Banknote },
-            messages
-        ];
+        return fullSuite;
     };
 
     const sidebarItems = getSidebarItems();
@@ -123,7 +130,8 @@ export default function AdminLayout({
                     items={sidebarItems} 
                     title="MARKETBRIDGE ADMIN" 
                 />
-                <div className="px-6 py-8">
+                <div className="px-6 py-4 space-y-2">
+                    <FeedbackLink />
                     <Button 
                         onClick={logout}
                         variant="outline"

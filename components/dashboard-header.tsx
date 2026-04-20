@@ -13,7 +13,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface DashboardHeaderProps {
     title: string;
@@ -23,6 +23,7 @@ interface DashboardHeaderProps {
 export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
     const { user, logout } = useAuth();
     const router = useRouter();
+    const pathname = usePathname();
 
     return (
         <header className="sticky top-0 z-40 flex h-24 w-full items-center justify-between border-b border-zinc-100 dark:border-zinc-800 bg-[#FAFAFA]/90 dark:bg-zinc-950/90 backdrop-blur-2xl px-6 md:px-12">
@@ -42,16 +43,18 @@ export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
                     <h1 className="text-xl md:text-2xl font-black italic tracking-widest text-[#FF6200] uppercase">
                         {title}
                     </h1>
-                    <span className="text-zinc-500 text-sm hidden md:block">
-                        Welcome back, {user?.displayName || 'Admin'} – {user?.role ? user.role.replace('_', ' ').toUpperCase() : 'ADMIN'} Dashboard
+                    <span className="text-zinc-500 text-[10px] hidden md:block">
+                        Active Identity: <span className="font-black text-foreground uppercase tracking-widest">{user?.displayName}</span> 
+                        <span className="mx-2 opacity-20">|</span> 
+                        Context: <span className="text-primary font-black uppercase tracking-widest text-[9px]">{pathname?.includes('/ceo') ? 'Executive Suite' : 'Operations Hub'}</span>
                     </span>
                 </div>
             </div>
 
             <div className="flex items-center gap-4 md:gap-8">
-                <Link href="/" className="hidden md:flex items-center gap-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors text-xs uppercase font-bold tracking-widest bg-white dark:bg-zinc-900 px-4 py-2 rounded-full border border-zinc-200 dark:border-zinc-700 hover:border-zinc-300">
-                    <Globe className="h-4 w-4" />
-                    Back to Public Site
+                <Link href="/" className="hidden md:flex items-center gap-3 text-zinc-500 hover:text-primary transition-all text-[10px] items-center uppercase font-black tracking-widest bg-white dark:bg-zinc-900 px-5 py-2.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                    <Globe className="h-3 w-3" />
+                    Marketplace Site
                 </Link>
 
                 <ThemeToggle />

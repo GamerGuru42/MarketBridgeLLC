@@ -8,6 +8,9 @@ export default function BetaLabel() {
   const pathname = usePathname() || ''
   const { isDemoMode } = useSystem()
 
+  // Hide if on admin pages to reduce clutter 
+  if (pathname?.startsWith('/admin') || pathname?.startsWith('/portal') || pathname?.startsWith('/terminal')) return null
+
   // Show if on campus route OR if system-wide Demo Mode is active
   if (!pathname.startsWith('/campus') && !isDemoMode) return null
 

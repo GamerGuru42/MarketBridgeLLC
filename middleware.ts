@@ -214,6 +214,16 @@ export async function middleware(request: NextRequest) {
 
     // ── 4. Internal System Isolation (Admin + Portal) ────────────────────────
     if (pathname.startsWith('/admin') || pathname.startsWith('/portal')) {
+        // REDIRECT TO HQ SUBDOMAIN IF ON MAIN DOMAIN
+        // Ensure that portal/admin routes are EXCLUSIVELY served from hq.marketbridge.com.ng
+        const isProduction = host.endsWith('marketbridge.com.ng');
+        const isLocalhost = host.includes('localhost') || host.includes('127.0.0.1');
+
+        if (isProduction && !isHQSubdomain && !isLocalhost) {
+            const hqUrl = new URL(request.url);
+            hqUrl.hostname = 'hq.marketbridge.com.ng';
+            return NextResponse.redirect(hqUrl);
+        }
 
         // Allow unauthenticated access ONLY to portal login/signup
         if (pathname === '/portal/login' || pathname === '/portal/signup') {
