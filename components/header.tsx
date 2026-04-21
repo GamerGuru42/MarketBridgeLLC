@@ -159,7 +159,7 @@ export const Header = () => {
                                                 <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium truncate mt-0.5">{user.email}</p>
                                             </div>
 
-                                            {['dealer', 'student_seller', 'seller'].includes(user.role) && (
+                                            {user.role === 'student_seller' && (
                                                 <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5">
                                                     <Link href="/seller/dashboard" className="flex items-center gap-3 px-3 py-2.5">
                                                         <Store className="h-4 w-4 text-[#FF6200]" />
@@ -189,7 +189,7 @@ export const Header = () => {
                                                 </Link>
                                             </DropdownMenuItem>
 
-                                            {['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder'].includes(user.role) && (
+                                            {['ceo', 'operations_admin', 'marketing_admin', 'systems_admin', 'it_support', 'technical_admin', 'admin'].includes(user.role) && (
                                                 <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5">
                                                     <Link href="/admin" className="flex items-center gap-3 px-3 py-2.5">
                                                         <Crown className="h-4 w-4 text-[#FF6200]" />

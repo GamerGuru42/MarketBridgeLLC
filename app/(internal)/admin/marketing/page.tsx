@@ -49,7 +49,7 @@ export default function MarketingAdminPage() {
             const { count: totalUsers } = await supabase.from('users').select('*', { count: 'exact', head: true });
 
             if (allUsers) {
-                const sellers = allUsers.filter(u => ['seller', 'student_seller', 'dealer'].includes(u.role));
+                const sellers = allUsers.filter(u => u.role === 'student_seller');
                 const buyers = allUsers.filter(u => ['buyer', 'student_buyer', 'customer'].includes(u.role));
                 const now = new Date();
                 const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());

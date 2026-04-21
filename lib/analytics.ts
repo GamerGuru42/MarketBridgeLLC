@@ -33,11 +33,11 @@ export async function fetchCEOStats(): Promise<CEOStats> {
 
     const gmv = orders?.reduce((sum, order) => sum + (Number(order.total_amount) || 0), 0) || 0;
 
-    // 2. Active Dealers
-    const { count: activeDealers } = await supabase
+    // 2. Active Sellers
+    const { count: activeSellers } = await supabase
         .from('users')
         .select('*', { count: 'exact', head: true })
-        .eq('role', 'dealer')
+        .eq('role', 'student_seller')
         .eq('is_verified', true);
 
     // 3. Total Users
@@ -69,7 +69,7 @@ export async function fetchCEOStats(): Promise<CEOStats> {
 
     return {
         gmv,
-        activeDealers: activeDealers || 0,
+        activeDealers: activeSellers || 0,
         totalUsers: totalUsers || 0,
         activeListings: activeListings || 0,
         trustScore

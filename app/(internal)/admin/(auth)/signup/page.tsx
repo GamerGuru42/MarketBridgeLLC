@@ -87,7 +87,7 @@ function AdminSignupContent() {
                     data: {
                         display_name: formData.displayName,
                         full_name: formData.displayName,
-                        role: isSellerInvite ? 'dealer' : role,
+                        role: isSellerInvite ? 'student_seller' : role,
                     },
                 },
             });
@@ -123,7 +123,7 @@ function AdminSignupContent() {
                             id: activeUser.id,
                             email: identifier,
                             display_name: formData.displayName,
-                            role: isSellerInvite ? 'dealer' : role,
+                            role: isSellerInvite ? 'student_seller' : role,
                             is_verified: true, // Auto-verify admins and approved sellers
                         }, {
                             onConflict: 'id'
@@ -239,9 +239,10 @@ function AdminSignupContent() {
                                         </SelectTrigger>
                                         <SelectContent className="bg-zinc-950 border-white/10 text-white">
                                             <SelectItem value="admin">Super Admin (Mission Control)</SelectItem>
-                                            <SelectItem value="technical_admin">Head of Technical</SelectItem>
+                                            <SelectItem value="systems_admin">Head of Systems</SelectItem>
                                             <SelectItem value="operations_admin">Head of Operations</SelectItem>
                                             <SelectItem value="marketing_admin">Head of Marketing</SelectItem>
+                                            <SelectItem value="it_support">IT Support</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>

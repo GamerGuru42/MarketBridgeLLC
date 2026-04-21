@@ -58,7 +58,7 @@ export default function OperationsAdminPage() {
             const { data: allS } = await supabase
                 .from('users')
                 .select('*, subscriptions(plan_id, status)')
-                .in('role', ['seller', 'student_seller', 'dealer'])
+                .in('role', ['student_seller'])
                 .order('created_at', { ascending: false });
             if (allS) setAllSellers(allS);
 

@@ -42,26 +42,23 @@ export const MobileBottomNav = () => {
             href: '/cart',
             label: 'Cart',
             icon: ShoppingCart,
-            show: ['customer', 'student_buyer'].includes(user?.role as any) || !user,
+            show: (user?.role === 'student_buyer') || !user,
             badge: itemCount,
         },
         {
             href: (() => {
                 if (!user) return '/login';
                 const role = user.role;
-                if (role === 'ceo') return '/ceo';
-                if (role === 'cofounder') return '/cofounder';
-                if (role === 'cto') return '/cto';
-                if (role === 'coo') return '/coo';
+                if (role === 'ceo') return '/admin/ceo';
+                if (role === 'operations_admin') return '/admin/operations';
                 if (role === 'marketing_admin') return '/admin/marketing';
-                if (['operations_admin', 'head_of_operations_admin'].includes(role)) return '/admin/operations';
-                if (role === 'technical_admin') return '/admin/technical';
-                if (['admin', 'super_admin'].includes(role)) return '/admin';
-                if (['dealer', 'student_seller'].includes(role)) return '/seller/dashboard';
+                if (role === 'systems_admin' || role === 'technical_admin') return '/admin/systems';
+                if (role === 'it_support') return '/admin/it-support';
+                if (role === 'student_seller') return '/seller/dashboard';
                 return '/orders';
             })(),
-            label: (user && ['ceo', 'cofounder', 'cto', 'coo', 'admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'head_of_operations_admin', 'super_admin'].includes(user.role)) ? 'Command' : (user ? 'Account' : 'Login'),
-            icon: (user && ['ceo', 'cofounder', 'cto', 'coo', 'admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'head_of_operations_admin', 'super_admin'].includes(user.role)) ? Crown : User,
+            label: (user && ['ceo', 'operations_admin', 'marketing_admin', 'systems_admin', 'it_support', 'technical_admin', 'admin'].includes(user.role)) ? 'Command' : (user ? 'Account' : 'Login'),
+            icon: (user && ['ceo', 'operations_admin', 'marketing_admin', 'systems_admin', 'it_support', 'technical_admin', 'admin'].includes(user.role)) ? Crown : User,
             show: true,
         },
     ];

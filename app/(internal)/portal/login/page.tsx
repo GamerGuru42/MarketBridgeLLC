@@ -7,19 +7,18 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
-const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo', 'systems_admin', 'it_support'];
+const ADMIN_ROLES = ['ceo', 'operations_admin', 'marketing_admin', 'systems_admin', 'it_support', 'technical_admin', 'admin'];
 
 // ─── Admin Session Cookie ────────────────────────────────────────────────────
 function setAdminSessionCookie(userId: string, role: string) {
     const payload = btoa(JSON.stringify({ uid: userId, role, ts: Date.now() }));
-    const isProduction = window.location.origin.includes('marketbridge.com.ng');
-    const domain = isProduction ? '; domain=.marketbridge.com.ng' : '';
-    document.cookie = `mb-admin-session=${payload}; path=/; max-age=${8 * 60 * 60}; SameSite=Lax${window.location.protocol === 'https:' ? '; Secure' : ''}${domain}`;
+    // Cookies are now strictly scoped to the HQ subdomain in production
+    document.cookie = `mb-admin-session=${payload}; path=/; max-age=${8 * 60 * 60}; SameSite=Lax${window.location.protocol === 'https:' ? '; Secure' : ''}`;
 }
 
 // Role to department hub mapping
 function getHubRoute(role: string): string {
-    if (role === 'ceo' || role === 'cofounder') return '/admin/ceo';
+    if (role === 'ceo') return '/admin/ceo';
     if (role === 'operations_admin') return '/admin/operations';
     if (role === 'marketing_admin') return '/admin/marketing';
     if (role === 'systems_admin' || role === 'technical_admin') return '/admin/systems';
@@ -34,7 +33,7 @@ function getAllowedRolesForDepartment(dept: string): string[] {
         case 'marketing_admin': return ['marketing_admin'];
         case 'systems_admin': return ['systems_admin', 'technical_admin'];
         case 'it_support': return ['it_support'];
-        case 'ceo': return ['ceo', 'cofounder', 'cto', 'coo'];
+        case 'ceo': return ['ceo'];
         default: return [];
     }
 }
@@ -69,25 +68,15 @@ function PortalLoginContent() {
         setIsLoading(true);
         setError('');
         try {
-            // Resolve intended role string for the cookie
-            let dbRole: string = dept;
-            if (dept === 'systems_admin') dbRole = 'systems_admin';
-
+            const dbRole: string = dept;
             const targetDestination = getHubRoute(dbRole);
-
             const callbackOrigin = window.location.origin;
-            const isProduction = callbackOrigin.includes('marketbridge.com.ng');
-            const domain = isProduction ? '; domain=.marketbridge.com.ng' : '';
-
-            // Set cookies for the auth callback to read
-            document.cookie = `mb_oauth_role=${dbRole}; path=/; max-age=600; SameSite=Lax${domain}`;
-            document.cookie = `mb_oauth_next=${encodeURIComponent(targetDestination)}; path=/; max-age=600; SameSite=Lax${domain}`;
-            document.cookie = `mb_oauth_dept=${dept}; path=/; max-age=600; SameSite=Lax${domain}`;
 
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: `${callbackOrigin}/auth/callback?role=${dbRole}&next=${encodeURIComponent(targetDestination)}&dept=${dept}`,
+                    // Added type=portal to isolate the callback logic
+                    redirectTo: `${callbackOrigin}/auth/callback?type=portal&role=${dbRole}&next=${encodeURIComponent(targetDestination)}`,
                     queryParams: {
                         prompt: 'select_account',
                     },

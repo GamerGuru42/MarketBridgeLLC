@@ -172,7 +172,9 @@ export async function middleware(request: NextRequest) {
 
     // ── 0. Subdomain & Host Detection ────────────────────────────────────────
     const host = request.headers.get('host') || '';
-    const isHQSubdomain = host.startsWith('hq.') || host.includes('.hq.');
+    const isProduction = host.endsWith('marketbridge.com.ng');
+    const isLocalhost = host.includes('localhost') || host.includes('127.0.0.1');
+    const isHQSubdomain = host.startsWith('hq.') || (isProduction && host === 'hq.marketbridge.com.ng');
 
     // ── 1. Rate Limiting ────────────────────────────────────────────────────
     const isPortalRoute = pathname.startsWith('/portal') || pathname.startsWith('/admin');
@@ -214,19 +216,15 @@ export async function middleware(request: NextRequest) {
 
     // ── 4. Internal System Isolation (Admin + Portal) ────────────────────────
     if (pathname.startsWith('/admin') || pathname.startsWith('/portal')) {
-        // REDIRECT TO HQ SUBDOMAIN IF ON MAIN DOMAIN
-        // Ensure that portal/admin routes are EXCLUSIVELY served from hq.marketbridge.com.ng
-        const isProduction = host.endsWith('marketbridge.com.ng');
-        const isLocalhost = host.includes('localhost') || host.includes('127.0.0.1');
-
+        // ENFORCE HQ DOMAIN IN PRODUCTION
         if (isProduction && !isHQSubdomain && !isLocalhost) {
             const hqUrl = new URL(request.url);
             hqUrl.hostname = 'hq.marketbridge.com.ng';
             return NextResponse.redirect(hqUrl);
         }
 
-        // Allow unauthenticated access ONLY to portal login/signup
-        if (pathname === '/portal/login' || pathname === '/portal/signup') {
+        // Allow unauthenticated access ONLY to portal login
+        if (pathname === '/portal/login') {
             const response = NextResponse.next();
             response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
             return response;
@@ -244,40 +242,22 @@ export async function middleware(request: NextRequest) {
             return NextResponse.redirect(url);
         }
 
-        // Has auth cookie → verify role in JWT
+        // Verify role
         const role = extractRoleFromCookies(request);
 
-        if (!role || !ADMIN_ROLES.includes(role)) {
-            // Check mb-admin-session as fallback
-            let backupRole: string | null = null;
-            if (hasAdminSession) {
-                try {
-                    const adminPayload = request.cookies.get('mb-admin-session')?.value;
-                    if (adminPayload) {
-                        const decoded = JSON.parse(atob(adminPayload));
-                        if (decoded.role && ADMIN_ROLES.includes(decoded.role)) {
-                            backupRole = decoded.role;
-                        }
-                    }
-                } catch {}
-            }
+        // Standardized Admin Roles (Phase 5 will fully enforce these names)
+        const activeAdminRoles = ['ceo', 'operations_admin', 'marketing_admin', 'systems_admin', 'it_support', 'technical_admin', 'admin'];
 
-            if (!backupRole) {
-                return new NextResponse(
-                    JSON.stringify({ error: 'Access denied. You do not have administrative privileges.' }),
-                    { status: 403, headers: { 'Content-Type': 'application/json' } }
-                );
-            }
+        if (!role || !activeAdminRoles.includes(role)) {
+            return new NextResponse(
+                JSON.stringify({ error: 'Security Violation: Access to HQ Portal requires an administrative role. Public users are strictly forbidden.' }),
+                { status: 403, headers: { 'Content-Type': 'application/json' } }
+            );
         }
 
-        const effectiveRole = role || extractRoleFromCookies(request); // double check or use backup
-
         // ── ROLE-BASED PATH FILTERING ────────────────────────────────────────
-        // Check if the user has permission for the specific sub-path
-        const activeRole = role || (hasAdminSession ? JSON.parse(atob(request.cookies.get('mb-admin-session')?.value || '{}')).role : null);
-        
         for (const [path, allowedRoles] of Object.entries(ROLE_PATH_ACCESS)) {
-            if (pathname.startsWith(path) && !allowedRoles.includes(activeRole)) {
+            if (pathname.startsWith(path) && !allowedRoles.includes(role)) {
                 return new NextResponse(
                     JSON.stringify({ error: 'Security Alert: Access to this department is restricted for your role.' }),
                     { status: 403, headers: { 'Content-Type': 'application/json' } }
@@ -295,36 +275,49 @@ export async function middleware(request: NextRequest) {
         response.headers.set('X-XSS-Protection', '1; mode=block');
         response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
         response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-        response.headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co;");
         
         return response;
     }
 
-    // ── 4.5. Launch Shield (Global guest protection) ──────────────────────────
+    // ── 5. Public Marketplace Isolation ──
     const IS_LOGGED_IN = request.cookies.getAll().some(c => c.name.startsWith('sb-') && c.name.includes('-auth-token'));
-    const LAUNCH_PUBLIC_ROUTES = ['/', '/login', '/signup', '/auth', '/portal', '/seller-qr', '/seller-onboard', '/verify-email', '/reset-password', '/api'];
+    const PUBLIC_ACCESSIBLE_ROUTES = ['/', '/login', '/signup', '/auth', '/seller-qr', '/verify-email', '/reset-password', '/api'];
 
-    const isPublicRoute = LAUNCH_PUBLIC_ROUTES.some(route => 
+    const isPublicAccessible = PUBLIC_ACCESSIBLE_ROUTES.some(route => 
         pathname === route || pathname.startsWith(route + '/')
-    ) || (isHQSubdomain && (pathname === '/' || pathname === '/login' || pathname.startsWith('/portal')));
+    );
 
-    if (!IS_LOGGED_IN && !isPublicRoute) {
+    // If on HQ subdomain but trying to access public marketplace (non-portal) routes
+    if (isHQSubdomain && !isPortalRoute && !pathname.startsWith('/auth')) {
+        const publicUrl = new URL(request.url);
+        if (isProduction) {
+            publicUrl.hostname = 'marketbridge.com.ng';
+        }
+        // Locally we just let it slide but usually we redirect back to root or marketplace
+        return NextResponse.redirect(publicUrl);
+    }
+
+    if (!IS_LOGGED_IN && !isPublicAccessible) {
         const url = request.nextUrl.clone();
         url.pathname = '/';
         return NextResponse.redirect(url);
     }
 
-    // ── 5. Administrative Isolation (Force redirects for Executive accounts) ──
-    const userRoleForIsolation = extractRoleFromCookies(request);
-    if (userRoleForIsolation && ADMIN_ROLES.includes(userRoleForIsolation)) {
-        if (pathname.startsWith('/seller') || pathname.startsWith('/buyer')) {
-            const portalUrl = request.nextUrl.clone();
-            portalUrl.pathname = userRoleForIsolation === 'ceo' ? '/admin/ceo' : '/admin';
-            return NextResponse.redirect(portalUrl);
+    // ── 6. Role-Based Redirection (Prevention of Admin bleed into Marketplace) ──
+    const currentRole = extractRoleFromCookies(request);
+    const ADMIN_ROLES_LIST = ['ceo', 'operations_admin', 'marketing_admin', 'systems_admin', 'it_support', 'technical_admin', 'admin'];
+
+    if (currentRole && ADMIN_ROLES_LIST.includes(currentRole)) {
+        // Admins should not be browsing /marketplace or /buyer paths normally
+        if (pathname.startsWith('/buyer') || (pathname.startsWith('/marketplace') && !isLocalhost)) {
+            const hqUrl = request.nextUrl.clone();
+            hqUrl.pathname = currentRole === 'ceo' ? '/admin/ceo' : '/admin';
+            if (isProduction) hqUrl.hostname = 'hq.marketbridge.com.ng';
+            return NextResponse.redirect(hqUrl);
         }
     }
 
-    // ── 6. Universal Security Headers (Public Routes) ──
+    // ── 7. Universal Security Headers (Public Routes) ──
     const response = NextResponse.next();
     response.headers.set('X-Content-Type-Options', 'nosniff');
     response.headers.set('X-Frame-Options', 'SAMEORIGIN');

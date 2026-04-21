@@ -113,7 +113,7 @@ export default function SettingsPage() {
             };
 
             // Only add business fields for dealers to avoid DB constraint issues
-            if (['dealer', 'student_seller'].includes(user.role)) {
+            if (user.role === 'student_seller') {
                 updateData.business_name = formData.businessName;
                 updateData.store_type = formData.storeType;
             }
@@ -228,7 +228,7 @@ export default function SettingsPage() {
                             onClick={() => {
                                 if (user.role === 'ceo') window.location.href = '/ceo';
                                 else if (user.role === 'admin' || user.role.includes('_admin')) window.location.href = '/admin';
-                                else if (user.role === 'dealer') window.location.href = '/seller/dashboard';
+                                else if (user.role === 'student_seller') window.location.href = '/seller/dashboard';
                                 else window.location.href = '/';
                             }}
                         >
@@ -250,7 +250,7 @@ export default function SettingsPage() {
                             <User className="h-3.5 w-3.5" />
                             Profile
                         </TabsTrigger>
-                        {['dealer', 'student_seller'].includes(user.role) && (
+                        {user.role === 'student_seller' && (
                             <>
                                 <TabsTrigger value="business" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FF6200] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
                                     <Building className="h-3.5 w-3.5" />
@@ -356,7 +356,7 @@ export default function SettingsPage() {
                     </TabsContent>
 
                     {/* Business Tab (Sellers Only) */}
-                    {['dealer', 'student_seller'].includes(user.role) && (
+                    {user.role === 'student_seller' && (
                         <TabsContent value="business" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
                                 <CardHeader className="p-8 pb-4">
@@ -405,7 +405,7 @@ export default function SettingsPage() {
                     )}
 
                     {/* Financials / Payouts Tab (Sellers Only) */}
-                    {['dealer', 'student_seller'].includes(user.role) && (
+                    {user.role === 'student_seller' && (
                         <TabsContent value="financials" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
                                 <CardHeader className="p-8 pb-4">

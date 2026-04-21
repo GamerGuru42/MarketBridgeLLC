@@ -29,7 +29,7 @@ export const Footer = () => {
                         <h3 className="text-foreground font-black uppercase text-[10px] tracking-[0.2em] mb-8">Platform</h3>
                         <ul className="space-y-4 text-muted-foreground text-xs font-bold uppercase tracking-widest">
                             <li><Link href="/listings" className="hover:text-foreground transition-colors">Browse Listings</Link></li>
-                            <li><Link href="/dealers" className="hover:text-foreground transition-colors">Founding Sellers</Link></li>
+                            <li><Link href="/sellers" className="hover:text-foreground transition-colors">Student Sellers</Link></li>
                             <li><Link href="/pricing" className="hover:text-foreground transition-colors">Beta Access</Link></li>
                         </ul>
                     </div>

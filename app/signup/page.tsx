@@ -221,18 +221,12 @@ function SignupContent() {
                             <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Seller</h3>
                             <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest mb-2">Sell on Campus</p>
                             
-                            <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'student_seller' ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
-                                <Button
-                                    onClick={(e) => { e.stopPropagation(); handleRoleSelect('student_seller'); }}
-                                    className="w-full h-12 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl shadow-[0_6px_20px_rgba(255,98,0,0.25)] transition-all"
-                                >
-                                    Sign Up with Email <ArrowRight className="ml-2 h-4 w-4" />
-                                </Button>
+                            <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'student_seller' ? "max-h-56 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
                                 <Button
                                     type="button"
                                     onClick={(e) => { e.stopPropagation(); handleGoogleAuth('student_seller'); }}
                                     disabled={googleLoadingRole === 'student_seller'}
-                                    className="w-full h-12 bg-foreground text-background hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl flex items-center justify-center gap-2 transition-all"
+                                    className="w-full h-14 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_6px_20px_rgba(255,98,0,0.25)]"
                                 >
                                     {googleLoadingRole === 'student_seller' ? (
                                         <Loader2 className="animate-spin h-4 w-4" />
@@ -243,6 +237,10 @@ function SignupContent() {
                                         </>
                                     )}
                                 </Button>
+                                <p className="text-[7.5px] text-muted-foreground font-bold uppercase tracking-[0.2em] leading-relaxed mt-4 px-2">
+                                    Sellers must use a school email ending in <span className="text-primary font-black">.edu.ng</span>. 
+                                    Personal accounts are strictly forbidden for security.
+                                </p>
                             </div>
                         </div>
                     </div>

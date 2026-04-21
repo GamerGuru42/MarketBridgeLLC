@@ -39,7 +39,7 @@ export default function SellerLayout({
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
     // The middleware handles protection, but we add an extra layer here
-    if (!user || !['dealer', 'student_seller'].includes(user.role)) {
+    if (!user || user.role !== 'student_seller') {
         // We don't redirect here to avoid race conditions with middleware
         // But we don't show the seller sidebar either
         return <>{children}</>;

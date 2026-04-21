@@ -71,7 +71,7 @@ export default function PricingPage() {
         }
 
         // MANDATORY EMAIL VERIFICATION CHECK
-        if (['student_seller', 'dealer'].includes(user.role) && !user.email_verified) {
+        if (user.role === 'student_seller' && !user.email_verified) {
             toast('Please verify your email Dashboard before subscribing.', 'error');
             router.push('/verify-email');
             return;
@@ -191,7 +191,7 @@ export default function PricingPage() {
                             )}
                         </div>
 
-                        {['student_seller', 'dealer'].includes(user?.role || '') ? (
+                        {user?.role === 'student_seller' ? (
                             <div className="flex items-center gap-2 px-6 py-2 bg-[#FF6200]/10 border border-[#FF6200]/20 rounded-full animate-in fade-in zoom-in duration-500">
                                 <ShieldCheck className="h-3 w-3 text-[#FF6200]" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF6200]">Merchant Status Verified: Dashboard Unlocked</span>

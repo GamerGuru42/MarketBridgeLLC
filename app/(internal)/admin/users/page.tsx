@@ -48,7 +48,7 @@ export default function AdminUsersPage() {
     const { toast } = useToast();
 
     useEffect(() => {
-        const ALLOWED_ROLES = ['operations_admin', 'technical_admin', 'ceo', 'cofounder', 'admin'];
+        const ALLOWED_ROLES = ['operations_admin', 'systems_admin', 'ceo', 'admin'];
         if (!authLoading && (!currentUser || !ALLOWED_ROLES.includes(currentUser.role))) {
             router.replace('/admin'); // Redirect back to general dash if not allowed
         }
@@ -76,7 +76,7 @@ export default function AdminUsersPage() {
         fetchUsers();
     }, [filterRole]);
 
-    const handleAction = async (userId: string, action: 'verify' | 'unverify' | 'make_dealer' | 'ban' | 'manage_coins') => {
+    const handleAction = async (userId: string, action: 'verify' | 'unverify' | 'make_seller' | 'ban' | 'manage_coins') => {
         try {
             let updates: any = {};
             let message = '';
@@ -101,9 +101,9 @@ export default function AdminUsersPage() {
                         updates = { is_verified: false };
                         message = 'Verification Revoked';
                         break;
-                    case 'make_dealer':
-                        updates = { role: 'dealer' };
-                        message = 'Promoted to Dealer Status';
+                    case 'make_seller':
+                        updates = { role: 'student_seller' };
+                        message = 'Promoted to Student Seller';
                         break;
                     case 'ban':
                         toast('Ban System not fully implemented in UI', 'info');
@@ -131,8 +131,12 @@ export default function AdminUsersPage() {
         switch (role) {
             case 'admin': return <Badge className="bg-primary/10 text-primary border-primary/20 font-mono uppercase tracking-widest text-[10px]">Admin</Badge>;
             case 'ceo': return <Badge className="bg-[#FF6200]/10 text-[#FF6200] border-[#FF6200]/20 font-mono uppercase tracking-widest text-[10px]">CEO</Badge>;
-            case 'dealer': return <Badge className="bg-primary/20 text-primary border-primary/30 font-mono uppercase tracking-widest text-[10px]">Dealer</Badge>;
-            case 'student_seller': return <Badge className="bg-muted text-muted-foreground border-border font-mono uppercase tracking-widest text-[10px]">Seller</Badge>;
+            case 'student_seller': return <Badge className="bg-primary/20 text-primary border-primary/30 font-mono uppercase tracking-widest text-[10px]">Student Seller</Badge>;
+            case 'student_buyer': return <Badge className="bg-muted text-muted-foreground border-border font-mono uppercase tracking-widest text-[10px]">Student Buyer</Badge>;
+            case 'operations_admin': return <Badge className="bg-green-500/10 text-green-600 border-green-500/20 font-mono uppercase tracking-widest text-[10px]">Operations</Badge>;
+            case 'marketing_admin': return <Badge className="bg-blue-500/10 text-blue-600 border-blue-500/20 font-mono uppercase tracking-widest text-[10px]">Marketing</Badge>;
+            case 'systems_admin': return <Badge className="bg-purple-500/10 text-purple-600 border-purple-500/20 font-mono uppercase tracking-widest text-[10px]">Systems</Badge>;
+            case 'it_support': return <Badge className="bg-cyan-500/10 text-cyan-600 border-cyan-500/20 font-mono uppercase tracking-widest text-[10px]">IT Support</Badge>;
             default: return <Badge variant="outline" className="text-muted-foreground border-border font-mono uppercase tracking-widest text-[10px]">{role}</Badge>;
         }
     };
@@ -165,8 +169,8 @@ export default function AdminUsersPage() {
                             />
                         </div>
                         <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
-                            {['All', 'Dealer', 'Admin', 'Seller'].map((role) => {
-                                const roleValue = role === 'All' ? null : (role === 'Seller' ? 'student_seller' : role.toLowerCase());
+                            {['All', 'Student Seller', 'Student Buyer', 'Admin'].map((role) => {
+                                const roleValue = role === 'All' ? null : (role === 'Student Seller' ? 'student_seller' : role === 'Student Buyer' ? 'student_buyer' : role.toLowerCase());
                                 return (
                                     <Button
                                         key={role}
@@ -304,12 +308,12 @@ export default function AdminUsersPage() {
                                                                 </DropdownMenuItem>
                                                             )}
 
-                                                            {u.role !== 'dealer' && u.role !== 'admin' && (
-                                                                <DropdownMenuItem onClick={() => handleAction(u.id, 'make_dealer')} className="gap-3 cursor-pointer py-3 rounded-xl focus:bg-primary/10 focus:text-primary transition-colors">
+                                                            {u.role !== 'student_seller' && !['ceo', 'operations_admin', 'marketing_admin', 'systems_admin', 'it_support', 'admin'].includes(u.role) && (
+                                                                <DropdownMenuItem onClick={() => handleAction(u.id, 'make_seller')} className="gap-3 cursor-pointer py-3 rounded-xl focus:bg-primary/10 focus:text-primary transition-colors">
                                                                     <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary"><Briefcase className="h-4 w-4" /></div>
                                                                     <div className="flex flex-col">
-                                                                        <span className="font-bold text-xs uppercase">Grant License</span>
-                                                                        <span className="text-[10px] opacity-40">Promote to dealer</span>
+                                                                        <span className="font-bold text-xs uppercase">Grant Seller License</span>
+                                                                        <span className="text-[10px] opacity-40">Promote to Student Seller</span>
                                                                     </div>
                                                                 </DropdownMenuItem>
                                                             )}

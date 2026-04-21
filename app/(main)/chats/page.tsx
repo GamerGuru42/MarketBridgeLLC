@@ -208,7 +208,7 @@ export default function ChatsPage() {
                                                     <h3 className="font-black italic uppercase tracking-tighter text-base truncate text-zinc-900 group-hover:text-[#FF6200] transition-colors">
                                                         {chat.other_user?.display_name || 'Unknown User'}
                                                     </h3>
-                                                    {['dealer', 'student_seller'].includes(chat.other_user?.role as string) && (
+                                                    {chat.other_user?.role === 'student_seller' && (
                                                         <Badge variant="outline" className="text-[8px] h-4 py-0 font-black uppercase tracking-widest bg-[#FF6200]/10 text-[#FF6200] border-[#FF6200]/20">
                                                             MERCHANT
                                                         </Badge>

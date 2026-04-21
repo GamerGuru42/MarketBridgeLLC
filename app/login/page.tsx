@@ -54,9 +54,13 @@ function LoginContent() {
     }, [searchParams]);
 
     function getRoleDestination(r: string) {
-        if (['admin', 'technical_admin', 'operations_admin', 'marketing_admin'].includes(r)) return '/admin';
-        if (['ceo', 'cofounder'].includes(r)) return '/admin/ceo';
-        if (['dealer', 'student_seller', 'seller'].includes(r)) return '/seller/dashboard';
+        if (r === 'ceo') return '/admin/ceo';
+        if (r === 'operations_admin') return '/admin/operations';
+        if (r === 'marketing_admin') return '/admin/marketing';
+        if (r === 'systems_admin' || r === 'technical_admin') return '/admin/systems';
+        if (r === 'it_support') return '/admin/it-support';
+        if (['admin'].includes(r)) return '/admin';
+        if (r === 'student_seller') return '/seller/dashboard';
         return '/marketplace';
     }
 
@@ -234,12 +238,12 @@ function LoginContent() {
                             <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Seller</h3>
                             <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest mb-2">Sell on Campus</p>
                             
-                            <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'seller' ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
+                            <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'seller' ? "max-h-56 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
                                 <Button
                                     type="button"
                                     onClick={(e) => { e.stopPropagation(); handleGoogleLogin('seller'); }}
                                     disabled={googleLoadingRole === 'seller'}
-                                    className="w-full h-12 bg-primary text-white hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_6px_20px_rgba(255,98,0,0.25)]"
+                                    className="w-full h-14 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_6px_20px_rgba(255,98,0,0.25)]"
                                 >
                                     {googleLoadingRole === 'seller' ? (
                                         <Loader2 className="animate-spin h-4 w-4" />
@@ -250,8 +254,9 @@ function LoginContent() {
                                         </>
                                     )}
                                 </Button>
-                                <p className="text-[7px] text-muted-foreground font-black uppercase tracking-[0.2em] pt-2 px-4 leading-tight">
-                                    Strictly .edu.ng school email only. No personal accounts allowed.
+                                <p className="text-[7.5px] text-muted-foreground font-bold uppercase tracking-[0.2em] leading-relaxed mt-4 px-2">
+                                    Sellers must use a school email ending in <span className="text-primary font-black">.edu.ng</span>. 
+                                    Personal accounts are strictly forbidden for security.
                                 </p>
                             </div>
                         </div>

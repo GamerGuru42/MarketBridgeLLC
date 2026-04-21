@@ -47,35 +47,15 @@ export default function FindSellersPage() {
             const { data, error } = await supabase
                 .from('users')
                 .select('*')
-                .in('role', ['dealer', 'student_seller'])
+                .eq('role', 'student_seller')
                 .eq('is_verified', true)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
-
-            if (data && data.length > 0) {
-                setSellers(data);
-            } else {
-                // Fallback to mock sellers
-                const { COMPREHENSIVE_MOCK_LISTINGS } = require('@/lib/mockData');
-                const uniqueSellers = Array.from(new Set(COMPREHENSIVE_MOCK_LISTINGS.map((l: any) => l.dealer._id)))
-                    .map(id => {
-                        const listing = COMPREHENSIVE_MOCK_LISTINGS.find((l: any) => l.dealer._id === id);
-                        return {
-                            id: listing.dealer._id,
-                            display_name: listing.dealer.displayName,
-                            business_name: listing.dealer.displayName,
-                            location: listing.location,
-                            is_verified: listing.dealer.isVerified,
-                            store_type: listing.dealer.shopType || 'Online',
-                            role: 'dealer',
-                            created_at: new Date().toISOString()
-                        };
-                    });
-                setSellers(uniqueSellers);
-            }
+            setSellers(data || []);
         } catch (error) {
             console.error('Error fetching sellers:', error);
+            setSellers([]);
         } finally {
             setLoading(false);
         }

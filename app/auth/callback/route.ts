@@ -3,219 +3,166 @@ import { supabaseAdmin } from '@/lib/supabase/admin'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
-// Department to allowed roles mapping
-function getAllowedRolesForDepartment(dept: string): string[] {
-    switch (dept) {
-        case 'operations_admin': return ['operations_admin'];
-        case 'marketing_admin': return ['marketing_admin'];
-        case 'systems_admin': return ['systems_admin', 'technical_admin'];
-        case 'it_support': return ['it_support'];
-        case 'ceo': return ['ceo', 'cofounder', 'cto', 'coo'];
-        default: return [];
-    }
-}
+// ─── Role Mapping & Constants ───────────────────────────────────────────────
+const ADMIN_ROLES = ['ceo', 'operations_admin', 'marketing_admin', 'systems_admin', 'it_support', 'technical_admin', 'admin'];
 
 function getHubRoute(role: string): string {
-    if (role === 'ceo' || role === 'cofounder') return '/admin/ceo';
+    if (role === 'ceo') return '/admin/ceo';
     if (role === 'operations_admin') return '/admin/operations';
     if (role === 'marketing_admin') return '/admin/marketing';
-    if (role === 'systems_admin' || role === 'technical_admin') return '/admin/systems';
+    if (role === 'systems_admin') return '/admin/systems';
     if (role === 'it_support') return '/admin/it-support';
     return '/admin';
 }
 
-async function logLoginAttempt(email: string, role: string | null, success: boolean, reason: string) {
+function migrateRole(oldRole: string | null): string {
+    if (!oldRole) return 'student_buyer';
+    const mapping: Record<string, string> = {
+        'dealer': 'student_seller',
+        'campus_starter': 'student_seller',
+        'campus_pro': 'student_seller',
+        'elite': 'student_seller',
+        'buyer': 'student_buyer',
+        'customer': 'student_buyer',
+        'student_buyer': 'student_buyer',
+        'student_seller': 'student_seller',
+    };
+    // Admin roles are kept as is for manual review per CEO instructions
+    if (ADMIN_ROLES.includes(oldRole)) return oldRole;
+    return mapping[oldRole] || 'student_buyer';
+}
+
+async function logAudit(email: string, action: string, details: any) {
     try {
         await supabaseAdmin.from('system_audit_logs').insert({
-            action_type: success ? 'ADMIN_LOGIN_SUCCESS' : 'ADMIN_LOGIN_DENIED',
-            details: { email, role, reason, timestamp: new Date().toISOString() },
+            action_type: action,
+            details: { ...details, timestamp: new Date().toISOString(), email }
         });
     } catch (e) {
-        console.error('Audit log write failed:', e);
+        console.error('Audit log failed:', e);
     }
 }
 
 export async function GET(request: Request) {
-    const { searchParams, origin } = new URL(request.url)
+    const { searchParams } = new URL(request.url)
+    const host = request.headers.get('host') || '';
     const code = searchParams.get('code')
-    const roleParam = searchParams.get('role')
-    const deptParam = searchParams.get('dept')
+    const typePostAuth = searchParams.get('type') // 'portal' or null
+    const roleIntent = searchParams.get('role')
+    const nextPath = searchParams.get('next') || '/'
+
+    const isProduction = host.endsWith('marketbridge.com.ng');
+    const isLocalhost = host.includes('localhost') || host.includes('127.0.0.1');
 
     if (code) {
-        console.log('Auth Callback: Code detected, initiating exchange...');
-        const cookieStore = cookies()
         const supabase = await createClient();
         const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
         if (!error && data?.user) {
-            console.log('Auth Callback: Exchange successful for:', data.user.email);
+            const userEmail = data.user.email?.toLowerCase() || '';
+            const cookieStore = cookies();
 
-            // ── Resolve role & destination from query params OR fallback cookies ──
-            const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo', 'systems_admin', 'it_support'];
-            const role = roleParam || cookieStore.get('mb_oauth_role')?.value;
-            const dept = deptParam || cookieStore.get('mb_oauth_dept')?.value;
-            const nextParam = searchParams.get('next');
-            const cookieNext = cookieStore.get('mb_oauth_next')?.value;
-            let finalNext = nextParam || (cookieNext ? decodeURIComponent(cookieNext) : '/');
-
-            // Clean up one-time cookies
-            try { if (cookieStore.get('mb_oauth_role')) cookieStore.delete('mb_oauth_role'); } catch {}
-            try { if (cookieStore.get('mb_oauth_next')) cookieStore.delete('mb_oauth_next'); } catch {}
-            try { if (cookieStore.get('mb_oauth_dept')) cookieStore.delete('mb_oauth_dept'); } catch {}
-
-            // ── Fetch existing profile ──
-            let { data: existingUser } = await supabase
+            // ── 1. Fetch/Migrate User Profile ──
+            let { data: profile } = await supabaseAdmin
                 .from('users')
-                .select('id, role, display_name')
+                .select('id, role, email')
                 .eq('id', data.user.id)
                 .maybeSingle();
 
-            const isSocialLogin = data.user.app_metadata.provider !== 'email';
-            const userEmail = data.user.email?.toLowerCase() || '';
-
-            // Handle pre-registered admin accounts (created by CEO/Systems Admin via email)
-            if (!existingUser && userEmail) {
-                const { data: emailUser } = await supabaseAdmin
+            // Bridge pre-registered email accounts if ID doesn't match yet
+            if (!profile && userEmail) {
+                const { data: emailMatch } = await supabaseAdmin
                     .from('users')
-                    .select('id, role, display_name')
+                    .select('id, role, email')
                     .eq('email', userEmail)
                     .maybeSingle();
                 
-                if (emailUser) {
-                    existingUser = emailUser;
-                    // Bridge the placeholder gap by updating the database to use their real Google Auth ID
-                    await supabaseAdmin
-                        .from('users')
-                        .update({ id: data.user.id })
-                        .eq('email', userEmail);
+                if (emailMatch) {
+                    await supabaseAdmin.from('users').update({ id: data.user.id }).eq('email', userEmail);
+                    profile = { ...emailMatch, id: data.user.id };
                 }
             }
 
-            // ── PORTAL (Admin) Login Path ──
-            // If role or dept cookie is present, this is a portal login attempt
-            const isPortalLogin = !!(role || dept);
+            // Apply Role Migration Logic
+            const rawRole = profile?.role || roleIntent || 'student_buyer';
+            const finalRole = migrateRole(rawRole);
 
-            if (isPortalLogin) {
-                // STRICT VALIDATION OVERRIDDEN: Auto-provision to prevent login blocks during testing
-                if (!existingUser || !ADMIN_ROLES.includes(existingUser.role)) {
-                    console.warn(`Auth Callback: Auto-provisioning admin account for ${userEmail}`);
-                    const newRole = dept ? (getAllowedRolesForDepartment(dept)[0] || 'ceo') : 'ceo';
-                    
-                    await supabaseAdmin.from('users').upsert({
-                        id: data.user.id,
-                        email: userEmail,
-                        role: newRole,
-                        display_name: data.user.user_metadata?.full_name || userEmail.split('@')[0],
-                    }, { onConflict: 'id' });
+            // Provision profile if missing
+            if (!profile) {
+                await supabaseAdmin.from('users').upsert({
+                    id: data.user.id,
+                    email: userEmail,
+                    role: finalRole,
+                    display_name: data.user.user_metadata?.full_name || userEmail.split('@')[0],
+                });
+            } else if (profile.role !== finalRole) {
+                // Update legacy role to standardized role
+                await supabaseAdmin.from('users').update({ role: finalRole }).eq('id', data.user.id);
+            }
 
-                    existingUser = { role: newRole, display_name: userEmail.split('@')[0] };
+            // Sync JWT metadata
+            await supabase.auth.updateUser({ data: { role: finalRole } });
+
+            // ── 2. Handle Portal (Admin) Flow ──
+            if (typePostAuth === 'portal') {
+                // SECURITY CHECK: Ensure user HAS an admin role to access portal
+                if (!ADMIN_ROLES.includes(finalRole)) {
+                    await logAudit(userEmail, 'PORTAL_ACCESS_DENIED', { role: finalRole, reason: 'Insufficient privileges' });
+                    await supabase.auth.signOut();
+                    const loginUrl = new URL('/portal/login', request.url);
+                    if (isProduction) loginUrl.hostname = 'hq.marketbridge.com.ng';
+                    loginUrl.searchParams.set('error', 'Your account does not have administrative access.');
+                    return NextResponse.redirect(loginUrl);
                 }
 
-                let dbRole = existingUser.role;
+                // SUCCESS: Redirect to HQ Portal
+                await logAudit(userEmail, 'PORTAL_LOGIN_SUCCESS', { role: finalRole });
+                const dest = getHubRoute(finalRole);
+                const redirectUrl = new URL(dest, request.url);
+                if (isProduction) redirectUrl.hostname = 'hq.marketbridge.com.ng';
 
-                // Check if user's role matches the department they selected (Auto-correct if testing)
-                if (dept) {
-                    const allowedRoles = getAllowedRolesForDepartment(dept);
-                    const isExec = ['ceo', 'cofounder', 'cto', 'coo'].includes(dbRole);
-                    if (!isExec && allowedRoles.length > 0 && !allowedRoles.includes(dbRole)) {
-                        console.warn(`Auth Callback: Auto-correcting role for ${userEmail} to access ${dept}`);
-                        dbRole = allowedRoles[0];
-                        await supabaseAdmin.from('users').update({ role: dbRole }).eq('id', data.user.id);
-                        existingUser.role = dbRole;
-                    }
-                }
-
-                // ── AUTHORIZED: Use the DB role (not the cookie intent) for routing ──
-                const actualRole = dbRole;
-                finalNext = getHubRoute(actualRole);
-
-                // Update JWT metadata to match DB
-                await supabase.auth.updateUser({ data: { role: actualRole } });
-
-                await logLoginAttempt(userEmail, actualRole, true, `Routed to ${finalNext}`);
-
-                console.log('Auth Callback: Admin authorized. Redirecting to:', finalNext, '| Role:', actualRole);
-
-                const redirectUrl = new URL(finalNext, origin);
                 const response = NextResponse.redirect(redirectUrl);
-
-                // Set admin session cookie
-                const payload = Buffer.from(JSON.stringify({ uid: data.user.id, role: actualRole, ts: Date.now() })).toString('base64');
-                const isProduction = origin.includes('marketbridge.com.ng');
+                
+                // Set Portal-Specific Session Cookie (Strictly Scoped)
+                const payload = btoa(JSON.stringify({ uid: data.user.id, role: finalRole, ts: Date.now() }));
                 response.cookies.set('mb-admin-session', payload, {
                     path: '/',
                     maxAge: 8 * 60 * 60,
                     sameSite: 'lax',
-                    secure: isProduction,
-                    ...(isProduction && { domain: '.marketbridge.com.ng' }),
+                    secure: true,
+                    // NO wildcard domain - strictly this subdomain
                 });
 
                 return response;
             }
 
-            // ── PUBLIC (Buyer/Seller) Login Path ──
-            let actualRole = 'buyer';
-
-            if (existingUser?.role && ADMIN_ROLES.includes(existingUser.role)) {
-                actualRole = existingUser.role;
-            } else {
-                actualRole = existingUser?.role || 'buyer';
-            }
+            // ── 3. Handle Public Marketplace Flow ──
+            // SECURITY CHECK: If user is admin trying to login via public site, still route to marketplace
+            // but ensure they don't land on hq.*
             
-            // Standardize roles
-            if (actualRole === 'student_seller' || actualRole === 'dealer') actualRole = 'seller';
-            if (actualRole === 'student_buyer' || actualRole === 'customer') actualRole = 'buyer';
-
-            // Enforce .edu.ng school email for ALL sellers
-            if (actualRole === 'seller') {
-                if (!userEmail.endsWith('.edu.ng')) {
-                    console.warn(`Auth Callback: Non-.edu.ng email "${userEmail}" attempted seller login/signup. Blocking.`);
-                    await supabase.auth.signOut();
-                    return NextResponse.redirect(
-                        new URL('/login?error=' + encodeURIComponent('Sellers must use a school email ending in .edu.ng. Please use your university Google account.'), origin)
-                    );
-                }
+            // SPECIAL: Enforce .edu.ng for Sellers
+            if (finalRole === 'student_seller' && !userEmail.endsWith('.edu.ng')) {
+                await supabase.auth.signOut();
+                const errorUrl = new URL('/login', request.url);
+                if (isProduction) errorUrl.hostname = 'marketbridge.com.ng';
+                errorUrl.searchParams.set('error', 'Sellers must use their university school email ending in .edu.ng. Please sign in with your school email.');
+                return NextResponse.redirect(errorUrl);
             }
 
-            // ── Upsert profile ──
-            console.log('Auth Callback: Upserting profile with role:', actualRole);
-            const { error: upsertError } = await supabaseAdmin.from('users').upsert({
-                id: data.user.id,
-                email: data.user.email,
-                display_name: existingUser?.display_name || data.user.user_metadata?.full_name || data.user.email?.split('@')[0],
-                role: actualRole,
-                email_verified: true,
-                ...(isSocialLogin && { is_verified: true })
-            }, { onConflict: 'id' });
+            const redirectUrl = new URL(nextPath, request.url);
+            if (isProduction) redirectUrl.hostname = 'marketbridge.com.ng';
 
-            if (upsertError) {
-                console.error('Auth Callback: Failed to upsert profile via Admin client:', upsertError);
-            }
-
-            // ── Update JWT metadata ──
-            await supabase.auth.updateUser({ data: { role: actualRole } });
-
-            // Build redirect URL
-            let redirectUrl: URL;
-            try {
-                redirectUrl = new URL(finalNext);
-            } catch {
-                redirectUrl = new URL(finalNext, origin);
-            }
-
-            console.log('Auth Callback: Redirecting to:', redirectUrl.toString(), '| Role:', actualRole);
+            console.log(`Auth Callback: Routing ${userEmail} to ${redirectUrl.toString()}`);
             return NextResponse.redirect(redirectUrl);
-        } else {
-            console.error('Auth Callback: Exchange failed:', error?.message);
         }
     }
 
-    const errorMsg = searchParams.get('error_description') || 'Something went wrong during sign in. Please try again.'
-    console.warn('Auth Callback: Redirecting to login due to error:', errorMsg);
+    // Error recovery
+    const errorMsg = searchParams.get('error_description') || 'Authentication failed.';
+    const isPortalFail = searchParams.get('type') === 'portal';
+    const fallbackUrl = new URL(isPortalFail ? '/portal/login' : '/login', request.url);
+    if (isProduction) fallbackUrl.hostname = isPortalFail ? 'hq.marketbridge.com.ng' : 'marketbridge.com.ng';
+    fallbackUrl.searchParams.set('error', errorMsg);
     
-    // If we're coming from the portal, redirect back to portal login
-    const isPortalCallback = searchParams.get('role') || searchParams.get('dept') || cookies().get('mb_oauth_role');
-    const redirectPath = isPortalCallback ? '/portal/login' : '/login';
-    
-    return NextResponse.redirect(new URL(`${redirectPath}?error=${encodeURIComponent(errorMsg)}`, origin))
+    return NextResponse.redirect(fallbackUrl);
 }

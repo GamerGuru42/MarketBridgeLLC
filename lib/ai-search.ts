@@ -48,7 +48,7 @@ interface SearchResult {
     condition?: string;
     is_verified_listing?: boolean;
     verification_status?: string;
-    dealer?: {
+    seller?: {
         id: string;
         display_name: string;
         is_verified: boolean;
@@ -128,8 +128,8 @@ function calculateRelevance(listing: any, query: string, detectedCategory: strin
         score += 10;
     }
 
-    // Verified dealer boost
-    if (listing.dealer?.is_verified) {
+    // Verified seller boost
+    if (listing.seller?.is_verified) {
         score += 5;
     }
 
@@ -164,7 +164,7 @@ export async function intelligentSearch(params: {
         .from('listings')
         .select(`
             *,
-            dealer:users!listings_dealer_id_fkey(
+            seller:users!listings_dealer_id_fkey(
                 id,
                 display_name,
                 is_verified,
@@ -262,7 +262,7 @@ export async function getRelatedListings(listingId: string, limit: number = 6): 
         .from('listings')
         .select(`
             *,
-            dealer:users!listings_dealer_id_fkey(
+            seller:users!listings_dealer_id_fkey(
                 id,
                 display_name,
                 is_verified

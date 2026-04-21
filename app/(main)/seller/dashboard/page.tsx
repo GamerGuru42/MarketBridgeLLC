@@ -194,7 +194,7 @@ export default function SellerDashboardPage() {
         }
         if (!user) return;
 
-        const approvedRoles = ['dealer', 'student_seller', 'seller'];
+        const approvedRoles = ['student_seller'];
         if (approvedRoles.includes(user.role)) {
             setApplicationStatus('approved');
             setSessionLost(false);

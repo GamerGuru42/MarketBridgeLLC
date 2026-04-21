@@ -29,23 +29,9 @@ interface ConversationContext {
     recentSearchResults?: SearchResult[]; // To remember what we just showed
 }
 
-import { COMPREHENSIVE_MOCK_LISTINGS } from './mockData';
-
-// Extended Product Database - SYNCED WITH LISTING PAGE MOCK DATA
-const MOCK_DB: SearchResult[] = COMPREHENSIVE_MOCK_LISTINGS.map(item => ({
-    id: item._id,
-    title: item.title,
-    price: item.price,
-    category: item.category,
-    location: item.location,
-    image: item.images[0],
-    keywords: [
-        ...item.title.toLowerCase().split(' '),
-        item.category.toLowerCase(),
-        ...item.description.toLowerCase().split(' ').filter(w => w.length > 3)
-    ],
-    description: item.description
-}));
+// Real-time search is now handled via the /api/chat route using Supabase.
+// This client-side brain handles general intent and knowledge.
+const MOCK_DB: SearchResult[] = [];
 
 const PLATFORM_KNOWLEDGE = {
     payment: {
@@ -67,9 +53,9 @@ const PLATFORM_KNOWLEDGE = {
         nodes: "Currently operational across major Abuja institutions (UniAbuja, Baze, Nile, Veritas, Bingham, and more)."
     },
     roles: {
-        ceo: "Central Command (CEO) has absolute oversight. Access via the 'CEO' terminal on the login page.",
-        admin: "Sector Admins (Tech, Ops, Marketing) manage specific nodes. Requires secure access codes.",
-        dealer: "Merchants/Dealers are the heartbeat of the platform. Verified university community members selling goods."
+        ceo: "Central Command (CEO) has absolute oversight. Access via the MarketBridge HQ Portal.",
+        admin: "Sector Admins (Operations, Marketing, Systems) manage specific departments. Access via the MarketBridge HQ Portal.",
+        student_seller: "Student Sellers are the heartbeat of the platform. Verified university community members selling goods."
     },
     support: {
         tech: {
@@ -84,7 +70,7 @@ const PLATFORM_KNOWLEDGE = {
         }
     },
     rewards: {
-        marketcoins: "Earn 1 coin per ₦100 spent (Buyer) or 1 coin per ₦200 sold (Seller). 1 coin = ₦1 discount at checkout.",
+        marketcoins: "Earn 1 coin per ₦100 spent (Buyer) or 1 coin per ₦200 sold (Student Seller). 1 coin = ₦1 discount at checkout.",
         referral: "Earn ₦300 credit (coins) for every friend who makes their first purchase of ₦5,000 or more."
     },
     branding: {
@@ -179,9 +165,9 @@ class AiBrain {
         // Pricing & Plans
         if (this.matchAny(lowerInput, ['plan', 'pricing', 'subscription', 'monthly', 'annual', 'cost', 'upgrade'])) {
             return {
-                content: `MarketBridge currently offers 3 tiers for community sellers:\n\n` +
+                content: `MarketBridge currently offers 3 tiers for student sellers:\n\n` +
                     `• **Free Tier**: ${PLATFORM_KNOWLEDGE.pricing.free}\n` +
-                    `• **Founding Seller (Beta)**: ${PLATFORM_KNOWLEDGE.pricing.founding}\n` +
+                    `• **Founding Student Seller (Beta)**: ${PLATFORM_KNOWLEDGE.pricing.founding}\n` +
                     `• **Enterprise**: ${PLATFORM_KNOWLEDGE.pricing.enterprise}\n\n` +
                     `Would you like me to take you to the Pricing page?`
             };
@@ -202,7 +188,7 @@ class AiBrain {
         // Verification
         if (this.matchAny(lowerInput, ['verify', 'verification', 'nin', 'student id', 'approve', 'sell'])) {
             return {
-                content: `To become a verified seller, you need: ${PLATFORM_KNOWLEDGE.verification.requirements.join(', ')}. ${PLATFORM_KNOWLEDGE.verification.process}`
+                content: `To become a verified Student Seller, you need: ${PLATFORM_KNOWLEDGE.verification.requirements.join(', ')}. ${PLATFORM_KNOWLEDGE.verification.process}`
             };
         }
 
@@ -296,9 +282,9 @@ class AiBrain {
         }
 
         // Operations Issues
-        if (this.matchAny(lowerInput, ['refund', 'payment', 'subscription', 'dealer', 'seller', 'order', 'dispute', 'escrow', 'delivery', 'cancel', 'account'])) {
+        if (this.matchAny(lowerInput, ['refund', 'payment', 'subscription', 'seller', 'order', 'dispute', 'escrow', 'delivery', 'cancel', 'account'])) {
             return {
-                content: `🟢 **Operations Request Logged**\n\nI'm connecting you with our Ops Support team. They handle refunds, subscriptions, and seller matters.\n\nFor faster resolution, email: ${PLATFORM_KNOWLEDGE.support.ops.email}\n\nYour request has been escalated.`,
+                content: `🟢 **Operations Request Logged**\n\nI'm connecting you with our Ops Support team. They handle refunds, subscriptions, and student seller matters.\n\nFor faster resolution, email: ${PLATFORM_KNOWLEDGE.support.ops.email}\n\nYour request has been escalated.`,
                 action: 'escalate_ops'
             };
         }
@@ -322,7 +308,7 @@ class AiBrain {
 
         // 8. Fallback 
         return {
-            content: "I'm not quite sure how to process that request. You can ask me about product prices, our escrow security system, or how to become a verified dealer!"
+            content: "I'm not quite sure how to process that request. You can ask me about product prices, our escrow security system, or how to become a verified Student Seller!"
         };
     }
 
