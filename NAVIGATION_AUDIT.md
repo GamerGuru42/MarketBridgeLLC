@@ -9,24 +9,24 @@
 #### Header Navigation
 - ✅ **HOME** → `/` (Homepage)
 - ✅ **LISTINGS** → `/listings` (Browse all active listings)
-- ✅ **DEALERS** → `/dealers` (Browse verified merchants - **NOW LIVE WITH SUPABASE**)
+- ✅ **SELLERS** → `/sellers` (Browse verified campus merchants - **NOW LIVE WITH SUPABASE**)
 - ✅ **ABOUT** → `/about` (Protocol intelligence page)
 - ✅ **SIGN IN** → `/login` (Authentication terminal)
 - ✅ **SIGN UP** → `/signup` (Identity establishment)
 
 #### Homepage CTAs
-- ✅ **"Become a Dealer"** (Hero) → `/signup?role=dealer` → Auto-sets `student_seller` role
-- ✅ **"Become a Dealer"** (Bottom CTA) → `/signup?role=dealer` → Auto-sets `student_seller` role
+- ✅ **"Become a Seller"** (Hero) → `/signup?role=seller` → Auto-sets `student_seller` role
+- ✅ **"Become a Seller"** (Bottom CTA) → `/signup?role=seller` → Auto-sets `student_seller` role
 - ✅ **"Browse Listings"** → `/listings`
-- ✅ **"View All Dealers"** → `/dealers`
+- ✅ **"View All Sellers"** → `/sellers`
 
-#### Dealers Page
+#### Sellers Page
 - ✅ **"Return to Core"** → `/` (Homepage)
-- ✅ **Search & Filter** → Real-time filtering of Supabase dealer data
-- ✅ **"Access Node"** (Dealer Card) → `/dealer/[id]` (Individual dealer profile - **NEW PAGE CREATED**)
+- ✅ **Search & Filter** → Real-time filtering of Supabase seller data
+- ✅ **"Access Node"** (Seller Card) → `/seller/[id]` (Individual seller profile)
 
-#### Dealer Profile Page (`/dealer/[id]`)
-- ✅ **"Return to Dealers"** → `/dealers`
+#### Seller Profile Page (`/seller/[id]`)
+- ✅ **"Return to Sellers"** → `/sellers`
 - ✅ **"Initiate Secure Chat"** → Creates chat session with dealer
 - ✅ **Listing Cards** → `/listings/[id]` (Individual listing details)
 - ✅ **Phone/Email Links** → Direct contact via `tel:` and `mailto:`
@@ -38,8 +38,8 @@
 #### Listing Detail Page
 - ✅ **"Secure Asset Now"** → `/checkout` (Payment flow)
 - ✅ **"Add to Cart"** → Adds to cart, updates badge
-- ✅ **"Secure Chat"** → Creates/opens chat with dealer
-- ✅ **"Direct Uplink"** → `tel:` link to dealer's phone
+- ✅ **"Secure Chat"** → Creates/opens chat with seller
+- ✅ **"Direct Uplink"** → `tel:` link to seller's phone
 - ✅ **"Report Issue"** → Opens report dialog, sends email
 
 #### About Page
@@ -116,10 +116,10 @@
 
 ## Key Fixes Implemented
 
-### **1. Dealers Page - Supabase Integration ✅**
-- **Before:** Mock data with hardcoded dealers
-- **After:** Live Supabase query fetching real `dealer` and `student_seller` users
-- **Query:** `users` table, filtered by `role IN ['dealer', 'student_seller']` and `is_verified = true`
+### **1. Sellers Page - Supabase Integration ✅**
+- **Before:** Mock data with hardcoded sellers
+- **After:** Live Supabase query fetching real `student_seller` users
+- **Query:** `users` table, filtered by `role = 'student_seller'` and `is_verified = true`
 - **Features:**
   - Real-time search by name/business
   - Location filtering
@@ -127,29 +127,29 @@
   - Loading state with spinner
   - Empty state handling
 
-### **2. Dealer Profile Page - New Route Created ✅**
-- **Route:** `/dealer/[id]/page.tsx`
+### **2. Seller Profile Page - New Route Created ✅**
+- **Route:** `/seller/[id]/page.tsx`
 - **Features:**
-  - Fetches dealer profile from Supabase
+  - Fetches seller profile from Supabase
   - Displays verification status, location, store type
-  - Shows dealer's active listings (max 6)
+  - Shows seller's active listings (max 6)
   - Contact buttons (phone, email, chat)
   - Stats cards (listings count, verification, member since, response time)
-  - Handles 404 for non-existent dealers
+  - Handles 404 for non-existent sellers
   - Premium dark industrial aesthetic maintained
 
 ### **3. Student Merchant Signup Flow ✅**
-- **Before:** "Become a Dealer" button asked redundant role selection questions
+- **Before:** "Become a Seller" button asked redundant role selection questions
 - **After:** Direct flow to merchant verification with pre-selected `student_seller` role
 - **Changes:**
-  - Signup page recognizes `?role=dealer` parameter
+  - Signup page recognizes `?role=seller` parameter
   - Auto-sets role to `student_seller`
   - Shows "Merchant Verification" title
   - Displays business fields (Business Name, Matric Number, University, Student ID)
   - Back button returns to homepage (not role selection)
 
 ### **4. Navigation Component Updates ✅**
-- **Header:** "Dealer Command" menu item now visible for both `dealer` and `student_seller`
+- **Header:** "Seller Command" menu item now visible for `student_seller`
 - **MobileBottomNav:** 
   - Cart visible for `student_buyer` and `customer`
   - Account button routes to `/dealer/dashboard` for `student_seller` and `dealer`
