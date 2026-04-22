@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Loader2, Server, Shield, Database, Zap, Activity, Eye, RefreshCw, UserPlus, AlertTriangle, CheckCircle, XCircle, MessageSquare, Bot, CreditCard } from 'lucide-react';
+import { Loader2, Server, Shield, Database, Zap, Activity, Eye, RefreshCw, UserPlus, AlertTriangle, CheckCircle, XCircle, MessageSquare, Bot, CreditCard, Users } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSystem } from '@/contexts/SystemContext';
 import { useToast } from '@/contexts/ToastContext';
