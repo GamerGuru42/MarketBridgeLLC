@@ -72,28 +72,28 @@ function ResetPasswordContent() {
     return (
         <div className="space-y-10">
             <div className="text-center space-y-4">
-                <h2 className="text-4xl font-black uppercase italic tracking-tighter text-foreground">Reset <span className="text-primary">Security</span></h2>
-                <p className="text-muted-foreground text-[10px] font-black uppercase tracking-widest">Establish new encrypted credentials</p>
+                <h2 className="text-4xl font-black uppercase italic tracking-tighter text-white">Reset <span className="text-orange-500">Security</span></h2>
+                <p className="text-gray-400 text-sm font-black uppercase tracking-widest">Establish new encrypted credentials</p>
             </div>
 
             <form onSubmit={handleReset} className="space-y-8">
                 <div className="space-y-6">
                     <div className="space-y-2">
-                        <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-2">New Password</Label>
+                        <Label className="text-[9px] uppercase font-black tracking-widest text-gray-400 ml-2">New Password</Label>
                         <div className="relative group">
-                            <Lock className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                            <Lock className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-orange-500 transition-colors" />
                             <Input
                                 type={showPassword ? 'text' : 'password'}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
-                                className="w-full h-16 pl-14 pr-14 bg-secondary border border-border rounded-2xl text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/50 outline-none font-bold"
+                                className="w-full h-16 pl-14 pr-14 bg-[#2a2a2a] border-0 rounded-xl text-white placeholder:text-gray-600 focus:ring-2 focus:ring-orange-500 outline-none font-bold"
                                 required
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-6 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
                             >
                                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </button>
@@ -101,15 +101,15 @@ function ResetPasswordContent() {
                     </div>
 
                     <div className="space-y-2">
-                        <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-2">Confirm New Password</Label>
+                        <Label className="text-[9px] uppercase font-black tracking-widest text-gray-400 ml-2">Confirm New Password</Label>
                         <div className="relative group">
-                            <ShieldCheck className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                            <ShieldCheck className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-orange-500 transition-colors" />
                             <Input
                                 type={showPassword ? 'text' : 'password'}
                                 value={passwordConfirm}
                                 onChange={(e) => setPasswordConfirm(e.target.value)}
                                 placeholder="••••••••"
-                                className="w-full h-16 pl-14 bg-secondary border border-border rounded-2xl text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/50 outline-none font-bold"
+                                className="w-full h-16 pl-14 bg-[#2a2a2a] border-0 rounded-xl text-white placeholder:text-gray-600 focus:ring-2 focus:ring-orange-500 outline-none font-bold"
                                 required
                             />
                         </div>
@@ -119,7 +119,7 @@ function ResetPasswordContent() {
                 <Button
                     type="submit"
                     disabled={isLoading || !password || password !== passwordConfirm}
-                    className="w-full h-18 bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-widest rounded-[1.5rem] shadow-[0_10px_30px_rgba(255,98,0,0.3)] border-none text-xs flex items-center justify-center gap-3 transition-all"
+                    className="w-full h-16 bg-orange-500 hover:bg-orange-600 text-black font-black uppercase tracking-widest rounded-xl shadow-[0_10px_30px_rgba(255,98,0,0.3)] border-none text-xs flex items-center justify-center gap-3 transition-all"
                 >
                     {isLoading ? <Loader2 className="animate-spin h-6 w-6" /> : (
                         <>
@@ -135,10 +135,10 @@ function ResetPasswordContent() {
 
 export default function ResetPasswordPage() {
     return (
-        <div className="min-h-screen bg-background flex items-center justify-center p-6 relative">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100vw] max-w-[600px] h-[300px] bg-primary/10 rounded-full blur-[100px] md:blur-[150px] pointer-events-none z-0" />
+        <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-6 relative">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100vw] max-w-[600px] h-[300px] bg-orange-500/10 rounded-full blur-[100px] md:blur-[150px] pointer-events-none z-0" />
 
-            <Card className="w-full max-w-lg glass-card bg-card/80 border-border rounded-[3rem] p-8 sm:p-14 relative z-10 shadow-2xl">
+            <Card className="w-full max-w-lg bg-[#1a1a1a] border border-[#2a2a2a] rounded-3xl p-8 sm:p-14 relative z-10 shadow-2xl">
                 <div className="mb-12 flex justify-center">
                     <Logo showText={false} className="scale-110" />
                 </div>

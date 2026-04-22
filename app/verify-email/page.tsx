@@ -65,24 +65,24 @@ function VerifyEmailContent() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col justify-center items-center p-4 py-8 md:py-12 bg-background text-foreground relative overflow-hidden">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100vw] max-w-[600px] h-[300px] bg-primary/10 rounded-full blur-[100px] pointer-events-none z-0" />
-            <div className="w-full max-w-lg glass-card bg-card/80 border border-border shadow-2xl rounded-3xl p-8 md:p-12 relative z-10 text-center space-y-6">
+        <div className="min-h-screen flex flex-col justify-center items-center p-4 py-8 md:py-12 bg-[#0a0a0a] text-white relative overflow-hidden">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100vw] max-w-[600px] h-[300px] bg-orange-500/10 rounded-full blur-[100px] pointer-events-none z-0" />
+            <div className="w-full max-w-lg bg-[#1a1a1a] border border-[#2a2a2a] shadow-2xl rounded-3xl p-8 md:p-12 relative z-10 text-center space-y-6">
                 
-                <div className="mx-auto w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20 mb-6">
-                    <MailCheck className="w-10 h-10 text-primary" />
+                <div className="mx-auto w-20 h-20 bg-orange-500/10 rounded-full flex items-center justify-center border border-orange-500/20 mb-6">
+                    <MailCheck className="w-10 h-10 text-orange-500" />
                 </div>
                 
-                <h2 className="text-3xl font-black uppercase tracking-tighter text-foreground italic font-heading leading-none">
-                    Check Your <span className="text-primary">Email</span>
+                <h2 className="text-3xl font-black uppercase tracking-tighter text-white italic font-heading leading-none">
+                    Check Your <span className="text-orange-500">Email</span>
                 </h2>
                 
-                <p className="text-muted-foreground font-bold text-sm leading-relaxed">
+                <p className="text-gray-400 font-bold text-sm leading-relaxed">
                     We've sent a verification link to <br/>
-                    <span className="text-foreground font-black">{email}</span>
+                    <span className="text-white font-black">{email}</span>
                 </p>
 
-                <p className="text-xs text-muted-foreground uppercase tracking-widest pb-4">
+                <p className="text-[10px] text-gray-500 uppercase tracking-widest pb-4">
                     Click the link in the email to activate your account.
                 </p>
 
@@ -90,7 +90,7 @@ function VerifyEmailContent() {
                     <Button 
                         onClick={handleCheckVerification} 
                         disabled={verifying}
-                        className="w-full h-14 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest rounded-xl"
+                        className="w-full h-14 bg-orange-500 text-black hover:bg-orange-600 font-black uppercase tracking-widest rounded-xl"
                     >
                         {verifying ? <Loader2 className="animate-spin h-5 w-5" /> : (
                             <>I've verified my email <ArrowRight className="ml-2 h-4 w-4" /></>
@@ -101,7 +101,7 @@ function VerifyEmailContent() {
                         onClick={handleResend} 
                         disabled={cooldown > 0}
                         variant="outline"
-                        className="w-full h-14 font-black uppercase tracking-widest rounded-xl border-border"
+                        className="w-full h-14 font-black uppercase tracking-widest rounded-xl border-[#2a2a2a] bg-[#2a2a2a] text-white hover:bg-[#3a3a3a]"
                     >
                         {cooldown > 0 ? `Resend Link (${cooldown}s)` : 'Resend Link'}
                     </Button>
