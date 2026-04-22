@@ -1,11 +1,15 @@
 User-agent: *
 Allow: /
-Disallow: /admin/
-Disallow: /api/
-Disallow: /seller/
-Disallow: /portal/
-Disallow: /dashboard/
-Disallow: /buyer/
-Disallow: /checkout/
+Disallow: /admin
+Disallow: /ceo
+Disallow: /hq
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /chat
+Disallow: /settings
+Disallow: /notifications
+Disallow: /api
+Disallow: /auth
+Disallow: /logout
 
-Sitemap: https://marketbridge.com.ng/sitemap.xml
+Sitemap: https://www.marketbridge.com.ng/sitemap.xml

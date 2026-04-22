@@ -182,17 +182,27 @@ export async function GET(request: Request) {
                 }
 
                 // ── 3. Handle Public Marketplace Flow ──
-                // SPECIAL: Enforce .edu.ng for Sellers
-                console.log(`Checking domain validation for role ${finalRole}: ${userEmail}`);
-                if (finalRole === 'student_seller' && !userEmail.endsWith('.edu.ng')) {
-                    console.log(`Domain validation failed for seller intent: ${userEmail}. Signing out.`);
-                    await supabase.auth.signOut();
+                // SPECIAL: Enforce Whitelist for Sellers
+                if (finalRole === 'student_seller') {
+                    const validDomains = [
+                        '@nileuniversity.edu.ng', '@bazeuniversity.edu.ng', '@veritas.edu.ng',
+                        '@aust.edu.ng', '@eun.edu.ng', '@philomath.edu.ng',
+                        '@cosmopolitan.edu.ng', '@miva.university', '@primeuniversity.edu.ng',
+                        '@binghamuni.edu.ng'
+                    ];
                     
-                    // Route back to origin of signup attempt so they see the error
-                    const errorUrl = new URL(roleIntent === 'student_seller' ? '/seller-onboard' : '/signup', request.url);
-                    if (isProduction) errorUrl.hostname = 'marketbridge.com.ng';
-                    errorUrl.searchParams.set('error', 'Sellers must use their university school email ending in .edu.ng. Please sign in with your school email.');
-                    return NextResponse.redirect(errorUrl);
+                    const isValidDomain = validDomains.some(domain => userEmail.endsWith(domain));
+                    
+                    if (!isValidDomain) {
+                        console.log(`Domain validation failed for seller intent: ${userEmail}. Signing out.`);
+                        await supabase.auth.signOut();
+                        
+                        const errorUrl = new URL('/signup', request.url);
+                        if (isProduction) errorUrl.hostname = 'marketbridge.com.ng';
+                        errorUrl.searchParams.set('seller_error', 'invalid_domain');
+                        errorUrl.searchParams.set('email', userEmail);
+                        return NextResponse.redirect(errorUrl);
+                    }
                 }
 
                 const redirectUrl = new URL(nextPath, request.url);
@@ -201,11 +211,15 @@ export async function GET(request: Request) {
                 // Check if user has completed profile
                 const { data: profileCheck } = await supabaseAdmin
                     .from('users')
-                    .select('university, matricNumber')
+                    .select('university, matric_number, phone_number')
                     .eq('id', data.user.id)
-                    .single();
+                    .maybeSingle();
 
-                if (!profileCheck?.university || !profileCheck?.matricNumber) {
+                if (finalRole === 'student_seller' && (!profileCheck?.university || !profileCheck?.matric_number || !profileCheck?.phone_number)) {
+                    const completeProfileUrl = new URL(`/complete-seller-profile`, request.url);
+                    if (isProduction) completeProfileUrl.hostname = 'marketbridge.com.ng';
+                    return NextResponse.redirect(completeProfileUrl);
+                } else if (!profileCheck?.university || !profileCheck?.matric_number) {
                     const completeProfileUrl = new URL(`/complete-profile?email=${encodeURIComponent(userEmail)}&role=${finalRole}`, request.url);
                     if (isProduction) completeProfileUrl.hostname = 'marketbridge.com.ng';
                     return NextResponse.redirect(completeProfileUrl);
