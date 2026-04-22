@@ -1,73 +1,63 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { normalizeIdentifier } from '@/lib/auth/utils';
-import { Loader2, ArrowLeft, ArrowRight, User as UserIcon, Globe, Briefcase, Mail, ShieldAlert, KeyRound } from 'lucide-react';
+import { Loader2, ArrowRight, User as UserIcon, Globe, Mail, BookOpen, GraduationCap } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/contexts/ToastContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSystem } from '@/contexts/SystemContext';
-import { cn } from '@/lib/utils';
+import { Checkbox } from '@/components/ui/checkbox';
 
-type Step = 'role' | 'details';
-type Role = 'student_buyer' | 'student_seller';
+const UNIVERSITIES = [
+    'Baze University',
+    'Nile University of Nigeria',
+    'Veritas University',
+    'University of Abuja',
+    'NOUN',
+    'Nigerian Defence Academy',
+    'Other'
+];
 
 function SignupContent() {
     const supabase = createClient();
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const { refreshUser, signInWithGoogle } = useAuth();
+    const { signInWithGoogle } = useAuth();
     const { toast } = useToast();
-    const { isDemoMode } = useSystem();
-
-    const [currentStep, setCurrentStep] = useState<Step>('role');
-    const [role, setRole] = useState<Role>('student_buyer');
 
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
         password: '',
-        passwordConfirm: ''
+        passwordConfirm: '',
+        university: '',
+        otherUniversity: '',
+        matricNumber: '',
+        role: 'student_buyer',
+        terms: false
     });
+    
     const [isLoading, setIsLoading] = useState(false);
-    const [googleLoadingRole, setGoogleLoadingRole] = useState<Role | null>(null);
-    const [expandedRole, setExpandedRole] = useState<Role | null>(null);
+    const [googleLoading, setGoogleLoading] = useState(false);
 
-    useEffect(() => {
-        const roleParam = searchParams?.get('role');
-        if (roleParam === 'student_seller' || roleParam === 'seller') {
-            setRole('student_seller');
-            setCurrentStep('details');
-        } else if (roleParam === 'student_buyer' || roleParam === 'buyer') {
-            setRole('student_buyer');
-            setCurrentStep('details');
-        }
-    }, [searchParams]);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
+        setFormData(prev => ({ ...prev, [e.target.name]: value }));
     };
 
-    const handleRoleSelect = (selectedRole: Role) => {
-        setRole(selectedRole);
-        if (selectedRole === 'student_seller') {
-            router.push('/seller-onboard');
-        } else {
-            setCurrentStep('details');
-        }
+    const handleRoleChange = (role: 'student_buyer' | 'student_seller') => {
+        setFormData(prev => ({ ...prev, role }));
     };
 
-    const handleGoogleAuth = async (selectedRole: Role) => {
-        setGoogleLoadingRole(selectedRole);
+    const handleGoogleAuth = async () => {
+        setGoogleLoading(true);
         try {
-            const next = selectedRole === 'student_seller' ? '/seller-onboard' : '/marketplace';
-            await signInWithGoogle(`${window.location.origin}/auth/callback?role=${selectedRole}&next=${next}`);
+            await signInWithGoogle(`${window.location.origin}/auth/callback?role=${formData.role}`);
         } catch (error: any) {
             toast(error.message || 'Google Auth failed', 'error');
-            setGoogleLoadingRole(null);
+            setGoogleLoading(false);
         }
     };
 
@@ -78,21 +68,30 @@ function SignupContent() {
             toast('Passwords do not match.', 'error');
             return;
         }
-        if (formData.password.length < 8) {
-            toast('Password must be at least 8 characters.', 'error');
+        
+        // Password strength validation
+        const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passRegex.test(formData.password)) {
+            toast('Password must be at least 8 chars, 1 uppercase, 1 lowercase, 1 number, and 1 special char.', 'error');
+            return;
+        }
+
+        if (!formData.terms) {
+            toast('You must accept the terms and conditions.', 'error');
             return;
         }
 
         const normalizedEmail = normalizeIdentifier(formData.email);
 
-        // DEMO RESTRICTION
-        if (isDemoMode) {
-            const allowedDomains = ['@bazeuniversity.edu.ng', '@nileuniversity.edu.ng', '@veritas.edu.ng'];
-            const isAllowed = allowedDomains.some(domain => normalizedEmail.endsWith(domain));
-            if (!isAllowed) {
-                toast('Demo Beta Access Restricted: Only Baze, Nile, and Veritas university emails are allowed during this phase.', 'error');
-                return;
-            }
+        if (formData.role === 'student_seller' && !normalizedEmail.endsWith('.edu.ng')) {
+            toast('Sellers must use a school email ending in .edu.ng.', 'error');
+            return;
+        }
+
+        const finalUniversity = formData.university === 'Other' ? formData.otherUniversity : formData.university;
+        if (!finalUniversity) {
+            toast('Please specify your university.', 'error');
+            return;
         }
 
         setIsLoading(true);
@@ -116,7 +115,7 @@ function SignupContent() {
                 options: {
                     data: {
                         full_name: formData.fullName,
-                        role: 'student_buyer',
+                        role: formData.role,
                     },
                     emailRedirectTo: `${window.location.origin}/auth/callback`,
                 },
@@ -129,20 +128,15 @@ function SignupContent() {
                     id: data.user.id,
                     email: normalizedEmail,
                     display_name: formData.fullName.trim(),
-                    role: 'student_buyer',
+                    role: formData.role,
+                    university: finalUniversity,
+                    matric_number: formData.matricNumber,
                     email_verified: false,
                 });
 
                 if (profileError) throw profileError;
 
-                if (data.session) {
-                    toast('Account created! Welcome to MarketBridge.', 'success');
-                    await refreshUser();
-                    router.push('/marketplace');
-                } else {
-                    toast('Account created! Check your email to verify.', 'success');
-                    router.push('/login');
-                }
+                router.push(`/verify-email?email=${encodeURIComponent(normalizedEmail)}`);
             }
         } catch (error: any) {
             toast(error.message || 'Registration failed', 'error');
@@ -151,247 +145,112 @@ function SignupContent() {
         }
     };
 
-    if (currentStep === 'role') {
-        return (
-            <div className="min-h-screen flex flex-col justify-center items-center p-4 py-8 md:py-12 bg-background text-foreground relative overflow-hidden transition-colors duration-300">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100vw] max-w-[600px] h-[300px] bg-primary/10 rounded-full blur-[100px] md:blur-[150px] pointer-events-none z-0" />
-                <div className="w-full max-w-2xl relative z-10 glass-card bg-card/80 border border-border rounded-3xl md:rounded-[3rem] p-5 md:p-10 lg:p-14 shadow-2xl">
-                    <div className="text-center mb-8 md:mb-10 space-y-4">
-                        <Link href="/" className="inline-flex items-center text-muted-foreground hover:text-foreground uppercase text-[10px] font-black tracking-widest transition-colors mb-2 md:mb-4">
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
-                        </Link>
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading">
-                            Create <span className="text-primary">Account</span>
-                        </h1>
-                        <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] italic">
-                            Select your account type
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:px-4">
-                        {/* ─── Buyer Card ─────────────────────────────────────────── */}
-                        <div 
-                            onClick={() => setExpandedRole(expandedRole === 'student_buyer' ? null : 'student_buyer')}
-                            className={cn(
-                                "bg-secondary border rounded-3xl p-6 text-center flex flex-col items-center shadow-sm cursor-pointer transition-all duration-300",
-                                expandedRole === 'student_buyer' ? "border-primary/50 ring-1 ring-primary/20 scale-[1.02]" : "border-border hover:border-primary/30"
-                            )}>
-                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4">
-                                <UserIcon className="h-6 w-6 text-muted-foreground" />
-                            </div>
-                            <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Buyer</h3>
-                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest mb-2">Shop & Browse</p>
-                            
-                            <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'student_buyer' ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
-                                <Button
-                                    onClick={(e) => { e.stopPropagation(); handleRoleSelect('student_buyer'); }}
-                                    className="w-full h-12 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl shadow-[0_6px_20px_rgba(255,98,0,0.25)] transition-all"
-                                >
-                                    Sign Up with Email <ArrowRight className="ml-2 h-4 w-4" />
-                                </Button>
-                                <Button
-                                    type="button"
-                                    onClick={(e) => { e.stopPropagation(); handleGoogleAuth('student_buyer'); }}
-                                    disabled={googleLoadingRole === 'student_buyer'}
-                                    className="w-full h-12 bg-foreground text-background hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl flex items-center justify-center gap-2 transition-all"
-                                >
-                                    {googleLoadingRole === 'student_buyer' ? (
-                                        <Loader2 className="animate-spin h-4 w-4" />
-                                    ) : (
-                                        <>
-                                            <Globe className="h-4 w-4" />
-                                            Google Sign-In
-                                        </>
-                                    )}
-                                </Button>
-                            </div>
-                        </div>
-
-                        {/* ─── Seller Card ────────────────────────────────────────── */}
-                        <div 
-                            onClick={() => setExpandedRole(expandedRole === 'student_seller' ? null : 'student_seller')}
-                            className={cn(
-                                "bg-secondary border rounded-3xl p-6 text-center flex flex-col items-center shadow-sm relative overflow-hidden cursor-pointer transition-all duration-300",
-                                expandedRole === 'student_seller' ? "border-primary/50 ring-1 ring-primary/20 scale-[1.02]" : "border-border hover:border-primary/30"
-                            )}>
-                            <div className="absolute top-3 right-3 h-1.5 w-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(255,98,0,0.8)]" />
-                            <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center mb-4">
-                                <Briefcase className="h-6 w-6 text-muted-foreground" />
-                            </div>
-                            <h3 className="text-sm font-black text-foreground uppercase tracking-tight mb-1">Seller</h3>
-                            <p className="text-muted-foreground text-[8px] font-black uppercase tracking-widest mb-2">Sell on Campus</p>
-                            
-                            <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'student_seller' ? "max-h-56 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
-                                <Button
-                                    type="button"
-                                    onClick={(e) => { e.stopPropagation(); handleGoogleAuth('student_seller'); }}
-                                    disabled={googleLoadingRole === 'student_seller'}
-                                    className="w-full h-14 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest text-[10px] rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_6px_20px_rgba(255,98,0,0.25)]"
-                                >
-                                    {googleLoadingRole === 'student_seller' ? (
-                                        <Loader2 className="animate-spin h-4 w-4" />
-                                    ) : (
-                                        <>
-                                            <Globe className="h-4 w-4" />
-                                            School Google Sign-In
-                                        </>
-                                    )}
-                                </Button>
-                                <p className="text-[7.5px] text-muted-foreground font-bold uppercase tracking-[0.2em] leading-relaxed mt-4 px-2">
-                                    Sellers must use a school email ending in <span className="text-primary font-black">.edu.ng</span>. 
-                                    Personal accounts are strictly forbidden for security.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="text-center pt-8 mt-6 border-t border-border">
-                        <p className="text-muted-foreground font-bold text-xs uppercase tracking-widest">
-                            Already have an account?{' '}
-                            <Link href="/login" className="text-primary font-black ml-2 hover:opacity-80">
-                                Log In
-                            </Link>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     return (
         <div className="min-h-screen flex flex-col justify-center items-center p-4 py-8 md:py-12 bg-background text-foreground relative overflow-hidden transition-colors duration-300">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100vw] max-w-[600px] h-[300px] bg-primary/10 rounded-full blur-[100px] md:blur-[150px] pointer-events-none z-0" />
-            <div className="w-full max-w-lg glass-card bg-card/80 border border-border shadow-2xl rounded-3xl md:rounded-[3rem] p-5 md:p-10 lg:p-14 relative z-10 m-auto mt-8 mb-8">
-                <div className="text-center mb-12 space-y-4">
-                    <div className="flex justify-between items-center mb-6">
-                        <Button
-                            variant="ghost"
-                            onClick={() => setCurrentStep('role')}
-                            className="text-muted-foreground hover:text-foreground uppercase text-[10px] font-black tracking-widest px-0"
-                        >
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
-                        </Button>
-                    </div>
-                    
+            <div className="w-full max-w-xl glass-card bg-card/80 border border-border shadow-2xl rounded-3xl md:rounded-[3rem] p-5 md:p-10 lg:p-14 relative z-10 m-auto mt-8 mb-8">
+                <div className="text-center mb-10 space-y-4">
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground italic font-heading leading-none">
-                        Sign <span className="text-primary">Up</span>
+                        Create <span className="text-primary">Account</span>
                     </h2>
                     <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px] italic">
-                        Enter your details
+                        Join MarketBridge Today
                     </p>
                 </div>
 
-                {isDemoMode && (
-                    <div className="mb-6 p-4 bg-[#FF6200]/10 border border-[#FF6200]/30 rounded-2xl flex items-start gap-3">
-                        <ShieldAlert className="h-5 w-5 text-[#FF6200] shrink-0 mt-0.5" />
-                        <div>
-                            <h4 className="text-[#FF6200] font-black uppercase text-[10px] tracking-widest mb-1 italic">🚀 Private Beta Mode Active</h4>
-                            <p className="text-[#FF6200]/80 text-[10px] font-bold leading-relaxed">
-                                This is a test/demo version. No real transactions or money will be processed. Access is strictly for testing purposes during this Private Beta phase.
-                            </p>
-                        </div>
+                <form onSubmit={handleSignup} className="space-y-5">
+                    
+                    {/* Role Selection (Radio) */}
+                    <div className="flex gap-4 mb-6">
+                        <label className={`flex-1 flex flex-col items-center justify-center border-2 rounded-2xl p-4 cursor-pointer transition-all ${formData.role === 'student_buyer' ? 'border-primary bg-primary/10 text-primary' : 'border-border bg-secondary text-muted-foreground hover:border-primary/50'}`}>
+                            <input type="radio" name="role" value="student_buyer" className="hidden" checked={formData.role === 'student_buyer'} onChange={() => handleRoleChange('student_buyer')} />
+                            <UserIcon className="h-6 w-6 mb-2" />
+                            <span className="font-black uppercase tracking-widest text-xs">Buyer</span>
+                        </label>
+                        <label className={`flex-1 flex flex-col items-center justify-center border-2 rounded-2xl p-4 cursor-pointer transition-all ${formData.role === 'student_seller' ? 'border-primary bg-primary/10 text-primary' : 'border-border bg-secondary text-muted-foreground hover:border-primary/50'}`}>
+                            <input type="radio" name="role" value="student_seller" className="hidden" checked={formData.role === 'student_seller'} onChange={() => handleRoleChange('student_seller')} />
+                            <BookOpen className="h-6 w-6 mb-2" />
+                            <span className="font-black uppercase tracking-widest text-xs">Seller</span>
+                        </label>
                     </div>
-                )}
 
-                <form onSubmit={handleSignup} className="space-y-6">
                     <div className="space-y-2">
                         <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading">Full Name</label>
                         <div className="relative">
-                            <div className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-muted-foreground">
-                                <UserIcon className="h-4 w-4" />
-                            </div>
-                            <input
-                                name="fullName"
-                                type="text"
-                                autoFocus
-                                value={formData.fullName}
-                                onChange={handleChange}
-                                required
-                                placeholder="Full Name"
-                                className="w-full h-16 pl-14 pr-6 bg-secondary border border-border rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm"
-                            />
+                            <div className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-muted-foreground"><UserIcon className="h-4 w-4" /></div>
+                            <input name="fullName" type="text" value={formData.fullName} onChange={handleChange} required placeholder="John Doe" className="w-full h-14 pl-14 pr-6 bg-secondary border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm" />
                         </div>
                     </div>
 
                     <div className="space-y-2">
                         <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading">Email Address</label>
                         <div className="relative">
-                            <div className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-muted-foreground">
-                                <Mail className="h-4 w-4" />
-                            </div>
-                            <input
-                                name="email"
-                                type="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                required
-                                placeholder="email@address.com"
-                                className="w-full h-16 pl-14 pr-6 bg-secondary border border-border rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm"
-                            />
+                            <div className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-muted-foreground"><Mail className="h-4 w-4" /></div>
+                            <input name="email" type="email" value={formData.email} onChange={handleChange} required placeholder="email@address.com" className="w-full h-14 pl-14 pr-6 bg-secondary border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm" />
                         </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading">University</label>
+                        <div className="relative">
+                            <div className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-muted-foreground"><GraduationCap className="h-4 w-4" /></div>
+                            <select name="university" value={formData.university} onChange={handleChange} required className="w-full h-14 pl-14 pr-6 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm appearance-none">
+                                <option value="" disabled>Select your university</option>
+                                {UNIVERSITIES.map(u => <option key={u} value={u}>{u}</option>)}
+                            </select>
+                        </div>
+                    </div>
+
+                    {formData.university === 'Other' && (
+                        <div className="space-y-2">
+                            <input name="otherUniversity" type="text" value={formData.otherUniversity} onChange={handleChange} required placeholder="Specify your university" className="w-full h-14 px-6 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm" />
+                        </div>
+                    )}
+
+                    <div className="space-y-2">
+                        <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading">Matriculation Number</label>
+                        <input name="matricNumber" type="text" value={formData.matricNumber} onChange={handleChange} required placeholder="e.g. BU/1234/56" className="w-full h-14 px-6 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm" />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-2">Password</label>
-                            <input
-                                name="password"
-                                type="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                required
-                                placeholder="Min 8 chars"
-                                className="w-full h-16 px-6 bg-secondary border border-border rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm"
-                            />
+                            <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading">Password</label>
+                            <input name="password" type="password" value={formData.password} onChange={handleChange} required placeholder="Min 8 chars" className="w-full h-14 px-6 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm" />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading ml-2">Confirm Password</label>
-                            <input
-                                name="passwordConfirm"
-                                type="password"
-                                value={formData.passwordConfirm}
-                                onChange={handleChange}
-                                required
-                                placeholder="••••••••"
-                                className="w-full h-16 px-6 bg-secondary border border-border rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm"
-                            />
+                            <label className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground font-heading">Confirm Password</label>
+                            <input name="passwordConfirm" type="password" value={formData.passwordConfirm} onChange={handleChange} required placeholder="••••••••" className="w-full h-14 px-6 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:border-primary/50 focus:bg-background transition-all font-bold tracking-wider text-sm" />
                         </div>
                     </div>
 
+                    <div className="flex items-center space-x-2 pt-2">
+                        <Checkbox id="terms" name="terms" checked={formData.terms} onCheckedChange={(checked) => setFormData(p => ({ ...p, terms: checked as boolean }))} />
+                        <label htmlFor="terms" className="text-xs text-muted-foreground">
+                            I agree to the <Link href="/terms" className="text-primary hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-primary hover:underline">Privacy Policy</Link>.
+                        </label>
+                    </div>
+
                     <div className="pt-4">
-                        <Button
-                            type="submit"
-                            disabled={isLoading}
-                            className="w-full h-16 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-[0.2em] text-sm rounded-2xl border-none shadow-[0_10px_30px_rgba(255,98,0,0.3)] transition-all flex items-center"
-                        >
-                            {isLoading ? <Loader2 className="animate-spin h-6 w-6 relative z-10" /> : (
-                                <>
-                                    Create Account <ArrowRight className="ml-4 h-5 w-5" />
-                                </>
-                            )}
+                        <Button type="submit" disabled={isLoading} className="w-full h-14 bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-[0.2em] text-sm rounded-xl shadow-[0_10px_30px_rgba(255,98,0,0.3)] transition-all">
+                            {isLoading ? <Loader2 className="animate-spin h-6 w-6" /> : "Create Account"}
                         </Button>
                     </div>
                 </form>
 
-                <div className="relative py-8 flex items-center justify-center">
+                <div className="relative py-6 flex items-center justify-center">
                     <div className="absolute inset-x-0 h-px bg-border" />
                     <span className="relative bg-card px-4 text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground">Or</span>
                 </div>
 
-                <Button
-                    type="button"
-                    onClick={() => handleGoogleAuth('student_buyer')}
-                    disabled={googleLoadingRole !== null}
-                    className="w-full h-16 bg-foreground text-background hover:opacity-90 font-black uppercase tracking-widest rounded-2xl flex items-center justify-center gap-3 transition-all"
-                >
-                    {googleLoadingRole ? <Loader2 className="animate-spin h-5 w-5" /> : (
-                        <>
-                            <Globe className="h-5 w-5" />
-                            Google Sign-In
-                        </>
-                    )}
+                <Button type="button" onClick={handleGoogleAuth} disabled={googleLoading} className="w-full h-14 bg-foreground text-background hover:opacity-90 font-black uppercase tracking-widest rounded-xl flex items-center justify-center gap-3 transition-all">
+                    {googleLoading ? <Loader2 className="animate-spin h-5 w-5" /> : <><Globe className="h-5 w-5" />Sign up with Google</>}
                 </Button>
 
+                <div className="text-center pt-8 mt-6 border-t border-border">
+                    <p className="text-muted-foreground font-bold text-xs uppercase tracking-widest">
+                        Already have an account? <Link href="/login" className="text-primary font-black ml-1 hover:opacity-80">Log In</Link>
+                    </p>
+                </div>
             </div>
         </div>
     );
@@ -399,11 +258,7 @@ function SignupContent() {
 
 export default function SignupPage() {
     return (
-        <Suspense fallback={
-            <div className="min-h-screen flex items-center justify-center bg-background">
-                <Loader2 className="animate-spin h-8 w-8 text-primary" />
-            </div>
-        }>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="animate-spin h-8 w-8 text-primary" /></div>}>
             <SignupContent />
         </Suspense>
     );

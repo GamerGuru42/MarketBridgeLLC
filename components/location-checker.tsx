@@ -47,24 +47,7 @@ export function LocationChecker({ children }: LocationCheckerProps) {
         setManualLocation('global');
     };
 
-    if (loading) {
-        return (
-            <div className="fixed inset-0 bg-black z-[9999] flex items-center justify-center">
-                <div className="flex flex-col items-center gap-6">
-                    <div className="relative">
-                        <div className="h-16 w-16 rounded-full border-t-2 border-[#FF6200] animate-spin" />
-                        <MapPin className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-6 w-6 text-[#FF6200]" />
-                    </div>
-                    <div className="flex flex-col items-center gap-2">
-                        <div className="h-1 w-32 bg-zinc-900 rounded-full overflow-hidden">
-                            <div className="h-full bg-[#FF6200] animate-pulse" />
-                        </div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">Checking Location...</span>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+
 
     const userLocation = city ? `${city}, ${region}` : (region || 'Unknown Area');
 

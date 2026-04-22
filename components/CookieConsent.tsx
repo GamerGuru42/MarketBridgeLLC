@@ -33,44 +33,58 @@ export function CookieConsent() {
     });
 
     useEffect(() => {
-        // Check if user has already consented
-        const consent = localStorage.getItem('cookie-consent');
+        // Check if user has already consented via document.cookie
+        const getCookie = (name: string) => {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop()?.split(';').shift();
+            return null;
+        };
+
+        const consent = getCookie('mb_cookie_consent');
         if (!consent) {
-            // Show banner after 1 second
             setTimeout(() => setShowBanner(true), 1000);
         } else {
-            // Load saved preferences
             try {
-                const saved = JSON.parse(consent);
-                setPreferences(saved);
+                if (consent === 'all') {
+                    setPreferences({ necessary: true, analytics: true, marketing: true });
+                } else if (consent === 'necessary') {
+                    setPreferences({ necessary: true, analytics: false, marketing: false });
+                } else {
+                    const saved = JSON.parse(decodeURIComponent(consent));
+                    setPreferences(saved);
+                }
             } catch (e) {
                 console.error('Failed to parse cookie preferences');
             }
         }
     }, []);
 
-    const savePreferences = (prefs: CookiePreferences) => {
-        localStorage.setItem('cookie-consent', JSON.stringify(prefs));
-        localStorage.setItem('cookie-consent-date', new Date().toISOString());
-        setPreferences(prefs);
+    const savePreferences = (prefs: CookiePreferences | 'all' | 'necessary') => {
+        let cookieValue = '';
+        if (prefs === 'all') {
+            cookieValue = 'all';
+            setPreferences({ necessary: true, analytics: true, marketing: true });
+        } else if (prefs === 'necessary') {
+            cookieValue = 'necessary';
+            setPreferences({ necessary: true, analytics: false, marketing: false });
+        } else {
+            cookieValue = encodeURIComponent(JSON.stringify(prefs));
+            setPreferences(prefs);
+        }
+        
+        // maxAge=31536000 (365 days)
+        document.cookie = `mb_cookie_consent=${cookieValue}; path=/; max-age=31536000; SameSite=Lax`;
         setShowBanner(false);
         setShowSettings(false);
     };
 
     const acceptAll = () => {
-        savePreferences({
-            necessary: true,
-            analytics: true,
-            marketing: true,
-        });
+        savePreferences('all');
     };
 
     const acceptNecessary = () => {
-        savePreferences({
-            necessary: true,
-            analytics: false,
-            marketing: false,
-        });
+        savePreferences('necessary');
     };
 
     const saveCustom = () => {
@@ -82,8 +96,8 @@ export function CookieConsent() {
     return (
         <>
             {/* Cookie Banner */}
-            <div className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6 pointer-events-none">
-                <Card className="max-w-4xl mx-auto pointer-events-auto shadow-2xl border-2">
+            <div className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6 flex justify-center pointer-events-none">
+                <Card className="w-full max-w-[600px] pointer-events-auto shadow-2xl border border-border bg-card/95 backdrop-blur">
                     <div className="p-6">
                         <div className="flex items-start gap-4">
                             <Cookie className="h-8 w-8 text-primary flex-shrink-0 mt-1" />
@@ -113,7 +127,7 @@ export function CookieConsent() {
                                         className="gap-2"
                                     >
                                         <Settings className="h-4 w-4" />
-                                        Customize
+                                        Customize Preferences
                                     </Button>
                                 </div>
                             </div>

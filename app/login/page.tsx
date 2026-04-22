@@ -29,6 +29,8 @@ function LoginContent() {
     const [googleLoadingRole, setGoogleLoadingRole] = useState<Role | null>(null);
     const [expandedRole, setExpandedRole] = useState<Role | null>(null);
     const [error, setError] = useState('');
+    const [requireCaptcha, setRequireCaptcha] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
 
     useEffect(() => {
         if (!loading && sessionUser && user) {
@@ -94,6 +96,18 @@ function LoginContent() {
         try {
             const emailToUse = normalizeIdentifier(formData.email);
 
+            // Check for locked account
+            const { data: userRecord } = await supabase.from('users').select('id, login_attempts, locked_until').eq('email', emailToUse).maybeSingle();
+            if (userRecord && userRecord.locked_until) {
+                const lockTime = new Date(userRecord.locked_until).getTime();
+                if (Date.now() < lockTime) {
+                    const remaining = Math.ceil((lockTime - Date.now()) / 60000);
+                    setError(`Account locked due to too many failed attempts. Try again in ${remaining} minutes.`);
+                    setIsLoading(false);
+                    return;
+                }
+            }
+
             const loginPromise = supabase.auth.signInWithPassword({
                 email: emailToUse,
                 password: formData.password,
@@ -106,8 +120,23 @@ function LoginContent() {
 
             if (signInError) {
                 const msg = signInError.message?.toLowerCase() ?? '';
-                if (msg.includes('invalid login') || msg.includes('invalid credentials')) {
-                    setError('Incorrect email or password.');
+                let attemptsCount = 0;
+                
+                if (userRecord && (msg.includes('invalid login') || msg.includes('invalid credentials'))) {
+                    attemptsCount = (userRecord.login_attempts || 0) + 1;
+                    let updates: any = { login_attempts: attemptsCount };
+                    
+                    if (attemptsCount >= 5) {
+                        updates.locked_until = new Date(Date.now() + 15 * 60000).toISOString();
+                        setError('Account locked for 15 minutes due to too many failed attempts.');
+                    } else if (attemptsCount >= 3) {
+                        setRequireCaptcha(true);
+                        setError('Incorrect email or password. Please complete the CAPTCHA.');
+                    } else {
+                        setError('Incorrect email or password.');
+                    }
+                    
+                    await supabase.from('users').update(updates).eq('email', emailToUse);
                 } else if (msg.includes('email not confirmed')) {
                     setError('Please verify your email first.');
                 } else if (msg.includes('timed out')) {
@@ -116,6 +145,11 @@ function LoginContent() {
                     setError(signInError.message || 'Login failed.');
                 }
                 return;
+            }
+            
+            // On success, reset attempts
+            if (userRecord && userRecord.login_attempts > 0) {
+                await supabase.from('users').update({ login_attempts: 0, locked_until: null }).eq('email', emailToUse);
             }
 
             if (!data?.user) {
@@ -365,6 +399,19 @@ function LoginContent() {
                             </button>
                         </div>
                     </div>
+
+                    <div className="flex items-center space-x-2 pt-2">
+                        <input type="checkbox" id="remember" className="rounded border-border bg-secondary text-primary cursor-pointer w-4 h-4" checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} />
+                        <label htmlFor="remember" className="text-xs font-black uppercase tracking-widest text-muted-foreground cursor-pointer">
+                            Remember Me
+                        </label>
+                    </div>
+
+                    {requireCaptcha && (
+                        <div className="p-4 bg-secondary border border-border rounded-xl flex items-center justify-center text-xs font-black uppercase tracking-widest text-muted-foreground h-20 shadow-inner">
+                            [ reCAPTCHA v2 PLACEHOLDER ]
+                        </div>
+                    )}
 
                     <div className="pt-4">
                         <Button

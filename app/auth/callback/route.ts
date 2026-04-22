@@ -50,14 +50,23 @@ export async function GET(request: Request) {
     const typePostAuth = searchParams.get('type') // 'portal' or null
     const roleIntent = searchParams.get('role')
     const nextPath = searchParams.get('next') || '/'
+    const authError = searchParams.get('error')
+    const error_description = searchParams.get('error_description')
 
     const isProduction = host.endsWith('marketbridge.com.ng');
     const isLocalhost = host.includes('localhost') || host.includes('127.0.0.1');
 
+    // Handle explicit errors from OAuth provider
+    if (authError) {
+        return NextResponse.redirect(new URL(`/login?error=${authError}&message=${encodeURIComponent(error_description || '')}`, request.url));
+    }
+
+    if (!code) {
+        return NextResponse.redirect(new URL('/login?error=missing_code', request.url));
+    }
+
     try {
         console.log(`Auth Callback Initiated. Code present: ${!!code}, Role Intent: ${roleIntent}, Next: ${nextPath}`);
-
-        if (code) {
             const supabase = await createClient();
             console.log('Exchanging code for session...');
             const { data, error } = await supabase.auth.exchangeCodeForSession(code)
@@ -189,13 +198,37 @@ export async function GET(request: Request) {
                 const redirectUrl = new URL(nextPath, request.url);
                 if (isProduction) redirectUrl.hostname = 'marketbridge.com.ng';
 
+                // Check if user has completed profile
+                const { data: profileCheck } = await supabaseAdmin
+                    .from('users')
+                    .select('university, matricNumber')
+                    .eq('id', data.user.id)
+                    .single();
+
+                if (!profileCheck?.university || !profileCheck?.matricNumber) {
+                    const completeProfileUrl = new URL(`/complete-profile?email=${encodeURIComponent(userEmail)}&role=${finalRole}`, request.url);
+                    if (isProduction) completeProfileUrl.hostname = 'marketbridge.com.ng';
+                    return NextResponse.redirect(completeProfileUrl);
+                }
+
+                // Redirect based on role
+                if (finalRole === 'student_buyer') {
+                    redirectUrl.pathname = '/dashboard';
+                } else if (finalRole === 'student_seller') {
+                    redirectUrl.pathname = '/seller-dashboard';
+                } else if (ADMIN_ROLES.includes(finalRole)) {
+                    if (isProduction) {
+                        redirectUrl.hostname = 'hq.marketbridge.com.ng';
+                    }
+                    redirectUrl.pathname = getHubRoute(finalRole);
+                }
+
                 console.log(`Auth Callback Result: Routing ${userEmail} to ${redirectUrl.toString()}`);
                 return NextResponse.redirect(redirectUrl);
             } else {
                  console.log(`No user returned in exchangeCodeForSession result.`);
                  throw new Error('User data missing after code exchange.');
             }
-        }
     } catch (err: any) {
         console.error('Critical Error in Auth Callback:', err);
         const errorUrl = new URL('/signup', request.url);
@@ -203,14 +236,4 @@ export async function GET(request: Request) {
         errorUrl.searchParams.set('error', `Authentication failed: ${err.message || 'Unknown server error'}. Please try again.`);
         return NextResponse.redirect(errorUrl);
     }
-
-    // Error recovery for missing code
-    console.log('Auth Callback failed: No "code" provided in URL.');
-    const errorMsg = searchParams.get('error_description') || 'Authentication failed. Please try logging in again.';
-    const isPortalFail = searchParams.get('type') === 'portal';
-    const fallbackUrl = new URL(isPortalFail ? '/portal/login' : '/signup', request.url);
-    if (isProduction) fallbackUrl.hostname = isPortalFail ? 'hq.marketbridge.com.ng' : 'marketbridge.com.ng';
-    fallbackUrl.searchParams.set('error', errorMsg);
-    
-    return NextResponse.redirect(fallbackUrl);
 }

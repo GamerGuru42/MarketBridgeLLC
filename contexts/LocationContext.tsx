@@ -99,11 +99,11 @@ async function reverseGeocode(lat: number, lng: number): Promise<{ city: string;
 }
 
 export function LocationProvider({ children }: { children: React.ReactNode }) {
-    const [coords, setCoords] = useState<Coordinates | null>(null);
-    const [city, setCity] = useState<string | null>(null);
-    const [region, setRegion] = useState<string | null>(null);
+    const [coords, setCoords] = useState<Coordinates | null>({ lat: 9.0765, lng: 7.3986 });
+    const [city, setCity] = useState<string | null>('Abuja');
+    const [region, setRegion] = useState<string | null>('Federal Capital Territory');
     const [nearestUniversity, setNearestUniversity] = useState<{ node: UniversityNode; distance: number } | null>(null);
-    const [isAbuja, setIsAbuja] = useState(false);
+    const [isAbuja, setIsAbuja] = useState(true);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [consentStatus, setConsentStatus] = useState<'prompt' | 'granted' | 'denied'>('prompt');
@@ -230,13 +230,19 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
                 setCoords(parsed);
                 updateProximity(parsed);
             } catch { /* ignore parse error */ }
+        } else {
+            // Default proximity check for Abuja center
+            updateProximity({ lat: 9.0765, lng: 7.3986 });
         }
+
+        // 5-second maximum loading time failsafe
+        const timeout = setTimeout(() => setLoading(false), 5000);
 
         // Always do IP detection for base region, but don't ask for GPS if prompt
         if (initialStatus === 'granted') {
-            requestLocation();
+            requestLocation().finally(() => clearTimeout(timeout));
         } else {
-            fallbackToIp();
+            fallbackToIp().finally(() => clearTimeout(timeout));
         }
     }, [requestLocation, fallbackToIp, updateProximity]);
 

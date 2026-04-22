@@ -46,21 +46,17 @@ export const SystemProvider = ({ children }: { children: React.ReactNode }) => {
 
                 if (mounted && data) {
                     const isDemo = data.is_demo_mode;
-                    let daysLeft = DEMO_DURATION_DAYS;
-                    let isExpired = false;
-
-                    if (isDemo && data.demo_start_date) {
-                        const start = new Date(data.demo_start_date).getTime();
-                        const now = new Date().getTime();
-                        const diffMs = now - start;
-                        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-                        daysLeft = Math.max(0, DEMO_DURATION_DAYS - diffDays);
-                        isExpired = daysLeft <= 0;
-                    }
+                    const launchStr = data.demo_start_date || '2026-04-20T00:00:00+01:00';
+                    const start = new Date(launchStr).getTime();
+                    const now = new Date().getTime();
+                    const diffMs = now - start;
+                    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                    const daysLeft = Math.max(0, DEMO_DURATION_DAYS - diffDays);
+                    const isExpired = daysLeft <= 0;
 
                     setSettings({
                         isDemoMode: isDemo,
-                        demoStartDate: data.demo_start_date,
+                        demoStartDate: launchStr,
                         daysLeft,
                         isExpired,
                         launchDate: data.launch_date || '2026-04-20T00:00:00+01:00',
@@ -80,20 +76,16 @@ export const SystemProvider = ({ children }: { children: React.ReactNode }) => {
                 if (!newData) return;
 
                 const isDemo = newData.is_demo_mode;
-                let daysLeft = DEMO_DURATION_DAYS;
-                let isExpired = false;
-
-                if (isDemo && newData.demo_start_date) {
-                    const start = new Date(newData.demo_start_date).getTime();
-                    const now = new Date().getTime();
-                    const diffDays = Math.floor((now - start) / (1000 * 60 * 60 * 24));
-                    daysLeft = Math.max(0, DEMO_DURATION_DAYS - diffDays);
-                    isExpired = daysLeft <= 0;
-                }
+                const launchStr = newData.demo_start_date || '2026-04-20T00:00:00+01:00';
+                const start = new Date(launchStr).getTime();
+                const now = new Date().getTime();
+                const diffDays = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+                const daysLeft = Math.max(0, DEMO_DURATION_DAYS - diffDays);
+                const isExpired = daysLeft <= 0;
 
                 setSettings({
                     isDemoMode: isDemo,
-                    demoStartDate: newData.demo_start_date,
+                    demoStartDate: launchStr,
                     daysLeft,
                     isExpired,
                     launchDate: newData.launch_date || '2026-04-20T00:00:00+01:00',
