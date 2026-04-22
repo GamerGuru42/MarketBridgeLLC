@@ -158,24 +158,27 @@ function SignupContent() {
 
                         {/* Seller Card */}
                         <div
-                            onClick={() => setExpandedRole(expandedRole === 'student_seller' ? null : 'student_seller')}
                             className={cn(
-                                "bg-[#2a2a2a] border rounded-3xl p-6 text-center flex flex-col items-center shadow-sm relative overflow-hidden cursor-pointer transition-all duration-300",
-                                expandedRole === 'student_seller' ? "border-orange-500/50 ring-1 ring-orange-500/20 scale-[1.02]" : "border-[#3a3a3a] hover:border-orange-500/30"
+                                "bg-[#2a2a2a] border rounded-3xl p-6 text-center flex flex-col items-center shadow-lg relative overflow-hidden transition-all duration-300",
+                                "border-orange-500/50 ring-1 ring-orange-500/20"
                             )}>
                             <div className="absolute top-3 right-3 h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse shadow-[0_0_10px_rgba(255,98,0,0.8)]" />
                             <div className="h-12 w-12 rounded-xl bg-[#1a1a1a] flex items-center justify-center mb-4">
-                                <BookOpen className="h-6 w-6 text-gray-400" />
+                                <BookOpen className="h-6 w-6 text-orange-500" />
                             </div>
                             <h3 className="text-sm font-black text-white uppercase tracking-tight mb-1">Seller</h3>
-                            <p className="text-gray-400 text-[8px] font-black uppercase tracking-widest mb-2">Sell on Campus</p>
-                            <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'student_seller' ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
-                                <Button type="button" onClick={(e) => { e.stopPropagation(); setRole('student_seller'); setCurrentStep('seller-google'); }}
-                                    className="w-full h-14 bg-orange-500 text-black hover:bg-orange-600 font-black uppercase tracking-widest text-[10px] rounded-xl shadow-[0_6px_20px_rgba(255,98,0,0.25)] flex items-center justify-center gap-2">
-                                    <ShieldCheck className="h-4 w-4" /> Seller Verification
+                            <p className="text-gray-400 text-[8px] font-black uppercase tracking-widest mb-4">Sell on Campus</p>
+                            
+                            <div className="w-full space-y-3">
+                                <Button 
+                                    type="button" 
+                                    onClick={() => { setRole('student_seller'); handleGoogleAuth(); }} 
+                                    disabled={googleLoading}
+                                    className="w-full py-6 bg-orange-500 text-black hover:bg-orange-600 font-black uppercase tracking-wider text-[11px] rounded-xl shadow-[0_10px_30px_rgba(255,98,0,0.3)] flex items-center justify-center gap-2">
+                                    {googleLoading ? <Loader2 className="animate-spin h-5 w-5" /> : <><ShieldCheck className="h-4 w-4" /> Sign Up with Google</>}
                                 </Button>
-                                <p className="text-[7.5px] text-gray-500 font-bold uppercase tracking-[0.2em] leading-relaxed mt-4 px-2">
-                                    Sellers must use a school email ending in <span className="text-orange-500 font-black">.edu.ng</span>.
+                                <p className="text-[8px] text-gray-500 font-bold uppercase tracking-[0.2em] leading-relaxed">
+                                    School email <span className="text-orange-500 font-black">(.edu.ng)</span> required
                                 </p>
                             </div>
                         </div>
@@ -192,61 +195,41 @@ function SignupContent() {
         );
     }
 
-    // ─── STEP 2b: Seller Google-Only ─────────────────────────────────────────
-    if (currentStep === 'seller-google') {
+    // Step 2b (Repurposed for errors)
+    if (sellerError) {
         return (
             <div className="min-h-screen flex flex-col justify-center items-center p-4 py-12 bg-[#0a0a0a] text-white relative overflow-hidden">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-orange-500/10 rounded-full blur-[150px] pointer-events-none z-0" />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-red-500/10 rounded-full blur-[150px] pointer-events-none z-0" />
                 <div className="w-full max-w-lg relative z-10 bg-[#1a1a1a] border border-[#2a2a2a] rounded-3xl p-6 md:p-10 lg:p-14 shadow-2xl">
                     <div className="text-center mb-10 space-y-4">
-                        <Button variant="ghost" onClick={() => setCurrentStep('role')}
-                            className="text-gray-400 hover:text-white uppercase text-[10px] font-black tracking-widest px-0 mb-4">
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Selection
-                        </Button>
-                        <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tighter italic leading-none">
-                            Seller <span className="text-orange-500">Verification</span>
+                        <div className="h-20 w-20 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-6 border border-red-500/20">
+                            <AlertTriangle className="h-10 w-10 text-red-500" />
+                        </div>
+                        <h1 className="text-3xl font-black uppercase tracking-tighter italic leading-none">
+                            Verification <span className="text-red-500">Failed</span>
                         </h1>
-                        <p className="text-gray-400 font-bold text-[10px] leading-relaxed max-w-sm mx-auto">
-                            Connect your verified university Google account to start selling on campus. Only <span className="text-orange-500">.edu.ng</span> emails from approved Abuja private universities are accepted.
+                        <p className="text-gray-400 font-bold text-[10px] leading-relaxed max-w-sm mx-auto uppercase tracking-widest">
+                            We couldn't identify your university from <span className="text-white">{sellerErrorEmail}</span>.
                         </p>
                     </div>
 
-                    {sellerError && (
-                        <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-center gap-4 mb-8">
-                            <AlertTriangle className="h-5 w-5 text-red-500 shrink-0" />
-                            <p className="text-red-400 text-[10px] font-bold uppercase tracking-widest">{sellerError}</p>
+                    <div className="bg-red-500/5 border border-red-500/20 rounded-2xl p-6 mb-8 text-center">
+                        <p className="text-red-400 text-[10px] font-black uppercase tracking-widest leading-relaxed">
+                            {sellerError}
+                        </p>
+                    </div>
+
+                    <div className="space-y-4">
+                        <Button variant="outline" onClick={() => { setSellerError(''); setSellerErrorEmail(''); setCurrentStep('role'); }}
+                            className="w-full h-14 border-[#2a2a2a] bg-[#2a2a2a] text-white hover:bg-[#3a3a3a] font-black uppercase tracking-widest text-[10px] rounded-xl">
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Try Again
+                        </Button>
+                        <div className="text-center p-4 bg-[#2a2a2a] border border-[#3a3a3a] rounded-2xl">
+                            <p className="text-[9px] text-gray-500 font-bold leading-relaxed uppercase tracking-widest">
+                                Contact support if you believe this is an error:{' '}
+                                <a href="mailto:support@marketbridge.com.ng" className="text-orange-500 hover:underline">support@marketbridge.com.ng</a>
+                            </p>
                         </div>
-                    )}
-
-                    <Button type="button" onClick={handleGoogleAuth} disabled={googleLoading}
-                        className="w-full h-16 bg-orange-500 text-black hover:bg-orange-600 font-black uppercase tracking-[0.2em] text-sm rounded-xl shadow-[0_10px_30px_rgba(255,98,0,0.3)] flex items-center justify-center gap-3 mb-8">
-                        {googleLoading ? <Loader2 className="animate-spin h-5 w-5" /> : <><Globe className="h-5 w-5" /> Sign Up with Google</>}
-                    </Button>
-
-                    {/* Approved Universities */}
-                    <div className="space-y-4 mb-8">
-                        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 text-center">Approved Universities</p>
-                        <div className="flex flex-wrap gap-2 justify-center">
-                            {APPROVED_UNIVERSITIES.map(u => (
-                                <span key={u.domain} className="text-[8px] font-black uppercase tracking-widest bg-[#2a2a2a] border border-[#3a3a3a] text-gray-400 px-3 py-1.5 rounded-lg">
-                                    {u.name}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="text-center p-4 bg-[#2a2a2a] border border-[#3a3a3a] rounded-2xl">
-                        <p className="text-[9px] text-gray-500 font-bold leading-relaxed">
-                            Don't have a school Google account? Contact your university IT department or email{' '}
-                            <a href="mailto:support@marketbridge.com.ng" className="text-orange-500 hover:underline">support@marketbridge.com.ng</a>
-                        </p>
-                    </div>
-
-                    <div className="text-center pt-8 mt-6 border-t border-[#2a2a2a]">
-                        <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">
-                            Already have an account?{' '}
-                            <Link href="/login" className="text-orange-500 font-black ml-2 hover:opacity-80">Log In</Link>
-                        </p>
                     </div>
                 </div>
             </div>
