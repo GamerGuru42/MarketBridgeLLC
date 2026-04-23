@@ -54,17 +54,30 @@ function SignupContent() {
         terms: false
     });
 
-    // Handle seller_error from callback redirect
+    // Handle errors from callback redirect
     useEffect(() => {
-        const err = searchParams?.get('seller_error');
+        const err = searchParams?.get('seller_error') || searchParams?.get('error');
+        const msg = searchParams?.get('message');
         const email = searchParams?.get('email');
+        
         if (err === 'invalid_domain') {
             setSellerError(`Only verified Abuja private university emails are accepted. Your email ${email || ''} does not qualify.`);
             setSellerErrorEmail(email || '');
             setCurrentStep('seller-google');
             setRole('student_seller');
+        } else if (err || msg) {
+            setSellerError(msg || err || 'Authentication failed. Please try again.');
         }
     }, [searchParams]);
+
+    const clearError = () => {
+        setSellerError('');
+        const url = new URL(window.location.href);
+        url.searchParams.delete('error');
+        url.searchParams.delete('message');
+        url.searchParams.delete('seller_error');
+        window.history.replaceState({}, '', url.toString());
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
@@ -103,9 +116,19 @@ function SignupContent() {
             });
             if (error) throw error;
             if (data.user) {
+                // Map to DB role
+                const dbRole = 'buyer'; // For this specific form
+
                 await supabase.from('users').upsert({
-                    id: data.user.id, email: normalizedEmail, display_name: formData.fullName.trim(),
-                    role: 'student_buyer', university: finalUniversity, matric_number: formData.matricNumber, email_verified: false,
+                    id: data.user.id, 
+                    email: normalizedEmail, 
+                    display_name: formData.fullName.trim(),
+                    role: dbRole, 
+                    university: finalUniversity, 
+                    matric_number: formData.matricNumber, 
+                    email_verified: false,
+                    is_verified: false,
+                    created_at: new Date().toISOString()
                 });
                 router.push(`/verify-email?email=${encodeURIComponent(normalizedEmail)}`);
             }
@@ -119,6 +142,18 @@ function SignupContent() {
             <div className="min-h-screen flex flex-col justify-center items-center p-4 py-12 bg-[#0a0a0a] text-white relative overflow-hidden">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-orange-500/10 rounded-full blur-[150px] pointer-events-none z-0" />
                 <div className="w-full max-w-2xl relative z-10 bg-[#1a1a1a] border border-[#2a2a2a] rounded-3xl p-6 md:p-10 lg:p-14 shadow-2xl">
+                    {sellerError && (
+                        <div className="mb-8 p-4 bg-red-500/10 border border-red-500/50 rounded-2xl flex flex-col items-center gap-3 text-center">
+                            <div className="flex items-center gap-2 text-red-500 font-black uppercase tracking-widest text-[10px]">
+                                <AlertTriangle className="h-4 w-4" /> Authentication Failed
+                            </div>
+                            <p className="text-gray-300 text-[11px] font-bold leading-relaxed">{sellerError}</p>
+                            <button onClick={clearError} className="mt-1 text-orange-500 hover:text-orange-400 text-[10px] font-black uppercase tracking-widest flex items-center gap-1 transition-colors">
+                                Try Again <ArrowRight className="h-3 w-3" />
+                            </button>
+                        </div>
+                    )}
+
                     <div className="text-center mb-10 space-y-4">
                         <Link href="/" className="inline-flex items-center text-gray-400 hover:text-white uppercase text-[10px] font-black tracking-widest transition-colors mb-4">
                             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home

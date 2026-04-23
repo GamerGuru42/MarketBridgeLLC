@@ -23,13 +23,14 @@ function migrateRole(oldRole: string | null): string {
         'campus_pro': 'student_seller',
         'elite': 'student_seller',
         'buyer': 'student_buyer',
+        'seller': 'student_seller',
         'customer': 'student_buyer',
         'student_buyer': 'student_buyer',
         'student_seller': 'student_seller',
     };
     // Admin roles are kept as is for manual review per CEO instructions
-    if (ADMIN_ROLES.includes(oldRole)) return oldRole;
-    return mapping[oldRole] || 'student_buyer';
+    if (oldRole && ADMIN_ROLES.includes(oldRole)) return oldRole;
+    return mapping[oldRole || ''] || 'student_buyer';
 }
 
 async function logAudit(email: string, action: string, details: any) {
@@ -119,19 +120,57 @@ export async function GET(request: Request) {
                 // Provision profile if missing
                 if (!profile) {
                     console.log(`Provisioning new profile in users table for ${userEmail} with role ${finalRole}`);
+                    
+                    // Map to DB-compatible role
+                    const dbRole = finalRole === 'student_seller' ? 'seller' : 
+                                  finalRole === 'student_buyer' ? 'buyer' : finalRole;
+
+                    // Auto-detect university
+                    let university = null;
+                    if (finalRole === 'student_seller') {
+                        const domain = userEmail.split('@')[1];
+                        const universityMap: Record<string, string> = {
+                            'nileuniversity.edu.ng': 'Nile University of Nigeria',
+                            'bazeuniversity.edu.ng': 'Baze University',
+                            'veritas.edu.ng': 'Veritas University',
+                            'aust.edu.ng': 'African University of Science & Technology',
+                            'eun.edu.ng': 'European University of Nigeria',
+                            'philomath.edu.ng': 'Philomath University',
+                            'cosmopolitan.edu.ng': 'Cosmopolitan University',
+                            'miva.university': 'Miva Open University',
+                            'primeuniversity.edu.ng': 'Prime University Abuja',
+                            'binghamuni.edu.ng': 'Bingham University',
+                        };
+                        university = universityMap[domain] || 'Unknown';
+                    }
+
                     const { error: insertErr } = await supabaseAdmin.from('users').upsert({
                         id: data.user.id,
                         email: userEmail,
-                        role: finalRole,
-                        display_name: data.user.user_metadata?.full_name || userEmail.split('@')[0],
+                        role: dbRole,
+                        display_name: data.user.user_metadata?.full_name || data.user.user_metadata?.name || userEmail.split('@')[0],
+                        university: university,
+                        is_verified: true,
+                        email_verified: true,
+                        photo_url: data.user.user_metadata?.avatar_url || data.user.user_metadata?.picture || '',
+                        matric_number: '', 
+                        phone_number: '',
+                        created_at: new Date().toISOString()
                     });
+
                     if (insertErr) {
                         console.error('Failed to provision user profile:', insertErr);
-                        throw new Error(`Profile creation failed: ${insertErr.message}`);
+                        // Redirect to signup with detailed error for debugging as requested
+                        const errorUrl = new URL('/signup', request.url);
+                        errorUrl.searchParams.set('error', `Profile creation failed: ${insertErr.message}`);
+                        return NextResponse.redirect(errorUrl);
                     }
                 } else if (profile.role !== finalRole) {
                     console.log(`Updating role for ${userEmail} from ${profile.role} to ${finalRole}`);
-                    const { error: updateErr } = await supabaseAdmin.from('users').update({ role: finalRole }).eq('id', data.user.id);
+                    // Map to DB-compatible role
+                    const dbRole = finalRole === 'student_seller' ? 'seller' : 
+                                  finalRole === 'student_buyer' ? 'buyer' : finalRole;
+                    const { error: updateErr } = await supabaseAdmin.from('users').update({ role: dbRole }).eq('id', data.user.id);
                     if (updateErr) {
                         console.error('Failed to update user profile role:', updateErr);
                         throw new Error(`Role update failed: ${updateErr.message}`);
