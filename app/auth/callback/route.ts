@@ -113,9 +113,10 @@ export async function GET(request: Request) {
                 }
 
                 // Apply Role Migration Logic
-                const rawRole = profile?.role || roleIntent || 'student_buyer';
+                // We prioritize roleIntent if provided (e.g. from /signup selection)
+                const rawRole = roleIntent || profile?.role || 'student_buyer';
                 const finalRole = migrateRole(rawRole);
-                console.log(`Calculated Final Role: ${finalRole}`);
+                console.log(`Calculated Final Role: ${finalRole} (Intent: ${roleIntent}, Profile: ${profile?.role})`);
 
                 // Provision profile if missing
                 if (!profile) {
@@ -264,7 +265,8 @@ export async function GET(request: Request) {
                     if (isProduction) completeProfileUrl.hostname = 'marketbridge.com.ng';
                     return NextResponse.redirect(completeProfileUrl);
                 } else if (!profileCheck?.university || !profileCheck?.matric_number) {
-                    const completeProfileUrl = new URL(`/complete-profile?email=${encodeURIComponent(userEmail)}&role=${finalRole}`, request.url);
+                    // All users currently use the seller-profile page for beta registration as it collects all needed student info
+                    const completeProfileUrl = new URL(`/complete-seller-profile?email=${encodeURIComponent(userEmail)}&role=${finalRole}`, request.url);
                     if (isProduction) completeProfileUrl.hostname = 'marketbridge.com.ng';
                     return NextResponse.redirect(completeProfileUrl);
                 }
