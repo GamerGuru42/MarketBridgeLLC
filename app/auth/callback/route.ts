@@ -144,7 +144,7 @@ export async function GET(request: Request) {
                         university = universityMap[domain] || 'Unknown';
                     }
 
-                    const { error: insertErr } = await supabaseAdmin.from('users').upsert({
+                    const userData = {
                         id: data.user.id,
                         email: userEmail,
                         role: dbRole,
@@ -156,7 +156,12 @@ export async function GET(request: Request) {
                         matric_number: '', 
                         phone_number: '',
                         created_at: new Date().toISOString()
-                    });
+                    };
+
+                    console.log('INSERTING USER WITH ROLE:', dbRole);
+                    console.log('INSERTING USER WITH DATA:', JSON.stringify(userData));
+
+                    const { error: insertErr } = await supabaseAdmin.from('users').upsert(userData);
 
                     if (insertErr) {
                         console.error('Failed to provision user profile:', insertErr);

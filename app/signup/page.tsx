@@ -72,6 +72,7 @@ function SignupContent() {
 
     const clearError = () => {
         setSellerError('');
+        setGoogleLoading(false);
         const url = new URL(window.location.href);
         url.searchParams.delete('error');
         url.searchParams.delete('message');
@@ -79,16 +80,26 @@ function SignupContent() {
         window.history.replaceState({}, '', url.toString());
     };
 
+    // Safety timeout for spinner
+    useEffect(() => {
+        if (googleLoading) {
+            const timer = setTimeout(() => setGoogleLoading(false), 8000);
+            return () => clearTimeout(timer);
+        }
+    }, [googleLoading]);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
         setFormData(prev => ({ ...prev, [e.target.name]: value }));
     };
 
-    const handleGoogleAuth = async () => {
+    const handleGoogleAuth = async (targetRole: Role) => {
         setGoogleLoading(true);
         setSellerError('');
         try {
-            await signInWithGoogle(`${window.location.origin}/auth/callback?role=${role}`);
+            // Map to DB-compatible role for metadata to bypass strict DB triggers
+            const metadataRole = targetRole === 'student_seller' ? 'seller' : 'buyer';
+            await signInWithGoogle(`${window.location.origin}/auth/callback?role=${targetRole}`);
         } catch (error: any) {
             toast(error.message || 'Google Auth failed', 'error');
             setGoogleLoading(false);
@@ -184,7 +195,7 @@ function SignupContent() {
                                     className="w-full h-12 bg-orange-500 text-black hover:bg-orange-600 font-black uppercase tracking-widest text-[10px] rounded-xl shadow-[0_6px_20px_rgba(255,98,0,0.25)]">
                                     Sign Up with Email <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
-                                <Button type="button" onClick={(e) => { e.stopPropagation(); setRole('student_buyer'); handleGoogleAuth(); }} disabled={googleLoading}
+                                <Button type="button" onClick={(e) => { e.stopPropagation(); handleGoogleAuth('student_buyer'); }} disabled={googleLoading}
                                     className="w-full h-12 bg-white text-black hover:bg-gray-200 font-black uppercase tracking-widest text-[10px] rounded-xl flex items-center justify-center gap-2">
                                     {googleLoading ? <Loader2 className="animate-spin h-4 w-4" /> : <><Globe className="h-4 w-4" /> Google Sign-Up</>}
                                 </Button>
@@ -207,7 +218,7 @@ function SignupContent() {
                             <div className="w-full space-y-3">
                                 <Button 
                                     type="button" 
-                                    onClick={() => { setRole('student_seller'); handleGoogleAuth(); }} 
+                                    onClick={(e) => { e.stopPropagation(); handleGoogleAuth('student_seller'); }} 
                                     disabled={googleLoading}
                                     className="w-full py-6 bg-orange-500 text-black hover:bg-orange-600 font-black uppercase tracking-wider text-[11px] rounded-xl shadow-[0_10px_30px_rgba(255,98,0,0.3)] flex items-center justify-center gap-2">
                                     {googleLoading ? <Loader2 className="animate-spin h-5 w-5" /> : <><ShieldCheck className="h-4 w-4" /> Sign Up with Google</>}
