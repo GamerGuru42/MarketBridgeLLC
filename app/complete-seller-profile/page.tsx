@@ -4,9 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
-import { Loader2, ArrowRight, GraduationCap, Phone, MapPin, User as UserIcon, Mail, Lock } from 'lucide-react';
+import { Loader2, ArrowRight, User as UserIcon } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
+import { cn } from '@/lib/utils';
 
 const DOMAIN_TO_UNI: Record<string, string> = {
     'nileuniversity.edu.ng': 'Nile University of Nigeria',
