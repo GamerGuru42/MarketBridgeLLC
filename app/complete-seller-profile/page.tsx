@@ -39,9 +39,17 @@ export default function CompleteSellerProfilePage() {
     const [email, setEmail] = useState('');
     const [university, setUniversity] = useState('');
     const [avatarUrl, setAvatarUrl] = useState('');
+    
+    // Bank Details
+    const [banks, setBanks] = useState<{name: string, code: string}[]>([]);
+    const [selectedBank, setSelectedBank] = useState('');
+    const [accountNumber, setAccountNumber] = useState('');
+    const [accountName, setAccountName] = useState('');
+    const [isVerifying, setIsVerifying] = useState(false);
+    
+    // Hidden/Legacy fields for DB compatibility
     const [matricNumber, setMatricNumber] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
-    const [campusBlock, setCampusBlock] = useState('');
 
     useEffect(() => {
         if (!loading && !sessionUser) {
@@ -54,46 +62,75 @@ export default function CompleteSellerProfilePage() {
             setFullName(sessionUser.user_metadata?.full_name || sessionUser.user_metadata?.name || userEmail.split('@')[0]);
             setAvatarUrl(sessionUser.user_metadata?.avatar_url || sessionUser.user_metadata?.picture || '');
 
-            // Auto-detect university from email domain
             const domain = userEmail.split('@')[1] || '';
             const detectedUni = DOMAIN_TO_UNI[domain] || '';
             setUniversity(detectedUni);
         }
+
+        // Load Banks
+        fetch('/api/paystack/banks')
+            .then(res => res.json())
+            .then(data => setBanks(data))
+            .catch(err => console.error('Failed to load banks:', err));
     }, [sessionUser, loading, router]);
+
+    // Auto-resolve bank account
+    useEffect(() => {
+        if (accountNumber.length === 10 && selectedBank) {
+            resolveAccount();
+        } else {
+            setAccountName('');
+        }
+    }, [accountNumber, selectedBank]);
+
+    const resolveAccount = async () => {
+        setIsVerifying(true);
+        try {
+            const res = await fetch(`/api/paystack/resolve?accountNumber=${accountNumber}&bankCode=${selectedBank}`);
+            const data = await res.json();
+            if (data.account_name) {
+                setAccountName(data.account_name);
+            } else {
+                setAccountName('Invalid account details');
+            }
+        } catch (err) {
+            setAccountName('Verification failed');
+        } finally {
+            setIsVerifying(false);
+        }
+    };
 
     const blocks = CAMPUS_BLOCKS[university] || CAMPUS_BLOCKS['default'];
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!matricNumber.trim()) { toast('Matriculation number is required.', 'error'); return; }
-        if (!phoneNumber.trim() || !/^(\+234|0)[789]\d{9}$/.test(phoneNumber.replace(/\s/g, ''))) {
-            toast('Enter a valid Nigerian phone number.', 'error'); return;
+        if (!selectedBank) { toast('Please select your bank.', 'error'); return; }
+        if (accountNumber.length !== 10) { toast('Enter a valid 10-digit account number.', 'error'); return; }
+        if (!accountName || accountName.includes('Invalid') || accountName.includes('failed')) { 
+            toast('Please verify your bank details first.', 'error'); return; 
         }
-        if (!campusBlock) { toast('Select your campus block.', 'error'); return; }
 
         setIsLoading(true);
         try {
-            const { error } = await supabase.from('users').upsert({
-                id: sessionUser!.id,
-                email: email,
-                display_name: fullName.trim(),
-                role: 'student_seller',
-                university: university,
-                avatar_url: avatarUrl,
-                matric_number: matricNumber.trim(),
-                phone_number: phoneNumber.replace(/\s/g, ''),
-                campus_block: campusBlock,
+            const { error } = await supabase.from('users').update({
+                bank_name: banks.find(b => b.code === selectedBank)?.name,
+                bank_code: selectedBank,
+                account_number: accountNumber,
+                account_name: accountName,
                 is_verified: true,
                 email_verified: true,
-            }, { onConflict: 'id' });
+                // Ensure university and display name are synced
+                university: university,
+                display_name: fullName.trim()
+            }).eq('id', sessionUser!.id);
 
             if (error) throw error;
 
             await refreshUser(sessionUser!.id);
-            toast('Welcome! Your seller account is active. You can start listing now.', 'success');
+            toast('Payment details verified! You are ready to sell.', 'success');
             router.replace('/seller-dashboard');
         } catch (err: any) {
-            toast(err.message || 'Profile creation failed.', 'error');
+            toast(err.message || 'Profile completion failed.', 'error');
         } finally {
             setIsLoading(false);
         }
@@ -121,85 +158,57 @@ export default function CompleteSellerProfilePage() {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Profile Photo */}
-                    <div className="flex flex-col items-center mb-8">
-                        <div className="relative group cursor-pointer">
-                            <div className="w-24 h-24 rounded-full border-2 border-[#2a2a2a] overflow-hidden bg-[#2a2a2a] flex items-center justify-center">
-                                {avatarUrl ? (
-                                    <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
-                                ) : (
-                                    <UserIcon className="w-10 h-10 text-gray-600" />
-                                )}
-                            </div>
-                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-white">Change</span>
-                            </div>
+                    {/* Simplified Profile Section */}
+                    <div className="flex items-center gap-4 p-4 bg-[#2a2a2a]/30 rounded-2xl border border-[#2a2a2a]">
+                        <div className="w-12 h-12 rounded-full border border-[#3a3a3a] overflow-hidden">
+                            {avatarUrl ? <img src={avatarUrl} alt="P" className="w-full h-full object-cover" /> : <UserIcon className="w-full h-full p-2 text-gray-500" />}
                         </div>
-                        <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-2">Profile Photo (Google)</p>
-                    </div>
-
-                    {/* Pre-filled Row */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                            <label className="text-[9px] uppercase font-black tracking-widest text-gray-500 ml-1">Full Name</label>
-                            <div className="relative">
-                                <input type="text" value={fullName} onChange={e => setFullName(e.target.value)} required
-                                    className="w-full h-14 px-6 bg-[#2a2a2a] border-0 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-orange-500 font-bold tracking-wider text-sm" />
-                            </div>
-                        </div>
-                        <div className="space-y-1.5">
-                            <label className="text-[9px] uppercase font-black tracking-widest text-gray-500 ml-1">Email <span className="text-orange-500">(locked)</span></label>
-                            <div className="relative">
-                                <input type="email" value={email} readOnly
-                                    className="w-full h-14 px-6 bg-[#2a2a2a] border-0 rounded-xl text-gray-400 font-bold tracking-wider text-sm cursor-not-allowed opacity-60" />
-                            </div>
+                        <div>
+                            <h3 className="text-sm font-black uppercase tracking-tight">{fullName}</h3>
+                            <p className="text-[9px] text-orange-500 font-black uppercase tracking-widest">{university || 'MarketBridge Seller'}</p>
                         </div>
                     </div>
 
-                    {/* University (Locked) */}
-                    <div className="space-y-1.5">
-                        <label className="text-[9px] uppercase font-black tracking-widest text-gray-500 ml-1">University <span className="text-orange-500">(Auto-Detected)</span></label>
-                        <div className="relative">
-                            <div className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500"><GraduationCap className="h-4 w-4" /></div>
-                            <input type="text" value={university} readOnly
-                                className="w-full h-14 pl-14 pr-6 bg-[#2a2a2a] border-0 rounded-xl text-orange-500/80 font-black tracking-widest text-xs cursor-not-allowed opacity-80" />
-                        </div>
-                    </div>
-
-                    {/* Manual Inputs Row */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Bank Section */}
+                    <div className="space-y-4">
                         <div className="space-y-1.5">
-                            <label className="text-[9px] uppercase font-black tracking-widest text-gray-400 ml-1">Matriculation Number</label>
-                            <input type="text" value={matricNumber} onChange={e => setMatricNumber(e.target.value)} required placeholder="NU/123/456"
-                                className="w-full h-14 px-6 bg-[#2a2a2a] border-0 rounded-xl text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-500 font-bold tracking-wider text-sm" />
-                        </div>
-                        <div className="space-y-1.5">
-                            <label className="text-[9px] uppercase font-black tracking-widest text-gray-400 ml-1">Phone Number</label>
-                            <div className="relative">
-                                <input type="tel" value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} required placeholder="08012345678"
-                                    className="w-full h-14 px-6 bg-[#2a2a2a] border-0 rounded-xl text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-500 font-bold tracking-wider text-sm" />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Campus Block */}
-                    <div className="space-y-1.5">
-                        <label className="text-[9px] uppercase font-black tracking-widest text-gray-400 ml-1">Hostel / Campus Block</label>
-                        <div className="relative">
-                            <div className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500"><MapPin className="h-4 w-4" /></div>
-                            <select value={campusBlock} onChange={e => setCampusBlock(e.target.value)} required
-                                className="w-full h-14 pl-14 pr-6 bg-[#2a2a2a] border-0 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-orange-500 font-bold tracking-wider text-sm appearance-none cursor-pointer">
-                                <option value="" disabled>Select your block</option>
-                                {blocks.map(b => <option key={b} value={b}>{b}</option>)}
+                            <label className="text-[9px] uppercase font-black tracking-widest text-gray-500 ml-1">Payout Bank</label>
+                            <select value={selectedBank} onChange={e => setSelectedBank(e.target.value)} required
+                                className="w-full h-14 px-6 bg-[#2a2a2a] border-0 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-orange-500 font-bold tracking-wider text-sm appearance-none cursor-pointer">
+                                <option value="">Select your bank</option>
+                                {banks.map(b => <option key={b.code} value={b.code}>{b.name}</option>)}
                             </select>
                         </div>
+
+                        <div className="space-y-1.5">
+                            <label className="text-[9px] uppercase font-black tracking-widest text-gray-500 ml-1">Account Number</label>
+                            <div className="relative">
+                                <input type="text" maxLength={10} value={accountNumber} onChange={e => setAccountNumber(e.target.value.replace(/\D/g, ''))} required placeholder="0123456789"
+                                    className="w-full h-14 px-6 bg-[#2a2a2a] border-0 rounded-xl text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-500 font-bold tracking-wider text-sm" />
+                                {isVerifying && <div className="absolute right-6 top-1/2 -translate-y-1/2"><Loader2 className="animate-spin h-4 w-4 text-orange-500" /></div>}
+                            </div>
+                        </div>
+
+                        {accountName && (
+                            <div className={cn("p-4 rounded-xl border flex items-center gap-3 transition-all", 
+                                accountName.includes('Invalid') || accountName.includes('failed') 
+                                ? "bg-red-500/5 border-red-500/20 text-red-400" 
+                                : "bg-green-500/5 border-green-500/20 text-green-400")}>
+                                <div className={cn("w-2 h-2 rounded-full animate-pulse", 
+                                    accountName.includes('Invalid') || accountName.includes('failed') ? "bg-red-500" : "bg-green-500")} />
+                                <span className="text-[10px] font-black uppercase tracking-[0.1em]">{accountName}</span>
+                            </div>
+                        )}
                     </div>
 
                     <div className="pt-6">
-                        <Button type="submit" disabled={isLoading}
+                        <Button type="submit" disabled={isLoading || isVerifying}
                             className="w-full h-16 bg-orange-500 text-black hover:bg-orange-600 font-black uppercase tracking-[0.2em] text-sm rounded-xl shadow-[0_10px_30px_rgba(255,98,0,0.3)] flex items-center justify-center">
-                            {isLoading ? <Loader2 className="animate-spin h-6 w-6" /> : <>Complete Registration <ArrowRight className="ml-4 h-5 w-5" /></>}
+                            {isLoading ? <Loader2 className="animate-spin h-6 w-6" /> : <>Access Seller Dashboard <ArrowRight className="ml-4 h-5 w-5" /></>}
                         </Button>
+                        <p className="text-center text-[8px] text-gray-600 font-bold uppercase tracking-[0.2em] mt-4 leading-relaxed">
+                            By proceeding, you agree that this bank account will be used for all payouts and withdrawals.
+                        </p>
                     </div>
                 </form>
             </div>
