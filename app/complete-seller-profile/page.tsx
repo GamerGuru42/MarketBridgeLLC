@@ -47,10 +47,6 @@ export default function CompleteSellerProfilePage() {
     const [accountNumber, setAccountNumber] = useState('');
     const [accountName, setAccountName] = useState('');
     const [isVerifying, setIsVerifying] = useState(false);
-    
-    // Hidden/Legacy fields for DB compatibility
-    const [matricNumber, setMatricNumber] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
 
     useEffect(() => {
         if (!loading && !sessionUser) {
@@ -71,7 +67,13 @@ export default function CompleteSellerProfilePage() {
         // Load Banks
         fetch('/api/paystack/banks')
             .then(res => res.json())
-            .then(data => setBanks(data))
+            .then(data => {
+                if (data.status && Array.isArray(data.data)) {
+                    setBanks(data.data);
+                } else if (Array.isArray(data)) {
+                    setBanks(data);
+                }
+            })
             .catch(err => console.error('Failed to load banks:', err));
     }, [sessionUser, loading, router]);
 
@@ -89,8 +91,12 @@ export default function CompleteSellerProfilePage() {
         try {
             const res = await fetch(`/api/paystack/resolve?accountNumber=${accountNumber}&bankCode=${selectedBank}`);
             const data = await res.json();
-            if (data.account_name) {
-                setAccountName(data.account_name);
+            
+            // Extract from Paystack response structure
+            const resolvedName = data.data?.account_name || data.account_name;
+            
+            if (resolvedName) {
+                setAccountName(resolvedName);
             } else {
                 setAccountName('Invalid account details');
             }

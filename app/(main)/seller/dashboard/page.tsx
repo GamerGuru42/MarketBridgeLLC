@@ -159,14 +159,14 @@ export default function SellerDashboardPage() {
         if (!user) return;
         const { data, error } = await supabase
             .from('users')
-            .select('bank_details, bank_name, account_number, account_name')
+            .select('bank_name, bank_code, account_number, account_name')
             .eq('id', user.id)
             .single();
 
         if (data) {
             setBankDetails({
                 bankName: data.bank_name || '',
-                bankCode: data.bank_details?.bank_code || '',
+                bankCode: data.bank_code || '',
                 accountNumber: data.account_number || '',
                 accountName: data.account_name || ''
             });

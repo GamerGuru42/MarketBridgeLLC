@@ -4,7 +4,7 @@ import { createPaystackSubaccount } from '@/lib/paystack';
 
 export async function POST(req: NextRequest) {
     try {
-        const { businessName, bankCode, accountNumber, userId } = await req.json();
+        const { businessName, bankCode, bankName, accountNumber, userId } = await req.json();
 
         if (!businessName || !bankCode || !accountNumber || !userId) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -29,7 +29,8 @@ export async function POST(req: NextRequest) {
                 paystack_subaccount_code: subaccountCode,
                 business_name: businessName,
                 account_number: accountNumber,
-                bank_name: bankCode,
+                bank_code: bankCode,
+                bank_name: bankName || bankCode,
             })
             .eq('id', userId);
 

@@ -253,18 +253,18 @@ export async function GET(request: Request) {
                 const redirectUrl = new URL(nextPath, request.url);
                 if (isProduction) redirectUrl.hostname = 'marketbridge.com.ng';
 
-                // Check if user has completed profile
+                // Check if user has completed profile (using bank_name as the indicator for streamlined seller flow)
                 const { data: profileCheck } = await supabaseAdmin
                     .from('users')
-                    .select('university, matric_number, phone_number')
+                    .select('university, bank_name')
                     .eq('id', data.user.id)
                     .maybeSingle();
 
-                if (finalRole === 'student_seller' && (!profileCheck?.university || !profileCheck?.matric_number || !profileCheck?.phone_number)) {
+                if (finalRole === 'student_seller' && !profileCheck?.bank_name) {
                     const completeProfileUrl = new URL(`/complete-seller-profile`, request.url);
                     if (isProduction) completeProfileUrl.hostname = 'marketbridge.com.ng';
                     return NextResponse.redirect(completeProfileUrl);
-                } else if (!profileCheck?.university || !profileCheck?.matric_number) {
+                } else if (!profileCheck?.university) {
                     // All users currently use the seller-profile page for beta registration as it collects all needed student info
                     const completeProfileUrl = new URL(`/complete-seller-profile?email=${encodeURIComponent(userEmail)}&role=${finalRole}`, request.url);
                     if (isProduction) completeProfileUrl.hostname = 'marketbridge.com.ng';
