@@ -117,8 +117,8 @@ function SignupContent() {
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
         if (formData.password !== formData.passwordConfirm) { toast('Passwords do not match.', 'error'); return; }
-        const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-        if (!passRegex.test(formData.password)) { toast('Password must be at least 8 chars, 1 uppercase, 1 lowercase, 1 number, and 1 special char.', 'error'); return; }
+        const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+        if (!passRegex.test(formData.password)) { toast('Password must be at least 8 characters with 1 uppercase letter, 1 lowercase letter, and 1 number.', 'error'); return; }
         if (!formData.terms) { toast('You must accept the terms and conditions.', 'error'); return; }
         const normalizedEmail = normalizeIdentifier(formData.email);
         const finalUniversity = formData.university === 'Other' ? formData.otherUniversity : formData.university;

@@ -92,8 +92,9 @@ function AdminAccessContent() {
             toast('Passwords do not match', 'error');
             return;
         }
-        if (formData.password.length < 8) {
-            toast('Password must be at least 8 characters', 'error');
+        const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+        if (!passRegex.test(formData.password)) {
+            toast('Password must be at least 8 characters with 1 uppercase letter, 1 lowercase letter, and 1 number.', 'error');
             return;
         }
 

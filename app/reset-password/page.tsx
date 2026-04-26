@@ -30,6 +30,12 @@ function ResetPasswordContent() {
             return;
         }
 
+        const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+        if (!passRegex.test(password)) {
+            toast('Password must be at least 8 characters with 1 uppercase letter, 1 lowercase letter, and 1 number.', 'error');
+            return;
+        }
+
         setIsLoading(true);
         try {
             const { error } = await supabase.auth.updateUser({
