@@ -144,11 +144,11 @@ function LoginContent() {
                             <p className="text-gray-400 text-[8px] font-black uppercase tracking-widest mb-2">Shop & Browse</p>
                             <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'buyer' ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
                                 <Button onClick={(e) => { e.stopPropagation(); setRole('buyer'); setCurrentStep('buyer-credentials'); }}
-                                    className="w-full h-12 bg-orange-500 text-black hover:bg-orange-600 font-black uppercase tracking-widest text-[10px] rounded-xl shadow-[0_6px_20px_rgba(255,98,0,0.25)]">
-                                    Log In with Email <ArrowRight className="ml-2 h-4 w-4" />
+                                    className="w-full h-12 border border-[#3a3a3a] bg-transparent text-white hover:bg-[#3a3a3a] font-black uppercase tracking-widest text-[10px] rounded-xl mb-2">
+                                    Log In with Email
                                 </Button>
                                 <Button type="button" onClick={(e) => { e.stopPropagation(); handleGoogleLogin('buyer'); }} disabled={googleLoadingRole === 'buyer'}
-                                    className="w-full h-12 bg-white text-black hover:bg-gray-200 font-black uppercase tracking-widest text-[10px] rounded-xl flex items-center justify-center gap-2">
+                                    className="w-full h-12 bg-orange-500 text-black hover:bg-orange-600 font-black uppercase tracking-widest text-[10px] rounded-xl shadow-[0_6px_20px_rgba(255,98,0,0.25)] flex items-center justify-center gap-2">
                                     {googleLoadingRole === 'buyer' ? <Loader2 className="animate-spin h-4 w-4" /> : <><Globe className="h-4 w-4" /> Google Sign-In</>}
                                 </Button>
                             </div>

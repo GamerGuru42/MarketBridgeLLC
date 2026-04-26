@@ -17,7 +17,9 @@ type Role = 'student_buyer' | 'student_seller';
 
 const UNIVERSITIES = [
     'Baze University', 'Nile University of Nigeria', 'Veritas University',
-    'University of Abuja', 'NOUN', 'Nigerian Defence Academy', 'Other'
+    'African University of Science & Technology', 'European University of Nigeria',
+    'Philomath University', 'Cosmopolitan University', 'Miva Open University',
+    'Prime University Abuja', 'Bingham University', 'Other'
 ];
 
 const APPROVED_UNIVERSITIES = [
@@ -51,7 +53,7 @@ function SignupContent() {
 
     const [formData, setFormData] = useState({
         fullName: '', email: '', password: '', passwordConfirm: '',
-        university: '', otherUniversity: '', matricNumber: '',
+        university: '', otherUniversity: '',
         terms: false
     });
 
@@ -142,7 +144,6 @@ function SignupContent() {
                     display_name: formData.fullName.trim(),
                     role: dbRole, 
                     university: finalUniversity, 
-                    matric_number: formData.matricNumber, 
                     email_verified: false,
                     is_verified: false,
                     created_at: new Date().toISOString()
@@ -198,11 +199,11 @@ function SignupContent() {
                             <p className="text-gray-400 text-[8px] font-black uppercase tracking-widest mb-2">Shop & Browse</p>
                             <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'student_buyer' ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
                                 <Button onClick={(e) => { e.stopPropagation(); setRole('student_buyer'); setCurrentStep('buyer-form'); }}
-                                    className="w-full h-12 bg-orange-500 text-black hover:bg-orange-600 font-black uppercase tracking-widest text-[10px] rounded-xl shadow-[0_6px_20px_rgba(255,98,0,0.25)]">
-                                    Sign Up with Email <ArrowRight className="ml-2 h-4 w-4" />
+                                    className="w-full h-12 border border-[#3a3a3a] bg-transparent text-white hover:bg-[#3a3a3a] font-black uppercase tracking-widest text-[10px] rounded-xl mb-2">
+                                    Sign Up with Email
                                 </Button>
                                 <Button type="button" onClick={(e) => { e.stopPropagation(); handleGoogleAuth('student_buyer'); }} disabled={loadingBuyerGoogle || loadingSellerGoogle}
-                                    className="w-full h-12 bg-white text-black hover:bg-gray-200 font-black uppercase tracking-widest text-[10px] rounded-xl flex items-center justify-center gap-2">
+                                    className="w-full h-12 bg-orange-500 text-black hover:bg-orange-600 font-black uppercase tracking-widest text-[10px] rounded-xl shadow-[0_6px_20px_rgba(255,98,0,0.25)] flex items-center justify-center gap-2">
                                     {loadingBuyerGoogle ? <Loader2 className="animate-spin h-4 w-4" /> : <><Globe className="h-4 w-4" /> Google Sign-Up</>}
                                 </Button>
                             </div>
@@ -272,9 +273,9 @@ function SignupContent() {
                     </div>
 
                     <div className="space-y-4">
-                        <Button variant="outline" onClick={() => { setSellerError(''); setSellerErrorEmail(''); setCurrentStep('role'); }}
+                        <Button variant="outline" onClick={() => { setSellerError(''); setSellerErrorEmail(''); setCurrentStep('role'); setRole('student_buyer'); }}
                             className="w-full h-14 border-[#2a2a2a] bg-[#2a2a2a] text-white hover:bg-[#3a3a3a] font-black uppercase tracking-widest text-[10px] rounded-xl">
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Try Again
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Go Back to Account Selection
                         </Button>
                         <div className="text-center p-4 bg-[#2a2a2a] border border-[#3a3a3a] rounded-2xl">
                             <p className="text-[9px] text-gray-500 font-bold leading-relaxed uppercase tracking-widest">
@@ -338,11 +339,6 @@ function SignupContent() {
                         <input name="otherUniversity" type="text" value={formData.otherUniversity} onChange={handleChange} required placeholder="Specify your university"
                             className="w-full h-14 px-6 bg-[#2a2a2a] border-0 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all font-bold tracking-wider text-sm" />
                     )}
-                    <div className="space-y-2">
-                        <label className="text-[10px] uppercase font-black tracking-[0.2em] text-gray-400">Matriculation Number</label>
-                        <input name="matricNumber" type="text" value={formData.matricNumber} onChange={handleChange} required placeholder="e.g. BU/1234/56"
-                            className="w-full h-14 px-6 bg-[#2a2a2a] border-0 rounded-xl text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all font-bold tracking-wider text-sm" />
-                    </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <label className="text-[10px] uppercase font-black tracking-[0.2em] text-gray-400">Password</label>
@@ -374,9 +370,9 @@ function SignupContent() {
                     <span className="relative bg-[#1a1a1a] px-4 text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">Or</span>
                 </div>
 
-                <Button type="button" onClick={handleGoogleAuth} disabled={googleLoading}
+                <Button type="button" onClick={() => handleGoogleAuth('student_buyer')} disabled={loadingBuyerGoogle}
                     className="w-full h-14 bg-white text-black hover:bg-gray-200 font-black uppercase tracking-widest rounded-xl flex items-center justify-center gap-3">
-                    {googleLoading ? <Loader2 className="animate-spin h-5 w-5" /> : <><Globe className="h-5 w-5" />Sign up with Google</>}
+                    {loadingBuyerGoogle ? <Loader2 className="animate-spin h-5 w-5" /> : <><Globe className="h-5 w-5" />Sign up with Google</>}
                 </Button>
 
                 <div className="text-center pt-8 mt-6 border-t border-[#2a2a2a]">

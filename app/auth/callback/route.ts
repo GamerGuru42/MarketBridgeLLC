@@ -18,19 +18,19 @@ function getHubRoute(role: string): string {
 function migrateRole(oldRole: string | null): string {
     if (!oldRole) return 'student_buyer';
     const mapping: Record<string, string> = {
-        'dealer': 'student_seller',
-        'campus_starter': 'student_seller',
-        'campus_pro': 'student_seller',
-        'elite': 'student_seller',
-        'buyer': 'student_buyer',
-        'seller': 'student_seller',
-        'customer': 'student_buyer',
-        'student_buyer': 'student_buyer',
-        'student_seller': 'student_seller',
+        'dealer': 'seller',
+        'campus_starter': 'seller',
+        'campus_pro': 'seller',
+        'elite': 'seller',
+        'buyer': 'buyer',
+        'seller': 'seller',
+        'customer': 'buyer',
+        'student_buyer': 'buyer',
+        'student_seller': 'seller',
     };
     // Admin roles are kept as is for manual review per CEO instructions
     if (oldRole && ADMIN_ROLES.includes(oldRole)) return oldRole;
-    return mapping[oldRole || ''] || 'student_buyer';
+    return mapping[oldRole || ''] || 'buyer';
 }
 
 async function logAudit(email: string, action: string, details: any) {
@@ -114,7 +114,7 @@ export async function GET(request: Request) {
 
                 // Apply Role Migration Logic
                 // We prioritize roleIntent if provided (e.g. from /signup selection)
-                const rawRole = roleIntent || profile?.role || 'student_buyer';
+                const rawRole = roleIntent || profile?.role || 'buyer';
                 const finalRole = migrateRole(rawRole);
                 console.log(`Calculated Final Role: ${finalRole} (Intent: ${roleIntent}, Profile: ${profile?.role})`);
 
@@ -122,13 +122,13 @@ export async function GET(request: Request) {
                 if (!profile) {
                     console.log(`Provisioning new profile in users table for ${userEmail} with role ${finalRole}`);
                     
-                    // Map to DB-compatible role
-                    const dbRole = finalRole === 'student_seller' ? 'seller' : 
-                                  finalRole === 'student_buyer' ? 'buyer' : finalRole;
+                    const isSellerDomain = userEmail.endsWith('.edu.ng') || userEmail.endsWith('miva.university');
+                    const dbRole = isSellerDomain ? 'seller' : 'buyer';
+                    const isNewBuyer = dbRole === 'buyer';
 
-                    // Auto-detect university
+                    // Auto-detect university for sellers
                     let university = null;
-                    if (finalRole === 'student_seller') {
+                    if (dbRole === 'seller') {
                         const domain = userEmail.split('@')[1];
                         const universityMap: Record<string, string> = {
                             'nileuniversity.edu.ng': 'Nile University of Nigeria',
@@ -154,9 +154,10 @@ export async function GET(request: Request) {
                         is_verified: true,
                         email_verified: true,
                         photo_url: data.user.user_metadata?.avatar_url || data.user.user_metadata?.picture || '',
-                        matric_number: '', 
-                        phone_number: '',
-                        created_at: new Date().toISOString()
+                        onboarding_complete: isNewBuyer,
+                        payout_setup: false,
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
                     };
 
                     console.log('INSERTING USER WITH ROLE:', dbRole);
@@ -229,22 +230,36 @@ export async function GET(request: Request) {
                 // ── 3. Handle Public Marketplace Flow ──
                 // SPECIAL: Enforce Whitelist for Sellers
                 if (finalRole === 'student_seller') {
-                    const validDomains = [
-                        '@nileuniversity.edu.ng', '@bazeuniversity.edu.ng', '@veritas.edu.ng',
-                        '@aust.edu.ng', '@eun.edu.ng', '@philomath.edu.ng',
-                        '@cosmopolitan.edu.ng', '@miva.university', '@primeuniversity.edu.ng',
-                        '@binghamuni.edu.ng'
-                    ];
+                    const universityMap: Record<string, string> = {
+                        'nileuniversity.edu.ng': 'Nile University of Nigeria',
+                        'bazeuniversity.edu.ng': 'Baze University',
+                        'veritas.edu.ng': 'Veritas University',
+                        'aust.edu.ng': 'African University of Science & Technology',
+                        'eun.edu.ng': 'European University of Nigeria',
+                        'philomath.edu.ng': 'Philomath University',
+                        'cosmopolitan.edu.ng': 'Cosmopolitan University',
+                        'miva.university': 'Miva Open University',
+                        'primeuniversity.edu.ng': 'Prime University Abuja',
+                        'binghamuni.edu.ng': 'Bingham University',
+                    };
                     
-                    const isValidDomain = validDomains.some(domain => userEmail.endsWith(domain));
+                    const domain = userEmail.split('@')[1];
+                    const universityName = universityMap[domain];
                     
-                    if (!isValidDomain) {
-                        console.log(`Domain validation failed for seller intent: ${userEmail}. Signing out.`);
+                    if (!userEmail.endsWith('.edu.ng') && !userEmail.endsWith('miva.university')) {
+                         console.log(`Domain validation failed for seller intent: ${userEmail}. Signing out.`);
+                         await supabase.auth.signOut();
+                         const errorUrl = new URL('/signup', request.url);
+                         errorUrl.searchParams.set('seller_error', 'invalid_domain');
+                         errorUrl.searchParams.set('email', userEmail);
+                         return NextResponse.redirect(errorUrl);
+                    }
+
+                    if (!universityName) {
+                        console.log(`Unapproved university for seller intent: ${userEmail}. Signing out.`);
                         await supabase.auth.signOut();
-                        
                         const errorUrl = new URL('/signup', request.url);
-                        if (isProduction) errorUrl.hostname = 'marketbridge.com.ng';
-                        errorUrl.searchParams.set('seller_error', 'invalid_domain');
+                        errorUrl.searchParams.set('seller_error', 'unapproved_university');
                         errorUrl.searchParams.set('email', userEmail);
                         return NextResponse.redirect(errorUrl);
                     }
@@ -253,28 +268,23 @@ export async function GET(request: Request) {
                 const redirectUrl = new URL(nextPath, request.url);
                 if (isProduction) redirectUrl.hostname = 'marketbridge.com.ng';
 
-                // Check if user has completed profile (using bank_name as the indicator for streamlined seller flow)
+                // Check if user has completed profile (Section 4.1 Step 3.6)
                 const { data: profileCheck } = await supabaseAdmin
                     .from('users')
-                    .select('university, bank_name')
+                    .select('onboarding_complete, university')
                     .eq('id', data.user.id)
                     .maybeSingle();
 
-                if (finalRole === 'student_seller' && !profileCheck?.bank_name) {
-                    const completeProfileUrl = new URL(`/complete-seller-profile`, request.url);
-                    if (isProduction) completeProfileUrl.hostname = 'marketbridge.com.ng';
-                    return NextResponse.redirect(completeProfileUrl);
-                } else if (!profileCheck?.university) {
-                    // All users currently use the seller-profile page for beta registration as it collects all needed student info
-                    const completeProfileUrl = new URL(`/complete-seller-profile?email=${encodeURIComponent(userEmail)}&role=${finalRole}`, request.url);
+                if (finalRole === 'seller' && !profileCheck?.onboarding_complete) {
+                    const completeProfileUrl = new URL(`/seller-onboarding`, request.url);
                     if (isProduction) completeProfileUrl.hostname = 'marketbridge.com.ng';
                     return NextResponse.redirect(completeProfileUrl);
                 }
 
                 // Redirect based on role
-                if (finalRole === 'student_buyer') {
-                    redirectUrl.pathname = '/dashboard';
-                } else if (finalRole === 'student_seller') {
+                if (finalRole === 'buyer') {
+                    redirectUrl.pathname = '/buyer-dashboard';
+                } else if (finalRole === 'seller') {
                     redirectUrl.pathname = '/seller-dashboard';
                 } else if (ADMIN_ROLES.includes(finalRole)) {
                     if (isProduction) {

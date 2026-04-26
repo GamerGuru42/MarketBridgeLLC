@@ -96,51 +96,41 @@ export function CookieConsent() {
     return (
         <>
             {/* Cookie Banner */}
-            <div className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6 flex justify-center pointer-events-none">
-                <Card className="w-full max-w-[600px] pointer-events-auto shadow-2xl border border-border bg-card/95 backdrop-blur">
-                    <div className="p-6">
-                        <div className="flex items-start gap-4">
-                            <Cookie className="h-8 w-8 text-primary flex-shrink-0 mt-1" />
-                            <div className="flex-1">
-                                <h3 className="text-lg font-semibold mb-2">
-                                    We Value Your Privacy
+            <div className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-8 flex justify-center pointer-events-none">
+                <Card className="w-full max-w-[650px] pointer-events-auto shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-orange-500/20 bg-[#1a1a1a]/95 backdrop-blur-xl rounded-[2rem] overflow-hidden">
+                    <div className="p-8">
+                        <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+                            <div className="h-16 w-16 rounded-2xl bg-orange-500/10 flex items-center justify-center flex-shrink-0 border border-orange-500/20">
+                                <Cookie className="h-8 w-8 text-orange-500" />
+                            </div>
+                            <div className="flex-1 text-center md:text-left">
+                                <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white mb-3 leading-none">
+                                    Cookie <span className="text-orange-500">Notice</span>
                                 </h3>
-                                <p className="text-sm text-muted-foreground mb-4">
-                                    We use cookies to enhance your browsing experience, provide personalized content,
-                                    and analyze our traffic. By clicking "Accept All", you consent to our use of cookies.
-                                    You can customize your preferences or learn more in our{' '}
-                                    <Link href="/privacy" className="text-primary hover:underline">
-                                        Privacy Policy
-                                    </Link>.
+                                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed mb-6">
+                                    We use cookies to optimize your campus marketplace experience. 
+                                    By accepting, you help us improve MarketBridge for all students.
                                 </p>
-                                <div className="flex flex-wrap gap-3">
-                                    <Button onClick={acceptAll} size="sm">
+                                <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
+                                    <Button onClick={acceptAll} className="h-12 px-8 bg-orange-500 text-black hover:bg-orange-600 font-black uppercase tracking-widest text-[10px] rounded-xl shadow-[0_6px_20px_rgba(255,98,0,0.25)]">
                                         Accept All
                                     </Button>
-                                    <Button onClick={acceptNecessary} variant="outline" size="sm">
-                                        Necessary Only
+                                    <Button onClick={acceptNecessary} variant="outline" className="h-12 px-8 border-[#2a2a2a] bg-[#2a2a2a] text-white hover:bg-[#3a3a3a] font-black uppercase tracking-widest text-[10px] rounded-xl">
+                                        Necessary
                                     </Button>
                                     <Button
                                         onClick={() => setShowSettings(true)}
                                         variant="ghost"
-                                        size="sm"
-                                        className="gap-2"
+                                        className="text-[9px] font-black uppercase tracking-widest text-gray-500 hover:text-orange-500 transition-colors"
                                     >
-                                        <Settings className="h-4 w-4" />
-                                        Customize Preferences
+                                        <Settings className="h-4 w-4 mr-2" />
+                                        Custom
                                     </Button>
                                 </div>
                             </div>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={acceptNecessary}
-                                className="flex-shrink-0"
-                            >
-                                <X className="h-4 w-4" />
-                            </Button>
                         </div>
                     </div>
+                    <div className="h-1 w-full bg-gradient-to-r from-transparent via-orange-500/30 to-transparent" />
                 </Card>
             </div>
 

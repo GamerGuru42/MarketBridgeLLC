@@ -25,8 +25,36 @@ const buyerItems = [
     { label: 'Disputes', href: '/disputes', icon: AlertCircle },
 ];
 
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from "@/components/ui/dialog";
+import { Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+
 export default function BuyerDashboardPage() {
     const { user } = useAuth();
+    const [showWelcome, setShowWelcome] = React.useState(false);
+    const [searchQuery, setSearchQuery] = React.useState('');
+    const router = useRouter();
+
+    React.useEffect(() => {
+        const onboarded = localStorage.getItem('mb_buyer_onboarded');
+        if (!onboarded && user?.role === 'buyer') {
+            setShowWelcome(true);
+            localStorage.setItem('mb_buyer_onboarded', 'true');
+        }
+    }, [user]);
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            router.push(`/marketplace?q=${encodeURIComponent(searchQuery)}`);
+        }
+    };
 
     return (
         <div className="flex min-h-screen bg-[#FAFAFA] dark:bg-zinc-950">
@@ -35,6 +63,31 @@ export default function BuyerDashboardPage() {
                 <DashboardHeader title="Buyer Center" sidebarItems={buyerItems} />
                 
                 <main className="flex-1 p-6 md:p-12 max-w-7xl mx-auto w-full space-y-12">
+                    
+                    {/* Search Bar Section */}
+                    <div className="relative group">
+                        <form onSubmit={handleSearch} className="relative">
+                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500 group-focus-within:text-[#FF6200] transition-colors" />
+                            <Input
+                                type="text"
+                                placeholder="Search for textbooks, electronics, or services..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="h-16 pl-16 pr-32 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 rounded-2xl text-base font-medium italic focus-visible:ring-[#FF6200] focus-visible:border-[#FF6200]"
+                            />
+                            <Button type="submit" className="absolute right-2 top-2 bottom-2 bg-[#FF6200] text-black hover:bg-[#FF7A29] font-black uppercase tracking-widest text-[10px] rounded-xl px-6">
+                                Search
+                            </Button>
+                        </form>
+                        {showWelcome && (
+                            <div className="absolute -top-12 left-0 animate-bounce">
+                                <div className="bg-[#FF6200] text-black px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-lg">
+                                    Start here!
+                                    <div className="absolute top-full left-4 w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-[#FF6200]" />
+                                </div>
+                            </div>
+                        )}
+                    </div>
                     
                     {/* Welcome Banner */}
                     <div className="relative overflow-hidden rounded-[2.5rem] bg-zinc-900 border border-zinc-800 p-8 md:p-12 shadow-2xl">
@@ -119,6 +172,30 @@ export default function BuyerDashboardPage() {
                     </div>
                 </main>
             </div>
+
+            <Dialog open={showWelcome} onOpenChange={setShowWelcome}>
+                <DialogContent className="bg-zinc-950 border-zinc-800 text-white max-w-md rounded-[2.5rem] p-10">
+                    <DialogHeader className="space-y-4 text-center">
+                        <div className="w-16 h-16 bg-[#FF6200]/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[#FF6200]/30">
+                            <ShoppingBag className="h-8 w-8 text-[#FF6200]" />
+                        </div>
+                        <DialogTitle className="text-3xl font-black uppercase tracking-tighter italic">
+                            Welcome to <span className="text-[#FF6200]">MarketBridge</span>
+                        </DialogTitle>
+                        <DialogDescription className="text-zinc-400 font-medium leading-relaxed">
+                            You're all set! Start browsing campus deals, secure transactions with our escrow system, and connect with verified student merchants.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="mt-8">
+                        <Button 
+                            onClick={() => setShowWelcome(false)}
+                            className="w-full h-14 bg-[#FF6200] text-black hover:bg-[#FF7A29] font-black uppercase tracking-widest text-xs rounded-2xl shadow-[0_10px_30px_rgba(255,98,0,0.3)] transition-all"
+                        >
+                            Start Exploring
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

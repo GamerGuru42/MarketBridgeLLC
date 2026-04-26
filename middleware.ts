@@ -22,6 +22,9 @@ const ADMIN_RATE_LIMIT: RateLimitConfig = {
     blockDurationMs: 60 * 60 * 1000,
 };
 
+const SELLER_SPECIFIC_PATHS = ['/seller-dashboard', '/sell', '/seller-listings', '/seller-orders', '/seller-payouts', '/seller-analytics'];
+const BUYER_SPECIFIC_PATHS = ['/buyer-dashboard', '/purchases', '/cart', '/checkout', '/wishlist'];
+
 function checkRateLimit(key: string, config: RateLimitConfig): boolean {
     const now = Date.now();
     const tracker = rateLimitMap.get(key);
@@ -232,8 +235,8 @@ export async function middleware(request: NextRequest) {
         return NextResponse.rewrite(url);
     }
 
-    // On www: block admin routes
-    if (isWWW && (pathname.startsWith('/admin') || pathname === '/ceo' || pathname.startsWith('/portal'))) {
+    // On www: block admin routes with 404
+    if (isWWW && (pathname.startsWith('/admin') || pathname === '/ceo' || pathname.startsWith('/portal') || pathname.startsWith('/hq'))) {
         return new NextResponse('Not Found', { status: 404 });
     }
 
@@ -281,7 +284,34 @@ export async function middleware(request: NextRequest) {
     if (!IS_LOGGED_IN && !isPublicAccessible && isWWW) {
         const url = request.nextUrl.clone();
         url.pathname = '/login';
+        url.searchParams.set('returnUrl', pathname);
         return NextResponse.redirect(url);
+    }
+
+    // ── 6. Role-Based Redirects (Section 2.3) ──
+    if (IS_LOGGED_IN && mappedRole && isWWW) {
+        // Universal Dashboard Redirect
+        if (pathname === '/dashboard') {
+            const url = request.nextUrl.clone();
+            url.pathname = mappedRole === 'seller' ? '/seller-dashboard' : '/buyer-dashboard';
+            return NextResponse.redirect(url);
+        }
+
+        // Buyer trying to access Seller areas
+        if (mappedRole === 'buyer' && SELLER_SPECIFIC_PATHS.some(path => pathname.startsWith(path))) {
+            const url = request.nextUrl.clone();
+            url.pathname = '/buyer-dashboard';
+            // We can't easily toast from middleware, but we can add a query param
+            url.searchParams.set('message', 'seller_features_restricted');
+            return NextResponse.redirect(url);
+        }
+
+        // Seller trying to access Buyer areas
+        if (mappedRole === 'seller' && BUYER_SPECIFIC_PATHS.some(path => pathname.startsWith(path))) {
+            const url = request.nextUrl.clone();
+            url.pathname = '/seller-dashboard';
+            return NextResponse.redirect(url);
+        }
     }
 
     // ── 7. Universal Security Headers (Public Routes) ──
