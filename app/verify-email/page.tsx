@@ -52,8 +52,8 @@ function VerifyEmailContent() {
             const { data: { session } } = await supabase.auth.getSession();
             if (session?.user?.email_confirmed_at) {
                 await refreshUser();
-                // We don't have role stored safely locally, but they'll be redirected by middleware or we can just push to dashboard
-                router.push('/dashboard');
+                // We don't have role stored safely locally, but they'll be redirected by middleware or we can just push to marketplace
+                router.push('/marketplace');
             } else {
                 toast('Your email has not been verified yet. Please check your inbox.', 'error');
             }

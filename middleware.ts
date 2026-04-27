@@ -293,7 +293,7 @@ export async function middleware(request: NextRequest) {
         // Universal Dashboard Redirect
         if (pathname === '/dashboard') {
             const url = request.nextUrl.clone();
-            url.pathname = mappedRole === 'seller' ? '/seller/dashboard' : '/buyer/dashboard';
+            url.pathname = mappedRole === 'seller' ? '/seller/dashboard' : '/marketplace';
             return NextResponse.redirect(url);
         }
 
