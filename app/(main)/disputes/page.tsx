@@ -62,13 +62,13 @@ export default function UserDisputesPage() {
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
                             <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading">Escalations Hub</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading">Help Center</span>
                         </div>
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
                             My <span className="text-[#FF6200]">Disputes</span>
                         </h1>
                         <p className="text-zinc-500 font-medium italic">
-                            Tracking <span className="text-zinc-900 font-bold">{disputes.length} active escalations</span> under Trust & Safety review.
+                            Tracking <span className="text-zinc-900 font-bold">{disputes.length} active reports</span> under Trust & Safety review.
                         </p>
                     </div>
 
@@ -89,7 +89,7 @@ export default function UserDisputesPage() {
                             </div>
                             <div>
                                 <h3 className="text-2xl font-black uppercase tracking-tighter italic font-heading text-zinc-900">No active disputes</h3>
-                                <p className="text-zinc-500 font-medium mt-2 max-w-sm mx-auto">Your transactions are running smoothly. If you ever face an issue, our Escrow system protects you.</p>
+                                <p className="text-zinc-500 font-medium mt-2 max-w-sm mx-auto">Your transactions are running smoothly. If you ever face an issue, our payment protection system protects you.</p>
                             </div>
                             <Button asChild className="h-14 px-10 bg-[#FF6200] text-black hover:bg-[#FF7A29] rounded-2xl font-black uppercase tracking-widest font-heading border-none shadow-[0_10px_30px_rgba(255,98,0,0.3)] transition-all hover:-translate-y-1">
                                 <Link href="/orders">View Orders <ArrowRight className="ml-2 h-4 w-4" /></Link>
@@ -152,7 +152,7 @@ export default function UserDisputesPage() {
                                         <div className="absolute -right-10 -top-10 w-32 h-32 bg-green-500/10 rounded-full blur-[30px]" />
                                         <h4 className="text-[10px] font-black uppercase tracking-widest text-green-400 mb-3 flex items-center gap-2 relative z-10">
                                             <ShieldCheck className="w-4 h-4" />
-                                            System Administrator Notes
+                                            Admin Notes
                                         </h4>
                                         <p className="text-sm font-medium italic text-zinc-300 relative z-10">{dispute.resolution_notes}</p>
                                     </div>
@@ -163,7 +163,7 @@ export default function UserDisputesPage() {
                                         <Button asChild variant="outline" className="h-12 px-8 text-[10px] font-black uppercase tracking-widest rounded-2xl border-zinc-200 text-zinc-600 hover:text-[#FF6200] hover:border-[#FF6200]/30 hover:bg-[#FF6200]/5 transition-all">
                                             <Link href={`/chats/${dispute.escrow_agreement.conversation_id}`}>
                                                 <ExternalLink className="w-3.5 h-3.5 mr-2" />
-                                                View Source Log
+                                                View Chat History
                                             </Link>
                                         </Button>
                                     )}

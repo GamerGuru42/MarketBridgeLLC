@@ -308,13 +308,13 @@ export default function SellerListingsPage() {
         <div className="container mx-auto py-10 px-4 space-y-8 bg-transparent transition-colors">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">Inventory Campus</h1>
-                    <p className="text-muted-foreground mt-2">Manage your marketplace assets and deployment status.</p>
+                    <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">My Inventory</h1>
+                    <p className="text-muted-foreground mt-2">Manage your products and listings.</p>
                 </div>
                 <Button asChild className="bg-[#FF6200] hover:bg-[#FF7A29] text-black font-black uppercase tracking-widest italic shadow-xl shadow-[#FF6200]/20 rounded-xl">
                     <Link href="/seller/listings/new">
                         <Plus className="mr-2 h-4 w-4" />
-                        Deploy New Asset
+                        Create New Listing
                     </Link>
                 </Button>
             </div>
@@ -322,8 +322,8 @@ export default function SellerListingsPage() {
             {listings.length === 0 ? (
                 <EmptyState
                     icon={<Package className="h-10 w-10 text-[#FF6200]" />}
-                    title="Zero Inventory Detected"
-                    description="You haven't deployed any assets to the marketplace yet."
+                    title="No Items Found"
+                    description="You haven't added any items to the marketplace yet."
                     actionLabel="Create First Listing"
                     actionHref="/seller/listings/new"
                 />
@@ -341,7 +341,7 @@ export default function SellerListingsPage() {
                                     />
                                 ) : (
                                     <div className="absolute inset-0 flex items-center justify-center text-muted-foreground font-mono text-xs uppercase tracking-widest">
-                                        No Visual Notice
+                                        No Image
                                     </div>
                                 )}
                                 <div className="absolute top-3 right-3 flex flex-col gap-2">
@@ -374,13 +374,13 @@ export default function SellerListingsPage() {
                                     <Button asChild variant="outline" size="sm" className="font-bold border-zinc-200 dark:border-white/10 hover:border-[#FF6200]/30 hover:bg-white dark:hover:bg-white/5 rounded-xl text-[10px] uppercase tracking-widest font-heading">
                                         <Link href={`/listings/${listing.id}`}>
                                             <Eye className="mr-2 h-3.5 w-3.5" />
-                                            PREVIEW
+                                            VIEW
                                         </Link>
                                     </Button>
                                     <Button asChild variant="outline" size="sm" className="font-bold border-zinc-200 dark:border-white/10 hover:border-[#FF6200]/30 hover:bg-white dark:hover:bg-white/5 rounded-xl text-[10px] uppercase tracking-widest font-heading">
                                         <Link href={`/seller/listings/${listing.id}/edit`}>
                                             <Edit className="mr-2 h-3.5 w-3.5" />
-                                            MODIFY
+                                            EDIT
                                         </Link>
                                     </Button>
                                     <Button
@@ -389,7 +389,7 @@ export default function SellerListingsPage() {
                                         className="font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl text-[10px] uppercase tracking-widest font-heading"
                                         onClick={() => toggleStatus(listing)}
                                     >
-                                        {listing.status === 'active' ? 'OFFLINE' : 'ONLINE'}
+                                        {listing.status === 'active' ? 'HIDE' : 'SHOW'}
                                     </Button>
                                     <Button
                                         variant="destructive"
@@ -524,7 +524,7 @@ export default function SellerListingsPage() {
                                     <div className="h-4 w-20 bg-[url('/paystack-logo.png')] bg-contain bg-no-repeat bg-center opacity-40 grayscale" />
                                 </div>
                                 <p className="text-center text-[9px] text-zinc-300 dark:text-zinc-600 uppercase tracking-[0.2em] font-medium">
-                                    Secure Transfer Protocol — No Recurring Charges
+                                    Secure Payment — No Recurring Charges
                                 </p>
                             </div>
                         </div>

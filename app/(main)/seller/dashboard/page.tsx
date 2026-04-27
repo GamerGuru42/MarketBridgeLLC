@@ -117,7 +117,7 @@ export default function SellerDashboardPage() {
     const { toast } = useToast();
 
     const tourSteps: TourStep[] = [
-        { targetId: 'tour-header', title: 'Seller Command', description: "Welcome to your bridge. This is your mission control where you manage your entire campus business at a glance.", position: 'bottom' },
+        { targetId: 'tour-header', title: 'Seller Dashboard', description: "Welcome to your bridge. This is your main area where you manage your entire campus business at a glance.", position: 'bottom' },
         { targetId: 'tour-stats', title: 'Dashboard Step 1: Earnings', description: "Track every Naira real-time. 'Revenue' shows your verified earnings, while 'Success Rate' tracks how many campus deals you've closed.", position: 'bottom' },
         { targetId: 'tour-actions', title: 'Dashboard Step 2: Inventory', description: "This is where you launch. List new products, manage your stock, and check your messages to keep the gear moving.", position: 'top' },
         { targetId: 'tour-tabs', title: 'Dashboard Step 3: Orders & Offers', description: "Master the deal here. Use the 'Offers' tab to counter-negotiate prices and the 'Orders' tab to track active escrow deliveries.", position: 'bottom' },
@@ -1027,21 +1027,21 @@ export default function SellerDashboardPage() {
                             )}
                         </h1>
                         <p className="text-zinc-500 dark:text-white/40 font-medium max-w-xl italic transition-colors">
-                            Command center for <span className="text-zinc-900 dark:text-white font-bold">{user?.displayName}</span>.
+                            Dashboard for <span className="text-zinc-900 dark:text-white font-bold">{user?.displayName}</span>.
                             Managing <span className="text-zinc-900 dark:text-white font-bold">your active listings</span> across campus.
                         </p>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-4">
                         <div className="h-16 px-8 rounded-2xl bg-white dark:bg-white/[0.02] border border-zinc-200 dark:border-white/5 shadow-sm dark:shadow-none flex flex-col justify-center shrink-0 transition-all duration-300">
-                            <span className="text-[10px] font-black text-zinc-400 dark:text-white/30 uppercase tracking-widest border-b border-zinc-100 dark:border-white/5 mb-1 pb-1 font-heading transition-colors">Network Status</span>
+                            <span className="text-[10px] font-black text-zinc-400 dark:text-white/30 uppercase tracking-widest border-b border-zinc-100 dark:border-white/5 mb-1 pb-1 font-heading transition-colors">Status</span>
                             <span className="text-sm font-black text-zinc-900 dark:text-white italic uppercase tracking-tighter flex items-center gap-2 font-heading transition-colors">
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200] animate-pulse" /> Connected
                             </span>
                         </div>
                         <div className="flex gap-3 w-full md:w-auto">
                             <Button id="tour-sync" onClick={fetchOrders} className="h-16 px-8 flex-1 md:flex-none bg-[#FF6200] text-black hover:bg-[#FF7A29] rounded-2xl font-black uppercase tracking-widest transition-all shadow-[0_4px_15px_rgba(255,98,0,0.2)] hover:shadow-[0_8px_30px_rgba(255,98,0,0.3)]">
-                                <RefreshCw className="h-4 w-4 mr-2" /> Sync Data
+                                <RefreshCw className="h-4 w-4 mr-2" /> Refresh
                             </Button>
                         </div>
                     </div>
@@ -1137,15 +1137,15 @@ export default function SellerDashboardPage() {
                     ))}
                 </div>
 
-                {/* Transaction Hub Container */}
+                {/* Orders & Offers Container */}
                 <div className="bg-white dark:bg-white/[0.02] border border-zinc-200 dark:border-white/5 shadow-sm dark:shadow-none rounded-[3rem] p-10 overflow-hidden transition-colors duration-300">
                     <Tabs defaultValue="orders" className="space-y-10">
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-zinc-200 dark:border-white/5 pb-8 transition-colors duration-300">
                             <div id="tour-tabs" className="flex bg-zinc-50 dark:bg-white/5 p-1.5 rounded-2xl border border-zinc-200 dark:border-white/5 transition-colors duration-300">
                                 <TabsList className="bg-transparent gap-2 h-auto p-0 border-none shadow-none text-zinc-500 dark:text-zinc-400">
-                                    <TabsTrigger value="orders" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading">Orders Queue</TabsTrigger>
+                                    <TabsTrigger value="orders" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading">Recent Orders</TabsTrigger>
                                     <TabsTrigger value="offers" className="data-[state=active]:bg-[#FF6200] data-[state=active]:text-black h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all font-heading relative">
-                                        Offers Dashboard
+                                        Price Offers
                                         {offerStats.totalPending > 0 && (
                                             <span className="absolute -top-1 -right-1 h-4 w-4 bg-[#FF6200] rounded-full text-[8px] flex items-center justify-center text-black border-2 border-black animate-pulse">
                                                 {offerStats.totalPending}
@@ -1157,7 +1157,7 @@ export default function SellerDashboardPage() {
                                 </TabsList>
                             </div>
                             <div className="flex items-center gap-4 text-zinc-400 dark:text-white/40 text-[10px] font-black uppercase tracking-widest font-heading italic transition-colors">
-                                <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200] animate-pulse" /> Auto-sync enabled
+                                <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200] animate-pulse" /> Auto-refresh enabled
                             </div>
                         </div>
 
@@ -1176,7 +1176,7 @@ export default function SellerDashboardPage() {
                                         {orders.length === 0 ? (
                                                 <div className="text-center py-24 bg-zinc-50 dark:bg-white/[0.01] border border-zinc-200 dark:border-white/5 shadow-sm dark:shadow-none border-dashed transition-colors duration-300">
                                                     <Package className="h-16 w-16 text-zinc-300 dark:text-white/10 mx-auto mb-6 transition-colors" />
-                                                    <p className="text-zinc-500 dark:text-white/40 font-black uppercase tracking-widest text-xs font-heading italic transition-colors">Zero orders detected in current sector</p>
+                                                    <p className="text-zinc-500 dark:text-white/40 font-black uppercase tracking-widest text-xs font-heading italic transition-colors">No orders found</p>
                                             </div>
                                         ) : (
                                             orders.map((order: Order) => (
@@ -1207,7 +1207,7 @@ export default function SellerDashboardPage() {
                                 {offers.length === 0 ? (
                                     <div className="text-center py-24 bg-zinc-50 dark:bg-white/[0.01] border border-zinc-200 dark:border-white/5 shadow-sm dark:shadow-none border-dashed transition-colors duration-300">
                                         <Zap className="h-16 w-16 text-zinc-300 dark:text-white/10 mx-auto mb-6 transition-colors" />
-                                        <p className="text-zinc-500 dark:text-white/40 font-black uppercase tracking-widest text-xs font-heading italic transition-colors">Zero negotiation notices detected</p>
+                                        <p className="text-zinc-500 dark:text-white/40 font-black uppercase tracking-widest text-xs font-heading italic transition-colors">No price offers yet</p>
                                     </div>
                                 ) : (
                                     offers.map((offer) => (
@@ -1215,7 +1215,7 @@ export default function SellerDashboardPage() {
                                             <div className="flex-1 space-y-4">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-3">
-                                                        <span className="text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest font-heading transition-colors">System: #{offer.id.slice(-8).toUpperCase()}</span>
+                                                        <span className="text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest font-heading transition-colors">Order: #{offer.id.slice(-8).toUpperCase()}</span>
                                                         <Badge className={cn(
                                                             "px-3 py-1 font-black uppercase text-[9px] tracking-widest border font-heading italic transition-colors",
                                                             offer.status === 'pending' ? 'bg-[#FF6200]/10 text-[#FF6200] border-[#FF6200]/20' :
@@ -1237,7 +1237,7 @@ export default function SellerDashboardPage() {
                                                 </div>
                                                 <div className="p-4 bg-zinc-50 dark:bg-white/[0.02] border border-zinc-100 dark:border-white/5 rounded-xl transition-colors">
                                                     <p className="text-[10px] text-zinc-500 dark:text-zinc-600 font-black uppercase tracking-widest mb-1 transition-colors">Message from Buyer</p>
-                                                    <p className="text-xs text-zinc-700 dark:text-zinc-400 font-medium leading-relaxed transition-colors">{offer.message || 'No additional data transmitted.'}</p>
+                                                    <p className="text-xs text-zinc-700 dark:text-zinc-400 font-medium leading-relaxed transition-colors">{offer.message || 'No additional message.'}</p>
                                                 </div>
                                                 <div className="flex items-center gap-3">
                                                     <div className="h-8 w-8 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center overflow-hidden transition-colors">
@@ -1294,7 +1294,7 @@ export default function SellerDashboardPage() {
                                             </div>
                                             <div>
                                                 <h3 className="text-2xl font-black uppercase tracking-tighter italic font-heading">MarketCoins</h3>
-                                                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Digital Loyalty System</p>
+                                                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Digital Rewards</p>
                                             </div>
                                         </div>
 
@@ -1409,7 +1409,7 @@ export default function SellerDashboardPage() {
                                                         <span className="text-xs font-black uppercase tracking-widest text-[#FF6200]">Review in Progress</span>
                                                     </div>
                                                     <p className="text-xs font-medium text-zinc-500 italic">
-                                                        Your application to lead <span className="text-zinc-900 dark:text-white font-bold">{ambassadorDetails?.campus}</span> is being reviewed by the HQ Operations team. Success details will arrive via email.
+                                                        Your application to lead <span className="text-zinc-900 dark:text-white font-bold">{ambassadorDetails?.campus}</span> is being reviewed. You will receive an update via email.
                                                     </p>
                                                 </div>
                                             ) : (
@@ -1458,8 +1458,8 @@ export default function SellerDashboardPage() {
                         <TabsContent value="settings" className="focus-visible:outline-none focus:outline-none">
                             <div className="max-w-xl space-y-8">
                                 <div className="space-y-1">
-                                    <h3 className="text-2xl font-black uppercase tracking-tighter font-heading italic">Payout Dashboard</h3>
-                                    <p className="text-zinc-500 text-sm italic mb-4">Establishing secure Paystack subaccount for auto-payouts.</p>
+                                    <h3 className="text-2xl font-black uppercase tracking-tighter font-heading italic">Payout Settings</h3>
+                                    <p className="text-zinc-500 text-sm italic mb-4">Set up your bank account to receive payments automatically.</p>
                                     <div className="bg-[#FF6200]/5 border border-[#FF6200]/10 p-4 rounded-2xl flex items-start gap-4 mb-8">
                                         <Zap className="h-5 w-5 text-[#FF6200] shrink-0 mt-1" />
                                         <p className="text-[10px] text-[#FF6200] font-black uppercase tracking-widest leading-relaxed">
@@ -1477,7 +1477,7 @@ export default function SellerDashboardPage() {
                                                 required
                                             >
                                                 <SelectTrigger className="h-14 bg-white dark:bg-white/5 border-zinc-200 dark:border-white/10 rounded-xl font-heading text-[10px] font-black uppercase tracking-widest text-left dark:text-white">
-                                                    <SelectValue placeholder="CHOOSE INSTITUTION" />
+                                                    <SelectValue placeholder="SELECT BANK" />
                                                 </SelectTrigger>
                                                 <SelectContent className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-white font-heading text-[10px] font-black uppercase tracking-widest">
                                                     {banks.map((bank) => (
@@ -1489,7 +1489,7 @@ export default function SellerDashboardPage() {
                                             </Select>
                                         </div>
                                         <div className="space-y-3">
-                                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 dark:text-zinc-400 font-heading">Account Serial</Label>
+                                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 dark:text-zinc-400 font-heading">Account Number</Label>
                                             <div className="relative">
                                                 <Input
                                                     value={bankDetails.accountNumber}
@@ -1503,7 +1503,7 @@ export default function SellerDashboardPage() {
                                         </div>
                                     </div>
                                     <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 dark:text-zinc-400 font-heading">Entity Name</Label>
+                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 dark:text-zinc-400 font-heading">Account Name</Label>
                                         <Input
                                             value={bankDetails.accountName}
                                             readOnly
@@ -1520,7 +1520,7 @@ export default function SellerDashboardPage() {
                                             </>
                                         ) : (
                                             <>
-                                                Sync Payout Profile <ArrowRight className="ml-3 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                                Save Payout Details <ArrowRight className="ml-3 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                             </>
                                         )}
                                     </Button>

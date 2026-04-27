@@ -44,16 +44,7 @@ export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
                         {title}
                     </h1>
                     <span className="text-zinc-500 text-[10px] hidden md:block">
-                        Active Identity: <span className="font-black text-foreground uppercase tracking-widest">{user?.displayName}</span> 
-                        <span className="mx-2 opacity-20">|</span> 
-                        Context: <span className="text-primary font-black uppercase tracking-widest text-[9px]">
-                            {pathname?.includes('/ceo') ? 'Executive Suite' : 
-                             user?.role === 'operations_admin' ? 'Operations Admin' :
-                             user?.role === 'marketing_admin' ? 'Marketing Admin' :
-                             user?.role === 'systems_admin' ? 'Systems Admin' :
-                             user?.role === 'it_support' ? 'IT Support' :
-                             'Management Panel'}
-                        </span>
+                        Logged in as <span className="font-black text-foreground uppercase tracking-widest">{user?.displayName}</span> 
                     </span>
                 </div>
             </div>
@@ -75,7 +66,7 @@ export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" sideOffset={15} className="w-64 bg-[#FAFAFA] border border-zinc-200 p-2 text-zinc-900 z-[999] rounded-[2rem] shadow-2xl backdrop-blur-3xl">
                             <div className="px-4 py-3 mb-2 border-b border-zinc-100">
-                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Management Account</p>
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Your Profile</p>
                                 <p className="text-sm font-black truncate uppercase">{user?.displayName}</p>
                             </div>
                             <DropdownMenuItem asChild className="focus:bg-white rounded-xl cursor-pointer py-3 group outline-none transition-colors border border-transparent focus:border-zinc-100">

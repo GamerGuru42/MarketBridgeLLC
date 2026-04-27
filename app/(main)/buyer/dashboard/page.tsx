@@ -97,10 +97,10 @@ export default function BuyerDashboardPage() {
                         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
                             <div className="space-y-4 max-w-xl">
                                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FF6200]/10 border border-[#FF6200]/20 text-[10px] font-black uppercase tracking-widest text-[#FF6200]">
-                                    <ShieldCheck className="h-3 w-3" /> Standard Protocol
+                                    <ShieldCheck className="h-3 w-3" /> Secure & Verified
                                 </div>
                                 <h1 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter leading-[0.95]">
-                                    Welcome to your <br /> <span className="text-[#FF6200]">Command Center</span>.
+                                    Welcome to your <br /> <span className="text-[#FF6200]">Dashboard</span>.
                                 </h1>
                                 <p className="text-zinc-400 font-medium">
                                     Monitor your escrow transactions, track asset deliveries, and communicate with campus merchants securely.
@@ -123,7 +123,7 @@ export default function BuyerDashboardPage() {
                             <div className="flex items-center justify-between">
                                 <h2 className="text-2xl font-black uppercase tracking-tighter text-zinc-900 dark:text-white">Active Escrows</h2>
                                 <Link href="/orders" className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] hover:text-[#FF7A29] transition-colors flex items-center gap-1">
-                                    View Log <ArrowRight className="h-3 w-3" />
+                                    View History <ArrowRight className="h-3 w-3" />
                                 </Link>
                             </div>
                             
