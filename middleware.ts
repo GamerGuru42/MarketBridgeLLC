@@ -22,8 +22,8 @@ const ADMIN_RATE_LIMIT: RateLimitConfig = {
     blockDurationMs: 60 * 60 * 1000,
 };
 
-const SELLER_SPECIFIC_PATHS = ['/seller-dashboard', '/sell', '/seller-listings', '/seller-orders', '/seller-payouts', '/seller-analytics'];
-const BUYER_SPECIFIC_PATHS = ['/buyer-dashboard', '/purchases', '/cart', '/checkout', '/wishlist'];
+const SELLER_SPECIFIC_PATHS = ['/seller/dashboard', '/sell', '/seller/listings', '/seller-orders', '/seller-payouts', '/seller-analytics'];
+const BUYER_SPECIFIC_PATHS = ['/buyer/dashboard', '/purchases', '/cart', '/checkout', '/wishlist'];
 
 function checkRateLimit(key: string, config: RateLimitConfig): boolean {
     const now = Date.now();
@@ -293,14 +293,27 @@ export async function middleware(request: NextRequest) {
         // Universal Dashboard Redirect
         if (pathname === '/dashboard') {
             const url = request.nextUrl.clone();
-            url.pathname = mappedRole === 'seller' ? '/seller-dashboard' : '/buyer-dashboard';
+            url.pathname = mappedRole === 'seller' ? '/seller/dashboard' : '/buyer/dashboard';
+            return NextResponse.redirect(url);
+        }
+
+        // Compatibility Redirects for flat paths
+        if (pathname === '/buyer-dashboard') {
+            const url = request.nextUrl.clone();
+            url.pathname = '/buyer/dashboard';
+            return NextResponse.redirect(url);
+        }
+
+        if (pathname === '/seller-dashboard') {
+            const url = request.nextUrl.clone();
+            url.pathname = '/seller/dashboard';
             return NextResponse.redirect(url);
         }
 
         // Buyer trying to access Seller areas
         if (mappedRole === 'buyer' && SELLER_SPECIFIC_PATHS.some(path => pathname.startsWith(path))) {
             const url = request.nextUrl.clone();
-            url.pathname = '/buyer-dashboard';
+            url.pathname = '/buyer/dashboard';
             // We can't easily toast from middleware, but we can add a query param
             url.searchParams.set('message', 'seller_features_restricted');
             return NextResponse.redirect(url);
@@ -309,7 +322,7 @@ export async function middleware(request: NextRequest) {
         // Seller trying to access Buyer areas
         if (mappedRole === 'seller' && BUYER_SPECIFIC_PATHS.some(path => pathname.startsWith(path))) {
             const url = request.nextUrl.clone();
-            url.pathname = '/seller-dashboard';
+            url.pathname = '/seller/dashboard';
             return NextResponse.redirect(url);
         }
     }

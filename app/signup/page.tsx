@@ -131,14 +131,14 @@ function SignupContent() {
 
             const { data, error } = await supabase.auth.signUp({
                 email: normalizedEmail, password: formData.password,
-                options: { data: { full_name: formData.fullName, role: 'student_buyer' }, emailRedirectTo: `${window.location.origin}/auth/callback` }
+                options: { data: { full_name: formData.fullName, role: 'buyer' }, emailRedirectTo: `${window.location.origin}/auth/callback` }
             });
             if (error) throw error;
             if (data.user) {
                 // Map to DB role
                 const dbRole = 'buyer'; // For this specific form
 
-                await supabase.from('users').upsert({
+                const { error: upsertError } = await supabase.from('users').upsert({
                     id: data.user.id, 
                     email: normalizedEmail, 
                     display_name: formData.fullName.trim(),
@@ -146,8 +146,15 @@ function SignupContent() {
                     university: finalUniversity, 
                     email_verified: false,
                     is_verified: false,
+                    onboarding_complete: true,
                     created_at: new Date().toISOString()
                 });
+
+                if (upsertError) {
+                    console.error('Signup Profile Upsert Error:', upsertError);
+                    throw new Error(`Database error saving new user profile: ${upsertError.message}`);
+                }
+
                 router.push(`/verify-email?email=${encodeURIComponent(normalizedEmail)}`);
             }
         } catch (error: any) { toast(error.message || 'Registration failed', 'error'); }

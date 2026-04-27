@@ -283,9 +283,9 @@ export async function GET(request: Request) {
 
                 // Redirect based on role
                 if (finalRole === 'buyer') {
-                    redirectUrl.pathname = '/buyer-dashboard';
+                    redirectUrl.pathname = '/buyer/dashboard';
                 } else if (finalRole === 'seller') {
-                    redirectUrl.pathname = '/seller-dashboard';
+                    redirectUrl.pathname = '/seller/dashboard';
                 } else if (ADMIN_ROLES.includes(finalRole)) {
                     if (isProduction) {
                         redirectUrl.hostname = 'hq.marketbridge.com.ng';
