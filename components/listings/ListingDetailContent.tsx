@@ -16,9 +16,8 @@ import { startConversation } from '@/lib/chat';
 import { ReviewsSection } from '@/components/ReviewsSection';
 import { cn } from '@/lib/utils';
 import { useSystem } from '@/contexts/SystemContext';
-import { ListingMap } from '@/components/ListingMap';
-import { ABUJA_UNIVERSITIES } from '@/lib/location';
 import {
+
     Dialog,
     DialogContent,
     DialogDescription,
@@ -592,7 +591,7 @@ export default function ListingDetailContent() {
                             </div>
 
                             <div className="relative z-10">
-                                <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-black uppercase tracking-[0.3em] font-heading mb-2">Market Valuation</p>
+                                <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-black uppercase tracking-[0.3em] font-heading mb-2">Current Price</p>
                                 <div className="space-y-1 mb-6">
                                     <div className="text-6xl font-black text-zinc-900 dark:text-white italic font-heading tracking-tighter">
                                         ₦{(listing.current_offered_price || listing.price).toLocaleString()}
@@ -648,7 +647,7 @@ export default function ListingDetailContent() {
                                         <div className="grid grid-cols-2 gap-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
                                             {activeOffer && activeOffer.status === 'pending' ? (
                                                 <Button disabled className="h-12 rounded-xl border-[#FF6200]/20 bg-[#FF6200]/5 text-[#FF6200] text-[10px] uppercase font-bold tracking-widest opacity-80 cursor-default">
-                                                    <Clock className="mr-2 h-3 w-3 animate-pulse" /> Offer Transmission Pending
+                                                    <Clock className="mr-2 h-3 w-3 animate-pulse" /> Offer Pending
                                                 </Button>
                                             ) : (
                                                 <Button onClick={() => setIsOfferOpen(true)} variant="outline" className="h-12 rounded-xl border-[#FF6200]/20 bg-[#FF6200]/5 text-[#FF6200] hover:bg-[#FF6200]/10 text-[10px] uppercase font-bold tracking-widest">
@@ -683,22 +682,6 @@ export default function ListingDetailContent() {
                                         <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-widest">Owner Mode Active</p>
                                     </div>
                                 )}
-                            </div>
-                        </div>
-
-                        {/* Location Node Map */}
-                        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-sm p-8 rounded-[2.5rem] space-y-6">
-                            <h3 className="text-zinc-900 dark:text-white font-black uppercase text-xs tracking-[0.2em] font-heading flex items-center gap-3">
-                                <span className="h-1.5 w-1.5 rounded-full bg-[#FF6200]" />
-                                Asset Node Location
-                            </h3>
-                            <ListingMap
-                                lat={ABUJA_UNIVERSITIES.find(u => u.name === listing.location || u.id === listing.location || u.id === 'baze')?.coords.lat || 9.0765}
-                                lng={ABUJA_UNIVERSITIES.find(u => u.name === listing.location || u.id === listing.location || u.id === 'baze')?.coords.lng || 7.3986}
-                                title={listing.location}
-                            />
-                            <div className="flex items-center gap-3 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest italic">
-                                <MapPin className="h-3 w-3 text-[#FF6200]" /> {listing.location} Marketplace Active
                             </div>
                         </div>
 
@@ -778,16 +761,16 @@ export default function ListingDetailContent() {
                         <div className="p-8 space-y-8">
                             <div className="text-center space-y-2">
                                 <DialogTitle className="text-2xl font-black uppercase italic tracking-tighter italic">
-                                    Negotiate <span className="text-[#FF6200]">Price</span>
+                                    Make an <span className="text-[#FF6200]">Offer</span>
                                 </DialogTitle>
                                 <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">
-                                    Adjust valuation using controls below
+                                    Adjust your offer using the controls below
                                 </p>
                             </div>
 
                             <div className="flex flex-col items-center justify-center space-y-6 py-4">
                                 <div className="text-center">
-                                    <p className="text-[10px] text-zinc-400 font-black uppercase tracking-widest mb-2">Current Proposal</p>
+                                    <p className="text-[10px] text-zinc-400 font-black uppercase tracking-widest mb-2">Your Offer</p>
                                     <div className="text-5xl font-black text-zinc-900 tracking-tighter tabular-nums">
                                         ₦{offerPrice.toLocaleString()}
                                     </div>
@@ -824,7 +807,7 @@ export default function ListingDetailContent() {
                                         onClick={() => setOfferPrice(listing.price)}
                                         className="h-10 rounded-xl border-zinc-100 text-[9px] font-black uppercase tracking-widest text-zinc-500"
                                     >
-                                        Reset to Base
+                                        Reset
                                     </Button>
                                     <Button 
                                         type="button"
@@ -832,14 +815,14 @@ export default function ListingDetailContent() {
                                         onClick={() => adjustPrice(2000)}
                                         className="h-10 rounded-xl border-zinc-100 text-[9px] font-black uppercase tracking-widest text-[#FF6200]"
                                     >
-                                        Boost +2k
+                                        Add +2k
                                     </Button>
                                 </div>
                             </div>
 
                             <div className="bg-[#FF6200]/10 border border-[#FF6200]/20 p-4 rounded-2xl">
                                 <p className="text-[9px] text-[#FF6200] font-black uppercase leading-tight text-center">
-                                    In-app negotiations are secured by platform policy.
+                                    All negotiations are secured by MarketBridge.
                                 </p>
                             </div>
                         </div>
@@ -851,7 +834,7 @@ export default function ListingDetailContent() {
                                 disabled={isSubmittingOffer}
                                 className="flex-2 h-14 bg-[#FF6200] text-black hover:bg-[#FF7A29] font-black uppercase tracking-widest text-[10px] rounded-2xl transition-all border-none px-8"
                             >
-                                {isSubmittingOffer ? <Loader2 className="h-4 w-4 animate-spin" /> : "Dispatch Proposal"}
+                                {isSubmittingOffer ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send Offer"}
                             </Button>
                         </div>
                     </form>
