@@ -771,7 +771,7 @@ export default function ListingDetailContent() {
                             <div className="flex flex-col items-center justify-center space-y-6 py-4">
                                 <div className="text-center">
                                     <p className="text-[10px] text-zinc-400 font-black uppercase tracking-widest mb-2">Your Offer</p>
-                                    <div className="text-5xl font-black text-zinc-900 tracking-tighter tabular-nums">
+                                    <div className="text-5xl font-black text-zinc-900 dark:text-white tracking-tighter tabular-nums">
                                         ₦{offerPrice.toLocaleString()}
                                     </div>
                                 </div>
