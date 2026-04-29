@@ -249,6 +249,9 @@ function SignupContent() {
                             Already have an account?{' '}
                             <Link href="/login" className="text-orange-500 font-black ml-2 hover:opacity-80">Log In</Link>
                         </p>
+                        <p className="text-gray-500 font-bold text-[10px] uppercase tracking-widest mt-4">
+                            Internal System?{' '}<Link href="/admin/signup" className="text-gray-400 hover:text-white transition-colors">Admin Portal</Link>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -385,6 +388,9 @@ function SignupContent() {
                 <div className="text-center pt-8 mt-6 border-t border-[#2a2a2a]">
                     <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">
                         Already have an account? <Link href="/login" className="text-orange-500 font-black ml-1 hover:opacity-80">Log In</Link>
+                    </p>
+                    <p className="text-gray-500 font-bold text-[10px] uppercase tracking-widest mt-4">
+                        Internal System?{' '}<Link href="/admin/signup" className="text-gray-400 hover:text-white transition-colors">Admin Portal</Link>
                     </p>
                 </div>
             </div>

@@ -179,6 +179,9 @@ function LoginContent() {
                         <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">
                             No account?{' '}<Link href="/signup" className="text-orange-500 font-black ml-2 hover:opacity-80">Sign Up</Link>
                         </p>
+                        <p className="text-gray-500 font-bold text-[10px] uppercase tracking-widest mt-4">
+                            Internal System?{' '}<Link href="/admin/login" className="text-gray-400 hover:text-white transition-colors">Admin Portal</Link>
+                        </p>
                     </div>
                 </div>
             </div>

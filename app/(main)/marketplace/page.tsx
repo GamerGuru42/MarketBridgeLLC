@@ -408,7 +408,7 @@ function ListingsContent() {
                                     <div className="p-8 space-y-6 flex-1 flex flex-col justify-between">
                                         <div className="space-y-3">
                                             <div className="flex items-center gap-2 mb-1">
-                                                <span className="text-[9px] font-black text-[#FF6200] uppercase tracking-widest">{listing.category.toUpperCase()}</span>
+                                                <span className="text-[9px] font-black text-[#FF6200] uppercase tracking-widest">{listing.category ? listing.category.toUpperCase() : 'UNCATEGORIZED'}</span>
                                                 <span className="h-1 w-1 rounded-full bg-zinc-700" />
                                                 <span className="text-[9px] font-medium text-zinc-500 dark:text-zinc-400 italic">{listing.location || 'Remote'}</span>
                                             </div>

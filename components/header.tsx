@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { useLocation } from '@/contexts/LocationContext';
 
 export const Header = () => {
     const { user, logout, loading } = useAuth();
@@ -26,6 +27,7 @@ export const Header = () => {
     const pathname = usePathname();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [currentNode, setCurrentNode] = useState<string>('Abuja');
+    const { setShowDialog } = useLocation();
 
     useEffect(() => {
         const saved = localStorage.getItem('mb-preferred-node');
@@ -61,8 +63,7 @@ export const Header = () => {
                         <button
                             className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-zinc-100 dark:bg-zinc-900/80 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800/50 rounded-full transition-all group"
                             onClick={() => {
-                                localStorage.removeItem('mb-preferred-node');
-                                window.location.reload();
+                                setShowDialog(true);
                             }}
                         >
                             <span className="relative flex h-1.5 w-1.5">
