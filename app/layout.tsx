@@ -16,7 +16,8 @@ import { OnboardingTour } from "@/components/OnboardingTour";
 import { DemoBanner } from "@/components/DemoBanner";
 import { FloatingFeedbackWidget } from "@/components/FloatingFeedbackWidget";
 
-import { MobileBottomNav } from "@/components/MobileBottomNav";
+
+
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -130,7 +131,6 @@ export default function RootLayout({
                     </ToastProvider>
                     <GlobalWidgets />
                     <OnboardingTour />
-                    <MobileBottomNav />
                   </CartProvider>
                 </LocationProvider>
               </AuthProvider>

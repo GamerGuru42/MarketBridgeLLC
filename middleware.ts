@@ -275,7 +275,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // ── 5. Public Marketplace Isolation ──
-    const PUBLIC_ACCESSIBLE_ROUTES = ['/', '/login', '/signup', '/auth', '/seller-qr', '/verify-email', '/reset-password', '/api', '/listings', '/about', '/terms', '/privacy', '/categories', '/search', '/logout'];
+    const PUBLIC_ACCESSIBLE_ROUTES = ['/', '/login', '/signup', '/auth', '/seller-qr', '/verify-email', '/reset-password', '/api', '/listings', '/about', '/terms', '/privacy', '/refund', '/disclaimer', '/categories', '/search', '/logout'];
 
     const isPublicAccessible = PUBLIC_ACCESSIBLE_ROUTES.some(route => 
         pathname === route || pathname.startsWith(route + '/')
