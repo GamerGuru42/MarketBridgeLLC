@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { setSetting } from '@/lib/settings';
+import { logAudit } from '@/lib/audit';
 
 export async function GET() {
     const supabase = await createClient();
@@ -32,7 +33,29 @@ export async function POST(req: Request) {
 
     try {
         const { key, value } = await req.json();
+        
+        // Fetch old setting value if possible
+        const { data: oldSetting } = await supabase
+            .from('site_settings')
+            .select('value')
+            .eq('key', key)
+            .single();
+
         await setSetting(key, value);
+
+        // Audit Log
+        await logAudit({
+            action: 'update_setting',
+            category: 'system',
+            severity: 'critical',
+            targetType: 'setting',
+            targetId: key,
+            targetLabel: key,
+            details: { updatedBy: user.id },
+            oldValue: oldSetting ? { value: oldSetting.value } : null,
+            newValue: { value }
+        }, req);
+
         return NextResponse.json({ success: true });
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import { logAudit } from '@/lib/audit';
 
 export async function POST(req: Request) {
     try {
@@ -44,6 +45,17 @@ export async function POST(req: Request) {
             console.error('Manual verification DB error:', error);
             return NextResponse.json({ error: 'System error during verification.' }, { status: 500 });
         }
+
+        // Audit Log
+        await logAudit({
+            action: 'verify_seller',
+            category: 'admin',
+            severity: 'info',
+            targetType: 'user',
+            targetId: sellerId,
+            details: { verifiedBy: user.id },
+            newValue: { email_verified: true, is_verified: true }
+        }, req);
 
         return NextResponse.json({ success: true, message: 'Seller manually verified successfully.' });
     } catch (err: any) {

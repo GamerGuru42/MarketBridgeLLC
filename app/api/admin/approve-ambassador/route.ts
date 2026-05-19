@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import { logAudit } from '@/lib/audit';
 
 export async function POST(req: Request) {
     try {
@@ -36,6 +37,18 @@ export async function POST(req: Request) {
                 .eq('id', appId);
 
             if (error) throw error;
+
+            // Audit Log
+            await logAudit({
+                action: 'decline_ambassador_application',
+                category: 'admin',
+                severity: 'info',
+                targetType: 'user',
+                targetId: userId,
+                details: { appId, declinedBy: adminUser.id },
+                newValue: { status: 'declined' }
+            }, req);
+
             return NextResponse.json({ success: true, message: 'Application declined.' });
         }
 
@@ -108,6 +121,17 @@ export async function POST(req: Request) {
                     metadata: { type: 'ambassador_reward', app_id: appId }
                 });
             if (subError) throw subError;
+
+            // Audit Log
+            await logAudit({
+                action: 'approve_ambassador_application',
+                category: 'admin',
+                severity: 'info',
+                targetType: 'user',
+                targetId: userId,
+                details: { appId, approvedBy: adminUser.id, campus: appData.campus },
+                newValue: { is_ambassador: true, subscription_plan_id: 'pro', coins_awarded: 500 }
+            }, req);
 
             return NextResponse.json({ success: true, message: 'Ambassador approved and rewards granted.' });
         }

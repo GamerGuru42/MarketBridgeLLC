@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import { logAudit } from '@/lib/audit';
 
 export async function POST(req: Request) {
     try {
@@ -44,6 +45,17 @@ export async function POST(req: Request) {
             console.error('Revoke DB error:', error);
             return NextResponse.json({ error: 'System error during revocation.' }, { status: 500 });
         }
+
+        // Audit Log
+        await logAudit({
+            action: 'revoke_seller',
+            category: 'admin',
+            severity: 'warning',
+            targetType: 'user',
+            targetId: sellerId,
+            details: { revokedBy: user.id },
+            newValue: { email_verified: false, is_verified: false }
+        }, req);
 
         return NextResponse.json({ success: true, message: 'Seller privileges successfully revoked.' });
     } catch (err: any) {

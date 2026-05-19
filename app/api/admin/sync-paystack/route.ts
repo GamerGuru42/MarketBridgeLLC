@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { paystackClient } from '@/lib/payment/paystack';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
+import { logAudit } from '@/lib/audit';
 
 export const dynamic = 'force-dynamic';
 
@@ -80,6 +81,23 @@ export async function GET(req: Request) {
             } else {
                 results.push({ planId: plan.id, status: 'exists', code: plan.paystack_plan_code });
             }
+        }
+
+        const createdPlans = results.filter(r => r.status === 'created');
+        if (createdPlans.length > 0) {
+            // Audit Log
+            await logAudit({
+                action: 'sync_paystack_plans',
+                category: 'financial',
+                severity: 'info',
+                targetType: 'setting',
+                targetId: 'paystack_plans',
+                details: {
+                    createdPlans,
+                    triggeredBy: user?.id || 'system_bypass',
+                    bypassUsed: bypass
+                }
+            }, req);
         }
 
         return NextResponse.json({

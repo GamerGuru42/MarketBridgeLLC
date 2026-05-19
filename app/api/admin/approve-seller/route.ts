@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { sendEmail } from '@/lib/email';
 import { getSellerApprovedTemplate } from '@/lib/email-templates';
+import { logAudit } from '@/lib/audit';
 
 export async function POST(req: Request) {
     try {
@@ -71,6 +72,19 @@ export async function POST(req: Request) {
             'Application Approved! 🎉',
             getSellerApprovedTemplate(application.full_name, inviteLink)
         );
+
+        // Audit Log
+        await logAudit({
+            action: 'approve_seller',
+            category: 'admin',
+            severity: 'info',
+            targetType: 'user',
+            targetId: application.user_id || applicationId,
+            targetLabel: application.student_email || application.full_name,
+            details: { applicationId, approverId },
+            oldValue: { status: application.status },
+            newValue: { status: 'approved', role: 'student_seller' },
+        }, req);
 
         return NextResponse.json({ success: true }, { status: 200 });
 
