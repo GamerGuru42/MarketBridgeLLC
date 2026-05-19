@@ -1,6 +1,44 @@
 const withPWA = require("@ducanh2912/next-pwa").default({
     dest: "public",
+    register: true,
+    skipWaiting: true,
     disable: process.env.NODE_ENV === "development",
+    runtimeCaching: [
+        {
+            // NEVER cache Supabase auth/API requests
+            urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
+            handler: "NetworkOnly",
+        },
+        {
+            // NEVER cache Next.js API routes or auth routes
+            urlPattern: /^https:\/\/.*\/(api|auth)\/.*/i,
+            handler: "NetworkOnly",
+        },
+        {
+            // Cache static assets (images, fonts, CSS, JS)
+            urlPattern: /\.(?:js|css|woff|woff2|png|jpg|jpeg|svg|gif|ico|webp)$/i,
+            handler: "CacheFirst",
+            options: {
+                cacheName: "static-assets",
+                expiration: {
+                    maxEntries: 100,
+                    maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
+                },
+            },
+        },
+        {
+            // Network-first for page navigations
+            urlPattern: /^https:\/\/.*/i,
+            handler: "NetworkFirst",
+            options: {
+                cacheName: "pages",
+                expiration: {
+                    maxEntries: 50,
+                    maxAgeSeconds: 24 * 60 * 60, // 1 day
+                },
+            },
+        },
+    ],
 });
 
 /** @type {import('next').NextConfig} */

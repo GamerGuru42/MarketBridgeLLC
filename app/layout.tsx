@@ -15,7 +15,7 @@ import { SystemProvider } from "@/contexts/SystemContext";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { DemoBanner } from "@/components/DemoBanner";
 import { FloatingFeedbackWidget } from "@/components/FloatingFeedbackWidget";
-import Script from "next/script";
+
 
 
 
@@ -137,21 +137,6 @@ export default function RootLayout({
             </SystemProvider>
           </ThemeProvider>
         </AppErrorBoundary>
-        <Script id="register-sw" strategy="afterInteractive">
-          {`
-            if ('serviceWorker' in navigator) {
-              window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                  .then((registration) => {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                  })
-                  .catch((error) => {
-                    console.error('ServiceWorker registration failed: ', error);
-                  });
-              });
-            }
-          `}
-        </Script>
       </body>
     </html>
   );
