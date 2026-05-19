@@ -25,14 +25,14 @@ CREATE TABLE IF NOT EXISTS chat_flags (
     severity TEXT NOT NULL DEFAULT 'medium'
         CHECK (severity IN ('low', 'medium', 'high', 'critical')),
     ai_summary TEXT,
-    resolved BOOLEAN DEFAULT FALSE,
+    is_resolved BOOLEAN DEFAULT FALSE,
     resolved_by UUID REFERENCES users(id) ON DELETE SET NULL,
     resolved_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_chat_flags_conversation ON chat_flags(conversation_id);
-CREATE INDEX IF NOT EXISTS idx_chat_flags_unresolved ON chat_flags(resolved) WHERE resolved = FALSE;
+CREATE INDEX IF NOT EXISTS idx_chat_flags_unresolved ON chat_flags(is_resolved) WHERE is_resolved = FALSE;
 
 -- RLS for chat_flags
 ALTER TABLE chat_flags ENABLE ROW LEVEL SECURITY;
