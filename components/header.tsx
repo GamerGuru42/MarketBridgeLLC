@@ -54,7 +54,7 @@ export const Header = () => {
 
     return (
         <>
-            <header className="fixed top-0 left-0 right-0 z-[100] bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 h-16 shadow-sm">
+            <header className="sticky top-0 left-0 right-0 z-[100] bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 h-16 shadow-sm">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between gap-4">
 
                     {/* Left: Logo + Campus Node */}

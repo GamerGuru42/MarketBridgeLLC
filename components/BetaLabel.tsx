@@ -15,7 +15,7 @@ export default function BetaLabel() {
   if (!pathname.startsWith('/campus') && !isDemoMode) return null
 
   return (
-    <div className="fixed bottom-56 left-4 md:bottom-4 md:left-4 z-[9999] pointer-events-none">
+    <div className="fixed top-[5.5rem] left-4 md:top-auto md:bottom-4 md:left-4 z-[9999] pointer-events-none">
       <div className="bg-[#FF6200] text-black text-[9px] sm:text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-[0_0_15px_rgba(255,98,0,0.3)] border border-black/10 backdrop-blur-md italic flex items-center gap-2">
         <span className="relative flex h-2 w-2">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-black opacity-40"></span>

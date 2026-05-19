@@ -11,7 +11,7 @@ export default function HomePage() {
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground selection:bg-[#FF6200] selection:text-white">
             <Header />
-            <main className="flex-1 w-full flex flex-col items-center pt-16">
+            <main className="flex-1 w-full flex flex-col items-center pt-0">
 
                 {/* ΓöÇΓöÇΓöÇ Hero Section ΓöÇΓöÇΓöÇ */}
                 <section className="w-full max-w-6xl mx-auto px-6 md:px-10 lg:px-16 pt-24 pb-32 flex flex-col md:flex-row items-center gap-12 lg:gap-24 relative">

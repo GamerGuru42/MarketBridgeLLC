@@ -215,7 +215,7 @@ export function AiAssistant() {
             <motion.button
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                    "fixed bottom-6 right-4 sm:right-6 h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-[0_10px_40px_rgba(255,98,0,0.4)] flex items-center justify-center text-white z-[110]",
+                    "fixed bottom-32 sm:bottom-6 right-4 sm:right-6 h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-[0_10px_40px_rgba(255,98,0,0.4)] flex items-center justify-center text-white z-[110]",
                     isOpen ? "bg-destructive hover:bg-destructive/90 shadow-[0_10px_40px_rgba(239,68,68,0.4)]" : "bg-[#FF6200] hover:bg-[#FF6200]/90"
                 )}
                 whileHover={{ scale: 1.1 }}
@@ -237,7 +237,7 @@ export function AiAssistant() {
                         animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
                         exit={{ opacity: 0, scale: 0.8, y: 50, filter: "blur(10px)" }}
                         transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                        className="fixed bottom-20 sm:bottom-24 right-4 sm:right-6 z-[110] w-[calc(100vw-2rem)] sm:w-[400px] origin-bottom-right"
+                        className="fixed bottom-48 sm:bottom-24 right-4 sm:right-6 z-[110] w-[calc(100vw-2rem)] sm:w-[400px] origin-bottom-right"
                     >
                         <Card className="border-white/10 shadow-[0_30px_100px_rgba(0,0,0,0.5)] overflow-hidden backdrop-blur-3xl bg-zinc-950/80 h-[450px] sm:h-[600px] flex flex-col ring-1 ring-white/10">
                             <CardHeader className="bg-gradient-to-r from-primary/20 to-transparent p-4 flex flex-row items-center gap-3 border-b border-primary/10 shrink-0">
