@@ -5,8 +5,8 @@
   "description": "Buy and sell on campus",
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#0F172A",
-  "background_color": "#FFFFFF",
+  "theme_color": "#FF6200",
+  "background_color": "#0a0a0a",
   "icons": [
     {
       "src": "/icon-192.png",
