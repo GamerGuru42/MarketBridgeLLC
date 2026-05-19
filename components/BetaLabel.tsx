@@ -21,7 +21,7 @@ export default function BetaLabel() {
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-black opacity-40"></span>
           <span className="relative inline-flex rounded-full h-2 w-2 bg-black"></span>
         </span>
-        {isDemoMode ? 'LIVE – Launch Phase 1' : 'MarketBridge Official'}
+        {isDemoMode ? 'Beta – Testing Phase' : 'MarketBridge Official'}
       </div>
     </div>
   )
