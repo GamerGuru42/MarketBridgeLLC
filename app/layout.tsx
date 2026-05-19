@@ -122,12 +122,7 @@ export default function RootLayout({
                       <LocationChecker>
                         {children}
                       </LocationChecker>
-
-                      {/* Beta label is shown only on campus pages */}
-                      <BetaLabel />
-
                       <NetworkStatus />
-                      <FloatingFeedbackWidget />
                     </ToastProvider>
                     <GlobalWidgets />
                     <OnboardingTour />
