@@ -1,12 +1,12 @@
 {
+  "id": "/",
   "name": "MarketBridge",
   "short_name": "MarketBridge",
   "description": "Buy and sell on campus",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FFFFFF",
   "theme_color": "#0F172A",
-  "scope": "/",
+  "background_color": "#FFFFFF",
   "icons": [
     {
       "src": "/icon-192.png",
@@ -16,7 +16,8 @@
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
