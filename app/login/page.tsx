@@ -71,8 +71,16 @@ function LoginContent() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsLoading(true);
         setError('');
+
+        const { loginSchema } = await import('@/lib/validations');
+        const parsed = loginSchema.safeParse(formData);
+        if (!parsed.success) {
+            setError(parsed.error.errors[0].message);
+            return;
+        }
+
+        setIsLoading(true);
         try {
             const emailToUse = normalizeIdentifier(formData.email);
             const { data: userRecord } = await supabase.from('users').select('id, login_attempts, locked_until').eq('email', emailToUse).maybeSingle();

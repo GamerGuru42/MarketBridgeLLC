@@ -3,6 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase/admin';
 import { sendEmail } from '@/lib/email';
 import { getSellerApplicationTemplate } from '@/lib/email-templates';
 import { rateLimit } from '@/lib/rate-limit';
+import { sellerApplicationSchema } from '@/lib/validations';
 
 export async function POST(req: Request) {
     try {
@@ -14,6 +15,12 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json();
+
+        const parsed = sellerApplicationSchema.safeParse(body);
+        if (!parsed.success) {
+            return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
+        }
+
         const {
             userId,
             fullName,
@@ -24,12 +31,7 @@ export async function POST(req: Request) {
             sellCategories,
             idCardUrl,
             bio
-        } = body;
-
-        // userId is REQUIRED — the dashboard trial lookup depends on it
-        if (!userId || !fullName || !phoneNumber || !university || !campusArea || !studentEmail || !sellCategories) {
-            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-        }
+        } = parsed.data;
 
         // Upsert by user_id — prevents duplicate applications from same user
         const { error } = await supabaseAdmin
