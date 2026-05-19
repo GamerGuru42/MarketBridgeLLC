@@ -41,14 +41,7 @@ export default function MainLayout({
     return (
         <div className="flex flex-col min-h-screen">
             <LocationConsentModal />
-            {!isDashboard && !isHome && (
-                <div className="bg-[#FF6200] text-black px-4 py-1.5 flex items-center justify-center gap-2 overflow-hidden whitespace-nowrap">
-                    <Zap className="h-3 w-3 fill-current animate-pulse" />
-                    <span className="text-[9px] font-black uppercase tracking-[0.2em] italic">
-                        MarketBridge Campus Beta – Testing Phase (Nigeria 2026)
-                    </span>
-                </div>
-            )}
+
             
             {user && (user as any).is_temporary_seller && !user.email_verified && (
                 <div className="bg-yellow-500 text-black px-4 py-2 flex items-center justify-center gap-2 z-50 overflow-hidden relative border-b border-yellow-600 shadow-sm">

@@ -231,13 +231,13 @@ function ListingsContent() {
                 <div className="space-y-4">
                     <div className="flex items-center gap-3">
                         <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading">Global Asset Index</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading">Live Campus Feed</span>
                     </div>
                     <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
                         Market<span className="text-[#FF6200]">Place</span>
                     </h1>
                     <p className="text-muted-foreground font-medium italic">
-                        Scanning <span className="text-foreground font-bold">{listings.length} live Notices</span> across the network.
+                        Showing <span className="text-foreground font-bold">{listings.length} active listings</span> across the campus.
                     </p>
                 </div>
 
@@ -247,7 +247,7 @@ function ListingsContent() {
                         <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 group-focus-within:text-[#FF6200] transition-colors" />
                         <input
                             type="text"
-                            placeholder="Search active Notices..."
+                            placeholder="Search active listings..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 pl-16 pr-6 h-16 text-zinc-900 dark:text-white placeholder:text-zinc-500 focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-medium italic text-sm transition-all"
@@ -277,16 +277,16 @@ function ListingsContent() {
                             onChange={(e) => setCampus(e.target.value)}
                             className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 px-6 h-16 text-zinc-900 dark:text-white focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
                         >
-                            <option value="" className="bg-[#FAFAFA] dark:bg-zinc-900 text-zinc-900 dark:text-white">All Terminals</option>
+                            <option value="" className="bg-[#FAFAFA] dark:bg-zinc-900 text-zinc-900 dark:text-white">All Universities</option>
                             {UNIVERSITIES.map(u => (
                                 <option key={u} value={u} className="bg-[#FAFAFA] dark:bg-zinc-900 text-zinc-900 dark:text-white">{u}</option>
                             ))}
-                            <option value="Global" className="bg-[#FAFAFA] dark:bg-zinc-900 text-zinc-900 dark:text-white">Global Access</option>
+                            <option value="Global" className="bg-[#FAFAFA] dark:bg-zinc-900 text-zinc-900 dark:text-white">Everywhere</option>
                         </select>
                     </div>
 
                     <Button type="submit" className="md:col-span-2 h-16 bg-[#FF6200] text-black hover:bg-[#FF7A29] font-black uppercase tracking-widest rounded-2xl border-none shadow-[0_10px_20px_rgba(255,98,0,0.1)]">
-                        Fire Query
+                        Search Market
                     </Button>
                 </form>
 
@@ -328,8 +328,8 @@ function ListingsContent() {
                         <EmptyState
                             icon={<ShieldCheck className="w-12 h-12 text-[#FF6200]" />}
                             title="Authentication Required"
-                            description="The marketplace network requires a secure connection. Log in to view live campus listings."
-                            actionLabel="Log In to Network"
+                            description="Log in to view live campus listings and start trading with verified students."
+                            actionLabel="Log In"
                             onAction={() => router.push('/login?redirect=/marketplace')}
                         />
                         <Link href="/">
@@ -346,8 +346,8 @@ function ListingsContent() {
                         <EmptyState
                             icon={<Search className="w-12 h-12 text-[#FF6200]" />}
                             title="Zero Matches Found"
-                            description="Adjust your parameters to re-scan the marketplace."
-                            actionLabel="Reset Network Scan"
+                            description="Adjust your filters or search terms to find what you're looking for."
+                            actionLabel="Clear Filters"
                             onAction={() => {
                                 setSearch('');
                                 setCategory('All Categories');
