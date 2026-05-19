@@ -20,7 +20,7 @@ export default function HomePage() {
                             <span className="w-2 h-2 rounded-full bg-[#FF6200] animate-pulse" />
                             <span className="text-[12px] font-bold tracking-widest text-[#FF6200] uppercase">Live in Abuja</span>
                         </div>
-                        <h1 className="text-[clamp(3rem,6vw,5.5rem)] font-black leading-[0.9] tracking-tighter text-foreground">
+                        <h1 className="text-[clamp(2.5rem,8vw,5.5rem)] font-black leading-[0.9] tracking-tighter text-foreground break-words sm:break-normal">
                             Abuja's Trusted<br />
                             Campus<br />
                             <span className="text-[#FF6200]">Marketplace.</span>
@@ -74,7 +74,7 @@ export default function HomePage() {
                                             <ShoppingBag className="w-6 h-6 text-[#FF6200]" />
                                         </div>
                                         <div>
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Delivering</p>
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Free delivery</p>
                                             <h4 className="font-bold text-foreground text-sm leading-tight">Jollof & Chicken</h4>
                                         </div>
                                     </div>
@@ -93,7 +93,7 @@ export default function HomePage() {
                                             <Store className="w-6 h-6 text-foreground" />
                                         </div>
                                         <div>
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Fixed Cost</p>
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Service Fee</p>
                                             <h4 className="font-bold text-foreground text-sm leading-tight">MacBook Repair</h4>
                                         </div>
                                     </div>
@@ -159,7 +159,7 @@ export default function HomePage() {
                                 Join The <span className="text-[#FF6200]">Community.</span>
                             </h2>
                             <p className="text-white/60 font-medium text-lg max-w-xl mb-10">
-                                Experience a vibrant marketplace for all your campus needs. Open for browsing and buying immediatelyΓÇöno waitlist, no delays.
+                                Experience a vibrant marketplace for all your campus needs. Open for browsing and buying immediately—no waitlist, no delays.
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">

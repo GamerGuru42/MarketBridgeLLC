@@ -197,6 +197,11 @@ export async function middleware(request: NextRequest) {
     const isHQ = host.startsWith('hq.');
     const isWWW = host === 'marketbridge.com.ng' || host.startsWith('www.') || (isLocalhost && !isHQ);
 
+    // ── 0. HTTPS Redirect ────────────────────────────────────────────────────
+    if (request.headers.get("x-forwarded-proto") !== "https" && process.env.NODE_ENV === "production" && !isLocalhost) {
+        return NextResponse.redirect(`https://${host}${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`, 301);
+    }
+
     // ── 1. Rate Limiting ────────────────────────────────────────────────────
     const isPortalRoute = pathname.startsWith('/portal') || pathname.startsWith('/admin');
     const isAuthRoute = (pathname.includes('/login') || pathname.includes('/auth') || pathname.includes('/signup')) && !pathname.includes('/callback');
