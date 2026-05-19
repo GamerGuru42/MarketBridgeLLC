@@ -41,11 +41,7 @@ export const Logo: React.FC<LogoProps> = ({
                     <span className="text-foreground">Market</span>
                     <span className="text-[#FF6200]">Bridge</span>
                 </span>
-                {isDemoMode && (
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF6200]/90 italic flex items-center gap-1.5 mt-0.5 border-t border-[#FF6200]/20 pt-0.5">
-                    Official Launch
-                  </span>
-                )}
+
             </div>
         </Link>
     );
