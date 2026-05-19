@@ -32,7 +32,7 @@ export default function MainLayout({
             
     // Allow temporary sellers to bypass email verification gate
             const isTemp = (user as any).is_temporary_seller === true;
-            if (['student_buyer', 'student_seller'].includes(user.role) && !user.email_verified && !isSocialLogin && !isTemp) {
+            if (['student_buyer', 'student_seller', 'buyer', 'seller'].includes(user.role) && !user.email_verified && !isSocialLogin && !isTemp) {
                 router.push('/verify-email');
             }
         }

@@ -42,7 +42,7 @@ export const MobileBottomNav = () => {
             href: '/cart',
             label: 'Cart',
             icon: ShoppingCart,
-            show: (user?.role === 'student_buyer') || !user,
+            show: (user?.role === 'student_buyer' || user?.role === 'buyer') || !user,
             badge: itemCount,
         },
         {
@@ -54,7 +54,7 @@ export const MobileBottomNav = () => {
                 if (role === 'marketing_admin') return '/admin/marketing';
                 if (role === 'systems_admin' || role === 'technical_admin') return '/admin/systems';
                 if (role === 'it_support') return '/admin/it-support';
-                if (role === 'student_seller') return '/seller/dashboard';
+                if (role === 'student_seller' || role === 'seller') return '/seller/dashboard';
                 return '/orders';
             })(),
             label: (user && ['ceo', 'operations_admin', 'marketing_admin', 'systems_admin', 'it_support', 'technical_admin', 'admin'].includes(user.role)) ? 'Command' : (user ? 'Account' : 'Login'),

@@ -160,7 +160,7 @@ export const Header = () => {
                                                 <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium truncate mt-0.5">{user.email}</p>
                                             </div>
 
-                                            {user.role === 'student_seller' && (
+                                            {(user.role === 'student_seller' || user.role === 'seller') && (
                                                 <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-800 my-0.5">
                                                     <Link href="/seller/dashboard" className="flex items-center gap-3 px-3 py-2.5">
                                                         <Store className="h-4 w-4 text-[#FF6200]" />
