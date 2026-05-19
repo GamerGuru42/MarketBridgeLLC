@@ -61,13 +61,13 @@ export default function ChatsPage() {
         try {
             const { data: asP1, error: e1 } = await supabase
                 .from('conversations')
-                .select(`*, other_user:users!participant2_id(id, display_name, photo_url, role), listing:listings(title)`)
+                .select(`*, other_user:users!participant2_id(id, display_name, photo_url, role, avatar_url), listing:listings(title)`)
                 .eq('participant1_id', user.id)
                 .order('last_message_at', { ascending: false });
 
             const { data: asP2, error: e2 } = await supabase
                 .from('conversations')
-                .select(`*, other_user:users!participant1_id(id, display_name, photo_url, role), listing:listings(title)`)
+                .select(`*, other_user:users!participant1_id(id, display_name, photo_url, role, avatar_url), listing:listings(title)`)
                 .eq('participant2_id', user.id)
                 .order('last_message_at', { ascending: false });
 
@@ -81,10 +81,28 @@ export default function ChatsPage() {
                 return dateB - dateA;
             });
 
+            // Fetch real unread counts
+            let unreadMap: Record<string, number> = {};
+            try {
+                const { data: unreadData } = await supabase.rpc('get_unread_counts', { p_user_id: user.id });
+                if (unreadData) {
+                    for (const row of unreadData) {
+                        unreadMap[row.conversation_id] = row.unread_count;
+                    }
+                }
+            } catch (e) {
+                // RPC may not exist yet if migration hasn't run — graceful fallback
+                console.warn('get_unread_counts RPC not available, falling back to 0');
+            }
+
             const processedChats = allChats.map(c => ({
                 ...c,
                 listing_title: c.listing?.title,
-                unread_count: 0
+                other_user: c.other_user ? {
+                    ...c.other_user,
+                    photo_url: c.other_user.avatar_url || c.other_user.photo_url
+                } : undefined,
+                unread_count: unreadMap[c.id] || 0
             }));
 
             setChats(processedChats);
@@ -99,19 +117,39 @@ export default function ChatsPage() {
         if (!user) return () => { };
 
         const channel = supabase
-            .channel('public:conversations_list')
+            .channel('chats_list_realtime')
+            // Listen for conversation updates (last_message changes)
             .on('postgres_changes', {
-                event: '*',
+                event: 'UPDATE',
                 schema: 'public',
                 table: 'conversations',
-                filter: `participant1_id=eq.${user.id}`
-            }, () => fetchChats())
+            }, (payload: any) => {
+                // Only refresh if this conversation involves the current user
+                const conv = payload.new;
+                if (conv.participant1_id === user.id || conv.participant2_id === user.id) {
+                    fetchChats();
+                }
+            })
+            // Listen for new conversations
             .on('postgres_changes', {
-                event: '*',
+                event: 'INSERT',
                 schema: 'public',
                 table: 'conversations',
-                filter: `participant2_id=eq.${user.id}`
-            }, () => fetchChats())
+            }, (payload: any) => {
+                const conv = payload.new;
+                if (conv.participant1_id === user.id || conv.participant2_id === user.id) {
+                    fetchChats();
+                }
+            })
+            // Listen for new messages to update unread counts instantly
+            .on('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'messages',
+            }, (payload: any) => {
+                // A new message arrived — refresh to update unread badges and last_message preview
+                fetchChats();
+            })
             .subscribe();
 
         return () => {

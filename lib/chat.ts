@@ -31,25 +31,29 @@ const supabase = createClient();
 export async function startConversation(currentUserId: string, otherUserId: string, listingId?: string) {
     if (!currentUserId || !otherUserId) throw new Error('Invalid participants');
 
-    // Check for existing conversation initiated by current user
-    const { data: initiated } = await supabase
-        .from('conversations')
-        .select('id')
-        .eq('participant1_id', currentUserId)
-        .eq('participant2_id', otherUserId)
-        .eq(listingId ? 'listing_id' : 'listing_id', listingId || null);
+    // Build query helper — properly handles null listing_id
+    const findExisting = async (p1: string, p2: string) => {
+        let query = supabase
+            .from('conversations')
+            .select('id')
+            .eq('participant1_id', p1)
+            .eq('participant2_id', p2);
 
-    if (initiated && initiated.length > 0) return initiated[0].id;
+        if (listingId) {
+            query = query.eq('listing_id', listingId);
+        } else {
+            query = query.is('listing_id', null);
+        }
 
-    // Check for existing conversation initiated by other user
-    const { data: received } = await supabase
-        .from('conversations')
-        .select('id')
-        .eq('participant1_id', otherUserId)
-        .eq('participant2_id', currentUserId)
-        .eq(listingId ? 'listing_id' : 'listing_id', listingId || null);
+        const { data } = await query;
+        return data && data.length > 0 ? data[0].id : null;
+    };
 
-    if (received && received.length > 0) return received[0].id;
+    // Check both directions (user A→B and B→A)
+    const existingId = await findExisting(currentUserId, otherUserId)
+        || await findExisting(otherUserId, currentUserId);
+
+    if (existingId) return existingId;
 
     // Create new conversation
     const { data: newConv, error } = await supabase

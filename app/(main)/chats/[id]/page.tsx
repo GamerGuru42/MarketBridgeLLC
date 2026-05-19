@@ -569,15 +569,86 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
     };
 
     // Image handling helpers
-    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const compressImage = async (file: File, maxSizeBytes: number = 2 * 1024 * 1024): Promise<File> => {
+        // If already under limit, return as-is
+        if (file.size <= maxSizeBytes) return file;
+
+        return new Promise((resolve, reject) => {
+            const img = new window.Image();
+            const url = URL.createObjectURL(file);
+            img.onload = () => {
+                URL.revokeObjectURL(url);
+                const canvas = document.createElement('canvas');
+                let { width, height } = img;
+
+                // Scale down if very large
+                const MAX_DIM = 1920;
+                if (width > MAX_DIM || height > MAX_DIM) {
+                    const ratio = Math.min(MAX_DIM / width, MAX_DIM / height);
+                    width = Math.round(width * ratio);
+                    height = Math.round(height * ratio);
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) { reject(new Error('Canvas not supported')); return; }
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Try progressively lower quality
+                let quality = 0.8;
+                const tryCompress = () => {
+                    canvas.toBlob(
+                        (blob) => {
+                            if (!blob) { reject(new Error('Compression failed')); return; }
+                            if (blob.size <= maxSizeBytes || quality <= 0.3) {
+                                resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.webp'), {
+                                    type: 'image/webp',
+                                    lastModified: Date.now()
+                                }));
+                            } else {
+                                quality -= 0.1;
+                                tryCompress();
+                            }
+                        },
+                        'image/webp',
+                        quality
+                    );
+                };
+                tryCompress();
+            };
+            img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Image load failed')); };
+            img.src = url;
+        });
+    };
+
+    const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file) {
-            if (file.size > 5 * 1024 * 1024) {
-                toast('Image too large. Maximum size is 5MB.', 'error');
-                return;
+        if (!file) return;
+
+        // Hard reject over 10MB raw (even before compression)
+        if (file.size > 10 * 1024 * 1024) {
+            toast('Image too large. Maximum raw size is 10MB.', 'error');
+            return;
+        }
+
+        try {
+            const compressed = await compressImage(file, 2 * 1024 * 1024);
+            setSelectedImage(compressed);
+            setImagePreview(URL.createObjectURL(compressed));
+
+            if (compressed.size < file.size) {
+                const saved = Math.round((1 - compressed.size / file.size) * 100);
+                toast(`Image compressed (${saved}% smaller)`, 'success');
             }
-            setSelectedImage(file);
-            setImagePreview(URL.createObjectURL(file));
+        } catch (err) {
+            // Fallback: use original if compression fails
+            if (file.size <= 5 * 1024 * 1024) {
+                setSelectedImage(file);
+                setImagePreview(URL.createObjectURL(file));
+            } else {
+                toast('Image too large and compression failed. Try a smaller image.', 'error');
+            }
         }
     }
 
