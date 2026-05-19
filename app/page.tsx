@@ -2,19 +2,33 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, ShoppingBag, Store, MapPin, Zap, CheckCircle2, QrCode } from 'lucide-react';
+import { ArrowRight, ShoppingBag, Store, MapPin, Zap, CheckCircle2, QrCode, Search, Laptop, Book, Utensils, Shirt } from 'lucide-react';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import QRCode from 'react-qr-code';
+import { useRouter } from 'next/navigation';
 
 export default function HomePage() {
+    const router = useRouter();
+
+    const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const query = formData.get('q');
+        if (query) {
+            router.push(`/marketplace?search=${encodeURIComponent(query as string)}`);
+        } else {
+            router.push('/marketplace');
+        }
+    };
+
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground selection:bg-[#FF6200] selection:text-white">
             <Header />
             <main className="flex-1 w-full flex flex-col items-center pt-0">
 
                 {/* ΓöÇΓöÇΓöÇ Hero Section ΓöÇΓöÇΓöÇ */}
-                <section className="w-full max-w-6xl mx-auto px-6 md:px-10 lg:px-16 pt-24 pb-32 flex flex-col md:flex-row items-center gap-12 lg:gap-24 relative">
+                <section className="w-full max-w-6xl mx-auto px-6 md:px-10 lg:px-16 pt-24 pb-20 flex flex-col md:flex-row items-center gap-12 lg:gap-24 relative">
                     <div className="flex-1 flex flex-col space-y-8 z-10 relative">
                         <div className="inline-flex items-center gap-2 mb-2">
                             <span className="w-2 h-2 rounded-full bg-[#FF6200] animate-pulse" />
@@ -122,6 +136,48 @@ export default function HomePage() {
                                 <CheckCircle2 className="w-4 h-4 text-[#FF6200]" />
                             </div>
                             <p className="font-black text-sm tracking-tight text-zinc-800 dark:text-zinc-200">Verified Seller</p>
+                        </div>
+                    </div>
+                </section>
+
+                {/* ΓöÇΓöÇΓöÇ Search & Categories Section ΓöÇΓöÇΓöÇ */}
+                <section className="w-full max-w-6xl mx-auto px-6 md:px-10 lg:px-16 pb-24 z-20 relative -mt-8">
+                    <div className="bg-card p-6 md:p-8 rounded-[2rem] shadow-xl border border-zinc-100 dark:border-zinc-800 flex flex-col gap-8">
+                        <form onSubmit={handleSearch} className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-900 p-2 rounded-2xl border border-zinc-200 dark:border-zinc-800 focus-within:border-[#FF6200] transition-colors">
+                            <div className="pl-4 text-zinc-400">
+                                <Search className="w-5 h-5" />
+                            </div>
+                            <input
+                                type="text"
+                                name="q"
+                                placeholder="Search for food, gadgets, textbooks..."
+                                className="flex-1 bg-transparent border-none outline-none text-foreground placeholder:text-zinc-500 font-medium text-sm md:text-base py-3 px-2"
+                            />
+                            <button
+                                type="submit"
+                                className="bg-[#FF6200] hover:bg-[#FF7A29] text-white px-6 py-3 rounded-xl font-bold tracking-wide uppercase text-xs sm:text-sm transition-colors"
+                            >
+                                Search
+                            </button>
+                        </form>
+
+                        <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4">
+                            {[
+                                { name: 'Food', icon: Utensils, route: '/marketplace?category=food' },
+                                { name: 'Gadgets', icon: Laptop, route: '/marketplace?category=electronics' },
+                                { name: 'Fashion', icon: Shirt, route: '/marketplace?category=fashion' },
+                                { name: 'Books', icon: Book, route: '/marketplace?category=books' },
+                                { name: 'Services', icon: Store, route: '/marketplace?category=services' },
+                            ].map((cat) => (
+                                <Link
+                                    key={cat.name}
+                                    href={cat.route}
+                                    className="flex items-center gap-2 px-5 py-3 rounded-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-[#FF6200] dark:hover:border-[#FF6200] hover:text-[#FF6200] transition-all group"
+                                >
+                                    <cat.icon className="w-4 h-4 text-zinc-500 group-hover:text-[#FF6200]" />
+                                    <span className="font-bold text-xs uppercase tracking-widest">{cat.name}</span>
+                                </Link>
+                            ))}
                         </div>
                     </div>
                 </section>

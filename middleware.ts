@@ -1,8 +1,34 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 
 // ─── Rate Limiting ───────────────────────────────────────────────────────────
 const rateLimitMap = new Map<string, { count: number; firstAttempt: number }>();
+
+let redis: Redis | null = null;
+if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+    try {
+        redis = new Redis({
+            url: process.env.UPSTASH_REDIS_REST_URL,
+            token: process.env.UPSTASH_REDIS_REST_TOKEN,
+        });
+    } catch (e) {
+        console.warn('Failed to initialize Redis rate limiting. Falling back to memory.', e);
+    }
+}
+
+const publicRatelimit = redis ? new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(10, '1 m'),
+    analytics: true,
+}) : null;
+
+const adminRatelimit = redis ? new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(5, '1 m'),
+    analytics: true,
+}) : null;
 
 interface RateLimitConfig {
     maxAttempts: number;
@@ -207,16 +233,34 @@ export async function middleware(request: NextRequest) {
     const isAuthRoute = (pathname.includes('/login') || pathname.includes('/auth') || pathname.includes('/signup')) && !pathname.includes('/callback');
 
     if (isAuthRoute) {
-        const config = isPortalRoute ? ADMIN_RATE_LIMIT : PUBLIC_RATE_LIMIT;
         const rateLimitKey = isPortalRoute ? `admin:${ip}` : `public:${ip}`;
-        const isAllowed = checkRateLimit(rateLimitKey, config);
+        const blockMinutes = isPortalRoute ? 60 : 30;
 
-        if (!isAllowed) {
-            const blockMinutes = isPortalRoute ? 60 : 30;
-            return new NextResponse(
-                JSON.stringify({ error: `Too many attempts. Your access is temporarily restricted for ${blockMinutes} minutes for security.` }),
-                { status: 429, headers: { 'Content-Type': 'application/json' } }
-            );
+        const ratelimit = isPortalRoute ? adminRatelimit : publicRatelimit;
+        if (ratelimit) {
+            try {
+                const { success } = await ratelimit.limit(rateLimitKey);
+                if (!success) {
+                    return new NextResponse(
+                        JSON.stringify({ error: `Too many attempts. Your access is temporarily restricted for ${blockMinutes} minutes for security.` }),
+                        { status: 429, headers: { 'Content-Type': 'application/json' } }
+                    );
+                }
+            } catch (e) {
+                // If redis fails during execution, fallback silently
+                console.error('Redis Rate Limit Error:', e);
+            }
+        } else {
+            // Fallback to in-memory map
+            const config = isPortalRoute ? ADMIN_RATE_LIMIT : PUBLIC_RATE_LIMIT;
+            const isAllowed = checkRateLimit(rateLimitKey, config);
+
+            if (!isAllowed) {
+                return new NextResponse(
+                    JSON.stringify({ error: `Too many attempts. Your access is temporarily restricted for ${blockMinutes} minutes for security.` }),
+                    { status: 429, headers: { 'Content-Type': 'application/json' } }
+                );
+            }
         }
     }
 

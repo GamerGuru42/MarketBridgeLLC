@@ -147,7 +147,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 }
             } catch (e) { /* ignore */ }
         }
-        const { error } = await supabase.auth.signInWithOAuth({
+        const isWebView = /wv|WebView|Android.*Version\/[0-9]\.[0-9]|Line|Instagram|FBAV/i.test(navigator.userAgent);
+
+        const { data, error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
                 redirectTo: redirectTo || `${window.location.origin}/auth/callback`,
@@ -155,19 +157,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     access_type: 'offline',
                     prompt: 'select_account',
                 },
+                skipBrowserRedirect: isWebView,
             },
         });
         if (error) throw error;
+
+        // Force manual redirect in WebViews to prevent popup blocking
+        if (isWebView && data?.url) {
+            window.location.href = data.url;
+        }
     };
 
     const signInWithFacebook = async () => {
-        const { error } = await supabase.auth.signInWithOAuth({
+        const isWebView = /wv|WebView|Android.*Version\/[0-9]\.[0-9]|Line|Instagram|FBAV/i.test(navigator.userAgent);
+
+        const { data, error } = await supabase.auth.signInWithOAuth({
             provider: 'facebook',
             options: {
                 redirectTo: `${window.location.origin}/auth/callback`,
+                skipBrowserRedirect: isWebView,
             },
         });
         if (error) throw error;
+        
+        if (isWebView && data?.url) {
+            window.location.href = data.url;
+        }
     };
 
     const logout = async () => {
