@@ -338,6 +338,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
     matcher: [
-        '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
+        '/((?!_next/static|_next/image|favicon.ico|favicon-v2\\.ico|sitemap.xml|robots.txt|manifest\\.json|sw\\.js|workbox-.*\\.js|icon-.*\\.png|apple-touch-icon.*\\.png|og-image\\.png|marketbridge_logo.*\\.png|.*\\.svg).*)',
     ],
 };
