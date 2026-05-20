@@ -729,12 +729,20 @@ export default function ListingDetailContent() {
                                     </div>
                                     <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-black uppercase tracking-widest mb-4">{listing.dealer.university || 'Verified Institution'}</p>
                                     <div className="flex items-center gap-4">
-                                        <div className="flex items-center gap-1.5">
+                                        <button
+                                            onClick={() => {
+                                                const element = document.getElementById('reviews-section');
+                                                if (element) {
+                                                    element.scrollIntoView({ behavior: 'smooth' });
+                                                }
+                                            }}
+                                            className="flex items-center gap-1.5 hover:underline cursor-pointer focus:outline-none"
+                                        >
                                             <Star className="h-3 w-3 fill-[#FF6200] text-[#FF6200]" />
                                             <span className="text-[10px] font-black italic">
                                                 {sellerRating ? `${sellerRating.avg} (${sellerRating.count} reviews)` : 'New Seller'}
                                             </span>
-                                        </div>
+                                        </button>
                                         <span className="w-1 h-1 rounded-full bg-zinc-200 dark:bg-zinc-700" />
                                         <div className="text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">{listing.dealer.store_type || 'DIGITAL'}</div>
                                     </div>
@@ -753,6 +761,15 @@ export default function ListingDetailContent() {
                             </p>
                         </div>
                     </div>
+                </div>
+
+                {/* Reviews Section */}
+                <div id="reviews-section" className="mt-16 pt-16 border-t border-zinc-200 dark:border-zinc-800">
+                    <h2 className="text-2xl font-black uppercase tracking-tighter italic font-heading mb-8 flex items-center gap-3">
+                        <span className="h-2 w-2 rounded-full bg-[#FF6200]" />
+                        Ratings & Reviews
+                    </h2>
+                    <ReviewsSection listingId={listing.id} dealerId={listing.dealer.id} />
                 </div>
                         {/* Offer Dialog */}
             <Dialog open={isOfferOpen} onOpenChange={setIsOfferOpen}>

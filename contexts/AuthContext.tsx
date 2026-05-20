@@ -52,11 +52,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const fetchUserProfile = async (userId: string, retryCount = 0) => {
         try {
-            const { data, error } = await supabase
-                .from('users')
-                .select('*')
-                .eq('id', userId)
-                .single();
+            const [userRes, profileRes] = await Promise.all([
+                supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .single(),
+                supabase
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', userId)
+                    .maybeSingle()
+            ]);
+
+            const { data, error } = userRes;
+            const profileRole = profileRes.data?.role;
+            const mergedData = data ? { ...data, role: profileRole || 'buyer' } : null;
 
             const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo', 'systems_admin', 'it_support'];
             
@@ -85,7 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 // RACE CONDITION PROTECTION:
                 // If the user has Admin intent but the DB returns 'buyer', 
                 // the profile update hasn't propagated yet. We MUST re-check.
-                const dbRole = data?.role;
+                const dbRole = mergedData?.role;
                 if (hasAdminIntent && (!dbRole || !ADMIN_ROLES.includes(dbRole)) && retryCount < 4) {
                     console.warn(`Race Condition Detected: User has Admin Intent but DB role is "${dbRole}". Retrying sync ${retryCount + 1}/4...`);
                     await new Promise(resolve => setTimeout(resolve, 1200)); // Wait 1.2s for DB consistency
@@ -94,27 +105,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
                 // Map Supabase user to our User type (include both id and _id for compatibility)
                 const mappedUser = {
-                    ...data,
-                    _id: data.id,
-                    displayName: data.display_name,
-                    phone_number: data.phone_number,
-                    photoURL: data.photo_url,
-                    isVerified: data.is_verified,
-                    storeType: data.store_type,
-                    businessName: data.business_name,
-                    subscriptionPlan: data.subscription_plan_id,
-                    subscriptionStatus: data.subscription_status,
-                    subscriptionStartDate: data.subscription_start_date,
-                    subscriptionEndDate: data.subscription_end_date,
-                    subscription_expires_at: data.subscription_expires_at,
-                    trial_start_date: data.trial_start_date,
-                    listingLimit: data.listing_limit,
-                    university: data.university,
-                    email_verified: data.email_verified,
-                    last_otp_sent: data.last_otp_sent,
-                    otp_attempts: data.otp_attempts,
-                    coins_balance: data.coins_balance,
-                    referral_link_code: data.referral_link_code,
+                    ...mergedData,
+                    _id: mergedData.id,
+                    displayName: mergedData.display_name,
+                    phone_number: mergedData.phone_number,
+                    photoURL: mergedData.photo_url,
+                    isVerified: mergedData.is_verified,
+                    storeType: mergedData.store_type,
+                    businessName: mergedData.business_name,
+                    subscriptionPlan: mergedData.subscription_plan_id,
+                    subscriptionStatus: mergedData.subscription_status,
+                    subscriptionStartDate: mergedData.subscription_start_date,
+                    subscriptionEndDate: mergedData.subscription_end_date,
+                    subscription_expires_at: mergedData.subscription_expires_at,
+                    trial_start_date: mergedData.trial_start_date,
+                    listingLimit: mergedData.listing_limit,
+                    university: mergedData.university,
+                    email_verified: mergedData.email_verified,
+                    last_otp_sent: mergedData.last_otp_sent,
+                    otp_attempts: mergedData.otp_attempts,
+                    coins_balance: mergedData.coins_balance,
+                    referral_link_code: mergedData.referral_link_code,
                 };
                 setUser(mappedUser as User);
             }

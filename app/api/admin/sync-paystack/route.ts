@@ -24,7 +24,7 @@ export async function GET(req: Request) {
         // Verify user is admin
         if (user) {
             const { data: profile } = await supabaseAdmin
-                .from('users')
+                .from('profiles')
                 .select('role')
                 .eq('id', user.id)
                 .single();

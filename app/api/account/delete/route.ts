@@ -40,7 +40,7 @@ export async function DELETE(request: Request) {
 
         // 2. Prevent CEO / admin accounts from self-deleting via this route
         const { data: profile } = await supabase
-            .from('users')
+            .from('profiles')
             .select('role')
             .eq('id', user.id)
             .single();

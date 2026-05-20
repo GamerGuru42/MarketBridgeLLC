@@ -20,10 +20,33 @@ export default function AdminVerifySellers() {
 
   async function fetchRequests() {
     setLoading(true);
+    
+    // First, find all users with a seller role in the profiles table
+    const { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('id, role')
+      .in('role', ['student_seller', 'seller']);
+      
+    if (profilesError) {
+        console.error("Error fetching sellers profiles:", profilesError);
+        setRows([]);
+        setLoading(false);
+        return;
+    }
+    
+    if (!profiles || profiles.length === 0) {
+        setRows([]);
+        setLoading(false);
+        return;
+    }
+    
+    const sellerIds = profiles.map(p => p.id);
+    
+    // Then fetch their full details from the users table
     const { data, error } = await supabase
       .from('users')
       .select('id, email, display_name, phone_number, is_verified, email_verified, is_temporary_seller, temporary_seller_expires_at, created_at')
-      .in('role', ['student_seller', 'seller'])
+      .in('id', sellerIds)
       .order('created_at', { ascending: false })
       .limit(100);
       
@@ -31,7 +54,15 @@ export default function AdminVerifySellers() {
         console.error("Error fetching sellers mapping:", error);
     }
     
-    setRows(data || []);
+    if (data) {
+        const combined = data.map(u => ({
+            ...u,
+            role: profiles.find(p => p.id === u.id)?.role
+        }));
+        setRows(combined);
+    } else {
+        setRows([]);
+    }
     setLoading(false);
   }
 

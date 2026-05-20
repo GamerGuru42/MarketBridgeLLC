@@ -60,12 +60,31 @@ export default function SystemsAdminPage() {
 
             // Admin users
             const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo', 'systems_admin', 'it_support'];
-            const { data: admins } = await supabase
-                .from('users')
-                .select('id, email, role, display_name, created_at')
-                .in('role', ADMIN_ROLES)
-                .order('created_at', { ascending: false });
-            setAdminUsers(admins || []);
+            const { data: profiles } = await supabase
+                .from('profiles')
+                .select('id, role')
+                .in('role', ADMIN_ROLES);
+            
+            if (profiles && profiles.length > 0) {
+                const adminIds = profiles.map(p => p.id);
+                const { data: admins } = await supabase
+                    .from('users')
+                    .select('id, email, display_name, created_at')
+                    .in('id', adminIds)
+                    .order('created_at', { ascending: false });
+                
+                if (admins) {
+                    const combinedAdmins = admins.map(u => ({
+                        ...u,
+                        role: profiles.find(p => p.id === u.id)?.role
+                    }));
+                    setAdminUsers(combinedAdmins);
+                } else {
+                    setAdminUsers([]);
+                }
+            } else {
+                setAdminUsers([]);
+            }
         } catch (e) {
             console.error(e);
         } finally {
@@ -83,29 +102,21 @@ export default function SystemsAdminPage() {
             // Check if user exists
             const { data: existing } = await supabase
                 .from('users')
-                .select('id, role')
+                .select('id')
                 .eq('email', newAdminEmail.toLowerCase().trim())
                 .maybeSingle();
 
             if (existing) {
-                // Update role
+                // Update role in profiles
                 const { error } = await supabase
-                    .from('users')
+                    .from('profiles')
                     .update({ role: newAdminRole })
                     .eq('id', existing.id);
                 if (error) throw error;
                 toast(`Updated ${newAdminEmail} to ${newAdminRole}`, 'success');
             } else {
-                // Create placeholder record
-                const { error } = await supabase
-                    .from('users')
-                    .insert({
-                        email: newAdminEmail.toLowerCase().trim(),
-                        role: newAdminRole,
-                        display_name: newAdminEmail.split('@')[0],
-                    });
-                if (error) throw error;
-                toast(`Created admin account for ${newAdminEmail}`, 'success');
+                // Cannot create placeholder without auth.users ID using the new schema
+                toast(`User must sign up first before admin role can be assigned.`, 'error');
             }
             setNewAdminEmail('');
             fetchSystemsData();

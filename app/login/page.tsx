@@ -109,11 +109,12 @@ function LoginContent() {
             if (!data?.user) { setError('Login failed.'); return; }
 
             let userRole = data.user.user_metadata?.role as string;
-            const { data: profile } = await supabase.from('users').select('role').eq('id', data.user.id).maybeSingle();
+            const { data: profile } = await supabase.from('profiles').select('role').eq('id', data.user.id).maybeSingle();
             if (!profile) {
                 const meta = data.user.user_metadata || {};
                 const healedRole = meta.role || 'student_buyer';
-                await supabase.from('users').upsert({ id: data.user.id, email: data.user.email ?? '', display_name: `${meta.first_name || ''} ${meta.last_name || ''}`.trim() || data.user.email?.split('@')[0] || 'User', role: healedRole, email_verified: !!data.user.email_confirmed_at, is_verified: false, is_verified_seller: false, coins_balance: healedRole === 'student_buyer' ? 100 : 0 }, { onConflict: 'id' });
+                await supabase.from('users').upsert({ id: data.user.id, email: data.user.email ?? '', display_name: `${meta.first_name || ''} ${meta.last_name || ''}`.trim() || data.user.email?.split('@')[0] || 'User', email_verified: !!data.user.email_confirmed_at, is_verified: false, is_verified_seller: false, coins_balance: healedRole === 'student_buyer' ? 100 : 0 }, { onConflict: 'id' });
+                await supabase.from('profiles').upsert({ id: data.user.id, email: data.user.email ?? '', role: healedRole }, { onConflict: 'id' });
                 userRole = healedRole;
             } else { userRole = profile.role || userRole; }
             refreshUser(data.user.id).catch(err => console.warn('Context sync error:', err));

@@ -123,8 +123,17 @@ function AdminSignupContent() {
                             id: activeUser.id,
                             email: identifier,
                             display_name: formData.displayName,
-                            role: isSellerInvite ? 'student_seller' : role,
                             is_verified: true, // Auto-verify admins and approved sellers
+                        }, {
+                            onConflict: 'id'
+                        });
+
+                    const { error: roleError } = await supabase
+                        .from('profiles')
+                        .upsert({
+                            id: activeUser.id,
+                            email: identifier,
+                            role: isSellerInvite ? 'student_seller' : role,
                         }, {
                             onConflict: 'id'
                         });

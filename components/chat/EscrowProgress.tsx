@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import { ImageUpload } from '@/components/ImageUpload';
 
 export type EscrowStep = {
     id: string;
@@ -49,6 +50,7 @@ export function EscrowProgress({ agreement, steps, onUpdate }: EscrowProgressPro
     const [isReviewOpen, setIsReviewOpen] = useState(false);
     const [reviewRating, setReviewRating] = useState(5);
     const [reviewComment, setReviewComment] = useState('');
+    const [reviewPhotoUrls, setReviewPhotoUrls] = useState<string[]>([]);
     const [submittingReview, setSubmittingReview] = useState(false);
     const [hasReviewed, setHasReviewed] = useState(false);
 
@@ -117,7 +119,8 @@ export function EscrowProgress({ agreement, steps, onUpdate }: EscrowProgressPro
                 body: JSON.stringify({
                     rating: reviewRating,
                     comment: reviewComment,
-                    userId: user.id
+                    userId: user.id,
+                    photoUrls: reviewPhotoUrls
                 })
             });
             const data = await res.json();
@@ -129,7 +132,8 @@ export function EscrowProgress({ agreement, steps, onUpdate }: EscrowProgressPro
             }
             setHasReviewed(true);
             setIsReviewOpen(false);
-            alert('Review submitted successfully!');
+            alert('Review submitted successfully for moderation!');
+            onUpdate();
         } catch (err: any) {
             console.error('Failed to submit review:', err);
             alert(err.message || 'Failed to submit review');
@@ -377,21 +381,29 @@ export function EscrowProgress({ agreement, steps, onUpdate }: EscrowProgressPro
                             ))}
                         </div>
                         <div className="space-y-2">
-                            <Label className="uppercase text-xs font-bold tracking-widest text-zinc-500">Public Comment (Optional)</Label>
+                            <Label className="uppercase text-[9px] font-black tracking-wider text-zinc-500">Public Comment (Optional)</Label>
                             <Textarea
                                 value={reviewComment}
                                 onChange={(e) => setReviewComment(e.target.value)}
                                 placeholder="What was it like transacting with this seller?"
-                                className="bg-black border-white/10 text-white min-h-[80px]"
+                                className="bg-black border-white/10 text-white min-h-[80px] text-xs focus-visible:ring-[#FF6200]"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="uppercase text-[9px] font-black tracking-wider text-zinc-500">Add Photos (Optional)</Label>
+                            <ImageUpload
+                                onImagesSelected={(urls) => setReviewPhotoUrls(urls)}
+                                bucketName="review-images"
+                                maxImages={3}
                             />
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button variant="ghost" onClick={() => setIsReviewOpen(false)} className="text-zinc-400">Cancel</Button>
+                        <Button variant="ghost" onClick={() => setIsReviewOpen(false)} className="text-zinc-400 text-xs font-bold uppercase tracking-widest">Cancel</Button>
                         <Button 
                             onClick={handleReviewSubmit} 
                             disabled={submittingReview}
-                            className="bg-[#FF6200] hover:bg-[#FF6200]/90 text-black font-bold uppercase tracking-widest"
+                            className="bg-[#FF6200] hover:bg-[#FF6200]/90 text-black font-bold uppercase tracking-widest text-xs"
                         >
                             {submittingReview ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                             Submit Rating

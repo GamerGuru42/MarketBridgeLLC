@@ -15,7 +15,7 @@ export async function POST(req: Request) {
 
         // Verify approver's role
         const { data: approverData } = await supabaseAdmin
-            .from('users')
+            .from('profiles')
             .select('role')
             .eq('id', approverId)
             .single();
@@ -54,10 +54,16 @@ export async function POST(req: Request) {
             await supabaseAdmin
                 .from('users')
                 .update({
-                    role: 'student_seller',
                     is_verified: true,
                     is_verified_seller: true,
                     isVerified: true,
+                })
+                .eq('id', application.user_id);
+
+            await supabaseAdmin
+                .from('profiles')
+                .update({
+                    role: 'student_seller',
                 })
                 .eq('id', application.user_id);
         }

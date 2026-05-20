@@ -9,6 +9,7 @@ import { ArrowLeft, MapPin, Star, Store, Globe, Building, Phone, Mail, MessageCi
 import Link from 'next/link';
 import { VerificationBadge } from '@/components/VerificationBadge';
 import { createClient } from '@/lib/supabase/client';
+import { ReviewsSection } from '@/components/ReviewsSection';
 
 interface SellerProfile {
     id: string;
@@ -30,6 +31,7 @@ export default function SellerProfilePage() {
     const [seller, setSeller] = useState<SellerProfile | null>(null);
     const [listings, setListings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [sellerRating, setSellerRating] = useState<{ avg: number; count: number } | null>(null);
 
     useEffect(() => {
         fetchSellerProfile();
@@ -58,6 +60,20 @@ export default function SellerProfilePage() {
                 .limit(6);
 
             setListings(listingsData || []);
+
+            // Fetch seller's rating stats
+            const { data: ratingData } = await supabase
+                .from('reviews')
+                .select('rating')
+                .eq('subject_id', params?.id)
+                .eq('status', 'approved');
+
+            if (ratingData && ratingData.length > 0) {
+                const avg = ratingData.reduce((s, r) => s + r.rating, 0) / ratingData.length;
+                setSellerRating({ avg: Math.round(avg * 10) / 10, count: ratingData.length });
+            } else {
+                setSellerRating(null);
+            }
         } catch (error) {
             console.error('Error fetching seller:', error);
         } finally {
@@ -178,9 +194,9 @@ export default function SellerProfilePage() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
                     {[
                         { label: 'Active Listings', value: listings.length, icon: Package },
+                        { label: 'Seller Rating', value: sellerRating ? `${sellerRating.avg} ★ (${sellerRating.count})` : 'NEW SELLER', icon: Star },
                         { label: 'Verified Campus', value: seller.is_verified ? 'YES' : 'PENDING', icon: ShieldCheck },
-                        { label: 'Member Since', value: new Date(seller.created_at).getFullYear(), icon: Clock },
-                        { label: 'Response Time', value: '< 2H', icon: Zap }
+                        { label: 'Member Since', value: new Date(seller.created_at).getFullYear(), icon: Clock }
                     ].map((stat, i) => (
                         <div key={i} className="glass-card p-6 rounded-2xl border-white/5">
                             <div className="flex items-center gap-3 mb-3">
@@ -231,6 +247,14 @@ export default function SellerProfilePage() {
                             <p className="text-white/30 text-sm">This seller currently has no active inventory.</p>
                         </div>
                     )}
+                </div>
+
+                {/* Reviews Section */}
+                <div className="mt-20 pt-20 border-t border-white/5">
+                    <h2 className="text-3xl font-black uppercase tracking-tighter italic mb-8">
+                        Seller <span className="text-white/40">Reviews</span>
+                    </h2>
+                    <ReviewsSection dealerId={seller.id} />
                 </div>
             </div>
         </div>

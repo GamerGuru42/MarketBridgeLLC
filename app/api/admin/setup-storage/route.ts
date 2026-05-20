@@ -20,7 +20,7 @@ export async function POST(req: Request) {
         }
 
         const { data: adminData } = await supabase
-            .from('users')
+            .from('profiles')
             .select('role')
             .eq('id', user.id)
             .single();
@@ -80,7 +80,7 @@ export async function GET() {
         }
 
         const { data: adminData } = await supabase
-            .from('users')
+            .from('profiles')
             .select('role')
             .eq('id', user.id)
             .single();

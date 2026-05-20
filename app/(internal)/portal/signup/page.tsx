@@ -117,16 +117,24 @@ function AdminAccessContent() {
             if (authError) throw authError;
             if (!authData.user) throw new Error('Signup failed — no user returned');
 
-            // Write into users table with correct admin/CEO role
-            const { error: profileError } = await supabase.from('users').upsert({
+            // Write into users table
+            const { error: userError } = await supabase.from('users').upsert({
                 id: authData.user.id,
                 email: normalizedEmail,
                 display_name: `${formData.firstName} ${formData.lastName}`.trim(),
                 first_name: formData.firstName,
                 last_name: formData.lastName,
-                role,
                 email_verified: false,
                 is_verified: true, // Admins are pre-verified
+            }, { onConflict: 'id' });
+
+            if (userError) throw userError;
+
+            // Write into profiles table for role
+            const { error: profileError } = await supabase.from('profiles').upsert({
+                id: authData.user.id,
+                email: normalizedEmail,
+                role
             }, { onConflict: 'id' });
 
             if (profileError) throw profileError;

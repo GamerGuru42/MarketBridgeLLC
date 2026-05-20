@@ -47,13 +47,33 @@ export function ImageUpload({
 
         try {
             // Validate type
-            if (!file.type.startsWith('image/')) {
-                throw new Error(`"${file.name}" is not a valid image file.`);
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                throw new Error(`"${file.name}" is not a supported format. Only JPG, PNG, and WebP are allowed.`);
             }
 
             // Validate size (max 10MB raw, compress to target ~2MB)
             if (file.size > 10 * 1024 * 1024) {
                 throw new Error(`"${file.name}" exceeds 10 MB. Please use a smaller image.`);
+            }
+
+            // Verify minimum dimensions (prevent 1x1 pixel spam)
+            const dimensionsOk = await new Promise<boolean>((resolve) => {
+                const img = new globalThis.Image();
+                const objectUrl = URL.createObjectURL(file);
+                img.onload = () => {
+                    URL.revokeObjectURL(objectUrl);
+                    resolve(img.width >= 100 && img.height >= 100);
+                };
+                img.onerror = () => {
+                    URL.revokeObjectURL(objectUrl);
+                    resolve(false);
+                };
+                img.src = objectUrl;
+            });
+
+            if (!dimensionsOk) {
+                throw new Error(`"${file.name}" is too small or invalid. Minimum resolution is 100x100 pixels.`);
             }
 
             // ID card orientation check

@@ -13,7 +13,7 @@ export async function POST(req: Request) {
 
     // Verify the user making the request is an admin
     const { data: adminData } = await supabase
-      .from('users')
+      .from('profiles')
       .select('role')
       .eq('id', user.id)
       .single()
@@ -49,8 +49,14 @@ export async function POST(req: Request) {
           is_verified: true,
           isVerified: true,
           email_verified: true,
-          role: 'student_seller',
           coins_balance: currentMC + 10,
+        })
+        .eq('id', reqRow.user_id)
+
+      await supabase
+        .from('profiles')
+        .update({
+          role: 'student_seller'
         })
         .eq('id', reqRow.user_id)
 

@@ -77,10 +77,19 @@ export default function MissionControlPage() {
         setLoading(true);
         try {
             const { count: usersCount } = await supabase.from('users').select('*', { count: 'exact', head: true });
-            const { data: allUsers } = await supabase.from('users').select('email, role');
+            const { data: allUsersRaw } = await supabase.from('users').select('id, email');
+            const { data: allProfiles } = await supabase.from('profiles').select('id, role');
             
-            const sellers = allUsers?.filter(u => u.role === 'student_seller' || u.role === 'seller') || [];
-            const buyers = allUsers?.filter(u => u.role === 'student_buyer' || u.role === 'buyer') || [];
+            let allUsers: any[] = [];
+            if (allUsersRaw && allProfiles) {
+                allUsers = allUsersRaw.map(u => ({
+                    email: u.email,
+                    role: allProfiles.find(p => p.id === u.id)?.role || 'buyer'
+                }));
+            }
+            
+            const sellers = allUsers.filter(u => u.role === 'student_seller' || u.role === 'seller');
+            const buyers = allUsers.filter(u => u.role === 'student_buyer' || u.role === 'buyer');
             
             const { count: listingsCount } = await supabase.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'active');
 

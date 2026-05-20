@@ -14,7 +14,7 @@ export async function POST(req: Request) {
 
         // Verify the user making the request is an admin
         const { data: adminData } = await supabase
-            .from('users')
+            .from('profiles')
             .select('role')
             .eq('id', user.id)
             .single();
@@ -40,6 +40,15 @@ export async function POST(req: Request) {
                 temporary_seller_expires_at: null
             })
             .eq('id', sellerId);
+
+        if (!error) {
+            await supabaseAdmin
+                .from('profiles')
+                .update({
+                    role: 'buyer'
+                })
+                .eq('id', sellerId);
+        }
 
         if (error) {
             console.error('Revoke DB error:', error);

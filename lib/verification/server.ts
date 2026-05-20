@@ -77,3 +77,27 @@ export async function verifyOtpAndCreateRequest(email: string, code: string, use
 
   return { success: true }
 }
+
+export async function verifyAdminOtp(email: string, code: string) {
+  const supabase = await createServerSupabaseClient()
+  const { data, error } = await supabase
+    .from('email_otps')
+    .select('*')
+    .eq('email', email)
+    .eq('code', code)
+    .order('created_at', { ascending: false })
+    .limit(1)
+
+  if (error || !data || data.length === 0) {
+    return { error: 'Invalid confirmation code' }
+  }
+
+  const otp = data[0]
+  if (otp.used) return { error: 'Code already used' }
+  if (new Date(otp.expires_at) < new Date()) return { error: 'Code expired' }
+
+  await supabase.from('email_otps').update({ used: true }).eq('id', otp.id)
+
+  return { success: true }
+}
+

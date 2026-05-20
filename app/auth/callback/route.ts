@@ -83,11 +83,19 @@ export async function GET(request: Request) {
                 console.log(`Session established for user: ${userEmail} (${data.user.id})`);
 
                 // ── 1. Fetch/Migrate User Profile ──
-                let { data: profile, error: profileErr } = await supabaseAdmin
+                let { data: userRecord, error: userErr } = await supabaseAdmin
                     .from('users')
-                    .select('id, role, email')
+                    .select('id, email')
                     .eq('id', data.user.id)
                     .maybeSingle();
+
+                let { data: profileRecord, error: profileErr } = await supabaseAdmin
+                    .from('profiles')
+                    .select('id, role')
+                    .eq('id', data.user.id)
+                    .maybeSingle();
+
+                let profile = userRecord ? { ...userRecord, role: profileRecord?.role || 'buyer' } : null;
 
                 if (profileErr) {
                     console.error('Error fetching user profile from database:', profileErr);
@@ -98,17 +106,20 @@ export async function GET(request: Request) {
                 if (!profile && userEmail) {
                     const { data: emailMatch, error: emailMatchErr } = await supabaseAdmin
                         .from('users')
-                        .select('id, role, email')
+                        .select('id, email')
                         .eq('email', userEmail)
                         .maybeSingle();
                     
                     if (emailMatchErr) console.error('Error fetching pre-registered email data:', emailMatchErr);
 
                     if (emailMatch) {
-                        console.log(`Bridging existing profile for ${userEmail} to new ID ${data.user.id}`);
                         const { error: bridgeErr } = await supabaseAdmin.from('users').update({ id: data.user.id }).eq('email', userEmail);
+                        await supabaseAdmin.from('profiles').update({ id: data.user.id }).eq('email', userEmail);
                         if (bridgeErr) console.error('Error bridging account:', bridgeErr);
-                        profile = { ...emailMatch, id: data.user.id };
+                        
+                        // fetch the bridged role
+                        const { data: bridgedProfile } = await supabaseAdmin.from('profiles').select('role').eq('id', data.user.id).maybeSingle();
+                        profile = { ...emailMatch, id: data.user.id, role: bridgedProfile?.role || 'buyer' };
                     }
                 }
 
@@ -148,7 +159,6 @@ export async function GET(request: Request) {
                     const userData = {
                         id: data.user.id,
                         email: userEmail,
-                        role: dbRole,
                         display_name: data.user.user_metadata?.full_name || data.user.user_metadata?.name || userEmail.split('@')[0],
                         university: university,
                         is_verified: true,
@@ -164,6 +174,7 @@ export async function GET(request: Request) {
                     console.log('INSERTING USER WITH DATA:', JSON.stringify(userData));
 
                     const { error: insertErr } = await supabaseAdmin.from('users').upsert(userData);
+                    await supabaseAdmin.from('profiles').upsert({ id: data.user.id, email: userEmail, role: dbRole });
 
                     if (insertErr) {
                         console.error('Failed to provision user profile:', insertErr);
@@ -177,7 +188,7 @@ export async function GET(request: Request) {
                     // Map to DB-compatible role
                     const dbRole = finalRole === 'student_seller' ? 'seller' : 
                                   finalRole === 'student_buyer' ? 'buyer' : finalRole;
-                    const { error: updateErr } = await supabaseAdmin.from('users').update({ role: dbRole }).eq('id', data.user.id);
+                    const { error: updateErr } = await supabaseAdmin.from('profiles').update({ role: dbRole }).eq('id', data.user.id);
                     if (updateErr) {
                         console.error('Failed to update user profile role:', updateErr);
                         throw new Error(`Role update failed: ${updateErr.message}`);

@@ -57,13 +57,21 @@ export default function AdminUsersPage() {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            let query = supabase.from('users').select('*').order('created_at', { ascending: false });
-            if (filterRole) {
-                query = query.eq('role', filterRole);
+            const { data: userData, error: userError } = await supabase.from('users').select('*').order('created_at', { ascending: false });
+            const { data: profileData, error: profileError } = await supabase.from('profiles').select('id, role');
+            if (userError) throw userError;
+            if (profileError) throw profileError;
+
+            if (userData && profileData) {
+                let combined = userData.map(u => ({
+                    ...u,
+                    role: profileData.find(p => p.id === u.id)?.role || 'buyer'
+                }));
+                if (filterRole) {
+                    combined = combined.filter(u => u.role === filterRole);
+                }
+                setUsers(combined);
             }
-            const { data, error } = await query;
-            if (error) throw error;
-            setUsers(data || []);
         } catch (error) {
             console.error('Error fetching users:', error);
             toast('Failed to sync user database', 'error');
@@ -91,6 +99,13 @@ export default function AdminUsersPage() {
                 const currentBalance = user.coins_balance || 0;
                 updates = { coins_balance: Math.max(0, currentBalance + Number(input)) };
                 message = `MarketCoins adjusted by ${Number(input)}`;
+                
+                const { error } = await supabase.from('users').update(updates).eq('id', userId);
+                if (error) throw error;
+            } else if (action === 'make_seller') {
+                message = 'Promoted to Student Seller';
+                const { error } = await supabase.from('profiles').update({ role: 'student_seller' }).eq('id', userId);
+                if (error) throw error;
             } else {
                 switch (action) {
                     case 'verify':
@@ -101,18 +116,14 @@ export default function AdminUsersPage() {
                         updates = { is_verified: false };
                         message = 'Verification Revoked';
                         break;
-                    case 'make_seller':
-                        updates = { role: 'student_seller' };
-                        message = 'Promoted to Student Seller';
-                        break;
                     case 'ban':
                         toast('Ban System not fully implemented in UI', 'info');
                         return;
                 }
+                const { error } = await supabase.from('users').update(updates).eq('id', userId);
+                if (error) throw error;
             }
 
-            const { error } = await supabase.from('users').update(updates).eq('id', userId);
-            if (error) throw error;
             toast(message, 'success');
             fetchUsers();
         } catch (err) {

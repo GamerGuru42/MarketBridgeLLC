@@ -49,11 +49,10 @@ export async function logAudit(entry: AuditLogEntry, request?: Request): Promise
             userAgent = request.headers.get('user-agent') || null;
         }
 
-        // Fetch actor role from users table
         let actorRole: string | null = null;
         if (user) {
             const { data: userData } = await supabase
-                .from('users')
+                .from('profiles')
                 .select('role')
                 .eq('id', user.id)
                 .single();

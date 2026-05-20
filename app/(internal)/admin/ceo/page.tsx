@@ -460,9 +460,9 @@ export default function CEOPage() {
                                 try {
                                     const { data: existing } = await supabase.from('users').select('id').eq('email', newAdminEmail.toLowerCase().trim()).maybeSingle();
                                     if (existing) {
-                                        await supabase.from('users').update({ role: newAdminRole }).eq('id', existing.id);
+                                        await supabase.from('profiles').update({ role: newAdminRole }).eq('id', existing.id);
                                     } else {
-                                        await supabase.from('users').insert({ email: newAdminEmail.toLowerCase().trim(), role: newAdminRole, display_name: newAdminEmail.split('@')[0] });
+                                        alert("Cannot assign role to a user that hasn't signed in yet. Please have them sign in with Google first, then assign their role.");
                                     }
                                     setNewAdminEmail('');
                                     alert(`Admin account assigned: ${newAdminEmail} → ${newAdminRole}`);
