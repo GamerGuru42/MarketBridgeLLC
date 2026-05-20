@@ -182,7 +182,7 @@ export default function ChatsPage() {
                         Messages
                     </h1>
                     <p className="text-zinc-500 mt-2 font-mono text-sm uppercase tracking-wider">
-                        Secure Communication Hub
+                        Secure Communication Portal
                     </p>
                 </div>
                 <div className="flex items-center gap-2">

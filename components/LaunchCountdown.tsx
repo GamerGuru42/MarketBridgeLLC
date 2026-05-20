@@ -67,7 +67,7 @@ export function LaunchCountdown() {
                 <div className="flex items-center gap-3 px-4 py-2 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full">
                     <div className="h-1.5 w-1.5 rounded-full bg-[#FF6200] animate-pulse" />
                     <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">
-                        {isDemoMode ? 'Private Beta Testing Active' : 'Official Launch Sequence'} // MarketBridge
+                        {isDemoMode ? 'Private Beta Testing Active' : 'Official Launch Preparing'} // MarketBridge
                     </span>
                 </div>
             </div>

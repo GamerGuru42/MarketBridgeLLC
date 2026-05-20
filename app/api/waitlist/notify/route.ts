@@ -22,10 +22,10 @@ export async function POST(req: Request) {
                 <div style="font-family: sans-serif; background-color: #000; color: #fff; padding: 40px; border-radius: 20px; border: 1px solid #333;">
                     <h1 style="color: #FF6200; text-transform: uppercase; font-size: 24px; letter-spacing: 2px;">MarketBridge System</h1>
                     <p style="font-size: 16px; line-height: 1.6;">You have been successfully added to the priority queue for <strong>${category}</strong>.</p>
-                    <p style="font-size: 14px; color: #888;">We are currently restricting access to verified nodes only. You will be notified immediately once this System level is unlocked for your credentials.</p>
+                    <p style="font-size: 14px; color: #888;">We are currently restricting access to verified users only. You will be notified immediately once this system is unlocked for your account.</p>
                     <br/>
                     <div style="border-top: 1px solid #333; padding-top: 20px; font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 3px;">
-                        MarketBridge Systems // Abuja Dashboard Node
+                        MarketBridge Systems // Abuja Dashboard
                     </div>
                 </div>
             `

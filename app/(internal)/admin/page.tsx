@@ -232,21 +232,21 @@ export default function MissionControlPage() {
                         {isOpsAdmin && (
                             <Link href="/admin/operations">
                                 <Button className="h-14 px-8 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 rounded-2xl font-black uppercase text-[10px] tracking-widest border shadow-xl shadow-primary/5">
-                                    <Activity className="h-4 w-4 mr-3" /> Operations Hub
+                                    <Activity className="h-4 w-4 mr-3" /> Operations Panel
                                 </Button>
                             </Link>
                         )}
                         {isTechAdmin && (
                             <Link href="/admin/technical">
                                 <Button className="h-14 px-8 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 rounded-2xl font-black uppercase text-[10px] tracking-widest border shadow-xl shadow-primary/5">
-                                    <Zap className="h-4 w-4 mr-3" /> Technical Hub
+                                    <Zap className="h-4 w-4 mr-3" /> Technical Panel
                                 </Button>
                             </Link>
                         )}
                         {isMarketingAdmin && (
                             <Link href="/admin/marketing">
                                 <Button className="h-14 px-8 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 rounded-2xl font-black uppercase text-[10px] tracking-widest border shadow-xl shadow-primary/5">
-                                    <TrendingUp className="h-4 w-4 mr-3" /> Marketing Hub
+                                    <TrendingUp className="h-4 w-4 mr-3" /> Marketing Panel
                                 </Button>
                             </Link>
                         )}
@@ -513,7 +513,7 @@ export default function MissionControlPage() {
                                 )}
                             </div>
                             <Link href="/admin/executive-chat" className="p-6 bg-primary text-primary-foreground text-center font-black uppercase text-[10px] tracking-widest hover:bg-primary/90 transition-all">
-                                Open Chat Hub
+                                Open Chat Center
                             </Link>
                         </Card>
                     </div>

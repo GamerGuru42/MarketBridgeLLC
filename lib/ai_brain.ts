@@ -140,17 +140,17 @@ class AiBrain {
         }
 
         // 3. Platform Knowledge Queries
-        // Google Identity Hub & Login
-        if (this.matchAny(lowerInput, ['google', 'gmail', 'identity', 'hub', 'automatic', 'prefill'])) {
+        // Google Identity Login
+        if (this.matchAny(lowerInput, ['google', 'gmail', 'identity', 'automatic', 'prefill'])) {
             return {
-                content: `Our new **Google Identity Hub** allows you to sign up or log in with a single click. It automatically pre-fills your profile data from your Google account to get you into the marketplace faster. Would you like me to guide you to the login terminal?`
+                content: `Our new **Google Identity Login** allows you to sign up or log in with a single click. It automatically pre-fills your profile data from your Google account to get you into the marketplace faster. Would you like me to guide you to the login page?`
             };
         }
 
-        // Executive Terminal / Admin Chat
-        if (this.matchAny(lowerInput, ['terminal', 'executive', 'cto', 'coo', 'admin chat', 'direct message'])) {
+        // Executive Dashboard / Admin Chat
+        if (this.matchAny(lowerInput, ['dashboard', 'executive', 'cto', 'coo', 'admin chat', 'direct message'])) {
             return {
-                content: `We've recently upgraded the **Executive Terminal**. CEOs and Admins can now initiate direct secure streams with the CTO Hub and other sector admins for real-time coordination. If you're an admin, make sure to use your secure access key.`
+                content: `We've recently upgraded the **Executive Dashboard**. CEOs and Admins can now initiate direct secure messages with the CTO and other sector admins for real-time coordination. If you're an admin, make sure to use your secure access key.`
             };
         }
 
@@ -260,7 +260,7 @@ class AiBrain {
 
         if (this.matchAny(lowerInput, ['login', 'sign in', 'access', 'cant login', 'password', 'reset'])) {
             return {
-                content: "Having trouble accessing the terminal? Go to the Login page and select your role (Buyer, Merchant, or Admin). Use 'Forgot Password' to reset your security key.",
+                content: "Having trouble accessing your account? Go to the Login page and select your role (Buyer, Merchant, or Admin). Use 'Forgot Password' to reset your password.",
                 action: 'none'
             };
         }

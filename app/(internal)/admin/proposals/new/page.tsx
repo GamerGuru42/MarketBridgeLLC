@@ -113,7 +113,7 @@ export default function SubmitProposalPage() {
                     Your strategic memo has been sent to the CEO's command queue for review and approval.
                 </p>
                 <Button asChild variant="outline">
-                    <Link href="/admin">Return to Hub</Link>
+                    <Link href="/admin">Return to Dashboard</Link>
                 </Button>
             </div>
         );

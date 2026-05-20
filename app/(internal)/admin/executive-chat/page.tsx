@@ -324,7 +324,7 @@ export default function ExecutiveChatPage() {
                 </div>
                 <h3 className="text-4xl font-black uppercase tracking-tighter text-foreground italic mb-4">Chat System <span className="text-primary">Initializing</span></h3>
                 <p className="text-muted-foreground max-w-sm mb-12 font-medium leading-relaxed opacity-70 italic font-heading">
-                    The team communication hub is currently setting up. Please activate the connection below to begin messaging.
+                    The team communication center is currently setting up. Please activate the connection below to begin messaging.
                 </p>
                 <div className="flex flex-col gap-4">
                     <Button
@@ -354,7 +354,7 @@ export default function ExecutiveChatPage() {
                     <h2 className="text-xl font-black italic tracking-tighter uppercase text-foreground">
                         Admin<span className="text-primary">Chat</span>
                     </h2>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1 opacity-60">HQ Communication Hub</p>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1 opacity-60">HQ Communication Portal</p>
                 </div>
 
                 <ScrollArea className="flex-1">

@@ -478,7 +478,7 @@ export default function CEOPage() {
                 </Card>
 
                 <div className="text-center py-20 opacity-20">
-                    <p className="text-[9px] font-black uppercase tracking-[0.6em] text-muted-foreground">MarketBridge Executive Hub // 2026</p>
+                    <p className="text-[9px] font-black uppercase tracking-[0.6em] text-muted-foreground">MarketBridge Executive Portal // 2026</p>
                 </div>
             </div>
         </div>

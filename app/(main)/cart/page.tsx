@@ -116,7 +116,7 @@ export default function CartPage() {
                                     <span className="text-sm font-black text-[#FF6200] uppercase tracking-tighter italic">0.0% (WAVED)</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-[10px] font-black text-white/40 uppercase tracking-widest font-heading">Hub Routing</span>
+                                    <span className="text-[10px] font-black text-white/40 uppercase tracking-widest font-heading">Checkout Routing</span>
                                     <span className="text-sm font-black text-[#FF6200] uppercase tracking-tighter italic">DIRECTED</span>
                                 </div>
 

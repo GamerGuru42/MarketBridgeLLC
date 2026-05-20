@@ -16,8 +16,8 @@ function setAdminSessionCookie(userId: string, role: string) {
     document.cookie = `mb-admin-session=${payload}; path=/; max-age=${8 * 60 * 60}; SameSite=Lax${window.location.protocol === 'https:' ? '; Secure' : ''}`;
 }
 
-// Role to department hub mapping
-function getHubRoute(role: string): string {
+// Role to department mapping
+function getDashboardRoute(role: string): string {
     if (role === 'ceo') return '/admin/ceo';
     if (role === 'operations_admin') return '/admin/operations';
     if (role === 'marketing_admin') return '/admin/marketing';
@@ -57,7 +57,7 @@ function PortalLoginContent() {
     useEffect(() => {
         if (!loading && sessionUser && user && ADMIN_ROLES.includes(user.role)) {
             setAdminSessionCookie(user.id, user.role);
-            const target = getHubRoute(user.role);
+            const target = getDashboardRoute(user.role);
             if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/admin')) {
                 window.location.assign(target);
             }
@@ -69,7 +69,7 @@ function PortalLoginContent() {
         setError('');
         try {
             const dbRole: string = dept;
-            const targetDestination = getHubRoute(dbRole);
+            const targetDestination = getDashboardRoute(dbRole);
             const callbackOrigin = window.location.origin;
 
             const { error } = await supabase.auth.signInWithOAuth({
@@ -151,7 +151,7 @@ function PortalLoginContent() {
                     </div>
                     
                     <div className="mt-12 pt-8 border-t border-border">
-                        <p className="text-muted-foreground/30 text-[9px] uppercase tracking-widest font-black">Secure Administration Management Hub</p>
+                        <p className="text-muted-foreground/30 text-[9px] uppercase tracking-widest font-black">Secure Administration Management Panel</p>
                     </div>
                 </div>
             </div>

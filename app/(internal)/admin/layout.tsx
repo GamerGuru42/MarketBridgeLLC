@@ -101,7 +101,7 @@ export default function AdminLayout({
         // ─── Operations Admin: ISOLATED ───
         if (role === 'operations_admin') {
             return [
-                { label: 'Operations Hub', href: '/admin/operations', icon: Activity },
+                { label: 'Operations Panel', href: '/admin/operations', icon: Activity },
                 { label: 'Disputes', href: '/admin/disputes', icon: ShieldAlert },
                 { label: 'Seller Management', href: '/admin/users', icon: Users },
                 { label: 'Product Registry', href: '/admin/listings', icon: ShoppingBag },
@@ -115,7 +115,7 @@ export default function AdminLayout({
         // ─── Marketing Admin: ISOLATED ───
         if (role === 'marketing_admin') {
             return [
-                { label: 'Marketing Hub', href: '/admin/marketing', icon: Target },
+                { label: 'Marketing Panel', href: '/admin/marketing', icon: Target },
                 { label: 'User Acquisition', href: '/admin/marketing', icon: TrendingUp },
                 { label: 'Product Manager', href: '/admin/listings', icon: ShoppingBag },
                 messages
@@ -125,7 +125,7 @@ export default function AdminLayout({
         // ─── Systems Admin: ISOLATED ───
         if (role === 'systems_admin' || role === 'technical_admin') {
             return [
-                { label: 'Systems Hub', href: '/admin/systems', icon: Server },
+                { label: 'Systems Panel', href: '/admin/systems', icon: Server },
                 { label: 'Database', href: '/admin/systems', icon: Database },
                 { label: 'Security Logs', href: '/admin/systems', icon: Shield },
                 { label: 'Admin Accounts', href: '/admin/systems', icon: Users },
@@ -136,7 +136,7 @@ export default function AdminLayout({
         // ─── IT Support: ISOLATED ───
         if (role === 'it_support') {
             return [
-                { label: 'IT Support Hub', href: '/admin/it-support', icon: Wrench },
+                { label: 'IT Support Panel', href: '/admin/it-support', icon: Wrench },
                 { label: 'Bug Reports', href: '/admin/it-support', icon: Bug },
                 { label: 'Integrations', href: '/admin/it-support', icon: Rocket },
                 { label: 'Tech Docs', href: '/admin/it-support', icon: FileText },
@@ -149,13 +149,13 @@ export default function AdminLayout({
             const isOnExecPath = pathname?.startsWith('/admin/ceo');
             if (isOnExecPath) {
                 return [
-                    { label: 'Executive Hub', href: '/admin/ceo', icon: Crown },
+                    { label: 'Executive Portal', href: '/admin/ceo', icon: Crown },
                     { label: 'Live Support', href: '/admin/live-chat', icon: Headphones },
                     messages,
                 ];
             }
             return [
-                { label: 'Executive Hub', href: '/admin/ceo', icon: Crown },
+                { label: 'Executive Portal', href: '/admin/ceo', icon: Crown },
                 { label: 'Systems', href: '/admin/systems', icon: Server },
                 { label: 'Operations', href: '/admin/operations', icon: Activity },
                 { label: 'Marketing', href: '/admin/marketing', icon: Target },

@@ -318,7 +318,7 @@ export default function MarketingAdminPage() {
                 <TabsContent value="map" className="space-y-8">
                     <Card className="bg-card border-border rounded-[2.5rem] p-10">
                         <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-6">Onboarded Sellers <span className="text-primary">Map</span></h3>
-                        <p className="text-muted-foreground text-sm italic mb-8">Abuja FCT — verified sellers grouped by campus hub. Only campuses with registered sellers appear.</p>
+                        <p className="text-muted-foreground text-sm italic mb-8">Abuja FCT — verified sellers grouped by campus. Only campuses with registered sellers appear.</p>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                             {Object.entries(campusSellers).length === 0 ? (
@@ -332,7 +332,7 @@ export default function MarketingAdminPage() {
                                         <div className="h-3 w-3 rounded-full bg-primary animate-pulse" />
                                         <div>
                                             <p className="font-black text-sm">{campus}</p>
-                                            <p className="text-[10px] text-muted-foreground font-bold">Active Campus Hub</p>
+                                            <p className="text-[10px] text-muted-foreground font-bold">Active Campus</p>
                                         </div>
                                     </div>
                                     <span className="text-2xl font-black italic text-primary">{count}</span>

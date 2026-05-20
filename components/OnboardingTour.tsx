@@ -31,7 +31,7 @@ const SELLER_STEPS: TourStep[] = [
 
 const ADMIN_STEPS: TourStep[] = [
     { title: "MISSION CONTROL", description: "Welcome to Executive Command. You have full oversight of the MarketBridge matrix.", icon: Shield },
-    { title: "LIVE INTEL RELAY", description: "Monitor real-time system events, user registrations, AI chat flags, and potential anomalies.", icon: Terminal },
+    { title: "LIVE SYSTEM LOGS", description: "Monitor real-time system events, user registrations, AI chat flags, and potential anomalies.", icon: Terminal },
     { title: "CUSTOMER SUPPORT", description: "View escalated tickets from Sage AI and chat with users live to resolve issues in real-time.", icon: Headphones },
     { title: "OPERATIONS & MODERATION", description: "Manage regional saturation, resolve disputes, and maintain the integrity of the ecosystem.", icon: Activity },
 ];

@@ -452,7 +452,7 @@ export default function OperationsAdminPage() {
             </Tabs>
 
             <div className="text-center py-20 opacity-20">
-                <p className="text-[9px] font-black uppercase tracking-[0.8em] text-muted-foreground italic">MarketBridge Operations Hub // Nigeria 2026</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.8em] text-muted-foreground italic">MarketBridge Operations Panel // Nigeria 2026</p>
             </div>
         </div>
     );

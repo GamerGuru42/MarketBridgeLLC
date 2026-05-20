@@ -155,7 +155,7 @@ export default function BuyerDashboardPage() {
                                         <MessageCircle className="h-5 w-5 text-zinc-400 group-hover:text-[#FF6200] transition-colors" />
                                     </div>
                                     <div>
-                                        <h3 className="text-xs font-black uppercase tracking-widest text-zinc-900 dark:text-white mb-1">Incoming Nodes</h3>
+                                        <h3 className="text-xs font-black uppercase tracking-widest text-zinc-900 dark:text-white mb-1">Incoming Orders</h3>
                                         <p className="text-[11px] text-zinc-500 max-w-[200px]">No active negotiations or messages from merchants.</p>
                                     </div>
                                 </div>

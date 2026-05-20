@@ -160,7 +160,7 @@ export default function SellerProfilePage() {
                                     <span className="w-1 h-1 rounded-full bg-zinc-800" />
                                     <div className="flex items-center gap-2">
                                         {getStoreIcon(seller.store_type)}
-                                        <span className="text-[10px] font-black uppercase tracking-widest">{seller.store_type || 'Digital'} Hub</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest">{seller.store_type || 'Digital'} Store</span>
                                     </div>
                                 </div>
                             </div>

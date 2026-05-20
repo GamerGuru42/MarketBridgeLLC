@@ -85,7 +85,7 @@ export default function AmbassadorPage() {
 
             if (error) throw error;
 
-            toast('Mission data transmitted. Our HQ team will vet your terminal.', 'success');
+            toast('Application submitted successfully. Our team will review your details.', 'success');
             setHasApplied(true);
         } catch (err: any) {
             toast(err.message || 'Transmission failed.', 'error');
@@ -133,13 +133,13 @@ export default function AmbassadorPage() {
                             <p className="text-lg text-zinc-500 dark:text-white/40 leading-relaxed font-medium">
                                 We're solving campus scams and payment unreliability through a native escrow network. 
                                 As a Lead, you are the face of trust on your campus. Your mission is to recruit the best student merchants, 
-                                facilitate safe trades, and grow the MarketBridge ecosystem within your university node.
+                                facilitate safe trades, and grow the MarketBridge ecosystem within your university campus.
                             </p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             {[
                                 { title: "Exclusive Access", desc: "Direct uplink to HQ operations.", icon: Target },
-                                { title: "Node Authority", desc: "Manage your campus marketplace flow.", icon: ShieldCheck },
+                                { title: "Campus Authority", desc: "Manage your campus marketplace flow.", icon: ShieldCheck },
                                 { title: "Network Growth", desc: "Earn rewards for every new verified user.", icon: Users },
                                 { title: "Executive Status", desc: "Professional recognition for your future.", icon: TrendingUp },
                             ].map((mission, i) => (
@@ -237,7 +237,7 @@ export default function AmbassadorPage() {
                          <div className="space-y-6">
                             <h2 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-white font-heading">Apply Now</h2>
                             <p className="text-zinc-400 font-medium italic max-w-xl mx-auto">
-                                If you lead your university node, you lead the bridge. Are you ready to own your campus?
+                                If you lead your university campus, you lead the bridge. Are you ready to own your campus?
                             </p>
                          </div>
 
@@ -255,7 +255,7 @@ export default function AmbassadorPage() {
                          ) : (
                             <form onSubmit={handleApply} className="text-left space-y-8">
                                 <div className="space-y-4">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 font-heading">Primary Campus Node</Label>
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 font-heading">Primary Campus</Label>
                                     <Input 
                                         placeholder="e.g. Baze University" 
                                         value={campus}
@@ -266,7 +266,7 @@ export default function AmbassadorPage() {
                                 <div className="space-y-4">
                                     <Label className="text-xs font-black uppercase tracking-widest text-zinc-600">About You</Label>
                                     <Textarea 
-                                        placeholder="Why should we trust you to lead your university node?" 
+                                        placeholder="Why should we trust you to lead your university campus?" 
                                         rows={4}
                                         value={motivation}
                                         onChange={(e) => setMotivation(e.target.value)}

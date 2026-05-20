@@ -111,7 +111,7 @@ export const SystemProvider = ({ children }: { children: React.ReactNode }) => {
                         <h1 className="text-4xl font-black uppercase tracking-tighter italic text-destructive">Demo Expired</h1>
                         <p className="text-muted-foreground font-medium">The 30-day private beta period for MarketBridge has officially concluded. Thank you to everyone who participated in the testing phase!</p>
                         <div className="bg-muted p-4 rounded-xl border border-border">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-foreground font-heading italic">Official launch sequence initiating soon.</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-foreground font-heading italic">Official launch preparing soon.</p>
                         </div>
                     </div>
                 </div>

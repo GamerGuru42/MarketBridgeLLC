@@ -76,7 +76,7 @@ export const AdminMap = ({ distribution = {}, buyerCount = 0 }: AdminMapProps) =
                         ))
                     ))}
 
-                    {/* Active Hubs */}
+                    {/* Active Campuses */}
                     {activeNodes.map((node, i) => {
                         const baseSize = 1;
                         const scale = Math.min(2, 1 + (node.count * 0.1)); // Scale with count
@@ -127,7 +127,7 @@ export const AdminMap = ({ distribution = {}, buyerCount = 0 }: AdminMapProps) =
                     <div className="text-right space-y-1.5">
                         <p className="text-[8px] font-black uppercase tracking-widest text-white/30 italic">Coverage Index</p>
                         <p className="text-[14px] font-black text-primary uppercase italic tracking-[0.2em]">
-                            {activeNodes.length} / {CAMPUS_DATA.length} Campus Hubs
+                            {activeNodes.length} / {CAMPUS_DATA.length} Campuses
                         </p>
                     </div>
                 </div>

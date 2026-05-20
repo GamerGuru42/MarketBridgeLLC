@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server'
 // ─── Role Mapping & Constants ───────────────────────────────────────────────
 const ADMIN_ROLES = ['ceo', 'operations_admin', 'marketing_admin', 'systems_admin', 'it_support', 'technical_admin', 'admin'];
 
-function getHubRoute(role: string): string {
+function getDashboardRoute(role: string): string {
     if (role === 'ceo') return '/admin/ceo';
     if (role === 'operations_admin') return '/admin/operations';
     if (role === 'marketing_admin') return '/admin/marketing';
@@ -219,7 +219,7 @@ export async function GET(request: Request) {
                     // SUCCESS: Redirect to HQ Portal
                     console.log('Portal Access Granted');
                     await logAudit(userEmail, 'PORTAL_LOGIN_SUCCESS', { role: finalRole });
-                    const dest = getHubRoute(finalRole);
+                    const dest = getDashboardRoute(finalRole);
                     const redirectUrl = new URL(dest, request.url);
                     if (isProduction) redirectUrl.hostname = 'hq.marketbridge.com.ng';
 
@@ -301,7 +301,7 @@ export async function GET(request: Request) {
                     if (isProduction) {
                         redirectUrl.hostname = 'hq.marketbridge.com.ng';
                     }
-                    redirectUrl.pathname = getHubRoute(finalRole);
+                    redirectUrl.pathname = getDashboardRoute(finalRole);
                 }
 
                 console.log(`Auth Callback Result: Routing ${userEmail} to ${redirectUrl.toString()}`);
