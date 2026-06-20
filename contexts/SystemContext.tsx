@@ -102,20 +102,6 @@ export const SystemProvider = ({ children }: { children: React.ReactNode }) => {
     return (
         <SystemContext.Provider value={settings}>
             {children}
-            {settings.isDemoMode && settings.isExpired && (
-                <div className="fixed inset-0 z-[9999] bg-background/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center">
-                    <div className="max-w-md space-y-6">
-                        <div className="h-20 w-20 bg-destructive/10 rounded-full flex items-center justify-center mx-auto animate-pulse">
-                            <span className="text-destructive text-4xl">⏱️</span>
-                        </div>
-                        <h1 className="text-4xl font-black uppercase tracking-tighter italic text-destructive">Demo Expired</h1>
-                        <p className="text-muted-foreground font-medium">The 30-day private beta period for MarketBridge has officially concluded. Thank you to everyone who participated in the testing phase!</p>
-                        <div className="bg-muted p-4 rounded-xl border border-border">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-foreground font-heading italic">Official launch preparing soon.</p>
-                        </div>
-                    </div>
-                </div>
-            )}
         </SystemContext.Provider>
     );
 };
