@@ -423,7 +423,7 @@ BEGIN
     INSERT INTO public.market_coins (user_id, balance) VALUES (NEW.id, 0);
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 CREATE TRIGGER trigger_create_user_accounts
     AFTER INSERT ON public.users
@@ -453,7 +453,7 @@ BEGIN
     
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 CREATE TRIGGER trigger_award_mc
     AFTER UPDATE ON public.orders
