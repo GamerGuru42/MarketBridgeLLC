@@ -178,6 +178,12 @@ ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS cancelled_by TEXT;
 ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS cancellation_reason TEXT;
 ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS mc_discount_used INTEGER DEFAULT 0;
 
+-- Drop legacy orders status checks to support campus marketplace statuses
+ALTER TABLE public.orders DROP CONSTRAINT IF EXISTS orders_status_check;
+ALTER TABLE public.orders DROP CONSTRAINT IF EXISTS status_check;
+ALTER TABLE public.orders ADD CONSTRAINT orders_status_check 
+    CHECK (status IN ('pending', 'confirmed', 'delivered', 'completed', 'cancelled', 'refunded', 'disputed'));
+
 -- -------------------------------------------------------------------------
 -- 6. Refactor reviews Table
 -- -------------------------------------------------------------------------
@@ -569,5 +575,28 @@ CREATE POLICY disputes_own ON public.disputes FOR SELECT USING (auth.uid() = ope
 
 -- University Domains
 CREATE POLICY university_domains_read ON public.university_domains FOR SELECT USING (true);
+
+-- Ensure RLS is enabled on orders
+ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+
+-- Drop legacy/restrictive order policies
+DROP POLICY IF EXISTS "Users can view their own orders" ON public.orders;
+DROP POLICY IF EXISTS "Users can view own orders" ON public.orders;
+DROP POLICY IF EXISTS "Users view own orders" ON public.orders;
+DROP POLICY IF EXISTS "Buyers can create orders" ON public.orders;
+DROP POLICY IF EXISTS "Users can create own orders" ON public.orders;
+DROP POLICY IF EXISTS "Buyers create orders" ON public.orders;
+DROP POLICY IF EXISTS "Sellers can update order status" ON public.orders;
+DROP POLICY IF EXISTS "Sellers/Buyers can update own orders" ON public.orders;
+
+-- Create clean, standard order policies for the campus marketplace
+CREATE POLICY "Users can view own orders" ON public.orders
+    FOR SELECT USING (auth.uid() = buyer_id OR auth.uid() = seller_id);
+
+CREATE POLICY "Buyers can create own orders" ON public.orders
+    FOR INSERT WITH CHECK (auth.uid() = buyer_id);
+
+CREATE POLICY "Sellers/Buyers can update own orders" ON public.orders
+    FOR UPDATE USING (auth.uid() = buyer_id OR auth.uid() = seller_id);
 
 COMMIT;
