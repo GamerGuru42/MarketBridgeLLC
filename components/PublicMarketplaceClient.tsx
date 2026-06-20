@@ -63,10 +63,10 @@ export default function PublicMarketplaceClient() {
                 <div className="flex items-center gap-6">
                     {user ? (
                         <Link 
-                            href={['dealer', 'student_seller', 'seller'].includes(user.role) ? "/seller/dashboard" : "/buyer/dashboard"} 
+                            href={['seller', 'student_seller', 'seller'].includes(user.role) ? "/seller/dashboard" : "/buyer/dashboard"} 
                             className="text-[10px] font-black uppercase tracking-widest text-[#FF6200] hover:text-white transition-all bg-[#FF6200]/10 px-4 py-2 rounded-full border border-[#FF6200]/20"
                         >
-                            {['dealer', 'student_seller', 'seller'].includes(user.role) ? "Merchant Center" : "Buyer Center"}
+                            {['seller', 'student_seller', 'seller'].includes(user.role) ? "Merchant Center" : "Buyer Center"}
                         </Link>
                     ) : (
                         <>

@@ -39,13 +39,13 @@ export async function DELETE(request: Request) {
         }
 
         // 2. Prevent CEO / admin accounts from self-deleting via this route
-        const { data: profile } = await supabase
-            .from('profiles')
+        const { data: userProfile } = await supabase
+            .from('users')
             .select('role')
             .eq('id', user.id)
             .single();
 
-        if (profile?.role === 'ceo') {
+        if (userProfile?.role === 'ceo') {
             return NextResponse.json(
                 { error: 'CEO accounts cannot be deleted through this interface.' },
                 { status: 403 }

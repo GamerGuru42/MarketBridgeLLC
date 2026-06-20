@@ -168,7 +168,7 @@ export default function SubmitProposalPage() {
                                             <option>Policy/Operations Shift</option>
                                             <option>Marketing Initiative</option>
                                             <option>Financial/Escrow Change</option>
-                                            <option>Dealer Growth Strategy</option>
+                                            <option>Seller Growth Strategy</option>
                                         </select>
                                     </div>
                                     <div className="space-y-2">

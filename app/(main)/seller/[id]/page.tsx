@@ -44,7 +44,7 @@ export default function SellerProfilePage() {
                 .from('users')
                 .select('*')
                 .eq('id', params?.id)
-                .in('role', ['dealer', 'student_seller'])
+                .in('role', ['seller', 'student_seller'])
                 .single();
 
             if (sellerError) throw sellerError;
@@ -54,7 +54,7 @@ export default function SellerProfilePage() {
             const { data: listingsData } = await supabase
                 .from('listings')
                 .select('*')
-                .eq('dealer_id', params?.id)
+                .eq('seller_id', params?.id)
                 .eq('status', 'active')
                 .order('created_at', { ascending: false })
                 .limit(6);
@@ -254,7 +254,7 @@ export default function SellerProfilePage() {
                     <h2 className="text-3xl font-black uppercase tracking-tighter italic mb-8">
                         Seller <span className="text-white/40">Reviews</span>
                     </h2>
-                    <ReviewsSection dealerId={seller.id} />
+                    <ReviewsSection sellerId={seller.id} />
                 </div>
             </div>
         </div>

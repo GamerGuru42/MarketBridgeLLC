@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/client';
 
 export type CEOStats = {
     gmv: number;
-    activeDealers: number;
+    activeSellers: number;
     totalUsers: number;
     activeListings: number;
     trustScore: number;
@@ -69,7 +69,7 @@ export async function fetchCEOStats(): Promise<CEOStats> {
 
     return {
         gmv,
-        activeDealers: activeSellers || 0,
+        activeSellers: activeSellers || 0,
         totalUsers: totalUsers || 0,
         activeListings: activeListings || 0,
         trustScore

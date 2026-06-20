@@ -52,22 +52,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const fetchUserProfile = async (userId: string, retryCount = 0) => {
         try {
-            const [userRes, profileRes] = await Promise.all([
-                supabase
-                    .from('users')
-                    .select('*')
-                    .eq('id', userId)
-                    .single(),
-                supabase
-                    .from('profiles')
-                    .select('role')
-                    .eq('id', userId)
-                    .maybeSingle()
-            ]);
+            const { data, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('id', userId)
+                .single();
 
-            const { data, error } = userRes;
-            const profileRole = profileRes.data?.role;
-            const mergedData = data ? { ...data, role: profileRole || 'buyer' } : null;
+            const mergedData = data ? { ...data, role: data.role || 'buyer' } : null;
 
             const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo', 'systems_admin', 'it_support'];
             

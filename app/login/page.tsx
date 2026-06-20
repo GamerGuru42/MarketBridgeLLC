@@ -53,7 +53,7 @@ function LoginContent() {
         if (r === 'systems_admin' || r === 'technical_admin') return '/admin/systems';
         if (r === 'it_support') return '/admin/it-support';
         if (['admin'].includes(r)) return '/admin';
-        if (r === 'student_seller') return '/seller/dashboard';
+        if (r === 'seller' || r === 'student_seller') return '/seller/dashboard';
         return '/marketplace';
     }
 
@@ -63,7 +63,7 @@ function LoginContent() {
         setGoogleLoadingRole(selectedRole);
         setError('');
         try {
-            const mappedRole = selectedRole === 'seller' ? 'student_seller' : 'student_buyer';
+            const mappedRole = selectedRole === 'seller' ? 'seller' : 'buyer';
             const next = redirectUrl || (selectedRole === 'seller' ? '/seller/dashboard' : '/marketplace');
             await signInWithGoogle(`${window.location.origin}/auth/callback?role=${mappedRole}&next=${next}`);
         } catch (err: any) { setError(err.message || 'Google Sign-In failed.'); setGoogleLoadingRole(null); }
@@ -109,14 +109,13 @@ function LoginContent() {
             if (!data?.user) { setError('Login failed.'); return; }
 
             let userRole = data.user.user_metadata?.role as string;
-            const { data: profile } = await supabase.from('profiles').select('role').eq('id', data.user.id).maybeSingle();
-            if (!profile) {
+            const { data: userData } = await supabase.from('users').select('role').eq('id', data.user.id).maybeSingle();
+            if (!userData?.role) {
                 const meta = data.user.user_metadata || {};
-                const healedRole = meta.role || 'student_buyer';
-                await supabase.from('users').upsert({ id: data.user.id, email: data.user.email ?? '', display_name: `${meta.first_name || ''} ${meta.last_name || ''}`.trim() || data.user.email?.split('@')[0] || 'User', email_verified: !!data.user.email_confirmed_at, is_verified: false, is_verified_seller: false, coins_balance: healedRole === 'student_buyer' ? 100 : 0 }, { onConflict: 'id' });
-                await supabase.from('profiles').upsert({ id: data.user.id, email: data.user.email ?? '', role: healedRole }, { onConflict: 'id' });
+                const healedRole = meta.role || 'buyer';
+                await supabase.from('users').upsert({ id: data.user.id, email: data.user.email ?? '', role: healedRole, display_name: `${meta.first_name || ''} ${meta.last_name || ''}`.trim() || data.user.email?.split('@')[0] || 'User', email_verified: !!data.user.email_confirmed_at, is_verified: false, is_verified_seller: false, coins_balance: healedRole === 'buyer' ? 100 : 0 }, { onConflict: 'id' });
                 userRole = healedRole;
-            } else { userRole = profile.role || userRole; }
+            } else { userRole = userData.role || userRole; }
             refreshUser(data.user.id).catch(err => console.warn('Context sync error:', err));
             router.replace(redirectUrl || getRoleDestination(userRole));
         } catch (err: any) { setError(err.message || 'Login failed.'); }

@@ -178,7 +178,7 @@ export default function CEOPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {[
                         { label: 'Total Revenue', value: `₦${stats?.gmv.toLocaleString() || '0'}`, icon: DollarSign, sub: 'Confirmed Sales', color: 'text-green-500' },
-                        { label: 'Active Sellers', value: stats?.activeDealers || 0, icon: Store, sub: 'Verified Merchants', color: 'text-primary' },
+                        { label: 'Active Sellers', value: stats?.activeSellers || 0, icon: Store, sub: 'Verified Merchants', color: 'text-primary' },
                         { label: 'Listed Products', value: stats?.activeListings || 0, icon: ShoppingBag, sub: 'Inventory Count', color: 'text-orange-500' },
                         { label: 'Platform Health', value: `${Math.round(stats?.trustScore || 100)}%`, icon: ShieldCheck, sub: 'System Stability', color: 'text-purple-500' },
                     ].map((card, i) => (
@@ -460,7 +460,7 @@ export default function CEOPage() {
                                 try {
                                     const { data: existing } = await supabase.from('users').select('id').eq('email', newAdminEmail.toLowerCase().trim()).maybeSingle();
                                     if (existing) {
-                                        await supabase.from('profiles').update({ role: newAdminRole }).eq('id', existing.id);
+                                        await supabase.from('users').update({ role: newAdminRole }).eq('id', existing.id);
                                     } else {
                                         alert("Cannot assign role to a user that hasn't signed in yet. Please have them sign in with Google first, then assign their role.");
                                     }

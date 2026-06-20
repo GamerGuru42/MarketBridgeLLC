@@ -7,7 +7,7 @@ interface CartItem {
     title: string;
     price: number;
     image: string;
-    dealerId: string;
+    sellerId: string;
     quantity: number;
 }
 

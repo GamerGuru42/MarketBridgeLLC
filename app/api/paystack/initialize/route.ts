@@ -20,7 +20,7 @@ export async function POST(req: Request) {
         // 1. Fetch Listing & Seller Details
         const { data: listing, error: listingError } = await supabase
             .from('listings')
-            .select('*, seller:users!listings_dealer_id_fkey(*)')
+            .select('*, seller:users!listings_seller_id_fkey(*)')
             .eq('id', listingId)
             .single();
 

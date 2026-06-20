@@ -41,11 +41,11 @@ interface Listing {
     status: string;
     images: string[];
     created_at: string;
-    dealer_id: string;
+    seller_id: string;
     verification_status: string;
     is_sponsored: boolean;
     sponsored_until: string | null;
-    dealer?: {
+    seller?: {
         display_name: string;
     };
 }
@@ -75,17 +75,17 @@ export default function AdminListingsPage() {
 
             if (listingsError) throw listingsError;
 
-            const dealerIds = Array.from(new Set(listingsData?.map(l => l.dealer_id) || []));
-            const { data: dealersData } = await supabase
+            const sellerIds = Array.from(new Set(listingsData?.map(l => l.seller_id) || []));
+            const { data: sellersData } = await supabase
                 .from('users')
                 .select('id, display_name')
-                .in('id', dealerIds);
+                .in('id', sellerIds);
 
-            const dealersMap = Object.fromEntries(dealersData?.map(d => [d.id, d.display_name]) || []);
+            const sellersMap = Object.fromEntries(sellersData?.map(d => [d.id, d.display_name]) || []);
 
             const enrichedListings = listingsData?.map(l => ({
                 ...l,
-                dealer: { display_name: dealersMap[l.dealer_id] || 'Unknown Dealer' }
+                seller: { display_name: sellersMap[l.seller_id] || 'Unknown Seller' }
             })) || [];
 
             setListings(enrichedListings);
@@ -125,7 +125,7 @@ export default function AdminListingsPage() {
 
     const filteredListings = listings.filter((l: Listing) =>
         l.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        l.dealer?.display_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        l.seller?.display_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         l.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -165,7 +165,7 @@ export default function AdminListingsPage() {
                         <div className="relative w-full md:w-96">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
-                                placeholder="Identify asset by title or dealer..."
+                                placeholder="Identify asset by title or seller..."
                                 className="pl-10 bg-background border-border h-11 text-foreground placeholder:text-muted-foreground/30 focus:ring-1 focus:ring-primary/30 rounded-xl"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -178,7 +178,7 @@ export default function AdminListingsPage() {
                                 <TableHeader className="bg-muted/30">
                                     <TableRow className="border-border hover:bg-transparent">
                                         <TableHead className="w-[400px] py-6 px-8 uppercase text-[10px] font-black tracking-widest text-muted-foreground font-heading">Asset Data</TableHead>
-                                        <TableHead className="py-6 px-4 uppercase text-[10px] font-black tracking-widest text-muted-foreground font-heading">Origin / Dealer</TableHead>
+                                        <TableHead className="py-6 px-4 uppercase text-[10px] font-black tracking-widest text-muted-foreground font-heading">Origin / Seller</TableHead>
                                         <TableHead className="py-6 px-4 uppercase text-[10px] font-black tracking-widest text-muted-foreground font-heading">Status</TableHead>
                                         <TableHead className="py-6 px-4 uppercase text-[10px] font-black tracking-widest text-muted-foreground font-heading">Boost</TableHead>
                                         <TableHead className="py-6 px-8 uppercase text-[10px] font-black tracking-widest text-muted-foreground text-right font-heading">Valuation</TableHead>
@@ -237,9 +237,9 @@ export default function AdminListingsPage() {
                                                 <TableCell className="px-4">
                                                     <div className="flex items-center gap-2 group-hover:translate-x-1 transition-transform">
                                                         <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center text-[10px] text-primary font-black border border-primary/20">
-                                                            {listing.dealer?.display_name?.[0] || 'U'}
+                                                            {listing.seller?.display_name?.[0] || 'U'}
                                                         </div>
-                                                        <span className="text-xs font-black uppercase tracking-tighter text-foreground/70">{listing.dealer?.display_name}</span>
+                                                        <span className="text-xs font-black uppercase tracking-tighter text-foreground/70">{listing.seller?.display_name}</span>
                                                     </div>
                                                 </TableCell>
                                                 <TableCell className="px-4">

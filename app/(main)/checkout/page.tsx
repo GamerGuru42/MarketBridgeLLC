@@ -121,7 +121,7 @@ export default function CheckoutPage() {
                         listingId: item.listingId,
                         quantity: item.quantity,
                         price: item.price,
-                        dealerId: item.dealerId
+                        sellerId: item.sellerId
                     })),
                     totalAmount: useCoins ? total - maxRedeemable : total,
                     coinsRedeemed: useCoins ? maxRedeemable : 0,
@@ -171,7 +171,7 @@ export default function CheckoutPage() {
                         Order <span className="text-[#FF6200]">Verification</span>
                     </h1>
                     <p className="text-white/40 font-medium max-w-2xl mx-auto italic lowercase leading-relaxed">
-                        To guarantee 0% transaction fees, please transfer the exact amount directly to our secure escrow account.
+                        To guarantee 0% transaction fees, please transfer the exact amount directly to our secure escrow account. <span className="text-[#FF6200] font-black uppercase tracking-wider">Funds are held in secure escrow</span> and will only be released to the seller after you confirm receipt (release on delivery).
                     </p>
                 </div>
 
@@ -346,7 +346,7 @@ export default function CheckoutPage() {
                                         )}
                                     </Button>
                                     <p className="text-[8px] text-white/30 font-bold uppercase tracking-widest text-center mt-6 italic">
-                                        Your order will be processed once payment is confirmed by Admin.
+                                        Your order will be processed once payment is confirmed. Funds are held in secure escrow and released only on delivery.
                                     </p>
                                 </div>
                             </div>

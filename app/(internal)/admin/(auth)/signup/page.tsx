@@ -129,7 +129,7 @@ function AdminSignupContent() {
                         });
 
                     const { error: roleError } = await supabase
-                        .from('profiles')
+                        .from('users')
                         .upsert({
                             id: activeUser.id,
                             email: identifier,

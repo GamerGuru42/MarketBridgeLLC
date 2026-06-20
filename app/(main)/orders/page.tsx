@@ -11,7 +11,7 @@ import { startConversation } from '@/lib/chat';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, Package, Clock, CheckCircle, XCircle, Truck, ArrowLeft, MessageCircle, AlertCircle } from 'lucide-react';
+import { Loader2, Package, Clock, CheckCircle, XCircle, Truck, ArrowLeft, MessageCircle, AlertCircle, ChevronRight } from 'lucide-react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -283,7 +283,9 @@ export default function OrdersPage() {
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-10 border-b border-zinc-100">
                                     <div className="space-y-1">
                                         <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Cycle ID</p>
-                                        <h3 className="text-3xl font-black uppercase tracking-tighter italic font-heading">#{order.id.slice(-8).toUpperCase()}</h3>
+                                        <Link href={`/orders/${order.id}`} className="hover:text-[#FF6200] transition-colors">
+                                            <h3 className="text-3xl font-black uppercase tracking-tighter italic font-heading">#{order.id.slice(-8).toUpperCase()}</h3>
+                                        </Link>
                                     </div>
                                     <div className={`px-6 py-3 rounded-2xl border flex items-center gap-3 ${order.status === 'completed' ? 'bg-[#FF6200]/10 border-[#FF6200]/20 text-[#FF6200]' :
                                         order.status === 'disputed' ? 'bg-[#FF6200]/10 border-[#FF6200]/20 text-[#FF6200]' :
@@ -313,7 +315,9 @@ export default function OrdersPage() {
                                             </div>
                                             <div className="flex-1 space-y-4">
                                                 <div className="space-y-2">
-                                                    <h4 className="text-2xl font-black uppercase tracking-tighter italic font-heading line-clamp-1">{order.listing?.title || 'Product'}</h4>
+                                                    <Link href={`/orders/${order.id}`} className="hover:text-[#FF6200] transition-colors block">
+                                                        <h4 className="text-2xl font-black uppercase tracking-tighter italic font-heading line-clamp-1">{order.listing?.title || 'Product'}</h4>
+                                                    </Link>
                                                     <p className="text-xs font-black uppercase tracking-widest text-[#FF6200] italic">
                                                         Auth Date: {new Date(order.created_at).toLocaleDateString('en-NG', { day: '2-digit', month: 'short', year: 'numeric' })}
                                                     </p>
@@ -351,6 +355,14 @@ export default function OrdersPage() {
                                             <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Cycle Value</p>
                                             <p className="text-4xl font-black text-[#FF6200] italic font-heading tracking-tighter">₦{order.amount.toLocaleString()}</p>
                                         </div>
+                                        <Button
+                                            asChild
+                                            className="w-full h-12 bg-black text-white hover:bg-zinc-800 rounded-2xl font-black uppercase tracking-widest text-[10px] font-heading border-none flex items-center justify-center gap-2"
+                                        >
+                                            <Link href={`/orders/${order.id}`}>
+                                                Track Order <ChevronRight className="h-4 w-4" />
+                                            </Link>
+                                        </Button>
                                         {/* Escrow Status & Actions */}
                                         {(order.status === 'pending') && (
                                             <div className="bg-[#FF6200]/5 border border-[#FF6200]/20 rounded-[2rem] p-8 space-y-4">
@@ -359,7 +371,7 @@ export default function OrdersPage() {
                                                     <span className="text-xs font-black uppercase tracking-widest">Awaiting Verification</span>
                                                 </div>
                                                 <p className="text-xs text-zinc-500 leading-relaxed font-medium italic">
-                                                    Our System is currently verifying the funds for this cycle. Once verified, the amount will be held in secure escrow.
+                                                    Our System is currently verifying the funds for this cycle. Once verified, the amount will be held in secure escrow and released on delivery.
                                                 </p>
                                             </div>
                                         )}
@@ -372,7 +384,7 @@ export default function OrdersPage() {
                                                         <span className="text-xs font-black uppercase tracking-widest">System: Escrow Active</span>
                                                     </div>
                                                     <p className="text-xs text-zinc-600 leading-relaxed font-medium italic">
-                                                        ₦{order.amount.toLocaleString()} is securely held. The seller has been notified to Dispatch.
+                                                        ₦{order.amount.toLocaleString()} is securely held in escrow. The seller has been notified to dispatch. Funds will only be released on delivery.
                                                     </p>
                                                 </div>
                                                 <div className="flex gap-4">

@@ -46,7 +46,7 @@ const TOUR_STEPS: Step[] = [
     },
     {
         title: 'Start Selling',
-        content: "Want to earn on campus? Hit 'Sell' to register as a verified dealer. List food, gadgets, fashion, services — anything the campus needs.",
+        content: "Want to earn on campus? Hit 'Sell' to register as a verified seller. List food, gadgets, fashion, services — anything the campus needs.",
         icon: <PlusCircle className="h-6 w-6" />,
         accent: 'from-orange-500 to-orange-400',
         tag: 'SELL',

@@ -28,7 +28,7 @@ const UNIVERSITIES = [
 
 interface Listing {
     id: string;
-    dealer_id: string;
+    seller_id: string;
     title: string;
     description: string;
     price: number;
@@ -37,18 +37,20 @@ interface Listing {
     status: string;
     location: string | null;
     created_at: string;
-    make?: string;
-    model?: string;
-    year?: number;
     condition?: string;
+    campus?: string;
+    delivery_type?: string;
+    delivery_fee?: number;
+    delivery_eta?: string;
     is_verified_listing?: boolean;
     verification_status?: string;
     is_sponsored?: boolean;
-    dealer?: {
+    seller?: {
         id: string;
         display_name: string;
         is_verified: boolean;
         store_type?: 'physical' | 'online' | 'both';
+        university?: string;
     };
 }
 
@@ -108,7 +110,7 @@ function ListingsContent() {
                 },
                 (payload: any) => {
                     console.log('New listing detected:', payload);
-                    // Refresh listings to get joined dealer data properly
+                    // Refresh listings to get joined seller data properly
                     fetchListings();
                 }
             )
@@ -161,7 +163,7 @@ function ListingsContent() {
                 const buildQuery = (baseQuery: any) => {
                     let q = baseQuery.eq('status', 'active');
                     if (category && category !== 'All Categories') q = q.eq('category', category);
-                    if (campus && campus !== 'Global') q = q.eq('dealer.university', campus);
+                    if (campus && campus !== 'Global') q = q.eq('campus', campus);
                     if (minPrice) q = q.gte('price', parseInt(minPrice));
                     if (maxPrice) q = q.lte('price', parseInt(maxPrice));
                     if (condition !== 'all') q = q.eq('condition', condition);
@@ -170,7 +172,7 @@ function ListingsContent() {
 
                 const selectFields = `
                     *,
-                    dealer:users!inner(
+                    seller:users!listings_seller_id_fkey(
                         id,
                         display_name,
                         is_verified,
@@ -429,7 +431,7 @@ function ListingsContent() {
                                                 {(listing as any).view_count > 0 && (
                                                     <span className="text-[9px] text-zinc-900/20 dark:text-white/20 font-bold">{(listing as any).view_count} views</span>
                                                 )}
-                                                {listing.dealer?.is_verified && (
+                                                {listing.seller?.is_verified && (
                                                     <div className="h-8 w-8 rounded-full bg-[#FF6200]/10 flex items-center justify-center border border-[#FF6200]/20">
                                                         <ShieldCheck className="h-4 w-4 text-[#FF6200]" />
                                                     </div>

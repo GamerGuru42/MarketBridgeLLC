@@ -44,17 +44,11 @@ export default function MarketingAdminPage() {
 
     const fetchMarketingData = async () => {
         try {
-            // Users
-            const { data: allUsersRaw } = await supabase.from('users').select('id, email, created_at, coins_balance');
-            const { data: allProfiles } = await supabase.from('profiles').select('id, role');
+            const { data: allUsers } = await supabase.from('users').select('id, email, created_at, coins_balance, role');
             const { count: totalUsers } = await supabase.from('users').select('*', { count: 'exact', head: true });
 
-            if (allUsersRaw && allProfiles) {
-                const allUsers = allUsersRaw.map(u => ({
-                    ...u,
-                    role: allProfiles.find(p => p.id === u.id)?.role || 'buyer'
-                }));
-                const sellers = allUsers.filter(u => u.role === 'student_seller');
+            if (allUsers) {
+                const sellers = allUsers.filter(u => u.role === 'student_seller' || u.role === 'seller');
                 const buyers = allUsers.filter(u => ['buyer', 'student_buyer', 'customer'].includes(u.role));
                 const now = new Date();
                 const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -254,7 +248,7 @@ export default function MarketingAdminPage() {
                                         <p className="font-bold text-sm">{u.email}</p>
                                     </div>
                                     <Badge variant="outline" className="text-[9px] font-black uppercase px-3 py-1 rounded-lg">
-                                        {allProfiles?.find(p => p.id === u.id)?.role || 'buyer'}
+                                        {u.role || 'buyer'}
                                     </Badge>
                                 </div>
                             ))}

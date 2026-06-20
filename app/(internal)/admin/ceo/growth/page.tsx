@@ -83,14 +83,14 @@ export default function CEOGrowthPage() {
             <Card className="border-none shadow-lg bg-black/50">
                 <CardHeader>
                     <CardTitle>Regional Distribution</CardTitle>
-                    <CardDescription>Dealer density across key operational zones</CardDescription>
+                    <CardDescription>Seller density across key operational zones</CardDescription>
                 </CardHeader>
                 <CardContent className="h-[300px] flex items-center justify-center border rounded border-dashed border-white/20">
                     <div className="text-center space-y-4">
                         <BarChart3 className="h-16 w-16 text-white/20 mx-auto" />
                         <div className="space-y-1">
-                            <p className="text-2xl font-bold text-white/60">{stats?.activeDealers || 0}</p>
-                            <p className="text-white/40 font-mono text-sm uppercase tracking-widest">Verified Dealers Active</p>
+                            <p className="text-2xl font-bold text-white/60">{stats?.activeSellers || 0}</p>
+                            <p className="text-white/40 font-mono text-sm uppercase tracking-widest">Verified Sellers Active</p>
                         </div>
                         <p className="text-xs text-white/30 max-w-sm mx-auto">
                             Detailed heatmap requires geolocation data from active sessions. Currently aggregating from user profiles.

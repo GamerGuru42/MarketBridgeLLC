@@ -19,7 +19,7 @@ export function VerificationBadge({ isVerified = false, size = 'md', showText = 
     return (
         <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 gap-1">
             <CheckCircle2 className={sizeClasses[size]} />
-            {showText && 'Verified Dealer'}
+            {showText && 'Verified Seller'}
         </Badge>
     );
 }

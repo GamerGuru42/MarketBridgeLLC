@@ -33,7 +33,7 @@ const COMMON_TYPOS: Record<string, string> = {
 
 interface SearchResult {
     id: string;
-    dealer_id: string;
+    seller_id: string;
     title: string;
     description: string;
     category: string;
@@ -164,7 +164,7 @@ export async function intelligentSearch(params: {
         .from('listings')
         .select(`
             *,
-            seller:users!listings_dealer_id_fkey(
+            seller:users!listings_seller_id_fkey(
                 id,
                 display_name,
                 is_verified,
@@ -262,7 +262,7 @@ export async function getRelatedListings(listingId: string, limit: number = 6): 
         .from('listings')
         .select(`
             *,
-            seller:users!listings_dealer_id_fkey(
+            seller:users!listings_seller_id_fkey(
                 id,
                 display_name,
                 is_verified

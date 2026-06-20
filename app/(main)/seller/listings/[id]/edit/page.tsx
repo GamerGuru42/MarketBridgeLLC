@@ -18,7 +18,7 @@ import { CATEGORIES } from '@/lib/categories';
 
 interface Listing {
     id: string;
-    dealer_id: string;
+    seller_id: string;
     title: string;
     description: string;
     price: number;
@@ -45,10 +45,12 @@ export default function EditListingPage() {
         description: '',
         price: '',
         category: '',
-        location: '',
-        condition: 'Brand New',
-        serviceFormat: 'fixed',
-        deliveryTimeframe: '1-3 days',
+        subcategory: '',
+        campus: '',
+        listing_condition: 'new',
+        delivery_type: 'pickup',
+        delivery_fee: '',
+        delivery_eta: '1-3 days',
     });
 
     useEffect(() => {
@@ -57,7 +59,7 @@ export default function EditListingPage() {
             return;
         }
 
-        if (user && !['dealer', 'student_seller', 'ceo', 'admin'].includes(user.role)) {
+        if (user && !['seller', 'student_seller', 'ceo', 'admin'].includes(user.role)) {
             router.push('/');
             return;
         }
@@ -75,7 +77,7 @@ export default function EditListingPage() {
                 .from('listings')
                 .select('*')
                 .eq('id', params?.id)
-                .eq('dealer_id', user.id)
+                .eq('seller_id', user.id)
                 .single();
 
             if (error) throw error;
@@ -123,10 +125,12 @@ export default function EditListingPage() {
                 description: cleanDescription,
                 price: data.price.toString(),
                 category: data.category,
-                location: data.location || '',
-                condition: condition,
-                serviceFormat: serviceFormat,
-                deliveryTimeframe: deliveryTimeframe,
+                subcategory: data.subcategory || '',
+                campus: data.campus || '',
+                listing_condition: data.listing_condition || 'new',
+                delivery_type: data.delivery_type || 'pickup',
+                delivery_fee: data.delivery_fee ? (data.delivery_fee / 100).toString() : '',
+                delivery_eta: data.delivery_eta || '1-3 days',
             });
             setImageUrls(data.images.length > 0 ? data.images : ['']);
             setVideoUrls(data.videos && data.videos.length > 0 ? data.videos : []);
@@ -156,14 +160,12 @@ export default function EditListingPage() {
             let finalDescription = formData.description;
             if (assetType === 'service') {
                 finalDescription = `[ASSET: SERVICE]
-Format: ${formData.serviceFormat.toUpperCase()}
-Est. Delivery: ${formData.deliveryTimeframe}
+Est. Delivery: ${formData.delivery_eta}
 
 ${formData.description}`;
             } else {
-                const displayCondition = formData.condition === 'used_clean' ? 'Excellent' : (formData.condition === 'Open Box' ? 'Like New (Open Box)' : formData.condition);
                 finalDescription = `[ASSET: PRODUCT]
-Condition: ${displayCondition.toUpperCase()}
+Condition: ${formData.listing_condition.toUpperCase()}
 
 ${formData.description}`;
             }
@@ -175,7 +177,12 @@ ${formData.description}`;
                     description: finalDescription,
                     price: parseFloat(formData.price),
                     category: formData.category,
-                    location: formData.location || null,
+                    subcategory: formData.subcategory || null,
+                    campus: formData.campus || null,
+                    listing_condition: assetType === 'product' ? formData.listing_condition : null,
+                    delivery_type: formData.delivery_type,
+                    delivery_fee: formData.delivery_fee ? Math.round(parseFloat(formData.delivery_fee) * 100) : 0,
+                    delivery_eta: formData.delivery_eta,
                     images: validImages,
                     videos: videoUrls.length > 0 ? videoUrls : null,
                 })
@@ -303,7 +310,6 @@ ${formData.description}`;
                                         setFormData({ 
                                             ...formData, 
                                             category: value,
-                                            condition: isFood ? 'Freshly Made' : (isService ? '' : 'Brand New')
                                         });
                                         
                                         if (isService) setAssetType('service');
@@ -328,71 +334,83 @@ ${formData.description}`;
                             {assetType === 'product' && CATEGORIES.find(c => c.name === formData.category)?.id !== 'services' && (
                                 <div className="space-y-3">
                                     <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic font-heading">Product Condition *</Label>
-                                    <Select value={formData.condition} onValueChange={(val) => setFormData({ ...formData, condition: val })}>
+                                    <Select value={formData.listing_condition} onValueChange={(val) => setFormData({ ...formData, listing_condition: val })}>
                                         <SelectTrigger className="h-16 rounded-2xl bg-black/40 border-white/5 focus:ring-1 focus:ring-[#FF6200] font-heading text-[10px] font-black uppercase tracking-widest">
                                             <SelectValue placeholder="Select condition" />
                                         </SelectTrigger>
                                         <SelectContent className="bg-zinc-900 border-white/10">
-                                            {CATEGORIES.find(c => c.name === formData.category)?.id === 'food' ? (
-                                                <>
-                                                    <SelectItem value="Freshly Made" className="py-3 text-[10px] font-black uppercase tracking-widest text-white">Freshly Made</SelectItem>
-                                                    <SelectItem value="Made Today" className="py-3 text-[10px] font-black uppercase tracking-widest text-white">Made Today</SelectItem>
-                                                    <SelectItem value="Pre-Packaged" className="py-3 text-[10px] font-black uppercase tracking-widest text-white">Pre-Packaged (Sealed)</SelectItem>
-                                                    <SelectItem value="Pre-Order" className="py-3 text-[10px] font-black uppercase tracking-widest text-white">Pre-Order (Made on Request)</SelectItem>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <SelectItem value="Brand New" className="py-3 text-[10px] font-black uppercase tracking-widest text-white">Brand New</SelectItem>
-                                                    <SelectItem value="Open Box" className="py-3 text-[10px] font-black uppercase tracking-widest text-white">Like New (Open Box)</SelectItem>
-                                                    <SelectItem value="used_clean" className="py-3 text-[10px] font-black uppercase tracking-widest text-white">Used (Excellent)</SelectItem>
-                                                    <SelectItem value="Used" className="py-3 text-[10px] font-black uppercase tracking-widest text-white">Used (Good)</SelectItem>
-                                                    <SelectItem value="UK Used" className="py-3 text-[10px] font-black uppercase tracking-widest text-white">UK Used / Refurbished</SelectItem>
-                                                </>
-                                            )}
+                                            <SelectItem value="new" className="py-3 text-[10px] font-black uppercase tracking-widest text-white">Brand New</SelectItem>
+                                            <SelectItem value="used" className="py-3 text-[10px] font-black uppercase tracking-widest text-white">Used / Open Box</SelectItem>
+                                            <SelectItem value="refurbished" className="py-3 text-[10px] font-black uppercase tracking-widest text-white">Refurbished</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
                             )}
 
-                            {assetType === 'service' && (
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic font-heading">Pricing Model *</Label>
-                                        <Select value={formData.serviceFormat} onValueChange={(val) => setFormData({ ...formData, serviceFormat: val })}>
-                                            <SelectTrigger className="h-16 rounded-2xl bg-black/40 border-white/5 focus:ring-1 focus:ring-[#FF6200] font-heading text-[10px] font-black uppercase tracking-widest">
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent className="bg-zinc-900 border-white/10">
-                                                <SelectItem value="fixed" className="py-3 text-[10px] font-black uppercase tracking-widest text-white">Fixed Project</SelectItem>
-                                                <SelectItem value="hourly" className="py-3 text-[10px] font-black uppercase tracking-widest text-white">Hourly Rate</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic font-heading">Est. Delivery *</Label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:col-span-2">
+                                <div className="space-y-3">
+                                    <Label htmlFor="campus" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic font-heading">Campus</Label>
+                                    <div className="relative group">
+                                        <div className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#FF6200] transition-colors">
+                                            <MapPin className="h-5 w-5" />
+                                        </div>
                                         <Input
-                                            value={formData.deliveryTimeframe}
-                                            onChange={(e) => setFormData({ ...formData, deliveryTimeframe: e.target.value })}
-                                            placeholder="e.g. 1-3 days"
-                                            className="h-16 px-6 rounded-2xl bg-black/40 border-white/5 focus:border-[#FF6200] font-bold text-xs uppercase tracking-widest"
+                                            id="campus"
+                                            value={formData.campus}
+                                            onChange={(e) => setFormData({ ...formData, campus: e.target.value })}
+                                            className="h-16 pl-16 rounded-2xl bg-black/40 border-white/5 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] transition-all text-sm font-bold uppercase tracking-widest font-heading"
                                         />
                                     </div>
                                 </div>
-                            )}
 
-                            <div className="space-y-3 md:col-span-2">
-                                <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic font-heading">Geographic Campus (Location)</Label>
-                                <div className="relative group">
-                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#FF6200] transition-colors">
-                                        <MapPin className="h-5 w-5" />
-                                    </div>
+                                <div className="space-y-3">
+                                    <Label htmlFor="subcategory" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic font-heading">Subcategory</Label>
                                     <Input
-                                        id="location"
-                                        value={formData.location}
-                                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                        className="h-16 pl-16 rounded-2xl bg-black/40 border-white/5 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] transition-all text-sm font-bold uppercase tracking-widest font-heading"
+                                        id="subcategory"
+                                        value={formData.subcategory}
+                                        onChange={(e) => setFormData({ ...formData, subcategory: e.target.value })}
+                                        className="h-16 px-6 rounded-2xl bg-black/40 border-white/5 focus:border-[#FF6200] focus:ring-1 focus:ring-[#FF6200] transition-all text-sm font-bold uppercase tracking-widest font-heading"
                                     />
                                 </div>
+
+                                <div className="space-y-3">
+                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic font-heading">Delivery Type *</Label>
+                                    <Select value={formData.delivery_type} onValueChange={(val) => setFormData({ ...formData, delivery_type: val })}>
+                                        <SelectTrigger className="h-16 rounded-2xl bg-black/40 border-white/5 focus:ring-1 focus:ring-[#FF6200] font-heading text-[10px] font-black uppercase tracking-widest">
+                                            <SelectValue placeholder="Select delivery type" />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-zinc-900 border-white/10">
+                                            <SelectItem value="pickup" className="py-3 text-[10px] font-black uppercase tracking-widest text-white">Pickup Only</SelectItem>
+                                            <SelectItem value="campus_delivery" className="py-3 text-[10px] font-black uppercase tracking-widest text-white">Campus Delivery</SelectItem>
+                                            <SelectItem value="both" className="py-3 text-[10px] font-black uppercase tracking-widest text-white">Pickup or Delivery</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic font-heading">Est. Delivery / ETA *</Label>
+                                    <Input
+                                        value={formData.delivery_eta}
+                                        onChange={(e) => setFormData({ ...formData, delivery_eta: e.target.value })}
+                                        className="h-16 px-6 rounded-2xl bg-black/40 border-white/5 focus:border-[#FF6200] font-bold text-xs uppercase tracking-widest"
+                                    />
+                                </div>
+
+                                {formData.delivery_type !== 'pickup' && (
+                                    <div className="space-y-3 md:col-span-2">
+                                        <Label htmlFor="delivery_fee" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic font-heading">Delivery Fee (₦) - Optional</Label>
+                                        <div className="relative group">
+                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#FF6200] transition-colors font-black font-heading text-lg italic">₦</div>
+                                            <Input
+                                                id="delivery_fee"
+                                                type="number"
+                                                value={formData.delivery_fee}
+                                                onChange={(e) => setFormData({ ...formData, delivery_fee: e.target.value })}
+                                                className="h-16 pl-16 rounded-2xl bg-black/40 border-white/5 focus:border-[#FF6200] transition-all text-lg font-black font-heading"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
 

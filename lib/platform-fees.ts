@@ -7,8 +7,8 @@ export interface PlatformFeeConfig {
     orderFeePercentage: number; // % of each order
     minimumFee: number; // Minimum fee in Naira
     maximumFee: number; // Maximum fee in Naira (optional cap)
-    subscriptionFeePercentage: number; // For dealer subscriptions
-    dealerRegistrationFee: number; // One-time dealer setup
+    subscriptionFeePercentage: number; // For seller subscriptions
+    sellerRegistrationFee: number; // One-time seller setup
 }
 
 // Default Platform Configuration
@@ -17,7 +17,7 @@ const DEFAULT_CONFIG: PlatformFeeConfig = {
     minimumFee: 100, // ₦100 minimum
     maximumFee: 50000, // ₦50,000 cap for large transactions
     subscriptionFeePercentage: 0, // We collect full subscription amount
-    dealerRegistrationFee: 5000, // ₦5,000 one-time dealer verification fee
+    sellerRegistrationFee: 5000, // ₦5,000 one-time seller verification fee
 };
 
 /**
@@ -116,10 +116,10 @@ Buyer Pays: ₦${breakdown.buyerPays.toLocaleString()}
 }
 
 /**
- * Get dealer registration fee
+ * Get seller registration fee
  */
-export function getDealerRegistrationFee(): number {
-    return DEFAULT_CONFIG.dealerRegistrationFee;
+export function getSellerRegistrationFee(): number {
+    return DEFAULT_CONFIG.sellerRegistrationFee;
 }
 
 /**

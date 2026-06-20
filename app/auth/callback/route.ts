@@ -16,14 +16,13 @@ function getDashboardRoute(role: string): string {
 }
 
 function migrateRole(oldRole: string | null): string {
-    if (!oldRole) return 'student_buyer';
+    if (!oldRole) return 'buyer';
     const mapping: Record<string, string> = {
-        'dealer': 'seller',
+        'seller': 'seller',
         'campus_starter': 'seller',
         'campus_pro': 'seller',
         'elite': 'seller',
         'buyer': 'buyer',
-        'seller': 'seller',
         'customer': 'buyer',
         'student_buyer': 'buyer',
         'student_seller': 'seller',
@@ -82,31 +81,23 @@ export async function GET(request: Request) {
                 const cookieStore = cookies();
                 console.log(`Session established for user: ${userEmail} (${data.user.id})`);
 
-                // ── 1. Fetch/Migrate User Profile ──
+                // ── 1. Fetch User from users table (role is now directly on users) ──
                 let { data: userRecord, error: userErr } = await supabaseAdmin
                     .from('users')
-                    .select('id, email')
+                    .select('id, email, role')
                     .eq('id', data.user.id)
                     .maybeSingle();
 
-                let { data: profileRecord, error: profileErr } = await supabaseAdmin
-                    .from('profiles')
-                    .select('id, role')
-                    .eq('id', data.user.id)
-                    .maybeSingle();
-
-                let profile = userRecord ? { ...userRecord, role: profileRecord?.role || 'buyer' } : null;
-
-                if (profileErr) {
-                    console.error('Error fetching user profile from database:', profileErr);
+                if (userErr) {
+                    console.error('Error fetching user record from database:', userErr);
                     // continue, profile will be provisioned
                 }
 
                 // Bridge pre-registered email accounts if ID doesn't match yet
-                if (!profile && userEmail) {
+                if (!userRecord && userEmail) {
                     const { data: emailMatch, error: emailMatchErr } = await supabaseAdmin
                         .from('users')
-                        .select('id, email')
+                        .select('id, email, role')
                         .eq('email', userEmail)
                         .maybeSingle();
                     
@@ -114,24 +105,21 @@ export async function GET(request: Request) {
 
                     if (emailMatch) {
                         const { error: bridgeErr } = await supabaseAdmin.from('users').update({ id: data.user.id }).eq('email', userEmail);
-                        await supabaseAdmin.from('profiles').update({ id: data.user.id }).eq('email', userEmail);
                         if (bridgeErr) console.error('Error bridging account:', bridgeErr);
                         
-                        // fetch the bridged role
-                        const { data: bridgedProfile } = await supabaseAdmin.from('profiles').select('role').eq('id', data.user.id).maybeSingle();
-                        profile = { ...emailMatch, id: data.user.id, role: bridgedProfile?.role || 'buyer' };
+                        userRecord = { ...emailMatch, id: data.user.id };
                     }
                 }
 
                 // Apply Role Migration Logic
                 // We prioritize roleIntent if provided (e.g. from /signup selection)
-                const rawRole = roleIntent || profile?.role || 'buyer';
+                const rawRole = roleIntent || userRecord?.role || 'buyer';
                 const finalRole = migrateRole(rawRole);
-                console.log(`Calculated Final Role: ${finalRole} (Intent: ${roleIntent}, Profile: ${profile?.role})`);
+                console.log(`Calculated Final Role: ${finalRole} (Intent: ${roleIntent}, DB: ${userRecord?.role})`);
 
-                // Provision profile if missing
-                if (!profile) {
-                    console.log(`Provisioning new profile in users table for ${userEmail} with role ${finalRole}`);
+                // Provision user if missing
+                if (!userRecord) {
+                    console.log(`Provisioning new user in users table for ${userEmail} with role ${finalRole}`);
                     
                     const isSellerDomain = userEmail.endsWith('.edu.ng') || userEmail.endsWith('miva.university');
                     const dbRole = isSellerDomain ? 'seller' : 'buyer';
@@ -159,6 +147,7 @@ export async function GET(request: Request) {
                     const userData = {
                         id: data.user.id,
                         email: userEmail,
+                        role: dbRole,
                         display_name: data.user.user_metadata?.full_name || data.user.user_metadata?.name || userEmail.split('@')[0],
                         university: university,
                         is_verified: true,
@@ -171,26 +160,23 @@ export async function GET(request: Request) {
                     };
 
                     console.log('INSERTING USER WITH ROLE:', dbRole);
-                    console.log('INSERTING USER WITH DATA:', JSON.stringify(userData));
 
                     const { error: insertErr } = await supabaseAdmin.from('users').upsert(userData);
-                    await supabaseAdmin.from('profiles').upsert({ id: data.user.id, email: userEmail, role: dbRole });
 
                     if (insertErr) {
-                        console.error('Failed to provision user profile:', insertErr);
-                        // Redirect to signup with detailed error for debugging as requested
+                        console.error('Failed to provision user:', insertErr);
                         const errorUrl = new URL('/signup', request.url);
                         errorUrl.searchParams.set('error', `Profile creation failed: ${insertErr.message}`);
                         return NextResponse.redirect(errorUrl);
                     }
-                } else if (profile.role !== finalRole) {
-                    console.log(`Updating role for ${userEmail} from ${profile.role} to ${finalRole}`);
+                } else if (userRecord.role !== finalRole) {
+                    console.log(`Updating role for ${userEmail} from ${userRecord.role} to ${finalRole}`);
                     // Map to DB-compatible role
                     const dbRole = finalRole === 'student_seller' ? 'seller' : 
                                   finalRole === 'student_buyer' ? 'buyer' : finalRole;
-                    const { error: updateErr } = await supabaseAdmin.from('profiles').update({ role: dbRole }).eq('id', data.user.id);
+                    const { error: updateErr } = await supabaseAdmin.from('users').update({ role: dbRole }).eq('id', data.user.id);
                     if (updateErr) {
-                        console.error('Failed to update user profile role:', updateErr);
+                        console.error('Failed to update user role:', updateErr);
                         throw new Error(`Role update failed: ${updateErr.message}`);
                     }
                 }
@@ -240,7 +226,7 @@ export async function GET(request: Request) {
 
                 // ── 3. Handle Public Marketplace Flow ──
                 // SPECIAL: Enforce Whitelist for Sellers
-                if (finalRole === 'student_seller') {
+                if (finalRole === 'seller') {
                     const universityMap: Record<string, string> = {
                         'nileuniversity.edu.ng': 'Nile University of Nigeria',
                         'bazeuniversity.edu.ng': 'Baze University',

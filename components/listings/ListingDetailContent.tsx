@@ -375,7 +375,7 @@ export default function ListingDetailContent() {
             title: listing.title,
             price: listing.price,
             image: listing.images[0] || '',
-            dealerId: listing.dealer.id,
+            sellerId: listing.dealer.id,
         });
         // Item added to cart via CartContext
     };
@@ -769,7 +769,7 @@ export default function ListingDetailContent() {
                         <span className="h-2 w-2 rounded-full bg-[#FF6200]" />
                         Ratings & Reviews
                     </h2>
-                    <ReviewsSection listingId={listing.id} dealerId={listing.dealer.id} />
+                    <ReviewsSection listingId={listing.id} sellerId={listing.dealer.id} />
                 </div>
                         {/* Offer Dialog */}
             <Dialog open={isOfferOpen} onOpenChange={setIsOfferOpen}>

@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
 
         // Verify the user making the request is an admin/ceo
         const { data: adminData } = await supabase
-            .from('profiles')
+            .from('users')
             .select('role')
             .eq('id', user.id)
             .single();

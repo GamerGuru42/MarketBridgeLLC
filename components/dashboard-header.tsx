@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
+import { NotificationBell } from '@/components/notification/NotificationBell';
 
 interface DashboardHeaderProps {
     title: string;
@@ -56,8 +57,9 @@ export function DashboardHeader({ title, sidebarItems }: DashboardHeaderProps) {
                 </Link>
 
                 <ThemeToggle />
+                {user && <NotificationBell />}
 
-                <div className="flex items-center gap-4 pl-6 border-l border-zinc-100">
+                <div className="flex items-center gap-4 pl-6 border-l border-zinc-100 dark:border-zinc-800">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <div className="h-10 w-10 rounded-2xl bg-white border border-zinc-200 shadow-sm border-none flex items-center justify-center text-[#FF6200] shadow-[0_0_15px_rgba(255,184,0,0.1)] group cursor-pointer hover:scale-105 transition-transform">

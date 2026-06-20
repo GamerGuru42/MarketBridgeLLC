@@ -72,7 +72,7 @@ export default function SellerListingsPage() {
             return;
         }
 
-        const allowedRoles = ['dealer', 'student_seller', 'ceo', 'admin', 'technical_admin'];
+        const allowedRoles = ['seller', 'student_seller', 'ceo', 'admin', 'technical_admin'];
         if (!allowedRoles.includes(user.role)) {
             router.push('/');
             return;
@@ -93,7 +93,7 @@ export default function SellerListingsPage() {
             const { data, error } = await supabase
                 .from('listings')
                 .select('*, view_count, expires_at, is_sponsored, sponsored_until, sponsored_tier')
-                .eq('dealer_id', user.id)
+                .eq('seller_id', user.id)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -110,14 +110,14 @@ export default function SellerListingsPage() {
         if (!user) return;
 
         const subscription = supabase
-            .channel('dealer_listings')
+            .channel('seller_listings')
             .on(
                 'postgres_changes',
                 {
                     event: '*',
                     schema: 'public',
                     table: 'listings',
-                    filter: `dealer_id=eq.${user.id}`,
+                    filter: `seller_id=eq.${user.id}`,
                 },
                 () => {
                     fetchListings();

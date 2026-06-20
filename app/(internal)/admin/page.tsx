@@ -78,7 +78,7 @@ export default function MissionControlPage() {
         try {
             const { count: usersCount } = await supabase.from('users').select('*', { count: 'exact', head: true });
             const { data: allUsersRaw } = await supabase.from('users').select('id, email');
-            const { data: allProfiles } = await supabase.from('profiles').select('id, role');
+            const { data: allProfiles } = await supabase.from('users').select('id, role');
             
             let allUsers: any[] = [];
             if (allUsersRaw && allProfiles) {

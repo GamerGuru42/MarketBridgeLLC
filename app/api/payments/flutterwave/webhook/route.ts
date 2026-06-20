@@ -28,7 +28,7 @@ export async function POST(req: Request) {
                     })
                     .eq('last_payment_ref', 'pending');
 
-                if (error) console.error('Error activating dealer via Flutterwave webhook:', error);
+                if (error) console.error('Error activating seller via Flutterwave webhook:', error);
             } else {
                 // Update order status in Supabase
                 const { error } = await supabase

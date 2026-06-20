@@ -61,7 +61,7 @@ export default function SystemsAdminPage() {
             // Admin users
             const ADMIN_ROLES = ['admin', 'technical_admin', 'operations_admin', 'marketing_admin', 'ceo', 'cofounder', 'cto', 'coo', 'systems_admin', 'it_support'];
             const { data: profiles } = await supabase
-                .from('profiles')
+                .from('users')
                 .select('id, role')
                 .in('role', ADMIN_ROLES);
             
@@ -109,7 +109,7 @@ export default function SystemsAdminPage() {
             if (existing) {
                 // Update role in profiles
                 const { error } = await supabase
-                    .from('profiles')
+                    .from('users')
                     .update({ role: newAdminRole })
                     .eq('id', existing.id);
                 if (error) throw error;

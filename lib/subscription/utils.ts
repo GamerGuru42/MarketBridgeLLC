@@ -128,7 +128,7 @@ export async function canCreateListing(userId: string): Promise<{
     const { count } = await supabase
         .from('listings')
         .select('*', { count: 'exact', head: true })
-        .eq('dealer_id', userId)
+        .eq('seller_id', userId)
         .eq('status', 'active');
 
     const currentCount = count || 0;
@@ -257,7 +257,7 @@ export async function getUpgradeRecommendation(userId: string): Promise<{
     const { count: listingCount } = await supabase
         .from('listings')
         .select('*', { count: 'exact', head: true })
-        .eq('dealer_id', userId);
+        .eq('seller_id', userId);
 
     const features = getSubscriptionFeatures(plan);
 

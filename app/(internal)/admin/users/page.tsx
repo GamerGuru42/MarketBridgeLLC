@@ -58,7 +58,7 @@ export default function AdminUsersPage() {
         setLoading(true);
         try {
             const { data: userData, error: userError } = await supabase.from('users').select('*').order('created_at', { ascending: false });
-            const { data: profileData, error: profileError } = await supabase.from('profiles').select('id, role');
+            const { data: profileData, error: profileError } = await supabase.from('users').select('id, role');
             if (userError) throw userError;
             if (profileError) throw profileError;
 
@@ -104,7 +104,7 @@ export default function AdminUsersPage() {
                 if (error) throw error;
             } else if (action === 'make_seller') {
                 message = 'Promoted to Student Seller';
-                const { error } = await supabase.from('profiles').update({ role: 'student_seller' }).eq('id', userId);
+                const { error } = await supabase.from('users').update({ role: 'student_seller' }).eq('id', userId);
                 if (error) throw error;
             } else {
                 switch (action) {

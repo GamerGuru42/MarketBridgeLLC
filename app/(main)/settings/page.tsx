@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, CheckCircle, User, Building, Shield, Bell, MapPin, Phone, MessageCircle, Tag, Banknote, Landmark, ArrowLeft, AlertTriangle } from 'lucide-react';
+import { Loader2, CheckCircle, User, Building, Shield, Bell, MapPin, Phone, MessageCircle, Tag, Banknote, Landmark, ArrowLeft, AlertTriangle, Gift, Copy, Share2, Users, Clock, CheckCircle2, ExternalLink } from 'lucide-react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NIGERIAN_STATES } from '@/lib/constants';
 
@@ -46,6 +46,14 @@ export default function SettingsPage() {
     });
     const [savingNotif, setSavingNotif] = useState<string | null>(null);
     const [notifSuccess, setNotifSuccess] = useState<string | null>(null);
+
+    // Referral state
+    const [referralCode, setReferralCode] = useState('');
+    const [referralStats, setReferralStats] = useState({ total: 0, completed: 0, pending: 0, mcEarned: 0 });
+    const [referralHistory, setReferralHistory] = useState<Array<{ id: string; referee_name: string; status: string; created_at: string; mc_rewarded: boolean }>>([]);
+    const [referralLoading, setReferralLoading] = useState(true);
+    const [codeCopied, setCodeCopied] = useState(false);
+    const [linkCopied, setLinkCopied] = useState(false);
 
     useEffect(() => {
         if (user) {
@@ -93,6 +101,55 @@ export default function SettingsPage() {
                 }
             };
             fetchNotifPrefs();
+
+            // Fetch referral data
+            const fetchReferralData = async () => {
+                setReferralLoading(true);
+                try {
+                    // Get user's referral code
+                    const { data: userData } = await supabase
+                        .from('users')
+                        .select('referral_code')
+                        .eq('id', user.id)
+                        .single();
+                    if (userData?.referral_code) setReferralCode(userData.referral_code);
+
+                    // Get referral records where this user is referrer
+                    const { data: refs } = await supabase
+                        .from('referrals')
+                        .select('id, referee_id, status, created_at, mc_rewarded')
+                        .eq('referrer_id', user.id)
+                        .order('created_at', { ascending: false });
+
+                    if (refs && refs.length > 0) {
+                        const completed = refs.filter(r => r.status === 'completed').length;
+                        const pending = refs.filter(r => r.status === 'pending').length;
+                        const mcEarned = refs.filter(r => r.mc_rewarded).length * 50; // 50 MC per successful referral
+                        setReferralStats({ total: refs.length, completed, pending, mcEarned });
+
+                        // Fetch referee display names
+                        const refereeIds = refs.map(r => r.referee_id).filter(Boolean);
+                        const { data: refereeUsers } = await supabase
+                            .from('users')
+                            .select('id, display_name')
+                            .in('id', refereeIds);
+
+                        const nameMap = new Map((refereeUsers || []).map(u => [u.id, u.display_name || 'Anonymous']));
+                        setReferralHistory(refs.map(r => ({
+                            id: r.id,
+                            referee_name: nameMap.get(r.referee_id) || 'Anonymous',
+                            status: r.status,
+                            created_at: r.created_at,
+                            mc_rewarded: r.mc_rewarded,
+                        })));
+                    }
+                } catch (err) {
+                    console.error('Failed to fetch referral data:', err);
+                } finally {
+                    setReferralLoading(false);
+                }
+            };
+            fetchReferralData();
         }
     }, [user]);
 
@@ -112,7 +169,7 @@ export default function SettingsPage() {
                 updated_at: new Date().toISOString()
             };
 
-            // Only add business fields for dealers to avoid DB constraint issues
+            // Only add business fields for sellers to avoid DB constraint issues
             if (user.role === 'student_seller') {
                 updateData.business_name = formData.businessName;
                 updateData.store_type = formData.storeType;
@@ -269,6 +326,10 @@ export default function SettingsPage() {
                         <TabsTrigger value="notifications" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FF6200] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
                             <Bell className="h-3.5 w-3.5" />
                             Notifications
+                        </TabsTrigger>
+                        <TabsTrigger value="referrals" className="gap-2 px-6 rounded-xl data-[state=active]:bg-[#FF6200] data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">
+                            <Gift className="h-3.5 w-3.5" />
+                            Referrals
                         </TabsTrigger>
                     </TabsList>
 
@@ -639,6 +700,183 @@ export default function SettingsPage() {
                                         Note: Critical security emails (password resets, login alerts) are always sent regardless of your preferences.
                                     </p>
                                 </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* Referrals Tab */}
+                    <TabsContent value="referrals" className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-8">
+                        {/* Referral Code Card */}
+                        <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5 relative">
+                            <div className="absolute top-0 right-0 w-48 h-48 bg-[#FF6200]/5 blur-[80px] rounded-full pointer-events-none" />
+                            <CardHeader className="p-8 pb-4">
+                                <CardTitle className="text-xl font-black uppercase tracking-tight flex items-center gap-3">
+                                    <Gift className="h-5 w-5 text-[#FF6200]" />
+                                    Your Referral Code
+                                </CardTitle>
+                                <CardDescription className="text-white/40 uppercase text-[9px] font-bold tracking-widest">Share your code and earn 50 MC for each successful referral</CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-8 pt-4 space-y-6">
+                                {referralLoading ? (
+                                    <div className="flex items-center justify-center py-8">
+                                        <Loader2 className="h-6 w-6 animate-spin text-[#FF6200]" />
+                                    </div>
+                                ) : (
+                                    <>
+                                        {/* Code Display */}
+                                        <div className="flex flex-col sm:flex-row gap-4 items-stretch">
+                                            <div className="flex-1 relative">
+                                                <div className="h-16 bg-black border-2 border-dashed border-[#FF6200]/30 rounded-2xl flex items-center justify-center">
+                                                    <span className="text-2xl font-black tracking-[0.3em] text-[#FF6200] font-mono">
+                                                        {referralCode || 'NO CODE'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <Button
+                                                    onClick={() => {
+                                                        navigator.clipboard.writeText(referralCode);
+                                                        setCodeCopied(true);
+                                                        setTimeout(() => setCodeCopied(false), 2000);
+                                                    }}
+                                                    className={`h-16 px-6 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all ${
+                                                        codeCopied
+                                                            ? 'bg-green-500/20 border border-green-500/30 text-green-400'
+                                                            : 'bg-white/5 border border-white/10 text-white hover:bg-white/10'
+                                                    }`}
+                                                >
+                                                    {codeCopied ? <CheckCircle2 className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+                                                    {codeCopied ? 'Copied' : 'Copy'}
+                                                </Button>
+                                                <Button
+                                                    onClick={() => {
+                                                        const shareUrl = `https://marketbridge.com.ng/ref/${referralCode}`;
+                                                        if (navigator.share) {
+                                                            navigator.share({
+                                                                title: 'Join MarketBridge',
+                                                                text: `Use my referral code ${referralCode} to sign up on MarketBridge and we both earn MC!`,
+                                                                url: shareUrl,
+                                                            });
+                                                        } else {
+                                                            navigator.clipboard.writeText(shareUrl);
+                                                            setLinkCopied(true);
+                                                            setTimeout(() => setLinkCopied(false), 2000);
+                                                        }
+                                                    }}
+                                                    className="h-16 px-6 bg-[#FF6200] hover:bg-[#FF7A29] text-black rounded-2xl font-black uppercase tracking-widest text-[10px] border-none"
+                                                >
+                                                    <Share2 className="h-4 w-4 mr-2" />
+                                                    {linkCopied ? 'Link Copied!' : 'Share'}
+                                                </Button>
+                                            </div>
+                                        </div>
+
+                                        {/* Share Link Preview */}
+                                        <div className="flex items-center gap-3 bg-black/50 border border-white/5 rounded-xl px-5 py-3">
+                                            <ExternalLink className="h-3.5 w-3.5 text-white/20 shrink-0" />
+                                            <span className="text-xs font-mono text-white/30 truncate">
+                                                marketbridge.com.ng/ref/{referralCode}
+                                            </span>
+                                        </div>
+                                    </>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {[
+                                { label: 'Total Referrals', value: referralStats.total, icon: Users, color: 'text-white' },
+                                { label: 'Completed', value: referralStats.completed, icon: CheckCircle2, color: 'text-green-400' },
+                                { label: 'Pending', value: referralStats.pending, icon: Clock, color: 'text-yellow-400' },
+                                { label: 'MC Earned', value: `${referralStats.mcEarned} MC`, icon: Gift, color: 'text-[#FF6200]' },
+                            ].map((stat) => (
+                                <Card key={stat.label} className="bg-white/5 border-white/10 rounded-2xl overflow-hidden">
+                                    <CardContent className="p-5">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <stat.icon className={`h-4 w-4 ${stat.color} opacity-60`} />
+                                            <span className="text-[9px] uppercase font-black tracking-widest text-white/30">{stat.label}</span>
+                                        </div>
+                                        <p className={`text-2xl font-black tracking-tight ${stat.color}`}>{stat.value}</p>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+
+                        {/* Referral History */}
+                        <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden bg-white/5">
+                            <CardHeader className="p-8 pb-4">
+                                <CardTitle className="text-xl font-black uppercase tracking-tight">Referral History</CardTitle>
+                                <CardDescription className="text-white/40 uppercase text-[9px] font-bold tracking-widest">People who signed up with your code</CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-8 pt-0">
+                                {referralLoading ? (
+                                    <div className="flex items-center justify-center py-12">
+                                        <Loader2 className="h-6 w-6 animate-spin text-[#FF6200]" />
+                                    </div>
+                                ) : referralHistory.length === 0 ? (
+                                    <div className="text-center py-16 space-y-4">
+                                        <div className="h-16 w-16 mx-auto rounded-2xl bg-white/5 flex items-center justify-center">
+                                            <Users className="h-7 w-7 text-white/20" />
+                                        </div>
+                                        <div>
+                                            <p className="text-white/40 font-bold uppercase tracking-wider text-sm">No referrals yet</p>
+                                            <p className="text-white/20 text-xs mt-1">Share your code to start earning MC!</p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full">
+                                            <thead>
+                                                <tr className="border-b border-white/5">
+                                                    <th className="text-left text-[9px] uppercase font-black tracking-widest text-white/30 pb-4 pl-4">Name</th>
+                                                    <th className="text-left text-[9px] uppercase font-black tracking-widest text-white/30 pb-4">Status</th>
+                                                    <th className="text-left text-[9px] uppercase font-black tracking-widest text-white/30 pb-4">Date</th>
+                                                    <th className="text-right text-[9px] uppercase font-black tracking-widest text-white/30 pb-4 pr-4">Reward</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-white/5">
+                                                {referralHistory.map((ref) => (
+                                                    <tr key={ref.id} className="hover:bg-white/[0.02] transition-colors">
+                                                        <td className="py-4 pl-4">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="h-8 w-8 rounded-lg bg-white/5 flex items-center justify-center">
+                                                                    <User className="h-3.5 w-3.5 text-white/30" />
+                                                                </div>
+                                                                <span className="font-bold text-sm text-white">{ref.referee_name}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td className="py-4">
+                                                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${
+                                                                ref.status === 'completed'
+                                                                    ? 'bg-green-500/10 text-green-400 border border-green-500/20'
+                                                                    : ref.status === 'pending'
+                                                                    ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
+                                                                    : 'bg-white/5 text-white/30 border border-white/10'
+                                                            }`}>
+                                                                {ref.status === 'completed' && <CheckCircle2 className="h-3 w-3" />}
+                                                                {ref.status === 'pending' && <Clock className="h-3 w-3" />}
+                                                                {ref.status}
+                                                            </span>
+                                                        </td>
+                                                        <td className="py-4">
+                                                            <span className="text-xs font-mono text-white/30">
+                                                                {new Date(ref.created_at).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                            </span>
+                                                        </td>
+                                                        <td className="py-4 pr-4 text-right">
+                                                            <span className={`font-black text-sm ${
+                                                                ref.mc_rewarded ? 'text-[#FF6200]' : 'text-white/20'
+                                                            }`}>
+                                                                {ref.mc_rewarded ? '+50 MC' : '—'}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
                             </CardContent>
                         </Card>
                     </TabsContent>

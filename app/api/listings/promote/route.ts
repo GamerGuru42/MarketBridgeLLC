@@ -21,7 +21,7 @@ export async function POST(req: Request) {
         // 1. Check if listing belongs to user
         const { data: listing, error: listingError } = await supabase
             .from('listings')
-            .select('dealer_id, title, is_sponsored')
+            .select('seller_id, title, is_sponsored')
             .eq('id', listingId)
             .single();
 
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Listing not found' }, { status: 404 });
         }
 
-        if (listing.dealer_id !== user.id) {
+        if (listing.seller_id !== user.id) {
             return NextResponse.json({ error: 'Permission denied' }, { status: 403 });
         }
 

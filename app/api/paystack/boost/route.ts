@@ -59,9 +59,9 @@ export async function POST(req: NextRequest) {
         // Verify the seller owns this listing
         const { data: listing, error: listingError } = await supabase
             .from('listings')
-            .select('id, title, dealer_id, status, is_sponsored, sponsored_until')
+            .select('id, title, seller_id, status, is_sponsored, sponsored_until')
             .eq('id', listingId)
-            .eq('dealer_id', user.id)
+            .eq('seller_id', user.id)
             .single();
 
         if (listingError || !listing) {

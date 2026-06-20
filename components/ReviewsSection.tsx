@@ -18,8 +18,8 @@ interface Review {
     rating: number;
     comment: string;
     photo_urls: string[];
-    dealer_reply: string | null;
-    dealer_reply_at: string | null;
+    seller_reply: string | null;
+    seller_reply_at: string | null;
     updated_at: string;
     helpful_count: number;
     status: 'pending' | 'approved' | 'flagged' | 'hidden';
@@ -37,10 +37,10 @@ interface Review {
 
 interface ReviewsSectionProps {
     listingId?: string;
-    dealerId: string;
+    sellerId: string;
 }
 
-export function ReviewsSection({ listingId, dealerId }: ReviewsSectionProps) {
+export function ReviewsSection({ listingId, sellerId }: ReviewsSectionProps) {
     const { user } = useAuth();
     const supabase = createClient();
     const [reviews, setReviews] = useState<Review[]>([]);
@@ -58,12 +58,12 @@ export function ReviewsSection({ listingId, dealerId }: ReviewsSectionProps) {
 
     useEffect(() => {
         fetchReviews();
-    }, [listingId, dealerId]);
+    }, [listingId, sellerId]);
 
     const fetchReviews = async () => {
         try {
             setLoading(true);
-            // Fetch reviews from the database where subject_id is the dealer
+            // Fetch reviews from the database where subject_id is the seller
             const { data, error } = await supabase
                 .from('reviews')
                 .select(`
@@ -78,7 +78,7 @@ export function ReviewsSection({ listingId, dealerId }: ReviewsSectionProps) {
                         title
                     )
                 `)
-                .eq('subject_id', dealerId)
+                .eq('subject_id', sellerId)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -158,7 +158,7 @@ export function ReviewsSection({ listingId, dealerId }: ReviewsSectionProps) {
         }
     };
 
-    // Handle Dealer Reply Submit
+    // Handle Seller Reply Submit
     const handleReplySubmit = async (reviewId: string) => {
         if (!replyText.trim()) return;
         setSubmittingReply(true);
@@ -180,8 +180,8 @@ export function ReviewsSection({ listingId, dealerId }: ReviewsSectionProps) {
                 if (r.id === reviewId) {
                     return {
                         ...r,
-                        dealer_reply: replyText.trim(),
-                        dealer_reply_at: new Date().toISOString()
+                        seller_reply: replyText.trim(),
+                        seller_reply_at: new Date().toISOString()
                     };
                 }
                 return r;
@@ -248,7 +248,7 @@ export function ReviewsSection({ listingId, dealerId }: ReviewsSectionProps) {
     // Single Review Card component
     const ReviewCard = ({ review }: { review: Review }) => {
         const isOwnReview = user?.id === review.reviewer_id;
-        const isDealer = user?.id === review.subject_id;
+        const isSeller = user?.id === review.subject_id;
         const isReplying = replyingReviewId === review.id;
 
         return (
@@ -300,7 +300,7 @@ export function ReviewsSection({ listingId, dealerId }: ReviewsSectionProps) {
                         </div>
                     </div>
 
-                    {/* Listing Title Context (if looking at dealer reviews page) */}
+                    {/* Listing Title Context (if looking at seller reviews page) */}
                     {!listingId && review.listing && (
                         <div className="text-[9px] text-[#FF6200] font-black uppercase tracking-widest bg-white/5 px-2.5 py-1 rounded-md inline-block">
                             Item: {review.listing.title}
@@ -346,7 +346,7 @@ export function ReviewsSection({ listingId, dealerId }: ReviewsSectionProps) {
                             Helpful ({review.helpful_count})
                         </Button>
 
-                        {isDealer && !review.dealer_reply && !isReplying && (
+                        {isSeller && !review.seller_reply && !isReplying && (
                             <Button
                                 onClick={() => {
                                     setReplyingReviewId(review.id);
@@ -361,11 +361,11 @@ export function ReviewsSection({ listingId, dealerId }: ReviewsSectionProps) {
                         )}
                     </div>
 
-                    {/* Dealer Reply Text Area (Form) */}
+                    {/* Seller Reply Text Area (Form) */}
                     {isReplying && (
                         <div className="bg-white/5 p-4 rounded-xl border border-white/10 space-y-3">
                             <h4 className="text-[10px] font-black uppercase tracking-widest text-[#FF6200]">
-                                Write dealer response
+                                Write seller response
                             </h4>
                             <Textarea
                                 value={replyText}
@@ -393,8 +393,8 @@ export function ReviewsSection({ listingId, dealerId }: ReviewsSectionProps) {
                         </div>
                     )}
 
-                    {/* Existing Dealer Reply Block */}
-                    {review.dealer_reply && (
+                    {/* Existing Seller Reply Block */}
+                    {review.seller_reply && (
                         <div className="bg-[#FF6200]/5 border-l-2 border-[#FF6200] p-4 rounded-r-xl space-y-2 mt-2">
                             <div className="flex justify-between items-center">
                                 <div className="flex items-center gap-2">
@@ -402,23 +402,23 @@ export function ReviewsSection({ listingId, dealerId }: ReviewsSectionProps) {
                                         <MessageSquare className="h-3 w-3 text-black" />
                                     </div>
                                     <span className="text-[9px] font-black uppercase tracking-widest text-white/80">
-                                        Dealer Response
+                                        Seller Response
                                     </span>
                                 </div>
-                                {review.dealer_reply_at && (
+                                {review.seller_reply_at && (
                                     <span className="text-[8px] text-white/30">
-                                        {new Date(review.dealer_reply_at).toLocaleDateString()}
+                                        {new Date(review.seller_reply_at).toLocaleDateString()}
                                     </span>
                                 )}
                             </div>
                             <p className="text-xs text-white/70 italic leading-relaxed">
-                                "{review.dealer_reply}"
+                                "{review.seller_reply}"
                             </p>
-                            {isDealer && !isReplying && (
+                            {isSeller && !isReplying && (
                                 <button
                                     onClick={() => {
                                         setReplyingReviewId(review.id);
-                                        setReplyText(review.dealer_reply || '');
+                                        setReplyText(review.seller_reply || '');
                                     }}
                                     className="text-[9px] font-black uppercase tracking-widest text-[#FF6200] hover:underline"
                                 >

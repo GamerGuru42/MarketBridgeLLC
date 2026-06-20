@@ -568,7 +568,49 @@ export class PaystackWebhookHandler {
                 });
             }
 
-            // ── 4. UNKNOWN PAYMENT TYPE ──────────────────────────────────
+            // ── 4. WALLET DEPOSIT ─────────────────────────────────────────
+            else if (reference.startsWith('WDEP-')) {
+                const userId = metadata?.user_id;
+
+                if (!userId) {
+                    console.error('WDEP- payment missing user_id in metadata');
+                    return;
+                }
+
+                // Mark transaction as success
+                await supabaseAdmin
+                    .from('transactions')
+                    .update({ status: 'success' })
+                    .eq('reference', reference);
+
+                // Credit wallet balance
+                const { data: currentWallet } = await supabaseAdmin
+                    .from('wallets')
+                    .select('balance')
+                    .eq('user_id', userId)
+                    .single();
+
+                const newBalance = (currentWallet?.balance || 0) + amount;
+
+                await supabaseAdmin
+                    .from('wallets')
+                    .update({ balance: newBalance, updated_at: new Date().toISOString() })
+                    .eq('user_id', userId);
+
+                console.log(`Wallet deposit: ${reference} — ₦${normalizedAmount} credited to ${userId} (new balance: ₦${newBalance / 100})`);
+
+                // Record payment
+                await supabaseAdmin.from('payments').insert({
+                    processor: 'paystack',
+                    processor_reference: reference,
+                    amount: normalizedAmount,
+                    status: 'successful',
+                    processor_response: event.data,
+                    metadata,
+                });
+            }
+
+            // ── 5. UNKNOWN PAYMENT TYPE ──────────────────────────────────
             else {
                 console.warn(`Unknown charge reference prefix: ${reference}`);
                 // Still record it for audit purposes

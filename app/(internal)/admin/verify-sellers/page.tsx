@@ -23,7 +23,7 @@ export default function AdminVerifySellers() {
     
     // First, find all users with a seller role in the profiles table
     const { data: profiles, error: profilesError } = await supabase
-      .from('profiles')
+      .from('users')
       .select('id, role')
       .in('role', ['student_seller', 'seller']);
       

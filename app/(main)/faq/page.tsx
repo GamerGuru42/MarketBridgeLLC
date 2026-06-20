@@ -8,27 +8,27 @@ export default function FAQPage() {
     const faqs = [
         {
             question: "What makes MarketBridge 'trustless'?",
-            answer: "In a trustless marketplace, you don't need to blindly trust dealers. We provide transparency through verified dealer badges, public reviews, transaction history, and clear order tracking. The platform's mechanisms replace the need for trust."
+            answer: "In a trustless marketplace, you don't need to blindly trust sellers. We provide transparency through verified seller badges, public reviews, transaction history, and clear order tracking. The platform's mechanisms replace the need for trust."
         },
         {
             question: "How does payment on delivery work?",
             answer: "You only pay when you receive your items. This protects buyers from fraud and ensures you get exactly what you ordered. It's our way of making transactions secure without requiring upfront trust."
         },
         {
-            question: "Are all dealers verified?",
-            answer: "We verify dealers through our verification process. Look for the green 'Verified Dealer' badge before making a purchase. Verified dealers have confirmed their identity and business information."
+            question: "Are all sellers verified?",
+            answer: "We verify sellers through our verification process. Look for the green 'Verified Seller' badge before making a purchase. Verified sellers have confirmed their identity and business information."
         },
         {
             question: "Can I return items?",
-            answer: "Return policies vary by dealer. Check the listing details or contact the dealer directly before purchasing. All communication is recorded for your protection."
+            answer: "Return policies vary by seller. Check the listing details or contact the seller directly before purchasing. All communication is recorded for your protection."
         },
         {
-            question: "How do I become a verified dealer?",
-            answer: "Sign up as a dealer and complete your profile with accurate business information. Our team will review your application and verify your credentials. Verification helps build trust with customers."
+            question: "How do I become a verified seller?",
+            answer: "Sign up as a seller and complete your profile with accurate business information. Our team will review your application and verify your credentials. Verification helps build trust with customers."
         },
         {
             question: "What if I have an issue with my order?",
-            answer: "Contact the dealer directly through our messaging system. All conversations are recorded. If you can't resolve the issue, our support team can help mediate."
+            answer: "Contact the seller directly through our messaging system. All conversations are recorded. If you can't resolve the issue, our support team can help mediate."
         },
         {
             question: "Are there any hidden fees?",
@@ -36,7 +36,7 @@ export default function FAQPage() {
         },
         {
             question: "How do reviews work?",
-            answer: "After receiving your order, you can leave a review. Reviews are public and cannot be deleted by dealers, ensuring honest feedback for future customers."
+            answer: "After receiving your order, you can leave a review. Reviews are public and cannot be deleted by sellers, ensuring honest feedback for future customers."
         },
         {
             question: "Is my personal information safe?",
@@ -64,8 +64,8 @@ export default function FAQPage() {
                     <Card className="bg-zinc-900/50 border-white/5">
                         <CardContent className="p-6 text-center">
                             <Shield className="h-8 w-8 mx-auto mb-3 text-[#FF6200]" />
-                            <h3 className="font-bold uppercase tracking-widest text-white mb-1">Verified Dealers</h3>
-                            <p className="text-xs text-white/40">All dealers go through verification</p>
+                            <h3 className="font-bold uppercase tracking-widest text-white mb-1">Verified Sellers</h3>
+                            <p className="text-xs text-white/40">All sellers go through verification</p>
                         </CardContent>
                     </Card>
                     <Card className="bg-zinc-900/50 border-white/5">

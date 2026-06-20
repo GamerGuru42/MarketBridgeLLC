@@ -28,13 +28,13 @@ interface Listing {
     price: number;
     images: string[];
     location: string;
-    dealer_id: string;
+    seller_id: string;
     created_at: string;
     make?: string;
     model?: string;
     year?: number;
     videos?: string[];
-    dealer: {
+    seller: {
         display_name: string;
     };
 }
@@ -61,7 +61,7 @@ export default function VerificationsPage() {
                 .from('listings')
                 .select(`
                     *,
-                    dealer:users!listings_dealer_id_fkey(display_name)
+                    seller:users!listings_seller_id_fkey(display_name)
                 `)
                 .eq('status', 'pending')
                 .order('created_at', { ascending: false });
@@ -204,7 +204,7 @@ export default function VerificationsPage() {
                                     </div>
                                     <div className="flex items-center gap-2 text-muted-foreground">
                                         <User className="h-3.5 w-3.5" />
-                                        <span className="truncate">{listing.dealer.display_name}</span>
+                                        <span className="truncate">{listing.seller.display_name}</span>
                                     </div>
                                     <div className="flex items-center gap-2 text-muted-foreground col-span-2">
                                         <MapPin className="h-3.5 w-3.5" />
@@ -257,7 +257,7 @@ export default function VerificationsPage() {
                     <div className="space-y-4 py-4">
                         <div className="space-y-2 text-sm border p-3 rounded-lg bg-muted/20">
                             <p><strong>Car:</strong> {verifyingListing?.title}</p>
-                            <p><strong>Dealer:</strong> {verifyingListing?.dealer.display_name}</p>
+                            <p><strong>Seller:</strong> {verifyingListing?.seller.display_name}</p>
                             {verifyingListing?.videos && verifyingListing.videos.length > 0 && (
                                 <div className="mt-3">
                                     <p className="text-xs font-semibold mb-2">Video Verification Assets:</p>

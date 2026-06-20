@@ -20,6 +20,7 @@ import {
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useLocation } from '@/contexts/LocationContext';
+import { NotificationBell } from '@/components/notification/NotificationBell';
 
 export const Header = () => {
     const { user, logout, loading } = useAuth();
@@ -97,24 +98,10 @@ export const Header = () => {
 
                     {/* Right: Auth actions */}
                     <div className="flex items-center gap-2 shrink-0">
-                        {!loading && !user && (
-                            <div className="hidden md:flex items-center gap-2">
-                                <Link
-                                    href="/login"
-                                    className="px-4 py-2 text-sm font-bold text-zinc-900 dark:text-zinc-100 border border-zinc-900 dark:border-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors rounded-full"
-                                >
-                                    Log in
-                                </Link>
-                                <Link
-                                    href="/signup"
-                                    className="px-5 py-2 rounded-full bg-[#FF6200] hover:bg-[#FF7A29] text-white text-sm font-black tracking-wide transition-all hover:scale-105 shadow-[0_4px_16px_rgba(255,98,0,0.25)]"
-                                >
-                                    Sign up
-                                </Link>
-                            </div>
-                        )}
-                        <div className="flex items-center">
+
+                        <div className="flex items-center gap-2">
                             <ThemeToggle />
+                            {user && <NotificationBell />}
                         </div>
 
                         {user && (
@@ -244,19 +231,10 @@ export const Header = () => {
                         </Link>
                     ))}
                     <div className="border-t border-zinc-100 dark:border-zinc-800 pt-4 flex flex-col gap-3 mt-2">
-                        {user ? (
+                        {user && (
                             <>
                                 <Link href="/settings" onClick={() => setMobileMenuOpen(false)} className="text-zinc-600 dark:text-zinc-300 hover:text-white font-bold p-2">My Account</Link>
                                 <button onClick={() => { setMobileMenuOpen(false); handleSignOut(); }} className="text-red-500 font-bold text-left p-2">Log out</button>
-                            </>
-                        ) : (
-                            <>
-                                <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="w-full py-4 rounded-2xl bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black text-center text-sm uppercase tracking-widest shadow-md">
-                                    Sign Up Free
-                                </Link>
-                                <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="w-full py-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-900 dark:text-white font-bold text-center text-sm">
-                                    Log In
-                                </Link>
                             </>
                         )}
                     </div>

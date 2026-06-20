@@ -21,7 +21,7 @@ export default function MainLayout({
     const router = useRouter();
     const { user, sessionUser, loading } = useAuth();
     
-    const isDashboard = pathname?.startsWith('/dealer') || pathname?.startsWith('/settings');
+    const isDashboard = pathname?.startsWith('/seller') || pathname?.startsWith('/settings');
     const isHome = pathname === '/';
 
     useEffect(() => {

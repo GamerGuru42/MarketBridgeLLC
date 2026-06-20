@@ -13,7 +13,7 @@ export async function POST(req: Request) {
 
     // Verify the user making the request is an admin
     const { data: adminData } = await supabase
-      .from('profiles')
+      .from('users')
       .select('role')
       .eq('id', user.id)
       .single()
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
         .eq('id', reqRow.user_id)
 
       await supabase
-        .from('profiles')
+        .from('users')
         .update({
           role: 'student_seller'
         })

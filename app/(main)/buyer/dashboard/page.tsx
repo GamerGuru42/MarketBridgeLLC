@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DashboardHeader } from '@/components/dashboard-header';
+import { FeaturedListings } from '@/components/FeaturedListings';
 
 const buyerItems = [
     { label: 'Overview', href: '/buyer/dashboard', icon: LayoutDashboard },
@@ -116,6 +117,9 @@ export default function BuyerDashboardPage() {
                             </div>
                         </div>
                     </div>
+
+                    {/* Featured Listings Section */}
+                    <FeaturedListings />
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Escrows Column */}

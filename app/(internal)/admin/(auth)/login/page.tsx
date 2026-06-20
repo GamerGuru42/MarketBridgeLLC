@@ -48,7 +48,7 @@ export default function AdminLoginPage() {
 
             // 2. Authoritative Verification & Deep Repair
             const { data: profile, error: profileFetchError } = await supabase
-                .from('profiles')
+                .from('users')
                 .select('role')
                 .eq('id', data.user.id)
                 .maybeSingle();
@@ -73,7 +73,7 @@ export default function AdminLoginPage() {
                     is_verified: true,
                     display_name: data.user.user_metadata?.display_name || 'Admin User'
                 });
-                await supabase.from('profiles').upsert({
+                await supabase.from('users').upsert({
                     id: data.user.id,
                     email: identifier,
                     role: metaRole
@@ -88,7 +88,7 @@ export default function AdminLoginPage() {
                     is_verified: true,
                     display_name: 'Visionary Leader'
                 });
-                await supabase.from('profiles').upsert({
+                await supabase.from('users').upsert({
                     id: data.user.id,
                     email: identifier,
                     role: 'ceo'

@@ -33,7 +33,7 @@ export async function POST(
 
         let isAuthorized = false;
 
-        // 1. Check if the user is the subject_id (dealer/seller of the review)
+        // 1. Check if the user is the subject_id (seller/seller of the review)
         if (review.subject_id === user.id) {
             isAuthorized = true;
         }
@@ -42,25 +42,25 @@ export async function POST(
         if (!isAuthorized && review.listing_id) {
             const { data: listing } = await supabase
                 .from('listings')
-                .select('dealer_id')
+                .select('seller_id')
                 .eq('id', review.listing_id)
                 .single();
 
-            if (listing && listing.dealer_id === user.id) {
+            if (listing && listing.seller_id === user.id) {
                 isAuthorized = true;
             }
         }
 
         if (!isAuthorized) {
-            return NextResponse.json({ error: 'Forbidden: Only the seller/dealer can reply to this review' }, { status: 403 });
+            return NextResponse.json({ error: 'Forbidden: Only the seller/seller can reply to this review' }, { status: 403 });
         }
 
         // Update the reply (allow empty string to clear a reply)
         const { error: updateError } = await supabase
             .from('reviews')
             .update({
-                dealer_reply: replyText || null,
-                dealer_reply_at: replyText ? new Date().toISOString() : null
+                seller_reply: replyText || null,
+                seller_reply_at: replyText ? new Date().toISOString() : null
             })
             .eq('id', reviewId);
 

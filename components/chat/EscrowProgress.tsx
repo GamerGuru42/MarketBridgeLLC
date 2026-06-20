@@ -356,7 +356,7 @@ export function EscrowProgress({ agreement, steps, onUpdate }: EscrowProgressPro
                 <DialogContent className="sm:max-w-[425px] bg-zinc-950 border-white/10 text-white">
                     <DialogHeader>
                         <DialogTitle className="text-xl font-black uppercase text-white flex items-center gap-2">
-                            <Star className="h-5 w-5 text-[#FF6200]" /> Review Dealer
+                            <Star className="h-5 w-5 text-[#FF6200]" /> Review Seller
                         </DialogTitle>
                         <DialogDescription className="text-zinc-400">
                             Rate your experience to help others make informed decisions.

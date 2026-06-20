@@ -235,7 +235,7 @@ export default function RevenueManagementPage() {
                 </div>
 
                 <div className="flex gap-3 mb-8 flex-wrap">
-                    {['all', 'order_fee', 'subscription', 'dealer_registration'].map((type) => (
+                    {['all', 'order_fee', 'subscription', 'seller_registration'].map((type) => (
                         <button
                             key={type}
                             onClick={() => setFilter(type)}
@@ -286,7 +286,7 @@ export default function RevenueManagementPage() {
                                                 </td>
                                                 <td className="py-6 px-6">
                                                     <div className="flex flex-col gap-1">
-                                                        <span className="text-xs font-bold text-white line-clamp-1">{record.seller?.display_name || 'Dealer'}</span>
+                                                        <span className="text-xs font-bold text-white line-clamp-1">{record.seller?.display_name || 'Seller'}</span>
                                                         <span className="text-[10px] text-white/30 italic">Target: {record.buyer?.display_name || 'Buyer'}</span>
                                                     </div>
                                                 </td>

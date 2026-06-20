@@ -131,7 +131,7 @@ function AdminAccessContent() {
             if (userError) throw userError;
 
             // Write into profiles table for role
-            const { error: profileError } = await supabase.from('profiles').upsert({
+            const { error: profileError } = await supabase.from('users').upsert({
                 id: authData.user.id,
                 email: normalizedEmail,
                 role

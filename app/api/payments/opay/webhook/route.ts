@@ -20,7 +20,7 @@ export async function POST(req: Request) {
                     })
                     .eq('last_payment_ref', 'pending'); // Or use the reference if stored
 
-                if (error) console.error('Error activating dealer via webhook:', error);
+                if (error) console.error('Error activating seller via webhook:', error);
             } else {
                 // Update order status in Supabase
                 const { error } = await supabase

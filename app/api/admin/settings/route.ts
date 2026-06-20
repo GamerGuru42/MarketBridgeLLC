@@ -9,7 +9,7 @@ export async function GET() {
 
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+    const { data: profile } = await supabase.from('users').select('role').eq('id', user.id).single();
     if (!['admin', 'ceo', 'technical_admin'].includes(profile?.role || '')) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
 
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+    const { data: profile } = await supabase.from('users').select('role').eq('id', user.id).single();
     if (!['admin', 'ceo', 'technical_admin'].includes(profile?.role || '')) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
