@@ -12,7 +12,7 @@ import { LocationProvider } from "@/contexts/LocationContext";
 import { ToastProvider } from "@/contexts/ToastContext";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { SystemProvider } from "@/contexts/SystemContext";
-import { OnboardingTour } from "@/components/OnboardingTour";
+
 import { DemoBanner } from "@/components/DemoBanner";
 import { FloatingFeedbackWidget } from "@/components/FloatingFeedbackWidget";
 
@@ -125,7 +125,7 @@ export default function RootLayout({
                       <NetworkStatus />
                     </ToastProvider>
                     <GlobalWidgets />
-                    <OnboardingTour />
+
                   </CartProvider>
                 </LocationProvider>
               </AuthProvider>

@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { createClient } from '@/lib/supabase/client';
 import { startConversation } from '@/lib/chat';
 import { Button } from '@/components/ui/button';
-import { GuidedTour, TourStep } from '@/components/GuidedTour';
+
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
@@ -116,13 +116,7 @@ export default function SellerDashboardPage() {
     const supabase = createClient();
     const { toast } = useToast();
 
-    const tourSteps: TourStep[] = [
-        { targetId: 'tour-header', title: 'Seller Dashboard', description: "Welcome to your bridge. This is your main area where you manage your entire campus business at a glance.", position: 'bottom' },
-        { targetId: 'tour-stats', title: 'Dashboard Step 1: Earnings', description: "Track every Naira real-time. 'Revenue' shows your verified earnings, while 'Success Rate' tracks how many campus deals you've closed.", position: 'bottom' },
-        { targetId: 'tour-actions', title: 'Dashboard Step 2: Inventory', description: "This is where you launch. List new products, manage your stock, and check your messages to keep the gear moving.", position: 'top' },
-        { targetId: 'tour-tabs', title: 'Dashboard Step 3: Orders & Offers', description: "Master the deal here. Use the 'Offers' tab to counter-negotiate prices and the 'Orders' tab to track active escrow deliveries.", position: 'bottom' },
-        { targetId: 'tour-vanguard', title: 'Dashboard Step 4: Marketing', description: "Own your campus. Become an Ambassador to unlock free Pro features, earn MarketCoins, and lead your university network.", position: 'top' },
-    ];
+
     const [orders, setOrders] = useState<Order[]>([]);
     const [stats, setStats] = useState<Stats>({
         totalOrders: 0,
@@ -1003,7 +997,7 @@ export default function SellerDashboardPage() {
             <div className="container mx-auto px-6 mt-6 relative z-10"><SellerWeatherWidget /></div>
 
             <div className="container mx-auto py-6 px-6 relative z-10 space-y-12 pb-24">
-                <GuidedTour steps={tourSteps} tourKey="seller_dashboard" />
+
                 {/* Header Section */}
                 <div id="tour-header" className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-zinc-200 dark:border-white/5 pb-12 transition-colors duration-300">
                     <div className="space-y-4">

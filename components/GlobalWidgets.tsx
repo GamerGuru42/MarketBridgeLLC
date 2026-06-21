@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { AiAssistant } from '@/components/AiAssistant';
 import { CookieConsent } from '@/components/CookieConsent';
-import { AppTour } from '@/components/AppTour';
+
 
 export function GlobalWidgets() {
     const pathname = usePathname();
@@ -24,7 +24,7 @@ export function GlobalWidgets() {
     return (
         <>
             {showSageAI && <AiAssistant />}
-            <AppTour />
+
             <CookieConsent />
         </>
     );
