@@ -124,14 +124,15 @@ export default function SellerOnboardingPage() {
                 display_name: fullName.trim(),
                 phone_number: phoneNumber ? phoneNumber.trim() : null,
                 onboarding_complete: true,
-                payout_setup: true
+                payout_setup: true,
+                role: 'student_seller'
             }).eq('id', sessionUser!.id);
 
             if (error) throw error;
 
             await refreshUser(sessionUser!.id);
             toast('Seller account activated!', 'success');
-            router.replace('/seller-dashboard');
+            router.replace('/seller/dashboard');
         } catch (err: any) {
             toast(err.message || 'Onboarding failed.', 'error');
         } finally {
