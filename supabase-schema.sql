@@ -26,8 +26,17 @@ CREATE TABLE IF NOT EXISTS public.users (
     trial_start_date TIMESTAMPTZ,
     listing_limit INTEGER DEFAULT 5,
     phone_number TEXT,
+    -- Seller Onboarding
+    university TEXT,
+    email_verified BOOLEAN DEFAULT FALSE,
+    onboarding_complete BOOLEAN DEFAULT FALSE,
+    payout_setup BOOLEAN DEFAULT FALSE,
+    is_temporary_seller BOOLEAN DEFAULT FALSE,
+    temporary_seller_expires_at TIMESTAMPTZ,
+    referred_by UUID REFERENCES public.users(id),
     -- Bank Details for Dealers
     bank_name TEXT,
+    bank_code TEXT,
     account_number TEXT,
     account_name TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),

@@ -27,6 +27,15 @@ export interface User {
     otp_attempts?: number;
     coins_balance?: number;
     referral_link_code?: string;
+    is_temporary_seller?: boolean;
+    temporary_seller_expires_at?: string;
+    referred_by?: string;
+    bank_name?: string;
+    bank_code?: string;
+    account_number?: string;
+    account_name?: string;
+    onboarding_complete?: boolean;
+    payout_setup?: boolean;
 }
 
 export interface FirestoreUser {
