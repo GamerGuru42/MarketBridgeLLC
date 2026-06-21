@@ -57,8 +57,13 @@ module.exports = {
         },
         container: {
             center: true,
-            padding: "2rem",
+            padding: "1rem",
             screens: {
+                xs: "480px",
+                sm: "640px",
+                md: "768px",
+                lg: "1024px",
+                xl: "1280px",
                 "2xl": "1400px",
             },
         },
@@ -117,6 +122,9 @@ module.exports = {
                 sans: ["var(--font-manrope)", "sans-serif"],
                 mono: ["var(--font-geist-mono)", "monospace"],
                 heading: ["var(--font-outfit)", "sans-serif"],
+            },
+            screens: {
+                xs: "480px",
             },
             keyframes: {
                 "accordion-down": {

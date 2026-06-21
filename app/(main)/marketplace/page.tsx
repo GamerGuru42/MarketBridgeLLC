@@ -224,91 +224,93 @@ function ListingsContent() {
     // Removed the strict auth redirect so non-authenticated users can view the index UI but NOT the actual listings data.
 
     return (
-        <div className="min-h-screen bg-background text-foreground relative selection:bg-[#FF6200] selection:text-black flex flex-col pt-28 pb-20">
+        <div className="min-h-screen bg-background text-foreground relative selection:bg-[#FF6200] selection:text-black flex flex-col pt-16 md:pt-28 pb-20">
             {/* Background Grid */}
             <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-10 dark:opacity-5 pointer-events-none z-0" />
 
-            <div className="container px-6 mx-auto relative z-10 space-y-12">
+            <div className="container px-4 sm:px-6 mx-auto relative z-10 space-y-8 md:space-y-12">
                 {/* Header */}
                 <div className="space-y-4">
                     <div className="flex items-center gap-3">
                         <span className="h-2 w-2 rounded-full bg-[#FF6200] animate-pulse" />
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 font-heading">Live Campus Feed</span>
                     </div>
-                    <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
+                    <h1 className="text-3xl sm:text-5xl md:text-7xl font-black uppercase tracking-tighter italic font-heading">
                         Market<span className="text-[#FF6200]">Place</span>
                     </h1>
-                    <p className="text-muted-foreground font-medium italic">
+                    <p className="text-muted-foreground font-medium italic text-sm md:text-base">
                         Showing <span className="text-foreground font-bold">{listings.length} active listings</span> across the campus.
                     </p>
                 </div>
 
                 {/* Search & Filters */}
-                <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                    <div className="md:col-span-5 relative group">
-                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 group-focus-within:text-[#FF6200] transition-colors" />
+                <form onSubmit={handleSearch} className="flex flex-col gap-3">
+                    <div className="relative group">
+                        <Search className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 group-focus-within:text-[#FF6200] transition-colors" />
                         <input
                             type="text"
                             placeholder="Search active listings..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 pl-16 pr-6 h-16 text-zinc-900 dark:text-white placeholder:text-zinc-500 focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-medium italic text-sm transition-all"
+                            className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 pl-10 md:pl-16 pr-4 md:pr-6 h-14 md:h-16 text-zinc-900 dark:text-white placeholder:text-zinc-500 focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-medium italic text-xs md:text-sm transition-all"
                         />
                     </div>
 
-                    <div className="md:col-span-3">
-                        <select
-                            title="Filter by Category"
-                            aria-label="Filter by Category"
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
-                            className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 px-6 h-16 text-zinc-900 dark:text-white focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
-                        >
-                            <option value="All Categories" className="bg-[#FAFAFA] dark:bg-zinc-900 text-zinc-900 dark:text-white">All Categories</option>
-                            {CATEGORIES.map((cat: any, idx: number) => (
-                                <option key={idx} value={cat.name} className="bg-[#FAFAFA] dark:bg-zinc-900 text-zinc-900 dark:text-white">{cat.name.toUpperCase()}</option>
-                            ))}
-                        </select>
-                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3">
+                        <div className="sm:col-span-1 md:col-span-5">
+                            <select
+                                title="Filter by Category"
+                                aria-label="Filter by Category"
+                                value={category}
+                                onChange={(e) => setCategory(e.target.value)}
+                                className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 px-4 md:px-6 h-14 md:h-16 text-zinc-900 dark:text-white focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-black uppercase tracking-widest text-[8px] md:text-[10px] appearance-none cursor-pointer"
+                            >
+                                <option value="All Categories" className="bg-[#FAFAFA] dark:bg-zinc-900 text-zinc-900 dark:text-white">All Categories</option>
+                                {CATEGORIES.map((cat: any, idx: number) => (
+                                    <option key={idx} value={cat.name} className="bg-[#FAFAFA] dark:bg-zinc-900 text-zinc-900 dark:text-white">{cat.name.toUpperCase()}</option>
+                                ))}
+                            </select>
+                        </div>
 
-                    <div className="md:col-span-2">
-                        <select
-                            title="Filter by Campus"
-                            aria-label="Filter by Campus"
-                            value={campus}
-                            onChange={(e) => setCampus(e.target.value)}
-                            className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 px-6 h-16 text-zinc-900 dark:text-white focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
-                        >
-                            <option value="" className="bg-[#FAFAFA] dark:bg-zinc-900 text-zinc-900 dark:text-white">All Universities</option>
-                            {UNIVERSITIES.map(u => (
-                                <option key={u} value={u} className="bg-[#FAFAFA] dark:bg-zinc-900 text-zinc-900 dark:text-white">{u}</option>
-                            ))}
-                            <option value="Global" className="bg-[#FAFAFA] dark:bg-zinc-900 text-zinc-900 dark:text-white">Everywhere</option>
-                        </select>
-                    </div>
+                        <div className="sm:col-span-1 md:col-span-3">
+                            <select
+                                title="Filter by Campus"
+                                aria-label="Filter by Campus"
+                                value={campus}
+                                onChange={(e) => setCampus(e.target.value)}
+                                className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 px-4 md:px-6 h-14 md:h-16 text-zinc-900 dark:text-white focus:outline-none focus:border-[#FF6200]/50 rounded-2xl font-black uppercase tracking-widest text-[8px] md:text-[10px] appearance-none cursor-pointer"
+                            >
+                                <option value="" className="bg-[#FAFAFA] dark:bg-zinc-900 text-zinc-900 dark:text-white">All Universities</option>
+                                {UNIVERSITIES.map(u => (
+                                    <option key={u} value={u} className="bg-[#FAFAFA] dark:bg-zinc-900 text-zinc-900 dark:text-white">{u}</option>
+                                ))}
+                                <option value="Global" className="bg-[#FAFAFA] dark:bg-zinc-900 text-zinc-900 dark:text-white">Everywhere</option>
+                            </select>
+                        </div>
 
-                    <Button type="submit" className="md:col-span-2 h-16 bg-[#FF6200] text-black hover:bg-[#FF7A29] font-black uppercase tracking-widest rounded-2xl border-none shadow-[0_10px_20px_rgba(255,98,0,0.1)]">
-                        Search Market
-                    </Button>
+                        <Button type="submit" className="sm:col-span-2 md:col-span-4 h-14 md:h-16 bg-[#FF6200] text-black hover:bg-[#FF7A29] font-black uppercase tracking-widest rounded-2xl border-none shadow-[0_10px_20px_rgba(255,98,0,0.1)] text-xs md:text-sm">
+                            Search Market
+                        </Button>
+                    </div>
                 </form>
 
                 {/* Loading State - Skeleton Grid */}
                 {loading && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pt-4">
+                    <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 pt-4">
                         {[...Array(8)].map((_, i) => (
-                            <div key={i} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-sm overflow-hidden flex flex-col h-full shadow-2xl">
-                                <Skeleton className="h-64 w-full rounded-none bg-zinc-100 dark:bg-zinc-800" />
-                                <div className="p-8 space-y-6 flex-1 flex flex-col justify-between">
-                                    <div className="space-y-3">
-                                        <Skeleton className="h-3 w-24 bg-zinc-100 dark:bg-zinc-800" />
-                                        <Skeleton className="h-6 w-3/4 bg-zinc-100 dark:bg-zinc-800" />
-                                        <Skeleton className="h-4 w-full bg-zinc-100 dark:bg-zinc-800" />
-                                        <Skeleton className="h-4 w-2/3 bg-zinc-100 dark:bg-zinc-800" />
+                            <div key={i} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl md:rounded-[2rem] shadow-sm overflow-hidden flex flex-col h-full">
+                                <Skeleton className="h-48 xs:h-56 sm:h-64 w-full rounded-none bg-zinc-100 dark:bg-zinc-800" />
+                                <div className="p-4 md:p-8 space-y-4 md:space-y-6 flex-1 flex flex-col justify-between">
+                                    <div className="space-y-2 md:space-y-3">
+                                        <Skeleton className="h-2 md:h-3 w-16 md:w-24 bg-zinc-100 dark:bg-zinc-800" />
+                                        <Skeleton className="h-4 md:h-6 w-3/4 bg-zinc-100 dark:bg-zinc-800" />
+                                        <Skeleton className="h-3 md:h-4 w-full bg-zinc-100 dark:bg-zinc-800" />
+                                        <Skeleton className="h-3 md:h-4 w-2/3 bg-zinc-100 dark:bg-zinc-800" />
                                     </div>
-                                    <div className="pt-6 border-t border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
-                                        <div className="flex flex-col space-y-2">
-                                            <Skeleton className="h-2 w-16 bg-zinc-100 dark:bg-zinc-800" />
-                                            <Skeleton className="h-6 w-24 bg-[#FF6200]/20" />
+                                    <div className="pt-4 md:pt-6 border-t border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
+                                        <div className="flex flex-col space-y-1 md:space-y-2">
+                                            <Skeleton className="h-1.5 md:h-2 w-12 md:w-16 bg-zinc-100 dark:bg-zinc-800" />
+                                            <Skeleton className="h-4 md:h-6 w-16 md:w-24 bg-[#FF6200]/20" />
                                         </div>
                                     </div>
                                 </div>
