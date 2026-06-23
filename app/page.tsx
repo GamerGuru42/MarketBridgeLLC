@@ -179,10 +179,10 @@ export default function HomePage() {
 
                         <div className="relative z-10 hidden md:flex flex-col items-center bg-white/5 border border-white/10 p-6 rounded-[2rem] backdrop-blur-sm transform hover:scale-105 transition-transform duration-300">
                             <div className="bg-white p-4 rounded-2xl mb-4 text-[#111111] flex items-center justify-center shadow-lg">
-                                <QRCode value="https://marketbridge.com.ng/seller-onboard" size={96} />
+                                <QRCode value="https://marketbridge.com.ng/app/download" size={96} />
                             </div>
-                            <p className="text-white font-black uppercase tracking-widest text-xs">Scan to Sell Fast</p>
-                            <p className="text-[#FF6200] text-[10px] uppercase font-bold tracking-widest mt-1">Open Camera App</p>
+                            <p className="text-white font-black uppercase tracking-widest text-xs">Download the App</p>
+                            <p className="text-[#FF6200] text-[10px] uppercase font-bold tracking-widest mt-1">Coming Soon</p>
                         </div>
                     </div>
                 </section>

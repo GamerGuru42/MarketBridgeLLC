@@ -27,7 +27,13 @@ export default function SellerOnboardPage() {
 
     useEffect(() => {
         if (!loading && user) {
-            router.push('/seller-setup/bank');
+            // Only redirect to bank setup if user is already a seller
+            if (user.role === 'seller' || user.role === 'student_seller') {
+                router.push('/seller-setup/bank');
+            } else {
+                // Buyers who land here should go to the marketplace, not bank details
+                router.push('/marketplace');
+            }
         }
     }, [user, loading, router]);
 
