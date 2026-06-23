@@ -37,11 +37,11 @@ export const BetaBanner = () => {
 
                             <div className="overflow-hidden flex-1 mask-linear-fade">
                                 <div className="animate-marquee whitespace-nowrap text-[10px] sm:text-xs font-bold uppercase tracking-wider text-zinc-300 will-change-transform">
-                                    <span className="text-[#FF6200] mr-2">Market Notice:</span>
-                                    Listings are samples for demonstration. Real inventory incoming.
+                                    <span className="text-[#FF6200] mr-2">Live Announcement:</span>
+                                    MarketBridge is now LIVE — Real transactions enabled. Verified sellers across Abuja campuses.
                                     <span className="mx-4 text-zinc-600">///</span>
-                                    <span className="text-[#FF6200] mr-2">Market Notice:</span>
-                                    Listings are samples for demonstration. Real inventory incoming.
+                                    <span className="text-[#FF6200] mr-2">Live Announcement:</span>
+                                    MarketBridge is now LIVE — Real transactions enabled. Verified sellers across Abuja campuses.
                                     <span className="mx-4 text-zinc-600">///</span>
                                 </div>
                             </div>

@@ -121,7 +121,7 @@ export async function GET(request: Request) {
                 if (!userRecord) {
                     console.log(`Provisioning new user in users table for ${userEmail} with role ${finalRole}`);
                     
-                    const isSellerDomain = userEmail.endsWith('.edu.ng') || userEmail.endsWith('miva.university');
+                    const isSellerDomain = userEmail.endsWith('.edu.ng');
                     const dbRole = isSellerDomain ? 'seller' : 'buyer';
                     const isNewBuyer = dbRole === 'buyer';
 
@@ -137,7 +137,6 @@ export async function GET(request: Request) {
                             'eun.edu.ng': 'European University of Nigeria',
                             'philomath.edu.ng': 'Philomath University',
                             'cosmopolitan.edu.ng': 'Cosmopolitan University',
-                            'miva.university': 'Miva Open University',
                             'primeuniversity.edu.ng': 'Prime University Abuja',
                             'binghamuni.edu.ng': 'Bingham University',
                         };
@@ -235,7 +234,6 @@ export async function GET(request: Request) {
                         'eun.edu.ng': 'European University of Nigeria',
                         'philomath.edu.ng': 'Philomath University',
                         'cosmopolitan.edu.ng': 'Cosmopolitan University',
-                        'miva.university': 'Miva Open University',
                         'primeuniversity.edu.ng': 'Prime University Abuja',
                         'binghamuni.edu.ng': 'Bingham University',
                     };
@@ -243,7 +241,7 @@ export async function GET(request: Request) {
                     const domain = userEmail.split('@')[1];
                     const universityName = universityMap[domain];
                     
-                    if (!userEmail.endsWith('.edu.ng') && !userEmail.endsWith('miva.university')) {
+                    if (!userEmail.endsWith('.edu.ng')) {
                          console.log(`Domain validation failed for seller intent: ${userEmail}. Signing out.`);
                          await supabase.auth.signOut();
                          const errorUrl = new URL('/signup', request.url);

@@ -18,7 +18,7 @@ type Role = 'student_buyer' | 'student_seller';
 const UNIVERSITIES = [
     'Baze University', 'Nile University of Nigeria', 'Veritas University',
     'African University of Science & Technology', 'European University of Nigeria',
-    'Philomath University', 'Cosmopolitan University', 'Miva Open University',
+    'Philomath University', 'Cosmopolitan University',
     'Prime University Abuja', 'Bingham University', 'Other'
 ];
 
@@ -30,7 +30,6 @@ const APPROVED_UNIVERSITIES = [
     { name: 'Evangel University', domain: 'eun.edu.ng' },
     { name: 'Philomath University', domain: 'philomath.edu.ng' },
     { name: 'Cosmopolitan University', domain: 'cosmopolitan.edu.ng' },
-    { name: 'MIVA University', domain: 'miva.university' },
     { name: 'Prime University', domain: 'primeuniversity.edu.ng' },
     { name: 'Bingham University', domain: 'binghamuni.edu.ng' },
 ];
@@ -44,7 +43,7 @@ function SignupContent() {
 
     const [currentStep, setCurrentStep] = useState<Step>('role');
     const [role, setRole] = useState<Role>('student_buyer');
-    const [expandedRole, setExpandedRole] = useState<Role | null>(null);
+    const [activeTab, setActiveTab] = useState<'buyer' | 'seller'>('buyer');
     const [loadingBuyerGoogle, setLoadingBuyerGoogle] = useState(false);
     const [loadingSellerGoogle, setLoadingSellerGoogle] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -63,10 +62,15 @@ function SignupContent() {
         const msg = searchParams?.get('message');
         const email = searchParams?.get('email');
         
-        if (err === 'invalid_domain') {
-            setSellerError(`Only verified Abuja private university emails are accepted. Your email ${email || ''} does not qualify.`);
+        if (err === 'invalid_domain' || err === 'unapproved_university') {
+            setSellerError(
+                err === 'invalid_domain' 
+                    ? `Only verified Abuja private university emails ending in .edu.ng are accepted. Your email ${email || ''} does not qualify.` 
+                    : `Your email domain is from an unapproved university. Please check our supported list.`
+            );
             setSellerErrorEmail(email || '');
-            setCurrentStep('seller-google');
+            setCurrentStep('role');
+            setActiveTab('seller');
             setRole('student_seller');
         } else if (err || msg) {
             setSellerError(msg || err || 'Authentication failed. Please try again.');
@@ -181,24 +185,24 @@ function SignupContent() {
         return (
             <div className="min-h-screen flex flex-col justify-center items-center p-4 py-12 bg-[#0a0a0a] text-white relative overflow-hidden">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-orange-500/10 rounded-full blur-[150px] pointer-events-none z-0" />
-                <div className="w-full max-w-2xl relative z-10 bg-[#1a1a1a] border border-[#2a2a2a] rounded-3xl p-6 md:p-10 lg:p-14 shadow-2xl">
+                <div className="w-full max-w-xl relative z-10 bg-[#111] border border-zinc-800 rounded-3xl p-6 md:p-10 shadow-2xl">
                     {sellerError && (
                         <div className="mb-8 p-4 bg-red-500/10 border border-red-500/50 rounded-2xl flex flex-col items-center gap-3 text-center">
                             <div className="flex items-center gap-2 text-red-500 font-black uppercase tracking-widest text-[10px]">
                                 <AlertTriangle className="h-4 w-4" /> Authentication Failed
                             </div>
-                            <p className="text-gray-300 text-[11px] font-bold leading-relaxed">{sellerError}</p>
+                            <p className="text-gray-350 text-[11px] font-bold leading-relaxed">{sellerError}</p>
                             <button onClick={clearError} className="mt-1 text-orange-500 hover:text-orange-400 text-[10px] font-black uppercase tracking-widest flex items-center gap-1 transition-colors">
                                 Try Again <ArrowRight className="h-3 w-3" />
                             </button>
                         </div>
                     )}
 
-                    <div className="text-center mb-10 space-y-4">
-                        <Link href="/" className="inline-flex items-center text-gray-400 hover:text-white uppercase text-[10px] font-black tracking-widest transition-colors mb-4">
+                    <div className="text-center mb-8 space-y-3">
+                        <Link href="/" className="inline-flex items-center text-gray-400 hover:text-white uppercase text-[10px] font-black tracking-widest transition-colors mb-2">
                             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
                         </Link>
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tighter italic leading-none">
+                        <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tighter italic leading-none">
                             Create <span className="text-orange-500">Account</span>
                         </h1>
                         <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px] italic">
@@ -206,61 +210,96 @@ function SignupContent() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:px-4">
-                        {/* Buyer Card */}
-                        <div
-                            onClick={() => setExpandedRole(expandedRole === 'student_buyer' ? null : 'student_buyer')}
+                    {/* Symmetrical Dual Selector Tabs */}
+                    <div className="flex bg-[#1a1a1a] p-1.5 rounded-2xl border border-zinc-800 mb-8">
+                        <button 
+                            type="button"
+                            onClick={() => { setActiveTab('buyer'); setRole('student_buyer'); }}
                             className={cn(
-                                "bg-[#2a2a2a] border rounded-3xl p-6 text-center flex flex-col items-center shadow-sm cursor-pointer transition-all duration-300",
-                                expandedRole === 'student_buyer' ? "border-orange-500/50 ring-1 ring-orange-500/20 scale-[1.02]" : "border-[#3a3a3a] hover:border-orange-500/30"
-                            )}>
-                            <div className="h-12 w-12 rounded-xl bg-[#1a1a1a] flex items-center justify-center mb-4">
-                                <UserIcon className="h-6 w-6 text-gray-400" />
-                            </div>
-                            <h3 className="text-sm font-black text-white uppercase tracking-tight mb-1">Buyer</h3>
-                            <p className="text-gray-400 text-[8px] font-black uppercase tracking-widest mb-2">Shop & Browse</p>
-                            <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'student_buyer' ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
-                                <Button onClick={(e) => { e.stopPropagation(); setRole('student_buyer'); setCurrentStep('buyer-form'); }}
-                                    className="w-full h-12 border border-[#3a3a3a] bg-transparent text-white hover:bg-[#3a3a3a] font-black uppercase tracking-widest text-[10px] rounded-xl mb-2">
-                                    Sign Up with Email
-                                </Button>
-                                <Button type="button" onClick={(e) => { e.stopPropagation(); handleGoogleAuth('student_buyer'); }} disabled={loadingBuyerGoogle || loadingSellerGoogle}
-                                    className="w-full h-12 bg-orange-500 text-black hover:bg-orange-600 font-black uppercase tracking-widest text-[10px] rounded-xl shadow-[0_6px_20px_rgba(255,98,0,0.25)] flex items-center justify-center gap-2">
-                                    {loadingBuyerGoogle ? <Loader2 className="animate-spin h-4 w-4" /> : <><Globe className="h-4 w-4" /> Google Sign-Up</>}
-                                </Button>
-                            </div>
-                        </div>
-
-                        {/* Seller Card */}
-                        <div
+                                "flex-1 py-3 text-xs font-black uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2",
+                                activeTab === 'buyer' ? "bg-orange-500 text-black shadow-lg" : "text-gray-400 hover:text-white"
+                            )}
+                        >
+                            <UserIcon className="h-3.5 w-3.5" />
+                            Buyer
+                        </button>
+                        <button 
+                            type="button"
+                            onClick={() => { setActiveTab('seller'); setRole('student_seller'); }}
                             className={cn(
-                                "bg-[#2a2a2a] border rounded-3xl p-6 text-center flex flex-col items-center shadow-lg relative overflow-hidden transition-all duration-300",
-                                "border-orange-500/50 ring-1 ring-orange-500/20"
-                            )}>
-                            <div className="absolute top-3 right-3 h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse shadow-[0_0_10px_rgba(255,98,0,0.8)]" />
-                            <div className="h-12 w-12 rounded-xl bg-[#1a1a1a] flex items-center justify-center mb-4">
-                                <BookOpen className="h-6 w-6 text-orange-500" />
-                            </div>
-                            <h3 className="text-sm font-black text-white uppercase tracking-tight mb-1">Seller</h3>
-                            <p className="text-gray-400 text-[8px] font-black uppercase tracking-widest mb-4">Sell on Campus</p>
-                            
-                            <div className="w-full space-y-3">
-                                <Button 
-                                    type="button" 
-                                    onClick={(e) => { e.stopPropagation(); handleGoogleAuth('student_seller'); }} 
-                                    disabled={loadingBuyerGoogle || loadingSellerGoogle}
-                                    className="w-full py-6 bg-orange-500 text-black hover:bg-orange-600 font-black uppercase tracking-wider text-[11px] rounded-xl shadow-[0_10px_30px_rgba(255,98,0,0.3)] flex items-center justify-center gap-2">
-                                    {loadingSellerGoogle ? <Loader2 className="animate-spin h-5 w-5" /> : <><ShieldCheck className="h-4 w-4" /> Sign Up with Google</>}
-                                </Button>
-                                <p className="text-[8px] text-gray-500 font-bold uppercase tracking-[0.2em] leading-relaxed">
-                                    School email <span className="text-orange-500 font-black">(.edu.ng)</span> required
-                                </p>
-                            </div>
-                        </div>
+                                "flex-1 py-3 text-xs font-black uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2",
+                                activeTab === 'seller' ? "bg-orange-500 text-black shadow-lg" : "text-gray-400 hover:text-white"
+                            )}
+                        >
+                            <BookOpen className="h-3.5 w-3.5" />
+                            Seller
+                        </button>
                     </div>
 
-                    <div className="text-center pt-8 mt-6 border-t border-[#2a2a2a]">
-                        <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">
+                    {activeTab === 'buyer' ? (
+                        <div className="space-y-4">
+                            <div className="text-center mb-6">
+                                <p className="text-gray-400 text-xs leading-relaxed">
+                                    Shop products, purchase services, and pay securely via escrow on any Abuja campus.
+                                </p>
+                            </div>
+                            
+                            <Button 
+                                type="button" 
+                                onClick={() => handleGoogleAuth('student_buyer')} 
+                                disabled={loadingBuyerGoogle || loadingSellerGoogle}
+                                className="w-full py-6 bg-white text-black hover:bg-gray-200 font-black uppercase tracking-wider text-[11px] rounded-xl flex items-center justify-center gap-2"
+                            >
+                                {loadingBuyerGoogle ? <Loader2 className="animate-spin h-5 w-5" /> : <><Globe className="h-4.5 w-4.5" /> Google Sign-Up</>}
+                            </Button>
+
+                            <div className="relative py-4 flex items-center justify-center">
+                                <div className="absolute inset-x-0 h-px bg-zinc-800" />
+                                <span className="relative bg-[#111] px-4 text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">Or</span>
+                            </div>
+
+                            <Button 
+                                type="button"
+                                onClick={() => { setRole('student_buyer'); setCurrentStep('buyer-form'); }}
+                                className="w-full py-6 border border-[#2a2a2a] bg-[#1a1a1a] text-white hover:bg-[#2a2a2a] font-black uppercase tracking-widest text-[11px] rounded-xl"
+                            >
+                                Sign Up with Email
+                            </Button>
+                        </div>
+                    ) : (
+                        <div className="space-y-6">
+                            <div className="text-center mb-4">
+                                <p className="text-gray-400 text-xs leading-relaxed">
+                                    To list products and start selling, verify your identity via Google Sign-In using your official student email.
+                                </p>
+                            </div>
+
+                            <Button 
+                                type="button" 
+                                onClick={() => handleGoogleAuth('student_seller')} 
+                                disabled={loadingBuyerGoogle || loadingSellerGoogle}
+                                className="w-full py-6 bg-orange-500 text-black hover:bg-orange-600 font-black uppercase tracking-wider text-[11px] rounded-xl shadow-[0_10px_30px_rgba(255,98,0,0.2)] flex items-center justify-center gap-2"
+                            >
+                                {loadingSellerGoogle ? <Loader2 className="animate-spin h-5 w-5" /> : <><ShieldCheck className="h-4.5 w-4.5" /> Sign Up with Google</>}
+                            </Button>
+
+                            <div className="border-t border-zinc-800 pt-4">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-3 text-center">Approved Abuja Universities</p>
+                                <div className="grid grid-cols-2 gap-2 text-[10px] font-bold text-zinc-405 bg-[#161616] p-3.5 rounded-xl border border-zinc-805">
+                                    {APPROVED_UNIVERSITIES.map(u => (
+                                        <div key={u.domain} className="flex items-center gap-1.5 truncate">
+                                            <span className="h-1 w-1 rounded-full bg-orange-500" />
+                                            <span>{u.name}</span>
+                                            <span className="text-[8px] text-zinc-600">({u.domain.split('.')[0]})</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="text-center pt-6 mt-6 border-t border-zinc-800">
+                        <p className="text-gray-450 font-bold text-xs uppercase tracking-widest">
                             Already have an account?{' '}
                             <Link href="/login" className="text-orange-500 font-black ml-2 hover:opacity-80">Log In</Link>
                         </p>

@@ -84,6 +84,30 @@ async function fetchIpLocation(): Promise<{ city: string; region: string; lat: n
 
 /** Reverse-geocode coordinates to get city/region via bigdatacloud (free) */
 async function reverseGeocode(lat: number, lng: number): Promise<{ city: string; region: string }> {
+    const googleKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+    if (googleKey) {
+        try {
+            const res = await fetch(
+                `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleKey}`
+            );
+            const d = await res.json();
+            if (d.results && d.results[0]) {
+                let city = '';
+                let region = '';
+                for (const component of d.results[0].address_components) {
+                    if (component.types.includes('locality')) {
+                        city = component.long_name;
+                    } else if (component.types.includes('administrative_area_level_1')) {
+                        region = component.long_name;
+                    }
+                }
+                return { city, region };
+            }
+        } catch (e) {
+            console.error('Google Maps reverse geocode failed, falling back', e);
+        }
+    }
+
     try {
         const res = await fetch(
             `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`

@@ -102,6 +102,13 @@ export const Header = () => {
                         <div className="flex items-center gap-2">
                             <ThemeToggle />
                             {user && <NotificationBell />}
+                            {!user && !loading && (
+                                <Link href="/login" className="hidden md:block">
+                                    <Button size="sm" className="bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black uppercase tracking-wider text-[11px] rounded-full px-5 py-2 transition-all">
+                                        Sign In
+                                    </Button>
+                                </Link>
+                            )}
                         </div>
 
                         {user && (
@@ -231,11 +238,15 @@ export const Header = () => {
                         </Link>
                     ))}
                     <div className="border-t border-zinc-100 dark:border-zinc-800 pt-4 flex flex-col gap-3 mt-2">
-                        {user && (
+                        {user ? (
                             <>
                                 <Link href="/settings" onClick={() => setMobileMenuOpen(false)} className="text-zinc-600 dark:text-zinc-300 hover:text-white font-bold p-2">My Account</Link>
                                 <button onClick={() => { setMobileMenuOpen(false); handleSignOut(); }} className="text-red-500 font-bold text-left p-2">Log out</button>
                             </>
+                        ) : (
+                            !loading && (
+                                <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="text-zinc-600 dark:text-zinc-300 hover:text-white font-bold p-2">Sign In</Link>
+                            )
                         )}
                     </div>
                 </div>

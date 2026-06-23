@@ -22,6 +22,7 @@ function LoginContent() {
 
     const [currentStep, setCurrentStep] = useState<Step>('role');
     const [role, setRole] = useState<Role>('buyer');
+    const [activeTab, setActiveTab] = useState<'buyer' | 'seller'>('buyer');
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -42,8 +43,8 @@ function LoginContent() {
         const emailParam = searchParams?.get('email');
         if (emailParam) { setFormData(prev => ({ ...prev, email: decodeURIComponent(emailParam) })); setCurrentStep('buyer-credentials'); }
         const roleParam = searchParams?.get('role');
-        if (roleParam === 'seller' || roleParam === 'student_seller') { setRole('seller'); setCurrentStep('seller-google'); }
-        else if (roleParam === 'buyer' || roleParam === 'student_buyer') { setRole('buyer'); setCurrentStep('buyer-credentials'); }
+        if (roleParam === 'seller' || roleParam === 'student_seller') { setRole('seller'); setActiveTab('seller'); }
+        else if (roleParam === 'buyer' || roleParam === 'student_buyer') { setRole('buyer'); setActiveTab('buyer'); }
     }, [searchParams]);
 
     function getRoleDestination(r: string) {
@@ -131,61 +132,90 @@ function LoginContent() {
         return (
             <div className="min-h-screen flex flex-col justify-center items-center p-4 py-12 bg-[#0a0a0a] text-white relative overflow-hidden">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-orange-500/10 rounded-full blur-[150px] pointer-events-none z-0" />
-                <div className="w-full max-w-2xl relative z-10 bg-[#1a1a1a] border border-[#2a2a2a] rounded-3xl p-6 md:p-10 lg:p-14 shadow-2xl">
-                    <div className="text-center mb-10 space-y-4">
-                        <Link href="/" className="inline-flex items-center text-gray-400 hover:text-white uppercase text-[10px] font-black tracking-widest transition-colors mb-4">
+                <div className="w-full max-w-xl relative z-10 bg-[#111] border border-zinc-800 rounded-3xl p-6 md:p-10 shadow-2xl">
+                    <div className="text-center mb-8 space-y-3">
+                        <Link href="/" className="inline-flex items-center text-gray-400 hover:text-white uppercase text-[10px] font-black tracking-widest transition-colors mb-2">
                             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
                         </Link>
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tighter italic leading-none">
+                        <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tighter italic leading-none">
                             Log <span className="text-orange-500">In</span>
                         </h1>
-                        <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px] italic">Select your account type</p>
+                        <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px] italic">Access your account</p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:px-4">
-                        {/* Buyer Card */}
-                        <div onClick={() => setExpandedRole(expandedRole === 'buyer' ? null : 'buyer')}
-                            className={cn("bg-[#2a2a2a] border rounded-3xl p-6 text-center flex flex-col items-center shadow-sm cursor-pointer transition-all duration-300",
-                                expandedRole === 'buyer' ? "border-orange-500/50 ring-1 ring-orange-500/20 scale-[1.02]" : "border-[#3a3a3a] hover:border-orange-500/30")}>
-                            <div className="h-12 w-12 rounded-xl bg-[#1a1a1a] flex items-center justify-center mb-4"><UserIcon className="h-6 w-6 text-gray-400" /></div>
-                            <h3 className="text-sm font-black text-white uppercase tracking-tight mb-1">Buyer</h3>
-                            <p className="text-gray-400 text-[8px] font-black uppercase tracking-widest mb-2">Shop & Browse</p>
-                            <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'buyer' ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
-                                <Button onClick={(e) => { e.stopPropagation(); setRole('buyer'); setCurrentStep('buyer-credentials'); }}
-                                    className="w-full h-12 border border-[#3a3a3a] bg-transparent text-white hover:bg-[#3a3a3a] font-black uppercase tracking-widest text-[10px] rounded-xl mb-2">
-                                    Log In with Email
-                                </Button>
-                                <Button type="button" onClick={(e) => { e.stopPropagation(); handleGoogleLogin('buyer'); }} disabled={googleLoadingRole === 'buyer'}
-                                    className="w-full h-12 bg-orange-500 text-black hover:bg-orange-600 font-black uppercase tracking-widest text-[10px] rounded-xl shadow-[0_6px_20px_rgba(255,98,0,0.25)] flex items-center justify-center gap-2">
-                                    {googleLoadingRole === 'buyer' ? <Loader2 className="animate-spin h-4 w-4" /> : <><Globe className="h-4 w-4" /> Google Sign-In</>}
-                                </Button>
-                            </div>
-                        </div>
+                    {/* Symmetrical Dual Selector Tabs */}
+                    <div className="flex bg-[#1a1a1a] p-1.5 rounded-2xl border border-zinc-800 mb-8">
+                        <button 
+                            type="button"
+                            onClick={() => { setActiveTab('buyer'); setRole('buyer'); }}
+                            className={cn(
+                                "flex-1 py-3 text-xs font-black uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2",
+                                activeTab === 'buyer' ? "bg-orange-500 text-black shadow-lg" : "text-gray-400 hover:text-white"
+                            )}
+                        >
+                            <UserIcon className="h-3.5 w-3.5" />
+                            Buyer
+                        </button>
+                        <button 
+                            type="button"
+                            onClick={() => { setActiveTab('seller'); setRole('seller'); }}
+                            className={cn(
+                                "flex-1 py-3 text-xs font-black uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2",
+                                activeTab === 'seller' ? "bg-orange-500 text-black shadow-lg" : "text-gray-400 hover:text-white"
+                            )}
+                        >
+                            <BookOpen className="h-3.5 w-3.5" />
+                            Seller
+                        </button>
+                    </div>
 
-                        {/* Seller Card */}
-                        <div onClick={() => setExpandedRole(expandedRole === 'seller' ? null : 'seller')}
-                            className={cn("bg-[#2a2a2a] border rounded-3xl p-6 text-center flex flex-col items-center shadow-sm relative overflow-hidden cursor-pointer transition-all duration-300",
-                                expandedRole === 'seller' ? "border-orange-500/50 ring-1 ring-orange-500/20 scale-[1.02]" : "border-[#3a3a3a] hover:border-orange-500/30")}>
-                            <div className="absolute top-3 right-3 h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse shadow-[0_0_10px_rgba(255,98,0,0.8)]" />
-                            <div className="h-12 w-12 rounded-xl bg-[#1a1a1a] flex items-center justify-center mb-4"><BookOpen className="h-6 w-6 text-gray-400" /></div>
-                            <h3 className="text-sm font-black text-white uppercase tracking-tight mb-1">Seller</h3>
-                            <p className="text-gray-400 text-[8px] font-black uppercase tracking-widest mb-2">Sell on Campus</p>
-                            <div className={cn("w-full space-y-2.5 overflow-hidden transition-all duration-500", expandedRole === 'seller' ? "max-h-56 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0")}>
-                                <Button type="button" onClick={(e) => { e.stopPropagation(); handleGoogleLogin('seller'); }} disabled={googleLoadingRole === 'seller'}
-                                    className="w-full h-14 bg-orange-500 text-black hover:bg-orange-600 font-black uppercase tracking-widest text-[10px] rounded-xl flex items-center justify-center gap-2 shadow-[0_6px_20px_rgba(255,98,0,0.25)]">
-                                    {googleLoadingRole === 'seller' ? <Loader2 className="animate-spin h-4 w-4" /> : <><Globe className="h-4 w-4" /> School Google Sign-In</>}
-                                </Button>
-                                <p className="text-[7.5px] text-gray-500 font-bold uppercase tracking-[0.2em] leading-relaxed mt-4 px-2">
-                                    Sellers sign in securely with their verified university account. No account?{' '}
-                                    <Link href="/signup?role=seller" className="text-orange-500 hover:underline" onClick={e => e.stopPropagation()}>Sign Up as Seller</Link>
+                    {activeTab === 'buyer' ? (
+                        <div className="space-y-4">
+                            <Button 
+                                type="button" 
+                                onClick={() => handleGoogleLogin('buyer')} 
+                                disabled={googleLoadingRole === 'buyer'}
+                                className="w-full py-6 bg-white text-black hover:bg-gray-200 font-black uppercase tracking-wider text-[11px] rounded-xl flex items-center justify-center gap-2"
+                            >
+                                {googleLoadingRole === 'buyer' ? <Loader2 className="animate-spin h-5 w-5" /> : <><Globe className="h-4.5 w-4.5" /> Google Sign-In</>}
+                            </Button>
+
+                            <div className="relative py-4 flex items-center justify-center">
+                                <div className="absolute inset-x-0 h-px bg-zinc-800" />
+                                <span className="relative bg-[#111] px-4 text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">Or</span>
+                            </div>
+
+                            <Button 
+                                type="button"
+                                onClick={() => { setRole('buyer'); setCurrentStep('buyer-credentials'); }}
+                                className="w-full py-6 border border-[#2a2a2a] bg-[#1a1a1a] text-white hover:bg-[#2a2a2a] font-black uppercase tracking-widest text-[11px] rounded-xl"
+                            >
+                                Log In with Email
+                            </Button>
+                        </div>
+                    ) : (
+                        <div className="space-y-6">
+                            <div className="text-center mb-4">
+                                <p className="text-gray-400 text-xs leading-relaxed">
+                                    To access your merchant store, sign in with your verified university Google account (.edu.ng).
                                 </p>
                             </div>
-                        </div>
-                    </div>
 
-                    <div className="text-center pt-8 mt-6 border-t border-[#2a2a2a]">
-                        <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">
-                            No account?{' '}<Link href="/signup" className="text-orange-500 font-black ml-2 hover:opacity-80">Sign Up</Link>
+                            <Button 
+                                type="button" 
+                                onClick={() => handleGoogleLogin('seller')} 
+                                disabled={googleLoadingRole === 'seller'}
+                                className="w-full py-6 bg-orange-500 text-black hover:bg-orange-600 font-black uppercase tracking-wider text-[11px] rounded-xl shadow-[0_10px_30px_rgba(255,98,0,0.2)] flex items-center justify-center gap-2"
+                            >
+                                {googleLoadingRole === 'seller' ? <Loader2 className="animate-spin h-5 w-5" /> : <><Globe className="h-4.5 w-4.5" /> Google Sign-In</>}
+                            </Button>
+                        </div>
+                    )}
+
+                    <div className="text-center pt-6 mt-6 border-t border-zinc-800">
+                        <p className="text-gray-450 font-bold text-xs uppercase tracking-widest">
+                            No account?{' '}
+                            <Link href="/signup" className="text-orange-500 font-black ml-2 hover:opacity-80">Sign Up</Link>
                         </p>
                     </div>
                 </div>

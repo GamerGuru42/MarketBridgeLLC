@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -22,32 +22,27 @@ export function AiAssistant() {
     const [isOpen, setIsOpen] = useState(false);
     const [retryCount, setRetryCount] = useState(0);
 
-    const { messages, input, handleInputChange, handleSubmit, isLoading, append, error, reload } = useChat({
+    const { messages, input, handleInputChange, handleSubmit, isLoading, append, error, reload, setMessages } = useChat({
         api: '/api/chat',
         maxSteps: 5,
         body: {
             isLoggedIn: !!user,
             userDisplayName: user?.displayName
         },
-        initialMessages: [{
+        onError: (err) => {
+            console.error('Sage chat error:', err);
+        },
+    });
+
+    useEffect(() => {
+        setMessages([{
             id: '1',
             role: 'assistant',
             content: !user 
                 ? "Hey there! 👋 I'm **Sage**, your personal MarketBridge assistant.\n\nLooking for something specific on campus? I can help you find products, explain how our secure escrow works, or guide you through setting up your account. \n\nHow can I help you own your campus today?" 
                 : "Welcome back! 👋 I'm **Sage**. Ready to bridge the gap today?\n\nI can help you:\n- 🔍 **Find products** across Abuja campuses\n- 📦 **Track active orders** in escrow\n- 🛠️ **Manage your shop** or verify listings\n- ⚖️ **Escalate disputes** to our operations team\n\nWhat's on your mind?",
-        }],
-        onError: (err) => {
-            console.error('Sage chat error:', err);
-            // Auto-retry once
-            if (retryCount < 2) {
-                setRetryCount(prev => prev + 1);
-                setTimeout(() => reload(), 1500);
-            }
-        },
-        onFinish: () => {
-            setRetryCount(0);
-        },
-    });
+        }]);
+    }, [user, setMessages]);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -55,7 +50,7 @@ export function AiAssistant() {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         scrollToBottom();
     }, [messages, isOpen, isLoading, error]);
 
@@ -332,7 +327,7 @@ export function AiAssistant() {
                                     </motion.div>
                                 )}
                             </AnimatePresence>
-                            {error && retryCount >= 2 && (
+                            {error && (
                                 <div className="flex gap-3 max-w-[85%] mt-2">
                                     <Avatar className="h-8 w-8 mt-1">
                                         <AvatarFallback className="bg-amber-500/20 text-amber-600">
@@ -344,7 +339,7 @@ export function AiAssistant() {
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => { setRetryCount(0); reload(); }}
+                                            onClick={() => { reload(); }}
                                             className="text-xs font-bold uppercase tracking-wider border-amber-500/30 hover:bg-amber-500/10"
                                         >
                                             ↻ Try Again

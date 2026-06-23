@@ -44,7 +44,7 @@ Escrow Fee Structure (Nigerian Naira):
 - Tier 1 (₦1 to ₦100,000): 1.5% fee, capped at ₦1,500 maximum.
 - Tier 2 (₦100,001 to ₦300,000): 2.5% fee plus ₦2,000 High-Value Protection Fee.
 - No transaction above ₦300,000 is permitted.
-- During Demo Mode, all transactions are capped at ₦5,000.
+
 
 MarketCoins (MC):
 - Earned automatically: 50 MC per ₦10,000 spent.
@@ -120,7 +120,7 @@ ${!isLoggedIn ? '- IMPORTANT: You are in "Guest Mode". You can answer marketplac
 `;
 
     const primaryModel = 'gemini-2.0-flash';
-    const fallbackModel = 'gemini-2.0-flash';
+    const fallbackModel = 'gemini-1.5-flash';
 
     async function runChat(modelId: string) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -207,9 +207,14 @@ ${!isLoggedIn ? '- IMPORTANT: You are in "Guest Mode". You can answer marketplac
                         }
                         try {
                             const supabase = await createClient();
+                            const { data: { user: authUser }, error: authUserErr } = await supabase.auth.getUser();
+                            if (authUserErr || !authUser) {
+                                return { found: false, message: 'Authentication required. Please log in to check your order status.', needsLogin: true };
+                            }
                             const { data, error } = await supabase
                                 .from('escrow_agreements')
                                 .select('id, status, amount, created_at, listing:listings(title)')
+                                .or(`buyer_id.eq.${authUser.id},seller_id.eq.${authUser.id}`)
                                 .order('created_at', { ascending: false })
                                 .limit(3);
 

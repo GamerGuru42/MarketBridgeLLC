@@ -2,10 +2,11 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, ShoppingBag, Store, MapPin, Zap, CheckCircle2, QrCode } from 'lucide-react';
+import { ArrowRight, ShoppingBag, Store, MapPin, Zap, CheckCircle2 } from 'lucide-react';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { useAuth } from '@/contexts/AuthContext';
+import QRCode from 'react-qr-code';
 
 export default function HomePage() {
     const { user } = useAuth();
@@ -31,13 +32,28 @@ export default function HomePage() {
                             Buy and sell fast within your uni. Order fresh food, textbooks, and services from verified students. Zero middlemen. Zero delays.
                         </p>
 
-                        {!user && (
+                        {!user ? (
                             <div className="pt-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
                                 <Link
                                     href="/signup"
-                                    className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black uppercase tracking-wider text-sm rounded-2xl transition-all hover:scale-[1.03] shadow-[0_8px_30px_rgba(255,98,0,0.3)] group"
+                                    className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black uppercase tracking-wider text-sm rounded-2xl transition-all hover:scale-[1.03] shadow-[0_8px_30px_rgba(255,98,0,0.3)] group text-center"
                                 >
                                     Get Started <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                </Link>
+                                <Link
+                                    href="/marketplace"
+                                    className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-black uppercase tracking-wider text-sm rounded-2xl transition-all hover:scale-[1.03] text-center border border-zinc-200 dark:border-zinc-800"
+                                >
+                                    Browse Market
+                                </Link>
+                            </div>
+                        ) : (
+                            <div className="pt-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                <Link
+                                    href={user.role === 'seller' || user.role === 'student_seller' ? '/seller/dashboard' : '/marketplace'}
+                                    className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-[#FF6200] hover:bg-[#FF7A29] text-white font-black uppercase tracking-wider text-sm rounded-2xl transition-all hover:scale-[1.03] shadow-[0_8px_30px_rgba(255,98,0,0.3)] group text-center"
+                                >
+                                    {user.role === 'seller' || user.role === 'student_seller' ? 'Seller Dashboard' : 'Go to Marketplace'} <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </Link>
                             </div>
                         )}
@@ -163,7 +179,7 @@ export default function HomePage() {
 
                         <div className="relative z-10 hidden md:flex flex-col items-center bg-white/5 border border-white/10 p-6 rounded-[2rem] backdrop-blur-sm transform hover:scale-105 transition-transform duration-300">
                             <div className="bg-white p-4 rounded-2xl mb-4 text-[#111111] flex items-center justify-center shadow-lg">
-                                <QrCode className="h-24 w-24" strokeWidth={1.5} />
+                                <QRCode value="https://marketbridge.com.ng/seller-onboard" size={96} />
                             </div>
                             <p className="text-white font-black uppercase tracking-widest text-xs">Scan to Sell Fast</p>
                             <p className="text-[#FF6200] text-[10px] uppercase font-bold tracking-widest mt-1">Open Camera App</p>
