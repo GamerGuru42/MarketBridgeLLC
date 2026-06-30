@@ -122,8 +122,17 @@ function SignupContent() {
         e.preventDefault();
         if (formData.password !== formData.passwordConfirm) { toast('Passwords do not match.', 'error'); return; }
         if (!formData.terms) { toast('You must accept the terms and conditions.', 'error'); return; }
-        const finalUniversity = formData.university === 'Other' ? formData.otherUniversity : formData.university;
-        if (!finalUniversity) { toast('Please specify your university.', 'error'); return; }
+        
+        let finalUniversity: string | null = null;
+        if (formData.university === 'Other') {
+            if (!formData.otherUniversity.trim()) {
+                toast('Please specify your university.', 'error');
+                return;
+            }
+            finalUniversity = formData.otherUniversity.trim();
+        } else if (formData.university) {
+            finalUniversity = formData.university;
+        }
 
         const { signupSchema } = await import('@/lib/validations');
         const [firstName, ...rest] = formData.fullName.trim().split(' ');
@@ -389,9 +398,9 @@ function SignupContent() {
                         <label className="text-[10px] uppercase font-black tracking-[0.2em] text-gray-400">University</label>
                         <div className="relative">
                             <div className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500"><GraduationCap className="h-4 w-4" /></div>
-                            <select name="university" value={formData.university} onChange={handleChange} required
+                            <select name="university" value={formData.university} onChange={handleChange}
                                 className="w-full h-14 pl-14 pr-6 bg-[#2a2a2a] border-0 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all font-bold tracking-wider text-sm appearance-none">
-                                <option value="" disabled>Select your university</option>
+                                <option value="">Not a student / Skip</option>
                                 {UNIVERSITIES.map(u => <option key={u} value={u}>{u}</option>)}
                             </select>
                         </div>
