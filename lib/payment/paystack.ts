@@ -2,6 +2,7 @@
 // PCI-Compliant Payment Processing for Nigeria
 // Date: 2026-02-13
 
+import crypto from 'crypto';
 import axios, { AxiosInstance } from 'axios';
 import type {
     PaystackInitializeResponse,
@@ -255,29 +256,79 @@ class PaystackClient {
     }
 
     /**
-     * Refund a transaction
+     * Refund a transaction (alias used by refund route)
      */
-    async refundTransaction(params: {
+    async refund(params: {
         transaction: string | number; // Transaction ID or reference
         amount?: number; // Partial refund amount in kobo
         currency?: Currency;
         customer_note?: string;
         merchant_note?: string;
-    }) {
+    }): Promise<{ status: boolean; message: string; data: { transaction_reference: string } }> {
         const response = await this.client.post('/refund', params);
-        return response.data;
+        return response.data as { status: boolean; message: string; data: { transaction_reference: string } };
     }
 
     /**
-     * Verify webhook signature
+     * Refund a transaction (legacy alias)
+     */
+    async refundTransaction(params: {
+        transaction: string | number;
+        amount?: number;
+        currency?: Currency;
+        customer_note?: string;
+        merchant_note?: string;
+    }): Promise<{ status: boolean; message: string; data: { transaction_reference: string } }> {
+        return this.refund(params);
+    }
+
+    /**
+     * Create a transfer recipient (bank account)
+     */
+    async createTransferRecipient(params: {
+        type: 'nuban';
+        name: string;
+        account_number: string;
+        bank_code: string;
+        currency?: Currency;
+    }): Promise<{ status: boolean; message: string; data: { recipient_code: string } }> {
+        const response = await this.client.post('/transferrecipient', {
+            ...params,
+            currency: params.currency || 'NGN',
+        });
+        return response.data as { status: boolean; message: string; data: { recipient_code: string } };
+    }
+
+    /**
+     * Initiate a transfer to a recipient's bank account.
+     * amount must be in KOBO.
+     */
+    async createTransfer(params: {
+        recipient: string; // Paystack recipient code
+        amount: number;    // In kobo
+        reason?: string;
+        reference?: string;
+        currency?: Currency;
+    }): Promise<{ status: boolean; message: string; data: { reference: string; transfer_code: string } }> {
+        const response = await this.client.post('/transfer', {
+            source: 'balance',
+            recipient: params.recipient,
+            amount: params.amount,
+            reason: params.reason || 'Seller payout',
+            reference: params.reference || this.generateReference(),
+            currency: params.currency || 'NGN',
+        });
+        return response.data as { status: boolean; message: string; data: { reference: string; transfer_code: string } };
+    }
+
+    /**
+     * Verify webhook signature (HMAC-SHA512)
      */
     verifyWebhookSignature(payload: string, signature: string): boolean {
-        const crypto = require('crypto');
         const hash = crypto
             .createHmac('sha512', PAYSTACK_SECRET_KEY)
             .update(payload)
             .digest('hex');
-
         return hash === signature;
     }
 
@@ -685,7 +736,6 @@ export function isValidEmail(email: string): boolean {
  * Generate customer code from email
  */
 export function generateCustomerCode(email: string): string {
-    const crypto = require('crypto');
     return crypto
         .createHash('md5')
         .update(email.toLowerCase())

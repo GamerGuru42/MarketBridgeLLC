@@ -1,106 +1,44 @@
-import crypto from 'crypto'
-import { NextRequest } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase/admin'
-import { tryAwardReferralBonusForUser } from '@/lib/referrals/server'
+import crypto from 'crypto';
+import { NextRequest, NextResponse } from 'next/server';
+import { PaystackWebhookHandler } from '@/lib/payment/paystack-webhook-handler';
 
-const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || ''
+const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY ?? '';
 
+// POST /api/webhooks/paystack
 export async function POST(req: NextRequest) {
-    const signature = req.headers.get('x-paystack-signature') || ''
-    const bodyText = await req.text()
+  // ── 1. Read raw body for signature verification ───────────────────────────
+  const bodyText = await req.text();
+  const signature = req.headers.get('x-paystack-signature') ?? '';
 
-    // Verify signature
-    const hash = crypto.createHmac('sha512', PAYSTACK_SECRET).update(bodyText).digest('hex')
-    if (!signature || hash !== signature) {
-        console.warn('Invalid Paystack webhook signature')
-        return new Response('Invalid signature', { status: 401 })
-    }
+  // ── 2. Verify HMAC-SHA512 signature ──────────────────────────────────────
+  const hash = crypto
+    .createHmac('sha512', PAYSTACK_SECRET)
+    .update(bodyText)
+    .digest('hex');
 
-    let event
-    try {
-        event = JSON.parse(bodyText)
-    } catch (e) {
-        console.error('Invalid webhook payload', e)
-        return new Response('Bad payload', { status: 400 })
-    }
+  if (!signature || hash !== signature) {
+    console.warn('[paystack-webhook] Invalid signature — rejecting request');
+    return new NextResponse('Invalid signature', { status: 401 });
+  }
 
-    try {
-        const eventType = event.event || event.type
-        const data = event.data || event.payload || {}
+  // ── 3. Parse JSON ─────────────────────────────────────────────────────────
+  let event: Record<string, unknown>;
+  try {
+    event = JSON.parse(bodyText) as Record<string, unknown>;
+  } catch {
+    console.error('[paystack-webhook] Malformed JSON payload');
+    return new NextResponse('Bad payload', { status: 400 });
+  }
 
-        if (eventType === 'charge.success' || eventType === 'transaction.success') {
-            const reference = data.reference || data.trxref || data.id
-            const metadata = data.metadata || {}
-            const subscriptionId = metadata?.subscription_id || metadata?.subscriptionId || null
-            const orderId = metadata?.order_id || metadata?.orderId || null
-            const buyerId = metadata?.user_id || metadata?.userId || data?.customer?.id || null
-            const sellerId = metadata?.seller_id || null
-            const amount = data.amount / 100 // Convert from kobo
-
-            if (subscriptionId) {
-                // Mark subscription active
-                const plan = metadata.plan || 'monthly'
-                const periodStart = new Date().toISOString()
-                const periodEnd = new Date()
-                if (plan === 'yearly' || plan === 'annual') periodEnd.setFullYear(periodEnd.getFullYear() + 1)
-                else periodEnd.setMonth(periodEnd.getMonth() + 1)
-
-                await supabaseAdmin.from('subscriptions').update({
-                    status: 'active',
-                    paystack_reference: reference,
-                    current_period_start: periodStart,
-                    current_period_end: periodEnd.toISOString()
-                }).eq('id', subscriptionId)
-
-                // Update user subscription_status
-                const { data: sub } = await supabaseAdmin.from('subscriptions').select('user_id,plan_id').eq('id', subscriptionId).single()
-                if (sub?.user_id) {
-                    await supabaseAdmin.from('users').update({
-                        subscription_status: 'active',
-                        subscription_start_date: periodStart
-                    }).eq('id', sub.user_id)
-                }
-            }
-
-            // Handle Order Success
-            if (orderId) {
-                // Award coins to buyer
-                if (buyerId) {
-                    const { earnCoinsBuyer } = await import('@/lib/coins')
-                    await earnCoinsBuyer(buyerId, amount, orderId)
-                }
-                // Award coins to seller
-                if (sellerId) {
-                    const { earnCoinsSeller } = await import('@/lib/coins')
-                    await earnCoinsSeller(sellerId, amount, orderId)
-                }
-
-                // Update order status if possible
-                try {
-                    await supabaseAdmin.from('orders').update({ status: 'paid', transaction_ref: reference }).eq('id', orderId)
-                } catch (e) { }
-            }
-
-            // Record payment and check referral bonus
-            try {
-                const payment = {
-                    processor: 'paystack',
-                    reference: reference,
-                    amount: amount,
-                    metadata: data,
-                    user_id: buyerId
-                }
-                await supabaseAdmin.from('payments').insert([payment])
-
-                if (buyerId) {
-                    await tryAwardReferralBonusForUser(buyerId)
-                }
-            } catch (e) { /* ignore if payments table absent */ }
-        }
-
-        return new Response('OK', { status: 200 })
-    } catch (e) {
-        console.error('Webhook processing failed', e)
-        return new Response('Error', { status: 500 })
-    }
+  // ── 4. Delegate to idempotent handler ─────────────────────────────────────
+  try {
+    await PaystackWebhookHandler.handleEvent(
+      event as Parameters<typeof PaystackWebhookHandler.handleEvent>[0]
+    );
+    return new NextResponse('OK', { status: 200 });
+  } catch (err) {
+    console.error('[paystack-webhook] Handler error:', err);
+    // Return 500 so Paystack retries the event
+    return new NextResponse('Internal error', { status: 500 });
+  }
 }
