@@ -2,7 +2,6 @@
 
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { AiAssistant } from '@/components/AiAssistant';
 import { CookieConsent } from '@/components/CookieConsent';
 
 
@@ -18,13 +17,8 @@ export function GlobalWidgets() {
     const authPaths = ['/login', '/signup', '/forgot-password'];
     if (authPaths.includes(pathname || '')) return null;
 
-    // Enable Sage AI globally (Hidden on admin routes)
-    const showSageAI = true;
-
     return (
         <>
-            {showSageAI && <AiAssistant />}
-
             <CookieConsent />
         </>
     );

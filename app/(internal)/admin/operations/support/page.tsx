@@ -187,16 +187,13 @@ export default function OperationsSupportPage() {
                                 <div className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm ${
                                     msg.sender_type === 'admin'
                                         ? 'bg-[#FF6600] text-black font-medium rounded-tr-none'
-                                        : msg.sender_type === 'ai'
-                                        ? 'bg-purple-50 text-purple-900 border border-purple-200 rounded-tl-none'
                                         : 'bg-zinc-100 text-zinc-900 border border-zinc-200 rounded-tl-none'
                                 }`}>
                                     <div className="flex items-center gap-2 mb-1">
-                                        {msg.sender_type === 'ai' && <Bot className="h-3 w-3 text-purple-500" />}
                                         {msg.sender_type === 'admin' && <Shield className="h-3 w-3" />}
                                         {msg.sender_type === 'user' && <User className="h-3 w-3 text-zinc-400" />}
                                         <span className="text-[10px] font-black uppercase tracking-widest opacity-60">
-                                            {msg.sender_type === 'ai' ? 'Sage AI' : msg.sender_type === 'admin' ? 'You' : 'User'}
+                                            {msg.sender_type === 'admin' ? 'You' : 'User'}
                                         </span>
                                     </div>
                                     <p className="whitespace-pre-wrap">{msg.content}</p>
@@ -235,7 +232,7 @@ export default function OperationsSupportPage() {
                         <Headphones className="text-[#FF6600] h-6 w-6" />
                         Customer Support Queue
                     </h1>
-                    <p className="text-sm text-zinc-500 font-medium mt-1">Live tickets from users and AI escalations. Click to respond.</p>
+                    <p className="text-sm text-zinc-500 font-medium mt-1">Live tickets from users. Click to respond.</p>
                 </div>
                 <Badge className="bg-[#FF6600]/10 text-[#FF6600] font-black text-sm border-none px-4 py-2">
                     {tickets.length} Active

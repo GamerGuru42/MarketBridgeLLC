@@ -384,7 +384,6 @@ export default function OperationsAdminPage() {
                     <Card className="bg-card border-border rounded-[2.5rem] overflow-hidden">
                         <CardHeader className="bg-muted/10 py-10 px-10 border-b border-border">
                             <CardTitle className="text-2xl font-black uppercase italic tracking-tighter">Support <span className="text-primary">Tickets</span></CardTitle>
-                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mt-1 opacity-60">Escalated by Sage AI</p>
                         </CardHeader>
                         <CardContent className="p-6 md:p-10 space-y-4">
                             {supportTickets.length === 0 ? (

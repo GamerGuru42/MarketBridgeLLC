@@ -235,7 +235,6 @@ export default function ITSupportPage() {
                         {[
                             { name: 'Paystack', desc: 'Payment gateway & escrow', status: 'operational' },
                             { name: 'Supabase', desc: 'Database & authentication', status: 'operational' },
-                            { name: 'Google Gemini', desc: 'Sage AI (gemini-2.0-flash)', status: 'operational' },
                             { name: 'Google OAuth', desc: 'Social authentication', status: 'operational' },
                         ].map((svc, i) => (
                             <Card key={i} className="bg-card border-border rounded-[2.5rem] p-8 flex items-center justify-between group hover:border-primary/20 transition-all">
@@ -284,7 +283,6 @@ export default function ITSupportPage() {
                             {[
                                 { title: 'Escrow System Architecture', desc: '7-stage escrow flow, Paystack integration, and subaccount model.' },
                                 { title: 'Authentication Flow', desc: 'Google OAuth, role resolution, cross-subdomain session management.' },
-                                { title: 'Sage AI Configuration', desc: 'Gemini 2.0 Flash model, tool definitions, escalation protocol.' },
                                 { title: 'Database Schema', desc: 'Supabase tables, RLS policies, and migration procedures.' },
                                 { title: 'Deployment Guide', desc: 'Vercel production deployment, environment variables, DNS config.' },
                                 { title: 'API Reference', desc: 'Internal API endpoints for admin operations, webhooks, and integrations.' },

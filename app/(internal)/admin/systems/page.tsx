@@ -162,7 +162,6 @@ export default function SystemsAdminPage() {
                     {[
                         { val: 'health', label: 'Platform Health', icon: Activity },
                         { val: 'escrow', label: 'Escrow Status', icon: CreditCard },
-                        { val: 'sage', label: 'Sage AI', icon: Bot },
                         { val: 'database', label: 'Database', icon: Database },
                         { val: 'demo', label: 'Demo Shield', icon: Shield },
                         { val: 'security', label: 'Security Logs', icon: Eye },
@@ -238,27 +237,6 @@ export default function SystemsAdminPage() {
                             <CheckCircle className="h-5 w-5 text-green-500" />
                             <span className="text-sm font-bold text-green-500">All payment systems operational</span>
                         </div>
-                    </Card>
-                </TabsContent>
-
-                {/* Sage AI Performance */}
-                <TabsContent value="sage" className="space-y-8">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {[
-                            { label: 'Total Queries Handled', value: '—', sub: 'Since Launch' },
-                            { label: 'Escalation Rate', value: '—', sub: 'To Human Ops' },
-                            { label: 'Model Version', value: 'gemini-2.0-flash', sub: 'Active Model' },
-                        ].map((m, i) => (
-                            <Card key={i} className="bg-card border-border rounded-[2.5rem] p-8">
-                                <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] mb-4">{m.label}</p>
-                                <p className="text-3xl font-black italic tracking-tighter mb-2">{m.value}</p>
-                                <p className="text-[10px] font-black uppercase tracking-widest opacity-40">{m.sub}</p>
-                            </Card>
-                        ))}
-                    </div>
-                    <Card className="bg-card border-border rounded-[2.5rem] p-10">
-                        <h3 className="text-xl font-black italic uppercase tracking-tighter mb-4">Response <span className="text-primary">Accuracy Logs</span></h3>
-                        <p className="text-muted-foreground text-sm italic">Sage AI performance metrics will populate as user interactions increase. Escalated tickets are tracked in the Operations Support Center.</p>
                     </Card>
                 </TabsContent>
 
